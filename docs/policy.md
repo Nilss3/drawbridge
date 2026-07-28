@@ -95,6 +95,33 @@ wait for devices to update, then sign with the new key and drop the old one.
 P-256 keeps signature verification on the platform provider with no third-party
 crypto library in an app that runs an always-on network service.
 
+## Releases are cut locally, not in CI
+
+There is deliberately no release workflow. CI cannot produce a correct release
+here, for two reasons that compound:
+
+- The **policy signing key lives offline**, so CI cannot sign a policy.
+- `required_apps` **pins herald by checksum**, and Android builds are not
+  byte-reproducible — so APKs built in CI would never match the hashes in the
+  signed policy, and every device would refuse the download.
+
+A workflow that publishes on a tag is worse than none: it silently replaces
+correctly-signed assets with ones that cannot be installed. One did exist and was
+removed after it fired on `v0.1.0` and had to be cancelled.
+
+Cut a release like this, in this order:
+
+```bash
+./gradlew :herald:assembleRelease            # 1. herald first
+# 2. hash the APKs into required_apps in dist/policy.json, bump version
+python3 tools/policytool.py sign --key-id drawbridge-2026-07
+cp dist/policy.signed.json policy/src/main/assets/drawbridge/default-policy.json
+./gradlew :dpc:assembleRelease               # 3. drawbridge last, carrying that policy
+gh release create vX.Y.Z dist/release/*.apk dist/release/SHA256SUMS
+```
+
+CI still runs tests and lint on every push, which is what it is good for.
+
 ## Build order matters when `required_apps` changes
 
 `required_apps` pins herald's APKs by checksum, and every APK embeds a copy of

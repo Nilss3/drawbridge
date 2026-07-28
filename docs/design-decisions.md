@@ -62,6 +62,13 @@ The plain `upstreams` are still required: they bootstrap that hostname and take
 over if DoT is unreachable. They are set to a *filtering* resolver so that losing
 the encrypted hop degrades to a narrower filter rather than an open one.
 
+## There is no release workflow
+
+Releases are built and signed on a workstation, not in CI. The policy signing key
+is meant to live offline, and `required_apps` pins herald's APKs by checksum —
+so CI-built APKs, which are not byte-reproducible, could never match a policy
+signed anywhere else. See [policy.md](policy.md) for the procedure.
+
 ## Policy is signed with ECDSA P-256, not Ed25519
 
 `Signature.getInstance("Ed25519")` only exists from API 33, and these apps target
