@@ -22,6 +22,10 @@ machine, what was and was not verified, and what to do next.
 
 Nothing is stale. Two things have still never run:
 
+- **`/releases/latest` must resolve.** Every release URL depends on it. GitHub
+  excludes drafts and pre-releases, so flagging the newest release as either
+  breaks provisioning and herald's auto-install. v0.1.0 is flagged pre-release,
+  which is fine while v0.1.1 is the newest published one.
 - **The self-update path.** `app_update` is unset, so `checkAndInstallSelf` has
   nothing to do. Setting it is circular — drawbridge's own APK contains the
   policy that would name its hash — so it takes two rounds: publish the APK,
