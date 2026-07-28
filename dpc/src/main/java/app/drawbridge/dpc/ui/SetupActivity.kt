@@ -42,6 +42,8 @@ class SetupActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_setup)
 
+        findViewById<View>(R.id.root).applyScreenInsets()
+
         pinStep = findViewById(R.id.pinStep)
         recoveryStep = findViewById(R.id.recoveryStep)
         pinField = findViewById(R.id.pinField)

@@ -90,6 +90,38 @@ no ECH configuration is ever delivered, so ECH is not negotiated. Clients fall
 back to A/AAAA, which costs nothing. The parser in this codebase therefore reads
 questions and *builds* answers, but never rewrites one.
 
+## Every screen insets itself for the system bars
+
+Both apps target API 36, and from API 35 the platform lays every app out edge to
+edge with no way to opt out. `android:statusBarColor` is ignored, the bars are
+transparent, and whatever the app draws at the top of its window is drawn
+*underneath* the status bar.
+
+The two apps were hit differently, and neither failure is visible below API 35:
+
+- **herald** put its toolbar under the status bar, because a `NoActionBar` theme
+  gives the layout the whole window.
+- **drawbridge** kept its action bar in the right place — AppCompat still insets
+  that — but the content view now starts at the top of the window and was drawn
+  behind both bars, hiding the first two lines of every screen.
+
+Each app therefore pads its own root: `View.applySystemBarInsets` in herald,
+`View.applyScreenInsets` in drawbridge, which also adds `actionBarSize`. Padding
+rather than margin, so the strip under each bar keeps the view's background —
+which is why herald's roots carry the toolbar colour and its content views carry
+the theme background. Both helpers no-op below API 35, where the decor view
+consumes the insets first and reports zero.
+
+Two consequences worth knowing:
+
+- **The bar icon colours are pinned in the themes.** With transparent bars the
+  platform picks icon colour from the theme, which is wrong for both apps:
+  herald's strips are always the dark toolbar colour, drawbridge's always follow
+  day/night. `windowLightStatusBar` and `windowLightNavigationBar` are set
+  explicitly rather than inherited.
+- **Fullscreen video needs no special case.** The insets go to zero while the
+  bars are hidden, so the padding collapses on its own.
+
 ## Blocklists are stored as hashes, not strings
 
 A merged adult + gambling + ad list is a few hundred thousand domains. As a

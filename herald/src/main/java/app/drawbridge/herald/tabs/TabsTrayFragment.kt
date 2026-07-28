@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import app.drawbridge.herald.BrowserActivity
 import app.drawbridge.herald.R
 import app.drawbridge.herald.browser.BrowserFragment
+import app.drawbridge.herald.ext.applySystemBarInsets
 import app.drawbridge.herald.ext.requireComponents
 import mozilla.components.browser.state.state.TabSessionState
 import mozilla.components.browser.tabstray.TabsAdapter
@@ -31,6 +32,8 @@ class TabsTrayFragment : Fragment(), UserInteractionHandler {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        view.applySystemBarInsets(top = true, bottom = true, sides = true)
 
         val tray = createTabsTray(view)
         tabsFeature = TabsFeature(tray, requireComponents.core.store, ::closeTray)

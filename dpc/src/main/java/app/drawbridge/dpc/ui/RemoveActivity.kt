@@ -1,6 +1,7 @@
 package app.drawbridge.dpc.ui
 
 import android.os.Bundle
+import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
@@ -33,6 +34,8 @@ class RemoveActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_remove)
+
+        findViewById<View>(R.id.root).applyScreenInsets()
 
         secretField = findViewById(R.id.secretField)
         statusView = findViewById(R.id.statusView)

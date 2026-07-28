@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import app.drawbridge.herald.R
+import app.drawbridge.herald.ext.applySystemBarInsets
 import kotlinx.coroutines.launch
 
 /**
@@ -53,6 +54,8 @@ abstract class EntryListActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_entry_list)
+
+        findViewById<View>(R.id.root).applySystemBarInsets(top = true, bottom = true, sides = true)
 
         findViewById<Toolbar>(R.id.toolbar).apply {
             setTitle(titleResId)

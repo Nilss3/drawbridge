@@ -20,7 +20,15 @@ machine, what was and was not verified, and what to do next.
 
 ### Known gaps in the current release
 
-Nothing is stale. Two things have still never run:
+**The released APKs have the edge-to-edge layout bug.** Both apps draw under the
+system bars on Android 15 and later: herald's toolbar sits beneath the status
+bar, and drawbridge hides the first two lines of every screen behind its own
+action bar. Fixed on `main` — see
+[design-decisions](design-decisions.md#every-screen-insets-itself-for-the-system-bars)
+— but not in v0.1.1, so it needs a release. herald's version is unchanged, so
+that release also means a new `required_apps` checksum and a policy update.
+
+Three things have still never run:
 
 - **`/releases/latest` must resolve.** Every release URL depends on it. GitHub
   excludes drafts and pre-releases, so flagging the newest release as either

@@ -4,21 +4,25 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?android:attr/colorBackground">
+    android:background="@color/toolbar_background">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/tabsToolbarTop"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:background="@color/toolbar_background"
-        android:title="@string/tabs_tray_title"
+        app:title="@string/tabs_tray_title"
         app:layout_constraintTop_toTopOf="parent"
         app:titleTextColor="@color/toolbar_text" />
 
+    <!-- The root is toolbar-coloured, so the strips it pads itself by under the
+         system bars match the two bars. The tab list carries the theme
+         background instead. -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/tabsTray"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:background="?android:attr/colorBackground"
         app:layout_constraintBottom_toTopOf="@+id/tabsActionBar"
         app:layout_constraintTop_toBottomOf="@+id/tabsToolbarTop" />
 

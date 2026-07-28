@@ -1,4 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <style name="Theme.Drawbridge" parent="Theme.Material3.DayNight" />
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!--
+        From API 35 the system bars are transparent and drawn over the window, so
+        their icons have to be dark against this theme's light background. The
+        night variant of this file flips both back.
+    -->
+    <style name="Theme.Drawbridge" parent="Theme.Material3.DayNight">
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowLightNavigationBar" tools:targetApi="o_mr1">true</item>
+    </style>
 </resources>

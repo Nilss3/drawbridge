@@ -39,6 +39,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        findViewById<View>(R.id.root).applyScreenInsets()
+
         ownershipStatus = findViewById(R.id.ownershipStatus)
         filterStatus = findViewById(R.id.filterStatus)
         policyStatus = findViewById(R.id.policyStatus)

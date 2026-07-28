@@ -14,6 +14,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import app.drawbridge.herald.BrowserActivity
 import app.drawbridge.herald.R
 import app.drawbridge.herald.downloads.DownloadService
+import app.drawbridge.herald.ext.applySystemBarInsets
 import app.drawbridge.herald.ext.requireComponents
 import app.drawbridge.herald.tabs.TabsTrayFragment
 import mozilla.components.browser.state.selector.selectedTab
@@ -95,6 +96,12 @@ class BrowserFragment :
     @Suppress("LongMethod")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val components = requireComponents
+
+        // The toolbar sits at the top of this layout, so without the inset it
+        // renders underneath the status bar. Padding the root keeps the engine
+        // view's own height in sync with it, and the root's background is the
+        // toolbar colour, so the padded strips read as part of the chrome.
+        view.applySystemBarInsets(top = true, bottom = true, sides = true)
 
         sessionFeature.set(
             feature = SessionFeature(

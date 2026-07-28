@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/toolbar_background"
     android:orientation="vertical">
 
     <androidx.appcompat.widget.Toolbar
@@ -13,8 +15,11 @@
         app:navigationIcon="@drawable/ic_back"
         app:titleTextColor="@color/toolbar_text" />
 
+    <!-- See activity_entry_list.xml: the root paints the system bar strips, the
+         content carries the theme background. -->
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/settingsContainer"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:background="?android:attr/colorBackground" />
 </LinearLayout>

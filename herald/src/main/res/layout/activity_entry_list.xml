@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/toolbar_background"
     android:orientation="vertical">
 
     <androidx.appcompat.widget.Toolbar
@@ -13,9 +15,13 @@
         app:navigationIcon="@drawable/ic_back"
         app:titleTextColor="@color/toolbar_text" />
 
+    <!-- The root is toolbar-coloured, so the strips it pads itself by under the
+         system bars match the chrome. The content below the toolbar carries the
+         theme background instead. -->
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="?android:attr/colorBackground">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/entryList"
