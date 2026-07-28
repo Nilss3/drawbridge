@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Heraldic gold on deep blue. Fixed in both day and night: a launcher icon
+         does not follow the app's theme. -->
+    <color name="ic_launcher_background">#FF2F3B6E</color>
+</resources>

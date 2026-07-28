@@ -154,6 +154,26 @@ the process restarted. `HeraldApplication.onConfigurationChanged` pushes the new
 value in, because the activity is recreated on a mode change but the engine is
 process-wide and outlives it.
 
+## herald dispatches its own search region
+
+`SearchMiddleware` loads the bundled search engine catalogue on exactly one
+trigger — `SearchAction.SetRegionAction` — and Android Components leaves
+dispatching it to `RegionMiddleware`, which resolves the region over the network
+through Mozilla's location service. That endpoint is retired. It resolves
+nothing, the action is never dispatched, and herald shipped with **no search
+engines at all**: no default, an empty picker in settings, and a URL bar that
+could open addresses but not search.
+
+herald drops `RegionMiddleware` and dispatches `SetRegionAction` itself, with the
+region taken from the phone's locale. The catalogue is bundled inside
+`feature-search`, so this needs no network — fitting an app whose only remote
+dependency is meant to be its own policy URL.
+
+The policy's `default_search_engine` is applied once the catalogue arrives (it
+loads asynchronously, so there is nothing to select at startup) and re-applied on
+policy changes, until someone picks an engine in settings — after which the
+choice is theirs and the policy stops overriding it.
+
 ## Blocklists are stored as hashes, not strings
 
 A merged adult + gambling + ad list is a few hundred thousand domains. As a

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- The same deep blue herald uses, so the pair reads as one system. -->
+    <color name="ic_launcher_background">#FF2F3B6E</color>
+</resources>

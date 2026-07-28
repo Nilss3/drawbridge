@@ -35,7 +35,7 @@ object BlockedPage {
               <style>
                 :root { color-scheme: light dark; }
                 body {
-                  margin: 0; min-height: 100vh; display: flex; align-items: center;
+                  margin: 0; min-height: 100vh; display: flex; align-items: flex-start;
                   justify-content: center; padding: 24px; box-sizing: border-box;
                   font-family: system-ui, -apple-system, sans-serif;
                   background: #f7f7f9; color: #1d1d21;
@@ -51,7 +51,7 @@ object BlockedPage {
                   box-shadow: 0 2px 16px rgba(0,0,0,.08);
                 }
                 .mark { margin-bottom: 16px; }
-                .mark svg { width: 48px; height: 48px; }
+                .mark svg { width: 64px; height: 64px; }
                 h1 { font-size: 1.25rem; margin: 0 0 12px; }
                 p { margin: 0 0 16px; line-height: 1.5; opacity: .85; }
                 .host {
@@ -64,10 +64,16 @@ object BlockedPage {
             <body>
               <div class="card">
                 <div class="mark">
+                  <!-- A drawbridge, raised: two gate towers, both leaves up on
+                       their chains, water below. -->
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                       stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
-                    <path d="M12 2.5 4.5 5.6v5.6c0 4.6 3.2 8.9 7.5 10.3 4.3-1.4 7.5-5.7 7.5-10.3V5.6L12 2.5Z"/>
-                    <path d="M9.2 9.2l5.6 5.6M14.8 9.2l-5.6 5.6"/>
+                       stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
+                       aria-hidden="true">
+                    <path d="M7 18V6M17 18V6"/>
+                    <path d="M2 15h5M17 15h5"/>
+                    <path d="M7 15l4-6M17 15l-4-6"/>
+                    <path d="M7 7l4 2.6M17 7l-4 2.6"/>
+                    <path d="M2 20.6q1.6-1.4 3.2 0t3.2 0 3.2 0 3.2 0 3.2 0"/>
                   </svg>
                 </div>
                 <h1>${context.getString(R.string.blocked_page_heading)}</h1>

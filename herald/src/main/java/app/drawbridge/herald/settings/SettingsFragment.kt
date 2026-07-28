@@ -2,6 +2,7 @@ package app.drawbridge.herald.settings
 
 import android.os.Bundle
 import android.text.format.DateUtils
+import android.view.View
 import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import androidx.preference.ListPreference
@@ -15,9 +16,13 @@ import app.drawbridge.herald.ext.requireComponents
 import app.drawbridge.herald.search.SearchEngineSelection
 import app.drawbridge.policy.PolicyManager
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import mozilla.components.browser.state.state.selectedOrDefaultSearchEngine
+import mozilla.components.browser.state.state.searchEngines
+import mozilla.components.lib.state.ext.flow
 
 /**
  * herald's settings.
@@ -30,6 +35,7 @@ import mozilla.components.browser.state.state.selectedOrDefaultSearchEngine
 class SettingsFragment : PreferenceFragmentCompat() {
 
     private lateinit var filterStatus: Preference
+    private lateinit var searchEngine: ListPreference
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         val context = requireContext()
@@ -88,26 +94,51 @@ class SettingsFragment : PreferenceFragmentCompat() {
         updateFilterStatus()
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        // The engine catalogue is loaded asynchronously, so it is normally still
+        // empty when the screen is built. Filling the list once in
+        // onCreatePreferences left the preference permanently empty, with its
+        // summary falling back to the title.
+        val components = requireComponents
+        viewLifecycleOwner.lifecycleScope.launch {
+            components.core.store.flow(viewLifecycleOwner)
+                .map { it.search }
+                .distinctUntilChanged()
+                .collect { search ->
+                    val engines = search.searchEngines
+                    if (engines.isEmpty()) return@collect
+
+                    val selected = search.selectedOrDefaultSearchEngine
+                    searchEngine.entries = engines.map { it.name }.toTypedArray()
+                    searchEngine.entryValues = engines.map { it.id }.toTypedArray()
+                    searchEngine.value = selected?.id
+                    searchEngine.summary = selected?.name
+                    searchEngine.isEnabled = true
+                }
+        }
+    }
+
     private fun buildSearchEnginePreference(): Preference {
         val components = requireComponents
-        val engines = SearchEngineSelection.availableEngines(components)
-        val selected = components.core.store.state.search.selectedOrDefaultSearchEngine
 
         return ListPreference(requireContext()).apply {
             key = "search_engine"
             setTitle(R.string.settings_search_engine)
-            entries = engines.map { it.name }.toTypedArray()
-            entryValues = engines.map { it.id }.toTypedArray()
-            value = selected?.id
-            summary = selected?.name ?: getString(R.string.settings_search_engine)
             isPersistent = false
+            summary = getString(R.string.settings_search_engine_loading)
+            isEnabled = false
+
             setOnPreferenceChangeListener { preference, newValue ->
-                val engine = engines.firstOrNull { it.id == newValue } ?: return@setOnPreferenceChangeListener false
+                val engine = SearchEngineSelection.availableEngines(components)
+                    .firstOrNull { it.id == newValue }
+                    ?: return@setOnPreferenceChangeListener false
                 SearchEngineSelection.selectByUser(requireContext(), components, engine)
                 preference.summary = engine.name
                 true
             }
-        }
+        }.also { searchEngine = it }
     }
 
     private fun updateFilterStatus() {

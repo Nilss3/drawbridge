@@ -4,13 +4,19 @@ import android.app.Application
 import android.content.res.Configuration
 import app.drawbridge.herald.components.Components
 import app.drawbridge.herald.ext.preferredColorScheme
+import app.drawbridge.herald.search.SearchEngineSelection
 import app.drawbridge.policy.PolicyManager
 import app.drawbridge.policy.work.PolicyWorker
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import mozilla.components.browser.state.action.SystemAction
+import mozilla.components.browser.state.state.searchEngines
+import mozilla.components.lib.state.ext.flow
 import mozilla.components.support.AppServicesInitializer
 import mozilla.components.support.base.log.Log
 import mozilla.components.support.base.log.sink.AndroidLogSink
@@ -45,12 +51,38 @@ class HeraldApplication : Application() {
         applicationScope.launch {
             policy.filterChanges.collect { components.filter.invalidateCache() }
         }
+        applicationScope.launch { applyPolicySearchEngine(policy) }
         PolicyWorker.schedule(this)
 
         components.core.engine.warmUp()
         components.filter.install(components.core.engine)
 
         restoreBrowserState()
+    }
+
+    /**
+     * Applies the policy's default search engine, and keeps applying it as the
+     * policy changes.
+     *
+     * The catalogue is loaded asynchronously by `SearchMiddleware`, so the engine
+     * the policy names does not exist yet at startup — hence waiting for a
+     * non-empty list rather than setting it once and hoping. Whether the choice
+     * still belongs to the policy is [SearchEngineSelection]'s call: once someone
+     * picks an engine in settings, it stops overriding.
+     */
+    private suspend fun applyPolicySearchEngine(policy: PolicyManager) {
+        components.core.store.flow()
+            .map { it.search.searchEngines }
+            .filter { it.isNotEmpty() }
+            .first()
+
+        policy.policy.collect { current ->
+            SearchEngineSelection.applyPolicyDefault(
+                this,
+                components,
+                current.browser.defaultSearchEngine,
+            )
+        }
     }
 
     /**

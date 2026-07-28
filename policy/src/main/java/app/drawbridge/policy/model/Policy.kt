@@ -140,7 +140,7 @@ data class BrowserPolicy(
     /** Shown on herald's block page. */
     @SerialName("blocked_page_message")
     val blockedPageMessage: String =
-        "This page is blocked by the content filter on this device.",
+        "This toxic content is denied access to your device, your life, and your soul.",
 
     /**
      * Finer-grained than DNS can be: regular expressions matched against the

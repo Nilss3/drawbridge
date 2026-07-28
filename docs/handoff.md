@@ -20,10 +20,18 @@ machine, what was and was not verified, and what to do next.
 
 ### Known gaps in the current release
 
-**herald on `main` is ahead of v0.1.2.** It now follows the phone's day/night
-setting, and the toolbar colours that made the URL unreadable while editing and
-hid the tab counter are fixed. Releasing it means a new `required_apps` checksum
-and a policy version, as always.
+**Both apps on `main` are ahead of v0.1.2, and the policy is ahead of 7.**
+Unreleased: herald follows the phone's day/night setting; the toolbar colours
+that made the URL unreadable while editing and hid the tab counter are fixed;
+search engines work at all for the first time (see
+[design-decisions](design-decisions.md#herald-dispatches-its-own-search-region));
+both apps have launcher icons; the block page has a drawbridge mark, sits at the
+top of the screen, and carries the reworded message from policy 8.
+
+Policy 8 is signed in `dist/` but **not pushed** — pushing it publishes it to
+every device, so it should go out with the release rather than before it.
+Releasing means a new `required_apps` checksum and another policy version on top,
+as always.
 
 Three things have still never run:
 

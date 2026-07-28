@@ -32,6 +32,7 @@
 
     <string name="settings_category_search">Search</string>
     <string name="settings_search_engine">Search engine</string>
+    <string name="settings_search_engine_loading">Loading…</string>
     <string name="settings_category_filter">Content filter</string>
     <string name="settings_filter_status">Filter status</string>
     <string name="settings_filter_status_summary">Policy version %1$d, last updated %2$s</string>

@@ -7,7 +7,10 @@ import mozilla.components.browser.engine.gecko.autofill.GeckoAutocompleteStorage
 import mozilla.components.browser.engine.gecko.permission.GeckoSitePermissionsStorage
 import mozilla.components.browser.icons.BrowserIcons
 import mozilla.components.browser.session.storage.SessionStorage
+import androidx.core.os.ConfigurationCompat
+import mozilla.components.browser.state.action.SearchAction
 import mozilla.components.browser.state.engine.EngineMiddleware
+import mozilla.components.browser.state.search.RegionState
 import mozilla.components.browser.state.store.BrowserStore
 import mozilla.components.browser.storage.sync.PlacesBookmarksStorage
 import mozilla.components.browser.storage.sync.PlacesHistoryStorage
@@ -23,11 +26,9 @@ import mozilla.components.feature.logins.exceptions.LoginExceptionStorage
 import mozilla.components.feature.media.MediaSessionFeature
 import mozilla.components.feature.prompts.file.FileUploadsDirCleaner
 import mozilla.components.feature.search.middleware.SearchMiddleware
-import mozilla.components.feature.search.region.RegionMiddleware
 import mozilla.components.feature.session.HistoryDelegate
 import mozilla.components.feature.sitepermissions.OnDiskSitePermissionsStorage
 import mozilla.components.lib.dataprotect.SecureAbove22Preferences
-import mozilla.components.service.location.LocationService
 import mozilla.components.service.sync.logins.DefaultLoginValidationDelegate
 import mozilla.components.service.sync.logins.GeckoLoginStorageDelegate
 import mozilla.components.service.sync.logins.SyncableLoginsStorage
@@ -74,13 +75,37 @@ class Core(private val context: Context, private val downloads: Downloads) {
                     downloadFileUtils = downloads.fileUtils,
                 ),
                 ThumbnailsMiddleware(thumbnailStorage),
-                RegionMiddleware(context, LocationService.default()),
                 SearchMiddleware(context),
             ) + EngineMiddleware.create(engine),
         ).apply {
             icons.install(engine, this)
             MediaSessionFeature(context, MediaSessionService::class.java, this).start()
+            dispatch(SearchAction.SetRegionAction(regionFromLocale()))
         }
+    }
+
+    /**
+     * The region the search engine catalogue is built for, taken from the phone's
+     * locale.
+     *
+     * `SearchMiddleware` loads the bundled catalogue on exactly one trigger —
+     * `SetRegionAction` — and nothing else dispatches it, which is why herald had
+     * no search engines at all. Android Components leaves that to
+     * `RegionMiddleware`, which looks the region up over the network through
+     * Mozilla's location service; that endpoint is retired, so it resolves
+     * nothing and the action is never dispatched.
+     *
+     * The locale is good enough for choosing between regional catalogues, and it
+     * costs no network call in an app that deliberately depends on no service but
+     * its own policy URL.
+     */
+    private fun regionFromLocale(): RegionState {
+        val country = ConfigurationCompat.getLocales(context.resources.configuration)
+            .get(0)
+            ?.country
+            ?.uppercase()
+
+        return if (country.isNullOrBlank()) RegionState.Default else RegionState(country, country)
     }
 
     val sessionStorage: SessionStorage by lazy { SessionStorage(context, engine) }
