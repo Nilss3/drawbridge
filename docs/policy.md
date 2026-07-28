@@ -111,8 +111,13 @@ removed after it fired on `v0.1.0` and had to be cancelled.
 
 Cut a release like this, in this order:
 
+Release URLs point at `/releases/latest/download/`, so the QR and the policy do
+not change from one release to the next. Only rebuild herald when herald has
+actually changed — a rebuild alters its hash and forces a policy re-sign for an
+otherwise identical binary.
+
 ```bash
-./gradlew :herald:assembleRelease            # 1. herald first
+./gradlew :herald:assembleRelease            # 1. herald first — only if it changed
 # 2. hash the APKs into required_apps in dist/policy.json, bump version
 python3 tools/policytool.py sign --key-id drawbridge-2026-07
 cp dist/policy.signed.json policy/src/main/assets/drawbridge/default-policy.json
