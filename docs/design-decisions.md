@@ -122,6 +122,38 @@ Two consequences worth knowing:
 - **Fullscreen video needs no special case.** The insets go to zero while the
   bars are hidden, so the padding collapses on its own.
 
+## herald's chrome is four colours, and some of them belong to Mozilla
+
+herald follows the phone's day/night setting. Everything it draws over comes from
+four colours in `values/colors.xml` and their night twins — `toolbar_background`
+for the toolbar and for the strips the system bars sit over, `toolbar_text`,
+`toolbar_hint`, `menu_icon` — so changing the chrome means editing two files and
+nothing else. The bar icon polarity is pinned per mode in the matching
+`themes.xml`, because with transparent system bars the platform picks it from the
+theme and gets it wrong for whichever mode does not match.
+
+Android Components does not inherit any of that. Its defaults assume a light
+toolbar, and anything left unset is invisible on a dark one — which is how the
+address bar came to be unreadable while being edited, and the tab counter came to
+be a dark box on a dark toolbar. Three of them have to be set by hand:
+
+- **`toolbar.display.colors` and `toolbar.edit.colors`.** Display *and* edit —
+  they are separate colour sets, and only setting the first leaves the text
+  unreadable exactly while it is being typed.
+- **`TabsAdapter(styling = TabsTrayStyling(...))`**, or the tray rows stay a
+  white card with a bright blue selection.
+- **The tab counter**, which has no setter at all: `TabCounterView.setColor` is
+  internal, so `mozac_ui_tabcounter_default_tint` is overridden as a resource
+  instead.
+
+Content follows the same setting through `preferredColorScheme`, which is read
+from the configuration rather than left at `PreferredColorScheme.System`: the
+engine resolves "system" once and keeps it, so a phone switching to dark while
+herald is running would go on rendering pages — and the block page — light until
+the process restarted. `HeraldApplication.onConfigurationChanged` pushes the new
+value in, because the activity is recreated on a mode change but the engine is
+process-wide and outlives it.
+
 ## Blocklists are stored as hashes, not strings
 
 A merged adult + gambling + ad list is a few hundred thousand domains. As a

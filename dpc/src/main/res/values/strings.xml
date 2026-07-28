@@ -9,7 +9,7 @@
     <string name="status_device_owner_no">Not managed — restrictions cannot be enforced. Provision with adb or a QR code first.</string>
     <string name="status_filter_running">Content filter: running</string>
     <string name="status_filter_stopped">Content filter: stopped</string>
-    <string name="status_policy">Policy version %1$d, last updated %2$s</string>
+    <string name="status_policy">Policy version %1$d, last updated %2$s. Checked automatically once a day.</string>
     <string name="status_policy_never">never</string>
     <string name="status_restrictions_none">No restrictions applied</string>
     <string name="status_restrictions_heading">Active restrictions</string>

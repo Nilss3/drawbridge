@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Night values. See values/colors.xml for what each one covers. -->
+    <color name="toolbar_background">#FF2B2A33</color>
+    <color name="toolbar_text">#FFFBFBFE</color>
+    <color name="toolbar_hint">#FFB0AFB8</color>
+    <color name="menu_icon">#FFFBFBFE</color>
+
+    <color name="tab_item_background">#FF42414D</color>
+    <color name="tab_item_selected_background">#FF5B5675</color>
+    <color name="tab_item_text">#FFFBFBFE</color>
+    <color name="tab_item_url">#FFB0AFB8</color>
+
+    <color name="mozac_ui_tabcounter_default_tint">@color/toolbar_text</color>
+    <color name="mozac_ui_tabcounter_default_text">@color/toolbar_text</color>
+</resources>

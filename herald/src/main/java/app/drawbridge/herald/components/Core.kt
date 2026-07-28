@@ -15,6 +15,7 @@ import mozilla.components.browser.thumbnails.ThumbnailsMiddleware
 import mozilla.components.browser.thumbnails.storage.ThumbnailStorage
 import mozilla.components.concept.engine.DefaultSettings
 import mozilla.components.concept.engine.Engine
+import app.drawbridge.herald.ext.preferredColorScheme
 import mozilla.components.concept.engine.EngineSession.TrackingProtectionPolicy
 import mozilla.components.concept.fetch.Client
 import mozilla.components.feature.downloads.DownloadMiddleware
@@ -50,6 +51,11 @@ class Core(private val context: Context, private val downloads: Downloads) {
                 // tracking protection also does cookie and fingerprinting work the
                 // DNS layer cannot.
                 globalPrivacyControlEnabled = true,
+                // Hands the phone's day/night setting to `prefers-color-scheme`,
+                // so sites that have a dark theme render in it — including the
+                // block page. Kept in step with the chrome by
+                // HeraldApplication.onConfigurationChanged.
+                preferredColorScheme = context.preferredColorScheme,
             ),
         ).also { wireLoginStorage() }
     }

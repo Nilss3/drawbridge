@@ -78,6 +78,10 @@ class ToolbarIntegration(
     )
 
     init {
+        val foreground = ContextCompat.getColor(context, R.color.toolbar_text)
+        val hintColor = ContextCompat.getColor(context, R.color.toolbar_hint)
+        val menuColor = ContextCompat.getColor(context, R.color.menu_icon)
+
         toolbar.display.apply {
             indicators = listOf(
                 DisplayToolbar.Indicators.SECURITY,
@@ -86,13 +90,34 @@ class ToolbarIntegration(
             displayIndicatorSeparator = true
             menuController = this@ToolbarIntegration.menuController
             hint = context.getString(R.string.toolbar_hint)
+            // Every foreground in the toolbar is set from the chrome palette.
+            // The library's defaults assume a light toolbar, so anything left
+            // unset here is invisible in night mode.
             colors = colors.copy(
-                hint = ContextCompat.getColor(context, R.color.toolbar_hint),
-                text = ContextCompat.getColor(context, R.color.toolbar_text),
+                siteInfoIconSecure = foreground,
+                siteInfoIconInsecure = foreground,
+                siteInfoIconLocalPdf = foreground,
+                emptyIcon = foreground,
+                menu = menuColor,
+                hint = hintColor,
+                title = foreground,
+                text = foreground,
+                separator = hintColor,
             )
         }
 
-        toolbar.edit.hint = context.getString(R.string.toolbar_hint)
+        toolbar.edit.apply {
+            hint = context.getString(R.string.toolbar_hint)
+            // Editing the URL was the other half of that: without this the entry
+            // field keeps the library's dark-on-light default and the text is
+            // unreadable against the toolbar.
+            colors = colors.copy(
+                clear = foreground,
+                icon = foreground,
+                hint = hintColor,
+                text = foreground,
+            )
+        }
 
         ToolbarAutocompleteFeature(toolbar).apply {
             updateAutocompleteProviders(listOf(historyStorage, shippedDomainsProvider))

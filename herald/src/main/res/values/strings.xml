@@ -37,7 +37,7 @@
     <string name="settings_filter_status_summary">Policy version %1$d, last updated %2$s</string>
     <string name="settings_filter_never_checked">never</string>
     <string name="settings_check_for_updates">Check for updates</string>
-    <string name="settings_check_for_updates_summary">Fetch the latest policy and blocklists now</string>
+    <string name="settings_check_for_updates_summary">Checked automatically once a day. Tap to check now.</string>
     <string name="settings_filter_updated">Filter updated (policy version %1$d)</string>
     <string name="settings_filter_update_failed">Could not reach the policy server</string>
     <string name="settings_category_privacy">Privacy</string>

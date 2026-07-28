@@ -20,7 +20,12 @@ machine, what was and was not verified, and what to do next.
 
 ### Known gaps in the current release
 
-Nothing is stale. Three things have still never run:
+**herald on `main` is ahead of v0.1.2.** It now follows the phone's day/night
+setting, and the toolbar colours that made the URL unreadable while editing and
+hid the tab counter are fixed. Releasing it means a new `required_apps` checksum
+and a policy version, as always.
+
+Three things have still never run:
 
 - **`/releases/latest` must resolve.** Every release URL depends on it. GitHub
   excludes drafts and pre-releases, so flagging the newest release as either

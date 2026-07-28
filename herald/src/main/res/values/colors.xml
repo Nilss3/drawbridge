@@ -1,7 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="toolbar_background">#FF2B2A33</color>
-    <color name="toolbar_text">#FFFBFBFE</color>
-    <color name="toolbar_hint">#FFB0AFB8</color>
-    <color name="menu_icon">#FFFBFBFE</color>
+    <!--
+        Day values. The night variant of this file carries the dark set, and
+        every screen picks up whichever matches the phone's setting.
+
+        These four are the whole chrome palette: the toolbar and the strips the
+        system bars sit over use toolbar_background, and anything drawn on top of
+        it uses toolbar_text or toolbar_hint. Nothing in the layouts hard-codes a
+        colour, so this file and its night twin are the only place to change it.
+    -->
+    <color name="toolbar_background">#FFF9F9FB</color>
+    <color name="toolbar_text">#FF15141A</color>
+    <color name="toolbar_hint">#FF5B5B66</color>
+    <color name="menu_icon">#FF15141A</color>
+
+    <!-- Tab tray rows. The library's defaults are a white card and a bright blue
+         selection, which is glaring against a dark tray. -->
+    <color name="tab_item_background">#FFFFFFFF</color>
+    <color name="tab_item_selected_background">#FFE7E4F9</color>
+    <color name="tab_item_text">#FF15141A</color>
+    <color name="tab_item_url">#FF5B5B66</color>
+
+    <!--
+        The tab counter is a library view whose box and count are drawn in one
+        fixed dark colour, which vanished against the dark toolbar. Android
+        Components exposes no setter for it — TabCounterView.setColor is internal
+        — so the library's own colour resources are overridden here to follow the
+        chrome instead.
+    -->
+    <color name="mozac_ui_tabcounter_default_tint">@color/toolbar_text</color>
+    <color name="mozac_ui_tabcounter_default_text">@color/toolbar_text</color>
 </resources>
