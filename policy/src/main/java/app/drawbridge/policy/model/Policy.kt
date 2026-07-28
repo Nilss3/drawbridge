@@ -53,11 +53,38 @@ data class Policy(
     val allowedBrowserPackage: String = DEFAULT_BROWSER_PACKAGE,
 
     /**
+     * When set, app control flips from "remove what is listed" to "remove what
+     * is not listed": any *user-installed* package outside this list is removed.
+     *
+     * Preinstalled and system apps are deliberately left alone — the phone still
+     * needs its camera, dialer and keyboard, and there is no reliable way to tell
+     * which of an OEM's preinstalls are load-bearing. Those are governed by
+     * [blockedPackages] as before, which hides rather than uninstalls them.
+     *
+     * `null` keeps the ordinary blocklist behaviour.
+     */
+    @SerialName("allowed_packages")
+    val allowedPackages: List<String>? = null,
+
+    /**
      * Packages exempt from browser allowlisting and package blocking — an
      * escape valve for a device-specific app that would otherwise be removed.
      */
     @SerialName("exempt_packages")
     val exemptPackages: List<String> = emptyList(),
+
+    /**
+     * Named variants of this policy, chosen on the device behind the parent's
+     * PIN. Each one overrides the fields it sets and inherits the rest.
+     *
+     * Switching is not symmetric: a stricter profile removes apps it does not
+     * allow, and switching back does not bring them back. See [Profile].
+     */
+    val profiles: List<Profile> = emptyList(),
+
+    /** Which of [profiles] applies until someone chooses otherwise. */
+    @SerialName("default_profile")
+    val defaultProfile: String? = null,
 
     val browser: BrowserPolicy = BrowserPolicy(),
 
@@ -78,7 +105,71 @@ data class Policy(
     companion object {
         const val DEFAULT_BROWSER_PACKAGE = "app.drawbridge.herald"
     }
+
+    /** Which profile is in force, given a device's selection. */
+    fun profileFor(selectedId: String?): Profile? {
+        val wanted = selectedId ?: defaultProfile ?: return null
+        return profiles.firstOrNull { it.id == wanted }
+    }
+
+    /**
+     * This policy with [selectedId]'s overrides applied. Unknown or absent
+     * selections fall back to [defaultProfile], and then to the policy as
+     * written, so a device holding a selection the policy has since dropped
+     * degrades to the base rather than to nothing.
+     */
+    fun withProfile(selectedId: String?): Policy {
+        val profile = profileFor(selectedId) ?: return this
+        return copy(
+            dns = profile.dns ?: dns,
+            blocklists = profile.blocklists ?: blocklists,
+            blockedDomains = profile.blockedDomains ?: blockedDomains,
+            allowedDomains = profile.allowedDomains ?: allowedDomains,
+            blockedPackages = profile.blockedPackages ?: blockedPackages,
+            allowedPackages = profile.allowedPackages ?: allowedPackages,
+            exemptPackages = profile.exemptPackages ?: exemptPackages,
+        )
+    }
 }
+
+/**
+ * A named variant of the policy: "which apps may be installed, and which DNS is
+ * used", plus the lists behind both.
+ *
+ * Every field is nullable and `null` means "inherit". Only the parts a variant
+ * actually changes need naming, so a profile reads as a diff rather than as a
+ * second copy of the policy that can drift.
+ *
+ * **Switching is one-way for apps.** A profile that no longer allows an app
+ * causes the app blocker to remove it; choosing the looser profile again does
+ * not reinstall it. That is a property of removal, not of profiles, and the UI
+ * says so before applying.
+ */
+@Serializable
+data class Profile(
+    val id: String,
+    val name: String,
+    val description: String = "",
+
+    val dns: DnsPolicy? = null,
+    val blocklists: List<BlocklistSource>? = null,
+
+    @SerialName("blocked_domains")
+    val blockedDomains: List<String>? = null,
+
+    @SerialName("allowed_domains")
+    val allowedDomains: List<String>? = null,
+
+    @SerialName("blocked_packages")
+    val blockedPackages: List<String>? = null,
+
+    /** Non-null switches this profile to allowlist mode; see [Policy.allowedPackages]. */
+    @SerialName("allowed_packages")
+    val allowedPackages: List<String>? = null,
+
+    @SerialName("exempt_packages")
+    val exemptPackages: List<String>? = null,
+)
 
 @Serializable
 data class DnsPolicy(

@@ -15,9 +15,11 @@ import app.drawbridge.policy.model.Policy
 /**
  * Removes apps that policy does not allow on the device.
  *
- * Two rules, both driven by the shared policy document:
+ * Three rules, all driven by the shared policy document:
  *  - anything whose package name is on `blocked_packages`;
- *  - any browser other than the one allowed browser.
+ *  - any browser other than the one allowed browser;
+ *  - in allowlist mode (`allowed_packages` set, typically by a profile), any
+ *    *user-installed* app that is not on the list.
  *
  * Browsers are *detected*, not listed: a package-name list of browsers is out of
  * date the moment someone publishes a new one, whereas the intent filter that
@@ -42,11 +44,29 @@ class AppBlocker(context: Context) {
         val reason = when {
             packageName in policy.blockedPackages -> "on the blocked package list"
             isBrowser(packageName) -> "is a browser other than ${policy.allowedBrowserPackage}"
+            notAllowed(packageName, policy) -> "not on this profile's allowed list"
             else -> return Action.NONE
         }
 
         Log.i(TAG, "Removing $packageName: $reason")
         return remove(packageName)
+    }
+
+    /**
+     * Allowlist mode: true when the policy names an allowed set and this package
+     * is outside it.
+     *
+     * Deliberately limited to user-installed apps. Flipping the default action
+     * from "remove what is listed" to "remove what is not" is the one rule that
+     * could take the phone apart — a list that forgets the dialer, the camera or
+     * the OEM's keyboard would otherwise hide them — and no allowlist a parent
+     * writes will name the hundred packages an Android build needs. Preinstalled
+     * apps stay reachable through `blocked_packages`, which hides rather than
+     * uninstalls and is therefore reversible.
+     */
+    private fun notAllowed(packageName: String, policy: Policy): Boolean {
+        val allowed = policy.allowedPackages ?: return false
+        return !isSystemPackage(packageName) && packageName !in allowed
     }
 
     /**

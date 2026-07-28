@@ -220,6 +220,8 @@ class PolicyStore(context: Context, private val config: PolicyConfig) {
         val lastCheckMillis: Long = 0,
         val lastSuccessMillis: Long = 0,
         val lastError: String? = null,
+        /** Selected policy profile, or null for the policy's own default. */
+        val profileId: String? = null,
     )
 
     companion object {

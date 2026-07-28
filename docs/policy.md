@@ -53,6 +53,55 @@ hold, which is what makes replaying an old, permissive policy fail.
 | `browser.default_search_engine` | Selected until someone picks another in herald's settings, after which the choice is theirs. Matched loosely, so `duckduckgo` finds `ddg`. |
 | `browser.search_engines` | The engines herald offers at all. Anything not named is hidden, including whatever the phone's locale would otherwise add; anything named that Mozilla's catalogue lacks is added by herald. |
 
+## Profiles: named variants of one policy
+
+A policy can offer named variants — "Everyday", "Schoolwork only" — chosen on the
+device behind the parent's PIN, the same authority that removes drawbridge. Each
+profile overrides the fields it names and inherits the rest, so it reads as a
+diff rather than a second policy that can drift out of step:
+
+```jsonc
+{
+  "version": 12,
+  "default_profile": "everyday",
+  "profiles": [
+    {
+      "id": "everyday",
+      "name": "Everyday",
+      "description": "The usual rules."
+    },
+    {
+      "id": "schoolwork",
+      "name": "Schoolwork only",
+      "description": "Only approved apps stay installed.",
+      "allowed_packages": ["app.drawbridge.herald", "com.google.android.calculator"],
+      "dns": { "upstreams": ["94.140.14.15"], "encrypted_upstream": "tls://all.dns.mullvad.net" }
+    }
+  ]
+}
+```
+
+A profile may override `dns`, `blocklists`, `blocked_domains`, `allowed_domains`,
+`blocked_packages`, `allowed_packages` and `exempt_packages`. An empty list is an
+override, not an absence — `"blocked_packages": []` means "block nothing", which
+is what makes a genuinely looser profile expressible.
+
+**`allowed_packages` flips app control to allowlist mode**: any *user-installed*
+app outside the list is removed. Preinstalled and system apps are deliberately
+left alone — no allowlist a parent writes will name the hundred packages an
+Android build needs, and a list that forgets the dialer or the keyboard would
+take the phone apart. Preinstalls stay reachable through `blocked_packages`,
+which hides rather than uninstalls and is therefore reversible.
+
+**Switching is one-way for apps.** Choosing a stricter profile removes what it
+does not allow, immediately. Choosing the looser one again does not reinstall
+anything — that is a property of removal, not of profiles. The device asks for
+confirmation and says so before applying.
+
+herald is not profile-aware: it keeps filtering on the base policy. On a managed
+device that costs nothing, because a profile's stricter lists are enforced at the
+DNS layer, which the browser's traffic goes through anyway.
+
 ### Search engines are a filtering decision
 
 Safe search is forced by rewriting the engine's hostname at the DNS layer, and

@@ -3,6 +3,7 @@ package app.drawbridge.policy
 import android.content.Context
 import android.util.Log
 import app.drawbridge.policy.model.Policy
+import app.drawbridge.policy.model.Profile
 import app.drawbridge.policy.net.Downloader
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -42,8 +43,23 @@ class PolicyManager private constructor(
 
     private val _policy = MutableStateFlow(Policy(version = 0))
 
-    /** The active policy. Emits a new value whenever one is installed. */
+    /**
+     * The active policy, with the selected profile already applied. Emits a new
+     * value whenever one is installed or the profile changes, so every consumer
+     * — DNS filter, app blocker, restrictions — sees the effective policy
+     * without knowing profiles exist.
+     */
     val policy: StateFlow<Policy> = _policy.asStateFlow()
+
+    /** The policy as published, before any profile is applied. */
+    @Volatile
+    private var baseline: Policy = Policy(version = 0)
+
+    /** The profiles the current policy offers, in document order. */
+    val profiles: List<Profile> get() = baseline.profiles
+
+    /** The profile in force, or null when the policy defines none. */
+    val selectedProfile: Profile? get() = baseline.profileFor(store.readState().profileId)
 
     private val _filterChanges = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
 
@@ -134,6 +150,39 @@ class PolicyManager private constructor(
         }
     }
 
+    /**
+     * Switches to [profileId] and brings the device in line with it.
+     *
+     * The blocklists a profile names may not be on disk yet, so this syncs them
+     * before swapping the filter over; a stricter profile that applied its app
+     * rules while still filtering on the looser profile's lists would be worse
+     * than useless. Returns false only if the id is not one this policy offers.
+     */
+    suspend fun selectProfile(profileId: String?): Boolean = withContext(Dispatchers.IO) {
+        if (profileId != null && baseline.profiles.none { it.id == profileId }) {
+            return@withContext false
+        }
+
+        refreshMutex.withLock {
+            store.writeState(store.readState().copy(profileId = profileId))
+
+            val effective = baseline.withProfile(profileId)
+            runCatching {
+                store.syncBlocklists(
+                    effective.blocklists,
+                    Downloader(
+                        connectTimeoutMillis = config.connectTimeoutMillis,
+                        readTimeoutMillis = config.readTimeoutMillis,
+                        maxBytes = config.maxDownloadBytes,
+                    ),
+                )
+            }.onFailure { Log.w(TAG, "Could not sync blocklists for profile $profileId", it) }
+
+            applyPolicy(baseline)
+        }
+        true
+    }
+
     fun isHostBlocked(host: String): Boolean = filterLock.read { filter.isHostBlocked(host) }
 
     fun isUrlBlocked(url: String): Boolean = filterLock.read { filter.isUrlBlocked(url) }
@@ -152,7 +201,9 @@ class PolicyManager private constructor(
         _policy.value = Policy(version = 0)
     }
 
-    private fun applyPolicy(policy: Policy) {
+    private fun applyPolicy(published: Policy) {
+        baseline = published
+        val policy = published.withProfile(store.readState().profileId)
         val compiled = store.openBlocklist()
         val next = ContentFilter.create(
             compiledBlocklist = compiled,

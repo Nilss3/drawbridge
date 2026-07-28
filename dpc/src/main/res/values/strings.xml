@@ -57,4 +57,21 @@
     <string name="filter_channel_name">Content filter</string>
     <string name="filter_notification_title">Content filter active</string>
     <string name="filter_notification_text">Filtering DNS for every app on this device</string>
+    <!-- Policy profiles -->
+    <string name="status_profile">Profile: %1$s</string>
+    <string name="status_profile_none">Profile: single policy, no variants</string>
+    <string name="action_change_profile">Change policy profile</string>
+    <string name="profile_none_available">This policy offers no profiles to choose from.</string>
+    <string name="profile_pin_title">Parent PIN</string>
+    <string name="profile_pin_hint">PIN or recovery code</string>
+    <string name="profile_pin_continue">Continue</string>
+    <string name="profile_pin_incorrect">That is not the PIN.</string>
+    <string name="profile_pin_locked">Too many attempts. Try again in %1$d seconds.</string>
+    <string name="profile_choose_title">Choose a profile</string>
+    <string name="profile_confirm_title">Switch to %1$s?</string>
+    <string name="profile_confirm_message">Apps this profile does not allow are removed straight away. Switching back later does not reinstall them.\n\nThe DNS resolver and the blocklists change with it.</string>
+    <string name="profile_confirm_apply">Switch</string>
+    <string name="profile_applying_title">Applying profile</string>
+    <string name="profile_applying_message">Downloading blocklists and checking installed apps…</string>
+    <string name="profile_apply_failed">That profile is no longer in the policy.</string>
 </resources>

@@ -32,8 +32,10 @@ class MainActivity : AppCompatActivity() {
     private lateinit var filterStatus: TextView
     private lateinit var policyStatus: TextView
     private lateinit var restrictionsStatus: TextView
+    private lateinit var profileStatus: TextView
     private lateinit var setupButton: Button
     private lateinit var removeButton: Button
+    private lateinit var profileButton: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,8 +47,10 @@ class MainActivity : AppCompatActivity() {
         filterStatus = findViewById(R.id.filterStatus)
         policyStatus = findViewById(R.id.policyStatus)
         restrictionsStatus = findViewById(R.id.restrictionsStatus)
+        profileStatus = findViewById(R.id.profileStatus)
         setupButton = findViewById(R.id.setupButton)
         removeButton = findViewById(R.id.removeButton)
+        profileButton = findViewById(R.id.profileButton)
 
         setupButton.setOnClickListener {
             startActivity(Intent(this, SetupActivity::class.java))
@@ -57,6 +61,10 @@ class MainActivity : AppCompatActivity() {
         }
 
         findViewById<Button>(R.id.refreshButton).setOnClickListener { refreshPolicy() }
+
+        profileButton.setOnClickListener {
+            ProfilePicker(this, this) { render() }.start()
+        }
     }
 
     override fun onResume() {
@@ -81,6 +89,12 @@ class MainActivity : AppCompatActivity() {
 
         val policy = DrawbridgeApplication.policy(this)
         lifecycleScope.launch {
+            // The policy is loaded from disk asynchronously, so anything read
+            // straight out of onResume would show the state before it arrived —
+            // which is how the profile line came to say "no variants" on a
+            // policy that had two.
+            withContext(Dispatchers.IO) { policy.ensureLoaded() }
+
             val state = withContext(Dispatchers.IO) { policy.state() }
             val lastCheck = if (state.lastSuccessMillis > 0) {
                 DateUtils.getRelativeTimeSpanString(state.lastSuccessMillis)
@@ -92,6 +106,21 @@ class MainActivity : AppCompatActivity() {
                 policy.policy.value.version,
                 lastCheck,
             )
+
+            val profile = withContext(Dispatchers.IO) { policy.selectedProfile }
+            profileStatus.text = if (profile == null) {
+                getString(R.string.status_profile_none)
+            } else {
+                getString(R.string.status_profile, profile.name)
+            }
+
+            // Switching profile decides which apps may exist, so it is gated on
+            // the same PIN as removal and hidden until that PIN exists.
+            profileButton.visibility = if (policy.profiles.isNotEmpty() && credentials.isConfigured) {
+                View.VISIBLE
+            } else {
+                View.GONE
+            }
         }
 
         val restrictions = deviceOwner.activeRestrictions()
