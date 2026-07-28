@@ -77,6 +77,7 @@ Then:
 - [docs/policy.md](docs/policy.md) — changing what is blocked
 - [docs/removal.md](docs/removal.md) — taking it off again
 - [docs/design-decisions.md](docs/design-decisions.md) — why it works the way it does
+- [docs/handoff.md](docs/handoff.md) — current state, what is untested, what to do next
 
 ## Repository layout
 
