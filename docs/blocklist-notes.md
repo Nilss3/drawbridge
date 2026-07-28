@@ -15,10 +15,17 @@ matches it.
 the same app and the same domains. Blocking YouTube blocks Shorts. There is no
 package or hostname that is Shorts and not YouTube.
 
-Blocking YouTube also supersedes the safe-search redirect: `DnsFilter` still maps
-`youtube.com` to `restrictmoderate.youtube.com`, but the block check runs first.
-Remove YouTube from `dist/lists/social.txt` and restricted mode takes over
-instead — which may be what you want for a slightly older child.
+**All of YouTube is blocked**, at the owner's explicit request: the main app,
+Kids, TV, Music, Studio, the Android TV build, `youtu.be` links, embeds via
+`youtube-nocookie.com`, and the `googlevideo.com` video CDN. Because matching is
+suffix-based, `youtube.com` also covers `m.`, `music.`, `tv.`, `kids.` and
+`studio.` without listing them.
+
+The safe-search redirect in `DnsFilter` still maps `youtube.com` to
+`restrictmoderate.youtube.com`, but the block check runs first, so it is dormant.
+It is left in place deliberately: remove YouTube from `dist/lists/social.txt` and
+restricted mode resumes with no code change — the obvious thing to want for an
+older child.
 
 ### Snapchat My AI
 
@@ -52,9 +59,6 @@ phone was ever going to run it.
 
 ## Deliberate omissions
 
-- **YouTube Kids** (`com.google.android.apps.youtube.kids`) is *not* blocked. It
-  is the curated variant, and blocking it alongside YouTube seemed more likely to
-  be wrong than right. Add it to `blocked_packages` if you disagree.
 - **Minecraft** — see above.
 - **WhatsApp** was not on the list and is not blocked.
 

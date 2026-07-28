@@ -8,18 +8,19 @@
 # maps youtube.com to restrictmoderate.youtube.com, but blocking is checked first,
 # so the redirect only takes effect if YouTube is removed from this list.
 
-# YouTube
+# YouTube — all of it, including Kids, TV, Music, Studio and embeds.
+# Matching is suffix-based, so youtube.com already covers m., music., tv.,
+# kids. and studio.youtube.com; only separate registrable domains and the
+# specific googleapis hosts need listing.
 youtube.com
-www.youtube.com
-m.youtube.com
 youtu.be
-youtubei.googleapis.com
-youtube.googleapis.com
-yt3.ggpht.com
+youtubekids.com
+youtube-nocookie.com
 ytimg.com
 googlevideo.com
-music.youtube.com
-youtube-nocookie.com
+yt3.ggpht.com
+youtubei.googleapis.com
+youtube.googleapis.com
 
 # Meta
 facebook.com
