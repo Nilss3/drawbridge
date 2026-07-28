@@ -13,31 +13,20 @@ machine, what was and was not verified, and what to do next.
 | | |
 |---|---|
 | Repo | https://github.com/Nilss3/drawbridge — public, `main`, 5 commits |
-| Release | [v0.1.0](https://github.com/Nilss3/drawbridge/releases/tag/v0.1.0), 6 assets, all download URLs verified 200 |
-| Live policy | version 4, at `dist/policy.signed.json` on `main` (raw URL verified 200) |
-| Both apps | `versionCode 1`, `versionName 0.1.0` |
+| Release | [v0.1.1](https://github.com/Nilss3/drawbridge/releases/tag/v0.1.1), 6 assets. Release URLs use `/releases/latest/`, so the QR and policy survive future releases unchanged. |
+| Live policy | version 6, at `dist/policy.signed.json` on `main` (raw URL verified 200) |
+| Apps | drawbridge `versionCode 2` / `0.1.1`; herald `versionCode 1` / `0.1.0` (unchanged since v0.1.0, so deliberately not rebuilt) |
 | Tests | 162 unit tests, lint clean |
 
-### The one thing that is out of date
+### Known gaps in the current release
 
-**`dpc-release.apk` in v0.1.0 predates the last two bug fixes** (commit
-`2e7c452`). A phone provisioned from the QR *right now* gets a drawbridge that
-cannot install herald, because of the download size cap fixed in that commit.
-Everything else about that build works.
+Nothing is stale. Two things have still never run:
 
-Cutting v0.1.1 fixes it and is cheap — it is a drawbridge-only change, so
-herald's checksums and the QR both stay valid:
-
-```bash
-./gradlew :dpc:assembleRelease
-cp dpc/build/outputs/apk/release/dpc-release.apk dist/release/
-cd dist/release && shasum -a 256 *.apk > SHA256SUMS && cd ../..
-gh release create v0.1.1 dist/release/*.apk dist/release/SHA256SUMS --title "v0.1.1"
-```
-
-The policy does **not** need re-signing: nothing herald-related changed. Do not
-rebuild herald unless you intend to re-hash and re-sign — see
-[policy.md, "Build order matters"](policy.md#build-order-matters-when-required_apps-changes).
+- **The self-update path.** `app_update` is unset, so `checkAndInstallSelf` has
+  nothing to do. Setting it is circular — drawbridge's own APK contains the
+  policy that would name its hash — so it takes two rounds: publish the APK,
+  then publish a policy naming it.
+- **QR provisioning on a real device.** See below.
 
 ---
 
