@@ -12,36 +12,22 @@ machine, what was and was not verified, and what to do next.
 
 | | |
 |---|---|
-| Repo | https://github.com/Nilss3/drawbridge — public, `main`, 7 commits |
-| Release | [v0.1.2](https://github.com/Nilss3/drawbridge/releases/tag/v0.1.2), 6 assets. Release URLs use `/releases/latest/`, so the QR and policy survive future releases unchanged. |
-| Live policy | version 7, at `dist/policy.signed.json` on `main` |
-| Apps | drawbridge `versionCode 3` / `0.1.2`; herald `versionCode 2` / `0.1.2` — both rebuilt for the system bar insets fix |
+| Repo | https://github.com/Nilss3/drawbridge — public, `main`, 13 commits |
+| Release | [v0.1.3](https://github.com/Nilss3/drawbridge/releases/tag/v0.1.3), 6 assets. Release URLs use `/releases/latest/`, so the QR and policy survive future releases unchanged. |
+| Live policy | version 10, at `dist/policy.signed.json` on `main` |
+| Apps | drawbridge `versionCode 4` / `0.1.3`; herald `versionCode 3` / `0.1.3` |
 | Tests | 162 unit tests, lint clean |
 
 ### Known gaps in the current release
 
-**Both apps on `main` are ahead of v0.1.2, and the policy is ahead of 7.**
-Unreleased: herald follows the phone's day/night setting; the toolbar colours
-that made the URL unreadable while editing and hid the tab counter are fixed;
-search engines work at all for the first time, with the offered list named by
-the policy (see
-[design-decisions](design-decisions.md#herald-dispatches-its-own-search-region));
-both apps have launcher icons; the block page has a drawbridge mark, sits at the
-top of the screen, and carries the reworded message from policy 9; there is a
-reader view; the tab tray is a thumbnail grid; and the ornamental tracking
-protection shield is gone from the toolbar.
-
-Policy 9 is signed in `dist/` but **not pushed** — pushing it publishes it to
-every device, so it should go out with the release rather than before it.
-Releasing means a new `required_apps` checksum and another policy version on top,
-as always.
+Nothing is stale: v0.1.3 carries everything on `main`, and policy 10 is live.
 
 Three things have still never run:
 
 - **`/releases/latest` must resolve.** Every release URL depends on it. GitHub
   excludes drafts and pre-releases, so flagging the newest release as either
   breaks provisioning and herald's auto-install. v0.1.0 is flagged pre-release,
-  which is fine while v0.1.2 is the newest published one.
+  which is fine while v0.1.3 is the newest published one.
 - **The self-update path.** `app_update` is unset, so `checkAndInstallSelf` has
   nothing to do. Setting it is circular — drawbridge's own APK contains the
   policy that would name its hash — so it takes two rounds: publish the APK,
@@ -119,9 +105,9 @@ Not verified, and worth doing:
   appear on real devices.
 - **A live policy update.** The change-detection code was checked for not
   misfiring, but no device has actually received a *new* policy version and
-  rebuilt its tunnel in response. v0.1.2 publishes policy 7 over 6, so the first
+  rebuilt its tunnel in response. v0.1.3 publishes policy 10 over 7, so the first
   provisioned device that polls will exercise this — including installing
-  herald `versionCode 2` over 1 through `required_apps`.
+  herald `versionCode 3` through `required_apps`.
 - **The self-update path.** `app_update` is unset in the policy, so
   `checkAndInstallSelf` has never had anything to do.
 

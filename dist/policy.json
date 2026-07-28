@@ -1,7 +1,7 @@
 {
-  "version": 9,
+  "version": 10,
   "issued_at": "2026-07-28T00:00:00Z",
-  "comment": "Names the search engines herald offers. DuckDuckGo stays the default because the DNS layer can force its safe search; Yandex and Baidu are deliberately absent. required_apps still pins the v0.1.2 herald builds.",
+  "comment": "Points required_apps at herald 0.1.3: system bar insets, day/night, working search engines, reader view, tab grid. Carries the reworded block page message and the search engine list. No change to what is blocked.",
   "dns": {
     "upstreams": [
       "94.140.14.15",
@@ -130,23 +130,23 @@
   "required_apps": [
     {
       "package_name": "app.drawbridge.herald",
-      "version_code": 2,
+      "version_code": 3,
       "url": "https://github.com/Nilss3/drawbridge/releases/latest/download/herald-arm64-v8a-release.apk",
-      "sha256": "2e7142e3e904db395c10587ffde7823ad9fdcf519ab726af32782d85f03958ef",
+      "sha256": "91df4a088ec5b0b6e45434e69c622f1eacfea42201df9eaedf46010427465884",
       "abi": "arm64-v8a"
     },
     {
       "package_name": "app.drawbridge.herald",
-      "version_code": 2,
+      "version_code": 3,
       "url": "https://github.com/Nilss3/drawbridge/releases/latest/download/herald-armeabi-v7a-release.apk",
-      "sha256": "66fefdc05a97c4307f87558b390a85360be06afceebeb6d83a5ceaf815188294",
+      "sha256": "e6d72495d2e24c3dc419cfb5ec6adc1c9832c8591e2d6d58f68630bb9badecd4",
       "abi": "armeabi-v7a"
     },
     {
       "package_name": "app.drawbridge.herald",
-      "version_code": 2,
+      "version_code": 3,
       "url": "https://github.com/Nilss3/drawbridge/releases/latest/download/herald-x86_64-release.apk",
-      "sha256": "fe1cdf533117214fdf938ff0f0cc1465918f235416b0f3b7d6427903a3ed5449",
+      "sha256": "6b5c218603c9bac36b98c6a0cb0cf797daaac59d13338dd3b983ae05c3571b91",
       "abi": "x86_64"
     }
   ]
