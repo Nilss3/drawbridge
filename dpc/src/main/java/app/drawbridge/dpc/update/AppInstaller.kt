@@ -84,7 +84,11 @@ class AppInstaller(context: Context) {
     private fun install(update: AppUpdate): Result {
         val staged = File(appContext.cacheDir, "${update.packageName}-${update.versionCode}.apk")
         try {
-            val digest = Downloader().getToFile(update.url, staged)
+            // Downloader's default cap is sized for policy documents and
+            // blocklists. An APK carrying a browser engine is far larger —
+            // herald is over 200 MB — so it needs its own ceiling, kept low
+            // enough that a hostile URL still cannot fill the disk.
+            val digest = Downloader(maxBytes = MAX_APK_BYTES).getToFile(update.url, staged)
 
             // Checked before the bytes reach the package installer: a mismatch
             // means this is not the APK the signed policy described, whatever
@@ -125,5 +129,8 @@ class AppInstaller(context: Context) {
 
     private companion object {
         const val TAG = "AppInstaller"
+
+        /** Comfortably above herald's ~220 MB, far below filling a phone. */
+        const val MAX_APK_BYTES = 512L * 1024 * 1024
     }
 }

@@ -69,8 +69,12 @@ class UpdateWorker(
                 .build()
 
             try {
+                // REPLACE, not KEEP: a previous attempt that failed — no network
+                // at provisioning, say — sits in exponential backoff, and KEEP
+                // would make every later trigger a silent no-op until that
+                // backoff elapsed. An explicit "install now" has to mean now.
                 WorkManager.getInstance(context)
-                    .enqueueUniqueWork(IMMEDIATE_WORK_NAME, ExistingWorkPolicy.KEEP, request)
+                    .enqueueUniqueWork(IMMEDIATE_WORK_NAME, ExistingWorkPolicy.REPLACE, request)
             } catch (e: IllegalStateException) {
                 Log.e(TAG, "WorkManager is unavailable; cannot install required apps", e)
             }
