@@ -12,28 +12,20 @@ machine, what was and was not verified, and what to do next.
 
 | | |
 |---|---|
-| Repo | https://github.com/Nilss3/drawbridge — public, `main`, 5 commits |
-| Release | [v0.1.1](https://github.com/Nilss3/drawbridge/releases/tag/v0.1.1), 6 assets. Release URLs use `/releases/latest/`, so the QR and policy survive future releases unchanged. |
-| Live policy | version 6, at `dist/policy.signed.json` on `main` (raw URL verified 200) |
-| Apps | drawbridge `versionCode 2` / `0.1.1`; herald `versionCode 1` / `0.1.0` (unchanged since v0.1.0, so deliberately not rebuilt) |
+| Repo | https://github.com/Nilss3/drawbridge — public, `main`, 7 commits |
+| Release | [v0.1.2](https://github.com/Nilss3/drawbridge/releases/tag/v0.1.2), 6 assets. Release URLs use `/releases/latest/`, so the QR and policy survive future releases unchanged. |
+| Live policy | version 7, at `dist/policy.signed.json` on `main` |
+| Apps | drawbridge `versionCode 3` / `0.1.2`; herald `versionCode 2` / `0.1.2` — both rebuilt for the system bar insets fix |
 | Tests | 162 unit tests, lint clean |
 
 ### Known gaps in the current release
 
-**The released APKs have the edge-to-edge layout bug.** Both apps draw under the
-system bars on Android 15 and later: herald's toolbar sits beneath the status
-bar, and drawbridge hides the first two lines of every screen behind its own
-action bar. Fixed on `main` — see
-[design-decisions](design-decisions.md#every-screen-insets-itself-for-the-system-bars)
-— but not in v0.1.1, so it needs a release. herald's version is unchanged, so
-that release also means a new `required_apps` checksum and a policy update.
-
-Three things have still never run:
+Nothing is stale. Three things have still never run:
 
 - **`/releases/latest` must resolve.** Every release URL depends on it. GitHub
   excludes drafts and pre-releases, so flagging the newest release as either
   breaks provisioning and herald's auto-install. v0.1.0 is flagged pre-release,
-  which is fine while v0.1.1 is the newest published one.
+  which is fine while v0.1.2 is the newest published one.
 - **The self-update path.** `app_update` is unset, so `checkAndInstallSelf` has
   nothing to do. Setting it is circular — drawbridge's own APK contains the
   policy that would name its hash — so it takes two rounds: publish the APK,
@@ -111,7 +103,9 @@ Not verified, and worth doing:
   appear on real devices.
 - **A live policy update.** The change-detection code was checked for not
   misfiring, but no device has actually received a *new* policy version and
-  rebuilt its tunnel in response.
+  rebuilt its tunnel in response. v0.1.2 publishes policy 7 over 6, so the first
+  provisioned device that polls will exercise this — including installing
+  herald `versionCode 2` over 1 through `required_apps`.
 - **The self-update path.** `app_update` is unset in the policy, so
   `checkAndInstallSelf` has never had anything to do.
 
@@ -157,14 +151,11 @@ Carried over from the original design notes and never answered:
 
 ## Reasonable next steps
 
-1. **Cut v0.1.1** (above) so the QR flow actually works.
-2. **Provision a real phone by QR** — the one major untested path, and the whole
+1. **Provision a real phone by QR** — the one major untested path, and the whole
    point of the release.
-3. **Back up both keys.**
-4. Then, in rough order of value:
+2. **Back up both keys.**
+3. Then, in rough order of value:
    - Localise the app strings to Dutch and French.
-   - Decide the games list and push a policy update — which doubles as the first
-     real test of remote policy delivery.
    - Consider dropping `x86_64` from future releases (emulator-only, a third of
      the upload) — but the policy references it, so remove it there too.
    - Revisit whether `armeabi-v7a` is worth keeping.

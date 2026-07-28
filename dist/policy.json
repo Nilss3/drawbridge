@@ -1,7 +1,7 @@
 {
-  "version": 6,
-  "issued_at": "2026-07-27T00:00:00Z",
-  "comment": "Release URLs now point at /releases/latest/ so the provisioning QR and this policy survive future releases unchanged. Checksums still pin the exact build, so a mismatched APK is refused.",
+  "version": 7,
+  "issued_at": "2026-07-28T00:00:00Z",
+  "comment": "Points required_apps at herald 0.1.2, which fixes the edge-to-edge layout bug that put the browser toolbar under the status bar on Android 15 and later. Blocking rules are unchanged from version 6.",
   "dns": {
     "upstreams": [
       "94.140.14.15",
@@ -120,23 +120,23 @@
   "required_apps": [
     {
       "package_name": "app.drawbridge.herald",
-      "version_code": 1,
+      "version_code": 2,
       "url": "https://github.com/Nilss3/drawbridge/releases/latest/download/herald-arm64-v8a-release.apk",
-      "sha256": "80523d87e2f0e3fe6e497cde068df610e5e590b0f26a489f62f4bf89eef8a64b",
+      "sha256": "2e7142e3e904db395c10587ffde7823ad9fdcf519ab726af32782d85f03958ef",
       "abi": "arm64-v8a"
     },
     {
       "package_name": "app.drawbridge.herald",
-      "version_code": 1,
+      "version_code": 2,
       "url": "https://github.com/Nilss3/drawbridge/releases/latest/download/herald-armeabi-v7a-release.apk",
-      "sha256": "6c53a38c65292aeec60ddbec3724a787caa5aeeb5e0aa726b97ee0dbdc3d9d63",
+      "sha256": "66fefdc05a97c4307f87558b390a85360be06afceebeb6d83a5ceaf815188294",
       "abi": "armeabi-v7a"
     },
     {
       "package_name": "app.drawbridge.herald",
-      "version_code": 1,
+      "version_code": 2,
       "url": "https://github.com/Nilss3/drawbridge/releases/latest/download/herald-x86_64-release.apk",
-      "sha256": "9f5b52f8248ed23414c7977ac087d080869cbafae39b43339588b73652785000",
+      "sha256": "fe1cdf533117214fdf938ff0f0cc1465918f235416b0f3b7d6427903a3ed5449",
       "abi": "x86_64"
     }
   ]
