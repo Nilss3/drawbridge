@@ -193,6 +193,19 @@ from its own CDN, which no domain blocklist covers — so DuckDuckGo is the
 default, and Yandex and Baidu are absent rather than merely unselected. See
 [policy.md](policy.md#search-engines-are-a-filtering-decision).
 
+## Reader view is Gecko's own, and cannot be a way around the filter
+
+Reader view is `feature-readerview`: the same Readability pass Firefox uses,
+shipped as a built-in web extension. It is worth stating why that is safe in a
+filtering browser — it runs over the DOM of the page already loaded and fetches
+nothing, so it can only ever show content the filter has already let through. The
+article it renders lives at a `moz-extension://` URL, which is why that scheme has
+to stay reachable.
+
+The menu entry only appears where Gecko reports the page as readerable, and the
+font and colour controls only once it is on, so neither shows on a page that has
+no article in it.
+
 ## Blocklists are stored as hashes, not strings
 
 A merged adult + gambling + ad list is a few hundred thousand domains. As a

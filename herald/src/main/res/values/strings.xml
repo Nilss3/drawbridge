@@ -13,6 +13,8 @@
     <string name="menu_share">Share</string>
     <string name="menu_find_in_page">Find in page</string>
     <string name="menu_desktop_site">Desktop site</string>
+    <string name="menu_reader_view">Reader view</string>
+    <string name="menu_reader_view_options">Reader view options</string>
     <string name="menu_bookmarks">Bookmarks</string>
     <string name="menu_history">History</string>
     <string name="menu_passwords">Saved passwords</string>

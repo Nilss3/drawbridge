@@ -28,6 +28,7 @@ import mozilla.components.feature.downloads.manager.FetchDownloadManager
 import mozilla.components.feature.findinpage.view.FindInPageBar
 import mozilla.components.feature.findinpage.view.FindInPageView
 import mozilla.components.feature.prompts.PromptFeature
+import mozilla.components.feature.readerview.view.ReaderViewControlsBar
 import mozilla.components.feature.session.FullScreenFeature
 import mozilla.components.feature.session.SessionFeature
 import mozilla.components.feature.session.SwipeRefreshFeature
@@ -55,12 +56,19 @@ class BrowserFragment :
     private val promptsFeature = ViewBoundFeatureWrapper<PromptFeature>()
     private val fullScreenFeature = ViewBoundFeatureWrapper<FullScreenFeature>()
     private val findInPageIntegration = ViewBoundFeatureWrapper<FindInPageIntegration>()
+    private val readerViewIntegration = ViewBoundFeatureWrapper<ReaderViewIntegration>()
     private val sitePermissionsFeature = ViewBoundFeatureWrapper<SitePermissionsFeature>()
     private val swipeRefreshFeature = ViewBoundFeatureWrapper<SwipeRefreshFeature>()
     private val windowFeature = ViewBoundFeatureWrapper<WindowFeature>()
 
     private val backHandlers: List<ViewBoundFeatureWrapper<*>>
-        get() = listOf(fullScreenFeature, findInPageIntegration, toolbarIntegration, sessionFeature)
+        get() = listOf(
+            fullScreenFeature,
+            findInPageIntegration,
+            readerViewIntegration,
+            toolbarIntegration,
+            sessionFeature,
+        )
 
     private val sessionId: String? get() = arguments?.getString(ARG_SESSION_ID)
 
@@ -68,6 +76,8 @@ class BrowserFragment :
     private val toolbar: BrowserToolbar get() = requireView().findViewById(R.id.toolbar)
     private val findInPageBar: FindInPageBar get() = requireView().findViewById(R.id.findInPageBar)
     private val swipeRefresh: SwipeRefreshLayout get() = requireView().findViewById(R.id.swipeRefresh)
+    private val readerViewControls: ReaderViewControlsBar
+        get() = requireView().findViewById(R.id.readerViewControls)
 
     private lateinit var downloadPermissionsLauncher: ActivityResultLauncher<Array<String>>
     private lateinit var sitePermissionsLauncher: ActivityResultLauncher<Array<String>>
@@ -234,6 +244,18 @@ class BrowserFragment :
                 sessionId,
                 findInPageBar as FindInPageView,
                 engineView,
+            ),
+            owner = this,
+            view = view,
+        )
+
+        readerViewIntegration.set(
+            feature = ReaderViewIntegration(
+                context = requireContext(),
+                engine = components.core.engine,
+                store = components.core.store,
+                sessionId = sessionId,
+                controlsView = readerViewControls,
             ),
             owner = this,
             view = view,

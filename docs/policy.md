@@ -67,8 +67,18 @@ Baidu are absent rather than merely unselected**. Narrowing `search_engines` to
 the first three is the strict setting; adding an engine to that list is a
 decision to trust its own safe search.
 
-Kagi additionally needs a paid, signed-in account, so it returns nothing useful
-until someone logs in.
+**Kagi is the exception worth understanding.** Its settings live on the account,
+server side, rather than in a cookie — so unlike every other engine here, what it
+filters is not something the person searching can switch off. Its
+[Family plan](https://help.kagi.com/kagi/plans/family-plan.html) (up to six
+members) adds parental controls on top: a safe-search filter that excludes adult
+material, lenses that can restrict a child's account to a whitelist of sites
+rather than the open web, and content moderation on its AI features.
+
+That makes Kagi the one engine in this list whose filtering drawbridge cannot
+enforce *and* whose filtering cannot be undone from the phone, provided the
+account is the parent's to manage. It is a paid service, and it returns nothing
+useful until someone is signed in.
 
 ### Pinned and unpinned lists
 

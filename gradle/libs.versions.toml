@@ -67,6 +67,7 @@ mozac-feature-intent = { module = "org.mozilla.components:feature-intent", versi
 mozac-feature-logins = { module = "org.mozilla.components:feature-logins", version.ref = "mozac" }
 mozac-feature-media = { module = "org.mozilla.components:feature-media", version.ref = "mozac" }
 mozac-feature-prompts = { module = "org.mozilla.components:feature-prompts", version.ref = "mozac" }
+mozac-feature-readerview = { module = "org.mozilla.components:feature-readerview", version.ref = "mozac" }
 mozac-feature-search = { module = "org.mozilla.components:feature-search", version.ref = "mozac" }
 mozac-feature-session = { module = "org.mozilla.components:feature-session", version.ref = "mozac" }
 mozac-feature-sitepermissions = { module = "org.mozilla.components:feature-sitepermissions", version.ref = "mozac" }
@@ -78,7 +79,6 @@ mozac-feature-webcompat = { module = "org.mozilla.components:feature-webcompat",
 # --- Mozilla Android Components: libs, support, ui ---
 mozac-lib-dataprotect = { module = "org.mozilla.components:lib-dataprotect", version.ref = "mozac" }
 mozac-lib-fetch-httpurlconnection = { module = "org.mozilla.components:lib-fetch-httpurlconnection", version.ref = "mozac" }
-mozac-service-location = { module = "org.mozilla.components:service-location", version.ref = "mozac" }
 mozac-service-sync-logins = { module = "org.mozilla.components:service-sync-logins", version.ref = "mozac" }
 mozac-lib-publicsuffixlist = { module = "org.mozilla.components:lib-publicsuffixlist", version.ref = "mozac" }
 mozac-lib-state = { module = "org.mozilla.components:lib-state", version.ref = "mozac" }

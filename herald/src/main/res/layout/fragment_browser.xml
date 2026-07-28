@@ -34,6 +34,16 @@
         android:background="?attr/colorSurface"
         android:visibility="gone" />
 
+    <!-- Font and colour controls for reader view. The feature shows and hides it;
+         it stays gone until reader view is on and the controls are asked for. -->
+    <mozilla.components.feature.readerview.view.ReaderViewControlsBar
+        android:id="@+id/readerViewControls"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:background="?attr/colorSurface"
+        android:visibility="gone" />
+
     <mozilla.components.browser.toolbar.BrowserToolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"

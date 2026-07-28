@@ -8,7 +8,7 @@ Two apps in one repo:
 
 | | | |
 |---|---|---|
-| **herald** | `herald/` | A real browser (GeckoView) that enforces the blocklist on every page and subresource it loads. |
+| **herald** | `herald/` | A real browser (GeckoView) that enforces the blocklist on every page and subresource it loads. Tabs, bookmarks, history, saved passwords, reader view, day/night. |
 | **drawbridge** | `dpc/` | The device policy controller: a device-wide DNS filter, app blocking, and the restrictions that stop the whole thing being switched off. |
 | *policy* | `policy/` | Shared library: the signed policy document, blocklist compilation, and the update poller both apps use. |
 

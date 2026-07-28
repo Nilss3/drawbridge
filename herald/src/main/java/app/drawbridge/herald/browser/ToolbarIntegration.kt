@@ -20,7 +20,7 @@ import kotlinx.coroutines.launch
 import mozilla.components.browser.domains.autocomplete.ShippedDomainsProvider
 import mozilla.components.browser.menu2.BrowserMenuController
 import mozilla.components.browser.state.selector.selectedTab
-import mozilla.components.browser.state.state.SessionState
+import mozilla.components.browser.state.state.TabSessionState
 import mozilla.components.browser.state.store.BrowserStore
 import mozilla.components.browser.storage.sync.PlacesBookmarksStorage
 import mozilla.components.browser.storage.sync.PlacesHistoryStorage
@@ -142,7 +142,7 @@ class ToolbarIntegration(
         ioScope.cancel()
     }
 
-    private fun navigationRow(session: SessionState?): RowMenuCandidate {
+    private fun navigationRow(session: TabSessionState?): RowMenuCandidate {
         val tint = ContextCompat.getColor(context, R.color.menu_icon)
 
         val forward = SmallMenuCandidate(
@@ -176,11 +176,11 @@ class ToolbarIntegration(
         return RowMenuCandidate(listOf(forward, refresh, stop))
     }
 
-    private fun menuItems(session: SessionState?): List<MenuCandidate> {
+    private fun menuItems(session: TabSessionState?): List<MenuCandidate> {
         val sessionItems = if (session == null) {
             emptyList()
         } else {
-            listOf(
+            listOfNotNull(
                 navigationRow(session),
                 TextMenuCandidate(context.getString(R.string.menu_add_bookmark)) {
                     addBookmark(session.content.title, session.content.url)
@@ -196,6 +196,17 @@ class ToolbarIntegration(
                     isChecked = session.content.desktopMode,
                     end = CompoundMenuCandidate.ButtonType.SWITCH,
                 ) { checked -> sessionUseCases.requestDesktopSite.invoke(checked) },
+                // Only offered where there is an article to strip down to;
+                // Gecko decides that per page and reports it in readerState.
+                CompoundMenuCandidate(
+                    text = context.getString(R.string.menu_reader_view),
+                    isChecked = session.readerState.active,
+                    end = CompoundMenuCandidate.ButtonType.SWITCH,
+                ) { ReaderViewIntegration.toggle?.invoke() }
+                    .takeIf { session.readerState.readerable },
+                TextMenuCandidate(context.getString(R.string.menu_reader_view_options)) {
+                    ReaderViewIntegration.showControls?.invoke()
+                }.takeIf { session.readerState.active },
             )
         }
 
