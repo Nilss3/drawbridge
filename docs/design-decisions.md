@@ -149,9 +149,24 @@ of entries in a memory-mapped file, and copying it into the extension's heap on
 every policy update would be slow and pointless. Firefox allows a blocking
 listener to return a Promise, so one native round trip per hostname is enough.
 
-## Release builds need an NDK to be a reasonable size
+## herald is ~218 MiB per ABI, and that cannot be reduced here
 
-AGP strips native debug symbols only when an NDK is available. GeckoView's
-`libxul.so` is ~150 MB unstripped, so a release build on a machine without an NDK
-produces an APK several times larger than it needs to be. The release workflow
-installs one; local release builds are otherwise correct, just fat.
+GeckoView is a whole browser engine: `libxul.so` alone is 145 MiB. Per-ABI splits
+are already enabled, without which a universal APK would be the sum of all three.
+
+An earlier version of these notes claimed the size was unstripped debug symbols
+and that building with an NDK would cut it by more than half. That is wrong, and
+was measured to be wrong: `libxul.so` contains no `.symtab` and no `.debug_*`
+sections, and `llvm-strip --strip-all` leaves it byte-for-byte identical. Mozilla
+already ships stripped release libraries. Installing an NDK changes nothing.
+
+What is actually available, if the download size ever becomes a problem:
+
+- Publish only the ABIs you deploy to. `x86_64` exists for emulators; dropping it
+  from a release removes a third of the upload, though it does not change what
+  any real device downloads.
+- Android App Bundles would let the store slice further, but that means Play
+  distribution, which this project deliberately avoids.
+
+Each provisioned device downloads its own ABI once, at provisioning time, and
+then only on updates.

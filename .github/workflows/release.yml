@@ -23,12 +23,6 @@ jobs:
 
       - uses: android-actions/setup-android@v3
 
-      # AGP strips native debug symbols only when an NDK is present. GeckoView's
-      # libxul.so is ~150 MB unstripped, so without this the herald APK is
-      # several times larger than it needs to be.
-      - name: Install NDK
-        run: sdkmanager --install "ndk;27.2.12479018"
-
       - uses: gradle/actions/setup-gradle@v4
 
       - name: Unit tests
