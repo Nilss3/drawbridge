@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">drawbridge</string>
+    <string name="admin_label">drawbridge parental controls</string>
+    <string name="admin_description">Keeps the content filter switched on and stops it from being removed without the parent PIN.</string>
+
+    <string name="status_heading">Device status</string>
+    <string name="status_device_owner_yes">Managed: drawbridge is the device owner</string>
+    <string name="status_device_owner_no">Not managed — restrictions cannot be enforced. Provision with adb or a QR code first.</string>
+    <string name="status_filter_running">Content filter: running</string>
+    <string name="status_filter_stopped">Content filter: stopped</string>
+    <string name="status_policy">Policy version %1$d, last updated %2$s</string>
+    <string name="status_policy_never">never</string>
+    <string name="status_restrictions_none">No restrictions applied</string>
+    <string name="status_restrictions_heading">Active restrictions</string>
+
+    <string name="action_setup">Set up parental controls</string>
+    <string name="action_refresh">Check for policy updates</string>
+    <string name="action_remove">Remove parental controls</string>
+
+    <string name="policy_refreshed">Policy updated (version %1$d)</string>
+    <string name="policy_refresh_failed">Could not reach the policy server</string>
+
+    <string name="setup_title">Set a parent PIN</string>
+    <string name="setup_pin_hint">At least %1$d digits. You will need it to change or remove these controls.</string>
+    <string name="setup_pin">PIN</string>
+    <string name="setup_pin_confirm">Confirm PIN</string>
+    <string name="setup_continue">Continue</string>
+    <string name="setup_pin_too_short">The PIN must be at least %1$d digits.</string>
+    <string name="setup_pin_mismatch">The two PINs do not match.</string>
+
+    <string name="setup_recovery_title">Write this down now</string>
+    <string name="setup_recovery_explanation">This one-time recovery code is the only way back in if the PIN is forgotten. It is not stored anywhere you can read it again, and there is no email reset — that would mean tying this device to an account.</string>
+    <string name="setup_recovery_confirm">I have written down or printed this code</string>
+    <string name="setup_recovery_share">Print or save the recovery code</string>
+    <string name="setup_recovery_subject">drawbridge recovery code</string>
+    <string name="setup_recovery_body">drawbridge recovery code: %1$s\n\nKeep this somewhere safe and offline. It can be used once to remove parental controls without the PIN.</string>
+    <string name="setup_finish">Finish setup</string>
+    <string name="setup_done">Parental controls are active.</string>
+    <string name="setup_done_not_owner">PIN saved and the filter is starting, but drawbridge is not the device owner, so the restrictions are not enforced.</string>
+
+    <string name="remove_title">Remove parental controls</string>
+    <string name="remove_explanation">Enter the parent PIN, or the one-time recovery code. This lifts every restriction and stops the filter. Nothing is erased and no factory reset is needed.</string>
+    <string name="remove_hint">PIN or recovery code</string>
+    <string name="remove_action">Remove</string>
+    <string name="remove_cancel">Cancel</string>
+    <string name="remove_incorrect">That is not the PIN or the recovery code.</string>
+    <string name="remove_incorrect_locked">Incorrect. Try again in %1$d seconds.</string>
+    <string name="remove_locked_out">Too many attempts. Try again in %1$d seconds.</string>
+    <string name="remove_confirm_title">Remove parental controls?</string>
+    <string name="remove_confirm_message">The content filter, app blocking and all device restrictions will be switched off. Apps that were hidden become available again. No data is lost.</string>
+    <string name="remove_confirm_yes">Remove</string>
+    <string name="remove_done">Parental controls removed.</string>
+    <string name="remove_done_not_owner">Filter stopped and settings cleared.</string>
+    <string name="remove_failed">Could not release device ownership. Check the log.</string>
+
+    <string name="filter_channel_name">Content filter</string>
+    <string name="filter_notification_title">Content filter active</string>
+    <string name="filter_notification_text">Filtering DNS for every app on this device</string>
+</resources>

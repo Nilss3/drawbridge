@@ -1,0 +1,95 @@
+# drawbridge — social media domains
+#
+# Curated and pinned by SHA-256 in dist/policy.json, unlike the large upstream
+# lists which rotate daily. Entries cover the parent domain only; matching is
+# suffix-based, so `facebook.com` also blocks `m.facebook.com`.
+#
+# YouTube is deliberately absent: it is handled by safe-search / restricted-mode
+# rewriting at the DNS layer rather than blocked outright.
+
+# Meta
+facebook.com
+fb.com
+fb.me
+fbcdn.net
+fbsbx.com
+messenger.com
+instagram.com
+cdninstagram.com
+threads.net
+threads.com
+
+# TikTok
+tiktok.com
+tiktokv.com
+tiktokcdn.com
+tiktokcdn-us.com
+byteoversea.com
+musical.ly
+
+# Snap
+snapchat.com
+snap.com
+sc-cdn.net
+
+# X / Twitter
+twitter.com
+x.com
+t.co
+twimg.com
+
+# Reddit
+reddit.com
+redd.it
+redditmedia.com
+redditstatic.com
+
+# Discord
+discord.com
+discord.gg
+discordapp.com
+discordapp.net
+discordcdn.com
+
+# Image and short-form feeds
+pinterest.com
+pinimg.com
+tumblr.com
+imgur.com
+9gag.com
+ifunny.co
+
+# Live streaming
+twitch.tv
+ttvnw.net
+kick.com
+rumble.com
+bigo.tv
+
+# Adult-adjacent creator platforms
+onlyfans.com
+onlyfans.net
+fansly.com
+patreon.com
+
+# Other networks
+vk.com
+weibo.com
+telegram.org
+telegram.me
+t.me
+bereal.com
+bsky.app
+bsky.social
+mastodon.social
+truthsocial.com
+gettr.com
+parler.com
+minds.com
+yubo.live
+omegle.com
+chatroulette.com
+monkey.app
+tinder.com
+bumble.com
+grindr.com

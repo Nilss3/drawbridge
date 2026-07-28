@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">herald</string>
+
+    <string name="toolbar_hint">Search or enter address</string>
+    <string name="share_via">Share via</string>
+
+    <string name="menu_forward">Forward</string>
+    <string name="menu_refresh">Refresh</string>
+    <string name="menu_stop">Stop</string>
+    <string name="menu_new_tab">New tab</string>
+    <string name="menu_add_bookmark">Add bookmark</string>
+    <string name="menu_share">Share</string>
+    <string name="menu_find_in_page">Find in page</string>
+    <string name="menu_desktop_site">Desktop site</string>
+    <string name="menu_bookmarks">Bookmarks</string>
+    <string name="menu_history">History</string>
+    <string name="menu_passwords">Saved passwords</string>
+    <string name="menu_settings">Settings</string>
+
+    <string name="tabs_tray_title">Tabs</string>
+    <string name="tabs_tray_new_tab">New tab</string>
+    <string name="tabs_tray_close_all">Close all</string>
+    <string name="tabs_tray_done">Done</string>
+
+    <string name="entry_delete">Remove</string>
+    <string name="action_clear_all">Clear all</string>
+    <string name="history_empty">No history yet.</string>
+    <string name="bookmarks_empty">No bookmarks yet.</string>
+    <string name="logins_empty">No saved passwords yet.</string>
+    <string name="logins_no_username">(no username)</string>
+
+    <string name="settings_category_search">Search</string>
+    <string name="settings_search_engine">Search engine</string>
+    <string name="settings_category_filter">Content filter</string>
+    <string name="settings_filter_status">Filter status</string>
+    <string name="settings_filter_status_summary">Policy version %1$d, last updated %2$s</string>
+    <string name="settings_filter_never_checked">never</string>
+    <string name="settings_check_for_updates">Check for updates</string>
+    <string name="settings_check_for_updates_summary">Fetch the latest policy and blocklists now</string>
+    <string name="settings_filter_updated">Filter updated (policy version %1$d)</string>
+    <string name="settings_filter_update_failed">Could not reach the policy server</string>
+    <string name="settings_category_privacy">Privacy</string>
+    <string name="settings_clear_browsing_data">Clear browsing data</string>
+    <string name="settings_browsing_data_cleared">Browsing data cleared</string>
+    <string name="settings_category_about">About</string>
+    <string name="settings_version">Version</string>
+
+    <string name="blocked_page_title">Blocked</string>
+    <string name="blocked_page_heading">Page blocked</string>
+</resources>

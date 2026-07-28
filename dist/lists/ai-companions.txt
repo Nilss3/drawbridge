@@ -1,0 +1,59 @@
+# drawbridge — AI companion / roleplay chat domains
+#
+# These are the "virtual girlfriend/boyfriend" and unfiltered-roleplay services.
+# They are not covered by mainstream adult or social blocklists, which is why
+# this list is maintained here and pinned by SHA-256 in dist/policy.json.
+#
+# General-purpose assistants (chatgpt.com, claude.ai, gemini.google.com) are
+# deliberately not listed — add them to `blocked_domains` in the policy if you
+# want them blocked too.
+
+character.ai
+characterai.io
+c.ai
+replika.com
+replika.ai
+myreplika.ai
+chai-research.com
+chai.ml
+janitorai.com
+janitorai.co
+crushon.ai
+spicychat.ai
+candy.ai
+dreamgf.ai
+girlfriendgpt.ai
+gptgirlfriend.online
+romantic.ai
+nomi.ai
+kindroid.ai
+muah.ai
+polybuzz.ai
+talkie-ai.com
+linky.ai
+joyland.ai
+sakura.fm
+yodayo.com
+moescape.ai
+pephop.ai
+chub.ai
+figgs.ai
+moemate.io
+botify.ai
+anima.ai
+paradot.ai
+ourdream.ai
+soulgen.ai
+soulfun.ai
+herahaven.com
+secrets.ai
+nectar.ai
+lovescape.com
+kupid.ai
+promptchan.ai
+perchance.org
+venus.chub.ai
+narrus.ai
+tavernai.net
+risuai.net
+sillytavern.app

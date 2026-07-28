@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:mozac="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <mozilla.components.ui.widgets.VerticalSwipeRefreshLayout
+        android:id="@+id/swipeRefresh"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <!--
+            EngineView is an interface, not a View subclass; BrowserActivity's
+            onCreateView hook substitutes the engine's real view at inflation
+            time. That is the documented Android Components pattern, so lint's
+            Instantiatable check does not apply here.
+        -->
+        <mozilla.components.concept.engine.EngineView
+            android:id="@+id/engineView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:ignore="Instantiatable" />
+    </mozilla.components.ui.widgets.VerticalSwipeRefreshLayout>
+
+    <mozilla.components.feature.findinpage.view.FindInPageBar
+        android:id="@+id/findInPageBar"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_gravity="bottom"
+        android:background="?attr/colorSurface"
+        android:visibility="gone" />
+
+    <mozilla.components.browser.toolbar.BrowserToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/browser_toolbar_height"
+        android:layout_gravity="top"
+        android:background="@color/toolbar_background" />
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

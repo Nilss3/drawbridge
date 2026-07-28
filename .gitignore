@@ -1,0 +1,18 @@
+*.iml
+.gradle/
+.idea/
+.kotlin/
+build/
+local.properties
+keystore.properties
+*.jks
+*.keystore
+.DS_Store
+captures/
+.externalNativeBuild/
+.cxx/
+keys/
+
+# Release APKs: herald is ~230 MB per ABI, well over GitHub's 100 MB file limit.
+# They belong on a GitHub Release as assets, not in git history.
+dist/release/*.apk

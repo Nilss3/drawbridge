@@ -1,0 +1,124 @@
+{
+  "version": 3,
+  "issued_at": "2026-07-27T00:00:00Z",
+  "comment": "Adds herald as a required app so a QR-provisioned device installs the browser itself. Bump 'version' on every change, then run tools/policytool.py sign.",
+  "dns": {
+    "upstreams": [
+      "94.140.14.15",
+      "94.140.15.16"
+    ],
+    "enforce_safe_search": true,
+    "strip_https_records": true,
+    "block_encrypted_dns": true,
+    "blocked_response_ttl_seconds": 60,
+    "encrypted_upstream": "tls://all.dns.mullvad.net"
+  },
+  "blocklists": [
+    {
+      "id": "adult",
+      "url": "https://blocklistproject.github.io/Lists/porn.txt",
+      "format": "hosts",
+      "category": "adult"
+    },
+    {
+      "id": "gambling",
+      "url": "https://blocklistproject.github.io/Lists/gambling.txt",
+      "format": "hosts",
+      "category": "gambling"
+    },
+    {
+      "id": "ads",
+      "url": "https://raw.githubusercontent.com/hagezi/dns-blocklists/main/domains/pro.txt",
+      "format": "domains",
+      "category": "ads"
+    },
+    {
+      "id": "encrypted-dns",
+      "url": "https://raw.githubusercontent.com/hagezi/dns-blocklists/main/domains/doh.txt",
+      "format": "domains",
+      "category": "encrypted-dns"
+    },
+    {
+      "id": "social",
+      "url": "https://raw.githubusercontent.com/Nilss3/drawbridge/main/dist/lists/social.txt",
+      "format": "domains",
+      "category": "social",
+      "sha256": "fbd73a64183c49669a8942e0439f92e46fddf820e6d04dca81c35e8342340c9a"
+    },
+    {
+      "id": "ai-companions",
+      "url": "https://raw.githubusercontent.com/Nilss3/drawbridge/main/dist/lists/ai-companions.txt",
+      "format": "domains",
+      "category": "ai-companions",
+      "sha256": "acfabfad5c62ca9089ad9281516a61dd68aa3bda82789789a5f589460b75afca"
+    }
+  ],
+  "blocked_domains": [],
+  "allowed_domains": [],
+  "blocked_packages": [
+    "com.facebook.katana",
+    "com.facebook.lite",
+    "com.facebook.orca",
+    "com.facebook.mlite",
+    "com.instagram.android",
+    "com.instagram.lite",
+    "com.instagram.barcelona",
+    "com.zhiliaoapp.musically",
+    "com.zhiliaoapp.musically.go",
+    "com.ss.android.ugc.trill",
+    "com.snapchat.android",
+    "com.twitter.android",
+    "com.twitter.android.lite",
+    "com.x.android",
+    "com.reddit.frontpage",
+    "com.discord",
+    "com.pinterest",
+    "com.tumblr",
+    "com.vkontakte.android",
+    "tv.twitch.android.app",
+    "com.bereal.ft",
+    "com.yubo.android",
+    "co.hinge.app",
+    "com.tinder",
+    "com.bumble.app",
+    "com.grindrapp.android",
+    "ai.character.app",
+    "ai.replika.app",
+    "com.chai.chai",
+    "com.omegle.chat",
+    "com.roblox.client",
+    "com.dts.freefireth",
+    "com.dts.freefiremax"
+  ],
+  "allowed_browser_package": "app.drawbridge.herald",
+  "exempt_packages": [],
+  "browser": {
+    "default_search_engine": "duckduckgo",
+    "blocked_page_message": "This page is blocked by the content filter on this device.",
+    "blocked_url_patterns": [],
+    "blocked_hosts": []
+  },
+  "required_apps": [
+    {
+      "package_name": "app.drawbridge.herald",
+      "version_code": 1,
+      "url": "https://github.com/Nilss3/drawbridge/releases/download/v0.1.0/herald-arm64-v8a-release.apk",
+      "sha256": "80523d87e2f0e3fe6e497cde068df610e5e590b0f26a489f62f4bf89eef8a64b",
+      "abi": "arm64-v8a"
+    },
+    {
+      "package_name": "app.drawbridge.herald",
+      "version_code": 1,
+      "url": "https://github.com/Nilss3/drawbridge/releases/download/v0.1.0/herald-armeabi-v7a-release.apk",
+      "sha256": "6c53a38c65292aeec60ddbec3724a787caa5aeeb5e0aa726b97ee0dbdc3d9d63",
+      "abi": "armeabi-v7a"
+    },
+    {
+      "package_name": "app.drawbridge.herald",
+      "version_code": 1,
+      "url": "https://github.com/Nilss3/drawbridge/releases/download/v0.1.0/herald-x86_64-release.apk",
+      "sha256": "9f5b52f8248ed23414c7977ac087d080869cbafae39b43339588b73652785000",
+      "abi": "x86_64"
+    }
+  ]
+}
