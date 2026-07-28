@@ -4,8 +4,22 @@
 # lists which rotate daily. Entries cover the parent domain only; matching is
 # suffix-based, so `facebook.com` also blocks `m.facebook.com`.
 #
-# YouTube is deliberately absent: it is handled by safe-search / restricted-mode
-# rewriting at the DNS layer rather than blocked outright.
+# YouTube is blocked outright here. The safe-search rewriting in DnsFilter still
+# maps youtube.com to restrictmoderate.youtube.com, but blocking is checked first,
+# so the redirect only takes effect if YouTube is removed from this list.
+
+# YouTube
+youtube.com
+www.youtube.com
+m.youtube.com
+youtu.be
+youtubei.googleapis.com
+youtube.googleapis.com
+yt3.ggpht.com
+ytimg.com
+googlevideo.com
+music.youtube.com
+youtube-nocookie.com
 
 # Meta
 facebook.com
@@ -71,6 +85,17 @@ onlyfans.com
 onlyfans.net
 fansly.com
 patreon.com
+
+# Messaging
+kik.com
+weixin.qq.com
+wechat.com
+line.me
+line-apps.com
+naver.jp
+
+# Short-form video
+lemon8-app.com
 
 # Other networks
 vk.com

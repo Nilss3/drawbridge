@@ -14,7 +14,7 @@ machine, what was and was not verified, and what to do next.
 |---|---|
 | Repo | https://github.com/Nilss3/drawbridge — public, `main`, 5 commits |
 | Release | [v0.1.0](https://github.com/Nilss3/drawbridge/releases/tag/v0.1.0), 6 assets, all download URLs verified 200 |
-| Live policy | version 3, at `dist/policy.signed.json` on `main` (raw URL verified 200) |
+| Live policy | version 4, at `dist/policy.signed.json` on `main` (raw URL verified 200) |
 | Both apps | `versionCode 1`, `versionName 0.1.0` |
 | Tests | 162 unit tests, lint clean |
 
@@ -141,8 +141,9 @@ Each of these looks like a bug and is not, or bites silently:
 
 Carried over from the original design notes and never answered:
 
-1. **Which games to block.** `blocked_packages` currently has the major social
-   apps plus only Roblox and Free Fire as a placeholder.
+1. ~~Which games to block.~~ **Answered 2026-07-28** — the owner's list is in
+   policy v4 (41 packages). Four items could not be blocked exactly as
+   specified; see [blocklist-notes.md](blocklist-notes.md).
 2. **Whether the current blocklists are right.** Mullvad's `all` resolver blocks
    a great deal on its own — including all social media — so some of the curated
    lists may now be redundant, and some categories may be blocked more

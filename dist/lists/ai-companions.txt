@@ -9,6 +9,12 @@
 # want them blocked too.
 
 character.ai
+aidungeon.io
+aidungeon.com
+play.aidungeon.io
+kajiwoto.com
+kajiwoto.ai
+weaver.app
 characterai.io
 c.ai
 replika.com

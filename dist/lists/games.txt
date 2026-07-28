@@ -1,0 +1,65 @@
+# drawbridge — game and game-adjacent domains
+#
+# App installs are stopped by `blocked_packages`; this list closes the browser
+# route to the same games, and the Minecraft Bedrock multiplayer servers.
+#
+# NOTE ON MINECRAFT: the game itself is deliberately NOT blocked — neither the
+# package nor minecraft.net. Only Realms and the large public Bedrock servers
+# are listed. A DNS blocklist cannot stop a server joined by raw IP address, and
+# it cannot enumerate the thousands of small servers that exist, so this is a
+# speed bump rather than a wall. Treat single-player and LAN as allowed.
+
+# Roblox
+roblox.com
+rbxcdn.com
+roblox.qq.com
+
+# Fortnite / Epic
+fortnite.com
+epicgames.com
+unrealengine.com
+easyantcheat.net
+
+# Supercell
+brawlstars.com
+supercell.com
+
+# Among Us
+innersloth.com
+among-us.net
+
+# Call of Duty
+callofduty.com
+codmobile.com
+
+# PUBG
+pubgmobile.com
+pubg.com
+
+# Free Fire
+ff.garena.com
+garena.com
+freefiremobile.com
+
+# Rockstar / GTA
+rockstargames.com
+socialclub.rockstargames.com
+
+# Social VR
+rec.net
+recroom.com
+vrchat.com
+vrchat.net
+
+# Minecraft Realms and major public Bedrock servers
+realms.minecraft.net
+pocket.realms.minecraft.net
+hivebedrock.network
+play.cubecraft.net
+mco.cubecraft.net
+mco.mineplex.com
+mco.lbsg.net
+play.galaxite.net
+play.nethergames.org
+play.inpvp.net
+mineville.org
