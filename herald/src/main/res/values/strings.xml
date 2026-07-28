@@ -22,6 +22,7 @@
 
     <string name="tabs_tray_title">Tabs</string>
     <string name="tabs_tray_new_tab">New tab</string>
+    <string name="tabs_tray_close_tab">Close tab</string>
     <string name="tabs_tray_close_all">Close all</string>
     <string name="tabs_tray_done">Done</string>
 

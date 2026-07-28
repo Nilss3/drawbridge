@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import app.drawbridge.herald.BrowserActivity
 import app.drawbridge.herald.R
@@ -14,6 +14,7 @@ import app.drawbridge.herald.browser.BrowserFragment
 import app.drawbridge.herald.ext.applySystemBarInsets
 import app.drawbridge.herald.ext.requireComponents
 import mozilla.components.browser.state.state.TabSessionState
+import mozilla.components.browser.tabstray.DefaultTabViewHolder
 import mozilla.components.browser.tabstray.TabsAdapter
 import mozilla.components.browser.tabstray.TabsTray
 import mozilla.components.browser.tabstray.TabsTrayStyling
@@ -80,6 +81,16 @@ class TabsTrayFragment : Fragment(), UserInteractionHandler {
 
         val adapter = TabsAdapter(
             thumbnailLoader = thumbnailLoader,
+            // Android Components' own row layout is a list item; this is the same
+            // holder against a card layout, which is what makes the grid a grid.
+            // DefaultTabViewHolder binds by id, so tab_grid_item.xml keeps them.
+            viewHolderProvider = { parent ->
+                DefaultTabViewHolder(
+                    LayoutInflater.from(parent.context)
+                        .inflate(R.layout.tab_grid_item, parent, false),
+                    thumbnailLoader,
+                )
+            },
             // Without this the rows keep the library's white card and bright blue
             // selection, whatever the rest of the app is doing.
             styling = TabsTrayStyling(
@@ -103,10 +114,17 @@ class TabsTrayFragment : Fragment(), UserInteractionHandler {
         )
 
         view.findViewById<RecyclerView>(R.id.tabsTray).apply {
-            layoutManager = LinearLayoutManager(requireContext())
+            layoutManager = GridLayoutManager(requireContext(), TAB_GRID_COLUMNS)
+            val edge = resources.getDimensionPixelSize(R.dimen.tab_grid_padding)
+            setPadding(edge, edge, edge, edge)
+            clipToPadding = false
             this.adapter = adapter
         }
 
         return adapter
+    }
+
+    private companion object {
+        const val TAB_GRID_COLUMNS = 2
     }
 }

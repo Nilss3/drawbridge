@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    One tab in the grid. The ids are Android Components' own, because
+    DefaultTabViewHolder binds by id — it needs all five, so the url text is
+    present but hidden, since the title and the thumbnail say enough at this size.
+
+    The holder paints the *root* with the tray styling, so the outer frame's
+    padding shows as a ring around the card: the theme colour normally, the
+    selection colour for the tab you are on.
+-->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/tab_grid_item_height"
+    android:padding="3dp">
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:cardBackgroundColor="@color/tab_item_background"
+        app:cardCornerRadius="10dp"
+        app:cardElevation="1dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:gravity="center_vertical"
+                android:paddingStart="10dp"
+                android:paddingEnd="4dp">
+
+                <ImageView
+                    android:id="@+id/mozac_browser_tabstray_icon"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:contentDescription="@null" />
+
+                <TextView
+                    android:id="@+id/mozac_browser_tabstray_title"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_weight="1"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:textColor="@color/tab_item_text"
+                    android:textSize="13sp" />
+
+                <androidx.appcompat.widget.AppCompatImageButton
+                    android:id="@+id/mozac_browser_tabstray_close"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="@string/tabs_tray_close_tab"
+                    android:padding="6dp"
+                    android:src="@drawable/mozac_ic_cross_24"
+                    app:tint="@color/tab_item_text" />
+            </LinearLayout>
+
+            <mozilla.components.browser.tabstray.thumbnail.TabThumbnailView
+                android:id="@+id/mozac_browser_tabstray_thumbnail"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:contentDescription="@null"
+                android:scaleType="centerCrop" />
+
+            <TextView
+                android:id="@+id/mozac_browser_tabstray_url"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone" />
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+</FrameLayout>

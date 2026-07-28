@@ -27,7 +27,9 @@ search engines work at all for the first time, with the offered list named by
 the policy (see
 [design-decisions](design-decisions.md#herald-dispatches-its-own-search-region));
 both apps have launcher icons; the block page has a drawbridge mark, sits at the
-top of the screen, and carries the reworded message from policy 9.
+top of the screen, and carries the reworded message from policy 9; there is a
+reader view; the tab tray is a thumbnail grid; and the ornamental tracking
+protection shield is gone from the toolbar.
 
 Policy 9 is signed in `dist/` but **not pushed** — pushing it publishes it to
 every device, so it should go out with the release rather than before it.

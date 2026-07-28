@@ -18,6 +18,7 @@ import app.drawbridge.herald.ext.applySystemBarInsets
 import app.drawbridge.herald.ext.requireComponents
 import app.drawbridge.herald.tabs.TabsTrayFragment
 import mozilla.components.browser.state.selector.selectedTab
+import mozilla.components.browser.thumbnails.BrowserThumbnails
 import mozilla.components.browser.toolbar.BrowserToolbar
 import mozilla.components.concept.engine.EngineView
 import mozilla.components.feature.app.links.AppLinksFeature
@@ -57,6 +58,7 @@ class BrowserFragment :
     private val fullScreenFeature = ViewBoundFeatureWrapper<FullScreenFeature>()
     private val findInPageIntegration = ViewBoundFeatureWrapper<FindInPageIntegration>()
     private val readerViewIntegration = ViewBoundFeatureWrapper<ReaderViewIntegration>()
+    private val thumbnailsFeature = ViewBoundFeatureWrapper<BrowserThumbnails>()
     private val sitePermissionsFeature = ViewBoundFeatureWrapper<SitePermissionsFeature>()
     private val swipeRefreshFeature = ViewBoundFeatureWrapper<SwipeRefreshFeature>()
     private val windowFeature = ViewBoundFeatureWrapper<WindowFeature>()
@@ -222,6 +224,15 @@ class BrowserFragment :
 
         windowFeature.set(
             feature = WindowFeature(components.core.store, components.useCases.tabsUseCases),
+            owner = this,
+            view = view,
+        )
+
+        // Captures the screenshot the tab grid shows. ThumbnailsMiddleware only
+        // stores them; without this nothing ever takes one and every card in the
+        // grid is blank.
+        thumbnailsFeature.set(
+            feature = BrowserThumbnails(requireContext(), engineView, components.core.store),
             owner = this,
             view = view,
         )

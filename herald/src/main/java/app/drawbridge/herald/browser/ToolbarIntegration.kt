@@ -83,11 +83,13 @@ class ToolbarIntegration(
         val menuColor = ContextCompat.getColor(context, R.color.menu_icon)
 
         toolbar.display.apply {
-            indicators = listOf(
-                DisplayToolbar.Indicators.SECURITY,
-                DisplayToolbar.Indicators.TRACKING_PROTECTION,
-            )
-            displayIndicatorSeparator = true
+            // Only the security indicator, which actually varies: https, plain
+            // http, or the data: URL the block page loads from. The tracking
+            // protection shield is gone — the policy is on for every page and
+            // cannot be changed, and tapping it opened nothing, so it was a fixed
+            // ornament taking up the left of the toolbar.
+            indicators = listOf(DisplayToolbar.Indicators.SECURITY)
+            displayIndicatorSeparator = false
             menuController = this@ToolbarIntegration.menuController
             hint = context.getString(R.string.toolbar_hint)
             // Every foreground in the toolbar is set from the chrome palette.
