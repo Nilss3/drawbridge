@@ -1,7 +1,7 @@
 {
-  "version": 8,
+  "version": 9,
   "issued_at": "2026-07-28T00:00:00Z",
-  "comment": "Rewords the browser's block page message. No change to what is blocked, and required_apps still pins the v0.1.2 herald builds.",
+  "comment": "Names the search engines herald offers. DuckDuckGo stays the default because the DNS layer can force its safe search; Yandex and Baidu are deliberately absent. required_apps still pins the v0.1.2 herald builds.",
   "dns": {
     "upstreams": [
       "94.140.14.15",
@@ -113,6 +113,16 @@
   "exempt_packages": [],
   "browser": {
     "default_search_engine": "duckduckgo",
+    "search_engines": [
+      "DuckDuckGo",
+      "Google",
+      "Bing",
+      "Brave Search",
+      "Qwant",
+      "Ecosia",
+      "Startpage",
+      "Kagi"
+    ],
     "blocked_page_message": "This toxic content is denied access to your device, your life, and your soul.",
     "blocked_url_patterns": [],
     "blocked_hosts": []

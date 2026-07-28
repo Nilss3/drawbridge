@@ -174,6 +174,25 @@ loads asynchronously, so there is nothing to select at startup) and re-applied o
 policy changes, until someone picks an engine in settings — after which the
 choice is theirs and the policy stops overriding it.
 
+## The policy names the engines; the user picks among them
+
+`browser.search_engines` decides which engines exist, and herald hides everything
+else — including whatever the phone's locale brought in. Engines Mozilla does not
+bundle (Brave, Startpage, Kagi) or bundles only for some locales (Ecosia, Qwant)
+are added by herald as custom engines with their own URL templates, so the list
+does not change when the phone travels.
+
+There is deliberately no in-app "add a search engine" button. It would be a way
+to reach an unfiltered engine from inside the browser, which is the same reason
+there is no `about:config` and no secure-DNS toggle.
+
+The list is a filtering decision rather than a preference: safe search is forced
+by rewriting the engine's hostname in `DnsFilter`, and only Google, Bing and
+DuckDuckGo publish a hostname to rewrite to. Everything else serves image results
+from its own CDN, which no domain blocklist covers — so DuckDuckGo is the
+default, and Yandex and Baidu are absent rather than merely unselected. See
+[policy.md](policy.md#search-engines-are-a-filtering-decision).
+
 ## Blocklists are stored as hashes, not strings
 
 A merged adult + gambling + ad list is a few hundred thousand domains. As a

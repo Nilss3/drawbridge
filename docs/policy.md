@@ -50,6 +50,25 @@ hold, which is what makes replaying an old, permissive policy fail.
 | `exempt_packages` | Escape valve for a device-specific app that would otherwise be caught. |
 | `required_apps` | APKs drawbridge installs if missing — herald above all. Pinned by SHA-256, and filtered by `abi` so one policy serves all of herald's per-ABI splits. |
 | `browser.blocked_url_patterns` | Regexes matched against the full URL — path-level rules DNS cannot express. herald only. |
+| `browser.default_search_engine` | Selected until someone picks another in herald's settings, after which the choice is theirs. Matched loosely, so `duckduckgo` finds `ddg`. |
+| `browser.search_engines` | The engines herald offers at all. Anything not named is hidden, including whatever the phone's locale would otherwise add; anything named that Mozilla's catalogue lacks is added by herald. |
+
+### Search engines are a filtering decision
+
+Safe search is forced by rewriting the engine's hostname at the DNS layer, and
+only **Google, Bing and DuckDuckGo** publish a hostname to rewrite to. Every
+other engine serves image results from its own CDN, which no domain blocklist
+covers — its safe-search setting is a cookie the user controls, not something
+this system can enforce.
+
+That is why the default is DuckDuckGo, why the shipped list is Google, Bing,
+DuckDuckGo, Brave Search, Qwant, Ecosia, Startpage and Kagi, and why **Yandex and
+Baidu are absent rather than merely unselected**. Narrowing `search_engines` to
+the first three is the strict setting; adding an engine to that list is a
+decision to trust its own safe search.
+
+Kagi additionally needs a paid, signed-in account, so it returns nothing useful
+until someone logs in.
 
 ### Pinned and unpinned lists
 

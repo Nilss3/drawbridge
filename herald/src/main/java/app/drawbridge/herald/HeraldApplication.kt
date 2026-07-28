@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.res.Configuration
 import app.drawbridge.herald.components.Components
 import app.drawbridge.herald.ext.preferredColorScheme
+import app.drawbridge.herald.search.SearchEngineCatalogue
 import app.drawbridge.herald.search.SearchEngineSelection
 import app.drawbridge.policy.PolicyManager
 import app.drawbridge.policy.work.PolicyWorker
@@ -77,6 +78,7 @@ class HeraldApplication : Application() {
             .first()
 
         policy.policy.collect { current ->
+            SearchEngineCatalogue.apply(components, current.browser.searchEngines)
             SearchEngineSelection.applyPolicyDefault(
                 this,
                 components,

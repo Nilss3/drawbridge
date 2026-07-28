@@ -133,9 +133,34 @@ data class DnsPolicy(
 
 @Serializable
 data class BrowserPolicy(
-    /** Must match one of herald's bundled search engine ids. */
+    /**
+     * The engine selected until someone picks another in herald's settings.
+     * Matched loosely against engine ids and names, so "duckduckgo" finds `ddg`.
+     */
     @SerialName("default_search_engine")
     val defaultSearchEngine: String = "duckduckgo",
+
+    /**
+     * The engines herald offers at all. Everything else — including whatever the
+     * phone's locale would otherwise bring in — is hidden.
+     *
+     * This is a filtering decision: safe search is forced by rewriting the
+     * engine's hostname at the DNS layer, and only Google, Bing and DuckDuckGo
+     * publish a hostname to rewrite to. The rest serve image results from their
+     * own CDN, which no domain blocklist covers, which is why Yandex and Baidu
+     * are absent rather than merely unselected.
+     */
+    @SerialName("search_engines")
+    val searchEngines: List<String> = listOf(
+        "DuckDuckGo",
+        "Google",
+        "Bing",
+        "Brave Search",
+        "Qwant",
+        "Ecosia",
+        "Startpage",
+        "Kagi",
+    ),
 
     /** Shown on herald's block page. */
     @SerialName("blocked_page_message")
