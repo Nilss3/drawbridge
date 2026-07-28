@@ -162,10 +162,20 @@ data class BrowserPolicy(
         "Kagi",
     ),
 
-    /** Shown on herald's block page. */
+    /**
+     * The heading on herald's block page, and the title of the tab showing it.
+     *
+     * Policy rather than a string resource so the wording can be changed without
+     * shipping a new browser, the same as [blockedPageMessage]. Blank falls back
+     * to herald's own string.
+     */
+    @SerialName("blocked_page_title")
+    val blockedPageTitle: String = "Drawbridge opened",
+
+    /** The line under the heading on herald's block page. */
     @SerialName("blocked_page_message")
     val blockedPageMessage: String =
-        "This toxic content is denied access to your device, your life, and your soul.",
+        "This website was denied access to your device, life and soul.",
 
     /**
      * Finer-grained than DNS can be: regular expressions matched against the

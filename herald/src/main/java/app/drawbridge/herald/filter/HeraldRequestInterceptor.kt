@@ -8,8 +8,11 @@ import mozilla.components.concept.engine.EngineSession
 import mozilla.components.concept.engine.request.RequestInterceptor
 
 /**
- * Blocks document loads — top-level pages and iframes — against the shared
- * policy, and replaces them with [BlockedPage].
+ * Blocks document loads against the shared policy.
+ *
+ * A blocked top-level page is replaced with [BlockedPage]; a blocked iframe is
+ * denied outright, because a block page shown for a frame would replace the page
+ * containing it.
  *
  * Subresources (images, scripts, XHR) are not routed through this callback; they
  * are handled by the bundled web extension in [BlocklistExtension]. Together the
@@ -36,6 +39,13 @@ class HeraldRequestInterceptor(private val context: Context) : RequestIntercepto
         }
 
         if (!policy.isUrlBlocked(uri)) return null
+
+        // A blocked iframe must not take the page with it. Android Components
+        // loads InterceptionResponse.Content into the *session*, not the frame
+        // that asked for it, so returning a block page here replaced the whole
+        // tab — one blocked tracker frame, and an article the filter was happy
+        // with disappeared. Deny cancels just that frame and leaves the page.
+        if (isSubframeRequest) return RequestInterceptor.InterceptionResponse.Deny
 
         return RequestInterceptor.InterceptionResponse.Content(
             data = BlockedPage.create(context, uri),

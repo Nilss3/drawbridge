@@ -22,7 +22,9 @@ object BlockedPage {
      * it twice and render the page as a wall of base64 text.
      */
     fun create(context: Context, url: String): String {
-        val message = HeraldPolicy.manager(context).policy.value.browser.blockedPageMessage
+        val browser = HeraldPolicy.manager(context).policy.value.browser
+        val title = browser.blockedPageTitle.ifBlank { context.getString(R.string.blocked_page_heading) }
+        val message = browser.blockedPageMessage
         val host = app.drawbridge.policy.ContentFilter.hostOf(url) ?: url
 
         return """
@@ -31,7 +33,7 @@ object BlockedPage {
             <head>
               <meta charset="utf-8">
               <meta name="viewport" content="width=device-width, initial-scale=1">
-              <title>${context.getString(R.string.blocked_page_title)}</title>
+              <title>${title.escapeHtml()}</title>
               <style>
                 :root { color-scheme: light dark; }
                 body {
@@ -76,7 +78,7 @@ object BlockedPage {
                     <path d="M2 20.6q1.6-1.4 3.2 0t3.2 0 3.2 0 3.2 0 3.2 0"/>
                   </svg>
                 </div>
-                <h1>${context.getString(R.string.blocked_page_heading)}</h1>
+                <h1>${title.escapeHtml()}</h1>
                 <p>${message.escapeHtml()}</p>
                 <span class="host">${host.escapeHtml()}</span>
               </div>

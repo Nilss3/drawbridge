@@ -206,6 +206,23 @@ The menu entry only appears where Gecko reports the page as readerable, and the
 font and colour controls only once it is on, so neither shows on a page that has
 no article in it.
 
+## A blocked iframe is denied, not given a block page
+
+`RequestInterceptor.onLoadRequest` fires for every document load, top-level and
+iframe alike, but Android Components loads `InterceptionResponse.Content` into
+the *session* rather than the frame that asked for it. Returning a block page for
+a blocked iframe therefore replaced the whole tab: a page the filter was happy
+with vanished because one tracker frame on it was not, and the block page named
+that tracker rather than the site the reader had asked for. On an ad-supported
+site that is most pages.
+
+Subframes get `InterceptionResponse.Deny` instead, which cancels that frame and
+leaves the page alone. Only top-level documents are worth a block page, because
+only there is the blocked host the thing the reader asked for.
+
+A subframe that merely *fails* — a DNS-filtered tracker on a managed device —
+does not take the page down; that path is frame-scoped already.
+
 ## Blocklists are stored as hashes, not strings
 
 A merged adult + gambling + ad list is a few hundred thousand domains. As a

@@ -41,7 +41,6 @@ import mozilla.components.support.base.feature.UserInteractionHandler
 import mozilla.components.support.base.feature.ViewBoundFeatureWrapper
 import mozilla.components.support.ktx.android.view.enterImmersiveMode
 import mozilla.components.support.ktx.android.view.exitImmersiveMode
-import mozilla.components.ui.widgets.behavior.EngineViewClippingBehavior
 
 /** The browsing screen: toolbar, engine view and the features attached to them. */
 class BrowserFragment :
@@ -286,15 +285,12 @@ class BrowserFragment :
             view = view,
         )
 
-        (swipeRefresh.layoutParams as? CoordinatorLayout.LayoutParams)?.apply {
-            behavior = EngineViewClippingBehavior(
-                context = requireContext(),
-                attrs = null,
-                engineViewParent = swipeRefresh,
-                topToolbarHeight = resources.getDimensionPixelSize(R.dimen.browser_toolbar_height),
-                bottomToolbarHeight = 0,
-            )
-        }
+        // No EngineViewClippingBehavior: that exists to slide a dynamic toolbar
+        // out of the way, and herald's toolbar is fixed. It positions the engine
+        // view itself, ignoring the root's padding, which pushed the bottom of
+        // every page under the navigation bar. A plain top margin leaves the
+        // engine view inside the padded area, where the insets already put it.
+        setEngineViewTopMargin(resources.getDimensionPixelSize(R.dimen.browser_toolbar_height))
 
         swipeRefreshFeature.set(
             feature = SwipeRefreshFeature(
@@ -322,14 +318,20 @@ class BrowserFragment :
         if (enabled) {
             activity?.enterImmersiveMode()
             toolbar.visibility = View.GONE
-            engineView.setDynamicToolbarMaxHeight(0)
+            // The system bars are hidden, so their insets go to zero on their
+            // own; the toolbar's own space has to be given back by hand.
+            setEngineViewTopMargin(0)
         } else {
             activity?.exitImmersiveMode()
             toolbar.visibility = View.VISIBLE
-            engineView.setDynamicToolbarMaxHeight(
-                resources.getDimensionPixelSize(R.dimen.browser_toolbar_height),
-            )
+            setEngineViewTopMargin(resources.getDimensionPixelSize(R.dimen.browser_toolbar_height))
         }
+    }
+
+    private fun setEngineViewTopMargin(margin: Int) {
+        val params = swipeRefresh.layoutParams as? CoordinatorLayout.LayoutParams ?: return
+        params.topMargin = margin
+        swipeRefresh.layoutParams = params
     }
 
     private fun viewportFitChanged(viewportFit: Int) {
