@@ -1,4 +1,4 @@
-# Handoff — state as of 2026-07-28
+# Handoff — state as of 2026-07-29
 
 Everything about *how the system works* lives in [README](../README.md),
 [design-decisions](design-decisions.md), [policy](policy.md),
@@ -13,14 +13,54 @@ machine, what was and was not verified, and what to do next.
 | | |
 |---|---|
 | Repo | https://github.com/Nilss3/drawbridge — public, `main`, 15 commits |
-| Release | [v0.1.4](https://github.com/Nilss3/drawbridge/releases/tag/v0.1.4), 6 assets. Release URLs use `/releases/latest/`, so the QR and policy survive future releases unchanged. |
-| Live policy | version 11, at `dist/policy.signed.json` on `main` |
-| Apps | drawbridge `versionCode 5` / `0.1.4`; herald `versionCode 4` / `0.1.4` |
-| Tests | 162 unit tests, lint clean |
+| Release | v0.1.5 is **built and staged in `dist/release/`, not published**. The newest published release is still [v0.1.4](https://github.com/Nilss3/drawbridge/releases/tag/v0.1.4). Release URLs use `/releases/latest/`, so the QR and policy survive future releases unchanged. |
+| Live policy | version 13, signed at `dist/policy.signed.json` — **not yet pushed**, so devices still see 11 |
+| Apps | drawbridge `versionCode 6` / `0.1.5`; herald `versionCode 5` / `0.1.5` |
+| Tests | 200 unit tests, lint clean |
 
 ### Known gaps in the current release
 
-Nothing is stale: v0.1.4 carries everything on `main`, and policy 11 is live.
+**v0.1.5 is built but not published.** Everything below is committed and the
+APKs are staged in `dist/release/` with a matching `SHA256SUMS`, signed with the
+keystore the provisioning QR pins. What has *not* happened is the last two
+commands of the release procedure:
+
+```bash
+git push && git push --tags
+gh release create v0.1.5 dist/release/*.apk dist/release/SHA256SUMS
+```
+
+Until both run, `raw.githubusercontent.com/.../main/dist/policy.signed.json`
+still serves policy 11 and `/releases/latest/` still resolves to v0.1.4, so a
+provisioned device sees no change at all. Push the commits and the release
+together — a pushed policy 13 without a published v0.1.5 would point
+`required_apps` at APKs that do not exist yet.
+
+Build-order note, as designed: herald bundles policy **12** and drawbridge
+bundles **13**. `required_apps` pins herald by checksum and herald embeds the
+policy, so the two are circular; the documented resolution is that herald ships
+one version behind. The only consequence here is that herald's bundled copy
+names the pre-LinkedIn `social.txt` hash, which is never used — the policy is
+fetched before any blocklist is.
+
+**The APK grew far less than expected**: arm64 went 218 MiB → 222 MiB, not the
+~16 MiB uBlock Origin takes unpacked. Its assets are almost all text and
+compress into the APK.
+
+### herald changes in v0.1.5
+
+- **Reader view actually works.** `ReaderViewMiddleware` was missing from the
+  store, which is the only thing that sets the flags `ReaderViewFeature` needs
+  to register its content-script ports and to re-check readability after a
+  navigation. See design-decisions; it fails silently, so it is worth knowing.
+- **uBlock Origin is bundled** and installed as a built-in extension, with its
+  popup on the toolbar and its dashboard in the menu.
+- **Bookmarks** got folders, search, editing, and import/export of a
+  `bookmarks.html` file.
+- **History and saved passwords** got a search field.
+- **A bookmarks new tab page**, off by default, behind a setting.
+- **LinkedIn** joins the social list (`linkedin.com`, `licdn.com`, `lnkd.in`),
+  and policy 13 carries the new list hash.
 
 Three things have still never run:
 
@@ -76,7 +116,18 @@ brew install --cask android-commandlinetools
   `libxul.so`; measurement showed the library is already stripped and nothing
   changed. Safe to delete. See design-decisions.md.
 - **Emulator** `Medium_Phone_API_36.0` (arm64, Play Store image) was used for all
-  device testing.
+  device testing. It is the *provisioned* one: drawbridge is device owner on it
+  and the installed herald is a release build, so a debug herald cannot be
+  installed over it.
+- **A second AVD, `herald_test`**, was added for browser work: same system image,
+  4 cores and 4 GB rather than 1 and 2 GB, no device owner. Created by hand in
+  `~/.android/avd/` because the Homebrew `avdmanager` has its own SDK root and
+  cannot see the system images under `~/Library/Android/sdk`. Delete it if the
+  disk is wanted back; nothing depends on it.
+- **Gradle may not find JDK 21 from a non-interactive shell.** The toolchain is
+  pinned to 21 and the only JDK on the `PATH` is 24, so
+  `JAVA_HOME=/opt/homebrew/opt/openjdk@21/libexec/openjdk.jdk/Contents/Home`
+  may be needed.
 
 ---
 
@@ -95,7 +146,33 @@ Verified on the API 36 emulator, end to end:
   downloaded the 217 MB signed herald release, verified its SHA-256 and
   installed it silently in ~60 seconds
 
+Verified on the `herald_test` emulator (2026-07-29), for the browser work:
+
+- **Reader view on the reported page** — the De Morgen article that Firefox
+  offers reader mode for and herald did not. Past the consent gate, the menu
+  offers it and it renders. Not offered on `about:blank`, as it should not be.
+- **uBlock Origin** installs (`Installed uBlock Origin (1.72.2)`), shows its
+  button and blocked-request counter on the toolbar, its popup opens as a sheet
+  and its dashboard opens as a tab.
+- **Bookmarks** — folder creation, moving a bookmark between folders, folder
+  navigation and back, search, and "Add bookmark" turning into "Edit bookmark".
+- **Export** wrote a valid `bookmarks.html` with the folder nesting intact;
+  **import** of a Firefox-shaped file recreated the tree, rejected the
+  `javascript:` and `file:` entries, and landed in its own dated folder.
+- **New tab page** off by default, showing the bookmark root when switched on,
+  with folders opening in place and back stepping out of them.
+- **History search** finds a page by title.
+
 Not verified, and worth doing:
+
+- **uBlock Origin on a managed device.** It was only exercised on the unmanaged
+  test emulator, where nothing filters DNS. Its update hosts were checked
+  against the live blocklists and none were blocked, and policy 12 allowlists
+  them so an upstream list cannot start blocking them later — but no managed
+  device has actually been watched updating a filter list.
+- **The APK size increase in practice.** Each ABI split grew by roughly 16 MB.
+  The auto-install path downloads the whole APK, and has only ever been timed at
+  the old size.
 
 - **QR provisioning itself.** The payload decodes correctly and every URL it
   references returns 200, but no device has been provisioned by scanning it. The
@@ -131,6 +208,11 @@ Each of these looks like a bug and is not, or bites silently:
   `pm list packages`; use `pm list packages -a` to see them.
 - **Testing removal wipes the PIN**, so the next provisioning cycle starts from
   setup again.
+- **aapt drops asset directories starting with an underscore.** Its default
+  ignore list contains `<dir>_*`. This cost an afternoon when uBlock Origin's
+  `_locales/` vanished from the APK and Gecko reported only
+  `Extension is invalid`. `herald/build.gradle.kts` overrides the pattern list;
+  do not "tidy" it away.
 
 ---
 
@@ -153,13 +235,24 @@ Carried over from the original design notes and never answered:
 
 ## Reasonable next steps
 
-1. **Provision a real phone by QR** — the one major untested path, and the whole
+1. **Publish v0.1.5** — push the commits and tag, then `gh release create`. The
+   artefacts are built and staged; nothing else is needed. Do not flag it as a
+   pre-release or leave it a draft.
+2. **Provision a real phone by QR** — the one major untested path, and the whole
    point of the release.
-2. **Back up both keys.**
-3. Then, in rough order of value:
-   - Localise the app strings to Dutch and French.
+3. **Back up both keys.**
+4. Then, in rough order of value:
+   - Decide whether the APK download path deserves the same allowlist treatment
+     policy 12 gave the list-update paths. `required_apps` points at
+     `github.com`, which redirects to a `*.githubusercontent.com` asset host
+     that has not been pinned down; a blocked redirect target would stop
+     auto-install silently, the same way a blocked list URL would have stopped
+     filter updates.
+   - Localise the app strings to Dutch and French. There are ~40 new strings
+     from the bookmark work.
    - Consider dropping `x86_64` from future releases (emulator-only, a third of
-     the upload) — but the policy references it, so remove it there too.
+     the upload) — but the policy references it, so remove it there too. It is
+     worth more now that each split is ~16 MB larger.
    - Revisit whether `armeabi-v7a` is worth keeping.
 
 ---

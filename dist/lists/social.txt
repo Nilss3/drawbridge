@@ -66,6 +66,11 @@ discordapp.com
 discordapp.net
 discordcdn.com
 
+# LinkedIn
+linkedin.com
+licdn.com
+lnkd.in
+
 # Image and short-form feeds
 pinterest.com
 pinimg.com

@@ -1,7 +1,7 @@
 {
-  "version": 12,
+  "version": 13,
   "issued_at": "2026-07-29T00:00:00Z",
-  "comment": "Allows the hosts uBlock Origin fetches its default filter lists from, and the two drawbridge fetches its own policy and blocklists from, so an upstream list cannot block either into silence. Exact hostnames only: cdn.jsdelivr.net is deliberately absent, being a general-purpose CDN and only ever a mirror. No change to what is blocked.",
+  "comment": "Adds LinkedIn to the social list and repoints required_apps at herald 0.1.5, which bundles uBlock Origin and fixes reader view. Carries policy 12's allowlist for the hosts the filters update from.",
   "dns": {
     "upstreams": [
       "94.140.14.15",
@@ -43,7 +43,7 @@
       "url": "https://raw.githubusercontent.com/Nilss3/drawbridge/main/dist/lists/social.txt",
       "format": "domains",
       "category": "social",
-      "sha256": "d8c41eacb713a93138e863eefcfd68fdee800c77c9b6cbb48edc7eb096d4dbd0"
+      "sha256": "f3f2a0de988b5490280acf08dad9b6d22ca16c7220fb35ff658a2bbe3944bfa6"
     },
     {
       "id": "ai-companions",
@@ -141,23 +141,23 @@
   "required_apps": [
     {
       "package_name": "app.drawbridge.herald",
-      "version_code": 4,
+      "version_code": 5,
       "url": "https://github.com/Nilss3/drawbridge/releases/latest/download/herald-arm64-v8a-release.apk",
-      "sha256": "e7e786260040673a49e54f5be11f3eb8bdccc3041c34e803a5c9744992bcd4ae",
+      "sha256": "0d0ffb4c12a168b3a092baa195384951768c013e3d4acd16abdd827cd6909024",
       "abi": "arm64-v8a"
     },
     {
       "package_name": "app.drawbridge.herald",
-      "version_code": 4,
+      "version_code": 5,
       "url": "https://github.com/Nilss3/drawbridge/releases/latest/download/herald-armeabi-v7a-release.apk",
-      "sha256": "20884f8a9ff6a53907cfc99529d38e668ba32533f3548c66d0b72d58f62c28f6",
+      "sha256": "10a7911b595d522282651dcffcac9dd834bff790c39afb1c35e900063d2c26c8",
       "abi": "armeabi-v7a"
     },
     {
       "package_name": "app.drawbridge.herald",
-      "version_code": 4,
+      "version_code": 5,
       "url": "https://github.com/Nilss3/drawbridge/releases/latest/download/herald-x86_64-release.apk",
-      "sha256": "a372bbe065d9d0c6360bcbdc7d0e2aa854c8c504b2bf144be2c10fefcfe6181e",
+      "sha256": "9fd601cf879596e93fbd898b961259ec7efb3c596dc9950bebc11d6004fb0cba",
       "abi": "x86_64"
     }
   ]
