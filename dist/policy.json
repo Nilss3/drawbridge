@@ -1,7 +1,7 @@
 {
-  "version": 11,
-  "issued_at": "2026-07-28T00:00:00Z",
-  "comment": "Points required_apps at herald 0.1.4, which stops a blocked iframe replacing the page around it. Adds blocked_page_title and rewords the block page. No change to what is blocked.",
+  "version": 12,
+  "issued_at": "2026-07-29T00:00:00Z",
+  "comment": "Allows the hosts uBlock Origin fetches its default filter lists from, and the two drawbridge fetches its own policy and blocklists from, so an upstream list cannot block either into silence. Exact hostnames only: cdn.jsdelivr.net is deliberately absent, being a general-purpose CDN and only ever a mirror. No change to what is blocked.",
   "dns": {
     "upstreams": [
       "94.140.14.15",
@@ -61,7 +61,17 @@
     }
   ],
   "blocked_domains": [],
-  "allowed_domains": [],
+  "allowed_domains": [
+    "ublockorigin.github.io",
+    "pgl.yoyo.org",
+    "publicsuffix.org",
+    "malware-filter.gitlab.io",
+    "ublockorigin.pages.dev",
+    "malware-filter.pages.dev",
+    "curbengh.github.io",
+    "raw.githubusercontent.com",
+    "blocklistproject.github.io"
+  ],
   "blocked_packages": [
     "com.facebook.katana",
     "com.facebook.lite",

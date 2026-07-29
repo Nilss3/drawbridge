@@ -44,7 +44,7 @@ hold, which is what makes replaying an old, permissive policy fail.
 | `dns.upstreams` | Plain-DNS fallback. Bootstraps the encrypted upstream's hostname and takes over if it is unreachable — keep it a *filtering* resolver so the failure mode is a narrower filter, not an open one. |
 | `blocklists` | Domain lists downloaded and compiled on device. `format` is `hosts` or `domains`; Adblock-style `\|\|domain^` lines are tolerated in either. |
 | `blocked_domains` | Extra domains on top of the lists. Suffix matching: `example.com` covers `www.example.com`. |
-| `allowed_domains` | Wins over everything else. Use it to carve an exception out of a bulk list. |
+| `allowed_domains` | Wins over everything else, in the DNS filter and in herald alike. Use it to carve an exception out of a bulk list — and see the note below, because it is also what keeps the filter able to update itself. |
 | `blocked_packages` | Apps drawbridge removes on sight. |
 | `allowed_browser_package` | The one browser allowed to exist. Every other browser is removed or hidden. |
 | `exempt_packages` | Escape valve for a device-specific app that would otherwise be caught. |
@@ -52,6 +52,37 @@ hold, which is what makes replaying an old, permissive policy fail.
 | `browser.blocked_url_patterns` | Regexes matched against the full URL — path-level rules DNS cannot express. herald only. |
 | `browser.default_search_engine` | Selected until someone picks another in herald's settings, after which the choice is theirs. Matched loosely, so `duckduckgo` finds `ddg`. |
 | `browser.search_engines` | The engines herald offers at all. Anything not named is hidden, including whatever the phone's locale would otherwise add; anything named that Mozilla's catalogue lacks is added by herald. |
+
+### A filter that blocks its own updates stops being a filter
+
+The blocklists are third-party and change daily, and nothing stops one of them
+adding a host the *filter itself* needs. If that happens there is no error
+anywhere: uBlock Origin keeps working on whatever lists shipped in the APK,
+drawbridge keeps enforcing whatever policy it last fetched, and both quietly
+stop getting newer ones.
+
+`allowed_domains` therefore carries the update paths, and they are worth
+recognising as load-bearing rather than as ordinary exceptions:
+
+| Host | Needed by |
+|---|---|
+| `raw.githubusercontent.com` | the signed policy, the curated lists, hagezi's lists |
+| `blocklistproject.github.io` | the adult and gambling lists |
+| `ublockorigin.github.io`, `ublockorigin.pages.dev` | uBO's own filter lists |
+| `pgl.yoyo.org` | Peter Lowe's list, enabled in uBO by default |
+| `publicsuffix.org` | uBO's public suffix list |
+| `malware-filter.gitlab.io`, `malware-filter.pages.dev`, `curbengh.github.io` | uBO's URLhaus list |
+
+They are exact hostnames, deliberately. `allowed_domains` matches suffixes, so
+an entry for `pages.dev` would exempt every site anyone can host on Cloudflare
+Pages. For the same reason `cdn.jsdelivr.net` is *not* on the list: it is a
+general-purpose CDN that will serve any file in any npm package or GitHub repo,
+and for every list uBO enables by default it is only ever a mirror — dropping it
+costs a fallback, not an update.
+
+If you enable a filter list in uBO's dashboard that is off by default —
+EasyList's own servers, AdGuard, and so on — add its host here too, or it will
+be the one list that never updates.
 
 ## Profiles: named variants of one policy
 
