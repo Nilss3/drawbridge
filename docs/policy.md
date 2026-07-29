@@ -233,12 +233,21 @@ otherwise identical binary.
 
 ```bash
 ./gradlew :herald:assembleRelease            # 1. herald first — only if it changed
+tools/stage-release.sh                       #    names the APKs and checks the pins
 # 2. hash the APKs into required_apps in dist/policy.json, bump version
 python3 tools/policytool.py sign --key-id drawbridge-2026-07
 cp dist/policy.signed.json policy/src/main/assets/drawbridge/default-policy.json
 ./gradlew :dpc:assembleRelease               # 3. drawbridge last, carrying that policy
-gh release create vX.Y.Z dist/release/*.apk dist/release/SHA256SUMS
+tools/stage-release.sh                       #    again, now that dpc exists
+gh release create vX.Y.Z dist/release/*.apk dist/release/SHA256SUMS \
+    dist/release/provisioning-qr.json
 ```
+
+`assembleRelease` builds **both editions** — six herald APKs, since the mono
+flavour was added. `tools/stage-release.sh` is what keeps the standard edition's
+published filenames stable, because `required_apps` pins them by URL and a
+flavour dimension would otherwise rename them; it fails loudly if any APK the
+signed policy names is missing or stale. Run it after each build step.
 
 CI still runs tests and lint on every push, which is what it is good for.
 

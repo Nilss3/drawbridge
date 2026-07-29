@@ -45,6 +45,30 @@ fetched before any blocklist is.
 ~16 MiB uBlock Origin takes unpacked. Its assets are almost all text and
 compress into the APK.
 
+### herald mono, unreleased on `main`
+
+A second edition of the browser for single-tasking: no tabs, everything in black
+and white, and a deliberate two-second pause before a page appears. Same
+filtering, same uBlock Origin, same bookmarks and history — it is a Gradle
+product flavour of `herald`, package `app.drawbridge.heraldmono`.
+
+Not in any release, and **not yet installable on a managed device**: the policy's
+`allowed_browser_package` names `app.drawbridge.herald`, so drawbridge would
+remove mono as a rogue browser within seconds of it appearing. Running it on a
+managed phone means a policy that names mono instead — the two are alternatives,
+never companions.
+
+Before it ships, three things need deciding or doing:
+
+- **Whether to publish it at all**, and if so whether every release carries both
+  editions. A release goes from 3 herald APKs to 6, roughly 650 MiB to 1.1 GiB.
+  GitHub imposes no limit that matters — the only hard one is 2 GiB per file,
+  and the largest asset is 242 MiB — so this is upload time, not quota.
+- **`required_apps` entries for mono**, if a device is ever to auto-install it.
+- **TextureView performance on real hardware.** Mono renders through a
+  TextureView rather than the default SurfaceView, which copies a frame more.
+  It looked fine on the emulator, which proves nothing about frame rates.
+
 ### herald changes in v0.1.5
 
 - **Reader view actually works.** `ReaderViewMiddleware` was missing from the
@@ -162,8 +186,22 @@ Verified on the `herald_test` emulator (2026-07-29), for the browser work:
   with folders opening in place and back stepping out of them.
 - **History search** finds a page by title.
 
+Verified on the `herald_test` emulator for herald mono:
+
+- **Greyscale** on a page and on playing video, with the chrome drained too;
+  "show this page in colour" restores it and navigating away takes it back.
+- **No tabs**: the counter and tray are gone, `target="_blank"` and both forms
+  of `window.open` load in the current page with working back history, and the
+  persisted session holds exactly one tab afterwards.
+- **The two-second pause**, naming the destination while it holds.
+- **The standard edition is unchanged** — colour, tab counter, no pause — which
+  is the regression that mattered most.
+
 Not verified, and worth doing:
 
+- **herald mono on real hardware**, especially whether the TextureView backend
+  costs frame rate on a real phone. Everything above is an emulator, where
+  rendering performance means nothing.
 - **uBlock Origin on a managed device.** It was only exercised on the unmanaged
   test emulator, where nothing filters DNS. Its update hosts were checked
   against the live blocklists and none were blocked, and policy 12 allowlists

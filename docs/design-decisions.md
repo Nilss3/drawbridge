@@ -337,6 +337,100 @@ It is off by default. The setting exists because a curated bookmark list is the
 right home page for the device this is built for, and a blank page is the right
 one for a browser that is only closing the browser gap on someone else's phone.
 
+## herald mono is a flavour, not a fork
+
+Mono is the same browser minus three things, so it shares one source tree and
+one Gradle module. What differs is named in `Edition` and switched on a
+`BuildConfig` flag, which R8 resolves at compile time — each edition's release
+build contains only its own branch.
+
+It sets `applicationId` outright. The ban on `applicationIdSuffix` still holds
+and is a different thing: a suffix makes a *variant of the same app* that Device
+Owner and the policy do not recognise, which is what got a `.debug` herald
+uninstalled seconds after provisioning. A flavour with its own id is a
+deliberately separate app. A managed device still runs exactly one browser —
+whichever `allowed_browser_package` names — because drawbridge removes every
+other one, so herald and mono are alternatives rather than companions.
+
+The cost is packaging: a release now builds six herald APKs instead of three.
+
+### Adding a flavour renames the APKs, and that is not cosmetic
+
+`required_apps` pins each APK by URL under `/releases/latest/download/`, so the
+published filenames are load-bearing — a drifted name means every provisioned
+device fetches a 404 and quietly stops updating. A flavour dimension renames
+Gradle's outputs to `herald-standard-<abi>-release.apk` by default, which would
+do exactly that.
+
+AGP 8 does not expose `outputFileName` on the public variant API, and the legacy
+variant API is incompatible with this project's configuration cache. The names
+are therefore fixed at staging time by `tools/stage-release.sh`, which then
+checks that every APK the signed policy pins exists under exactly that name and
+matches its hash. A loud failure in place of a silent one.
+
+## Mono renders without colour at the surface, not in the page
+
+The greyscale filter goes on the engine's own view, not on the document. That
+reaches everything Gecko paints — text, CSS, images, canvas, WebGL and playing
+video — and costs the page no layout.
+
+The obvious alternative is a content script injecting `filter: grayscale(1)`.
+It was rejected before being built: `filter` on the root element makes it a
+containing block for `position: fixed` descendants, so sticky headers and fixed
+navigation start scrolling with the page on a great many sites. A page can also
+see and remove an injected stylesheet.
+
+The price is moving GeckoView off its default `SurfaceView`, whose contents the
+system composites separately and which a view-level colour filter cannot touch.
+`GeckoView.setViewBackend(BACKEND_TEXTURE_VIEW)` puts the engine inside the
+app's own view hierarchy, where a `ColorMatrixColorFilter` applies. This was
+spiked before it was designed: a Wikipedia article and a playing video both
+render monochrome, and the same video frame is vivid red with the filter off.
+Toggling costs under a millisecond, so "show this page in colour" is a layer
+change and not a reload.
+
+TextureView is the less-travelled GeckoView path and copies a frame more than
+SurfaceView does. It also logs `TextureView doesn't support background color`,
+which is a no-op warning but means the engine view's background will not paint —
+watch for a flash on slow loads. Neither has been measured on real hardware.
+
+The toolbar is filtered too, because uBlock Origin's browser-action icon is a
+bitmap the extension supplies and no palette can reach it.
+
+## The pause in mono is felt, not enforced
+
+The two-second wait is presentation. The page loads underneath it the whole
+time, so nothing is slower and the wait does not vary with the network.
+
+Delaying the load itself is possible and worse. `RequestInterceptor.onLoadRequest`
+is synchronous, so waiting inside it blocks the thread Gecko calls it on.
+Returning `Deny` and reissuing the load works for typed URLs and bookmarks but
+loses POST bodies on form submissions. Wrapping GeckoView's own navigation
+delegate — which *does* return a deferrable `GeckoResult` — would work, and takes
+herald off the Android Components abstraction it otherwise sits cleanly on top
+of.
+
+The pause begins when `loading` turns true, not when the URL changes. The first
+attempt used the URL and was wrong in a way only the device showed: the URL
+commits after the round trip, so the old page flashed up and the hold read as
+the new page stalling rather than as the browser being deliberate.
+
+## Mono keeps one tab by enforcing it, not by finding every path to it
+
+Removing the tab counter, the tray, "New tab" and the long-press entries removes
+the *sight* of tabs, not the ability to make them. `target="_blank"` and
+`window.open` are handled a layer down, by setting Gecko's own
+`browser.link.open_newwindow` to "current tab" with the restriction that covers
+`window.open` calls asking for window features. Then, whatever still manages to
+create a tab — an intent from another app, a restored session — the selected one
+survives and the rest are closed.
+
+Two mechanisms because the first is best-effort: `GeckoPreferenceController` is
+marked experimental, and if it changes or stops working the invariant still
+holds. `TabIntentProcessor`'s third parameter is `isPrivate`, not `openNewTab`;
+it has no option to load in place, which is what made the invariant necessary
+rather than merely tidy.
+
 ## Blocklists are stored as hashes, not strings
 
 A merged adult + gambling + ad list is a few hundred thousand domains. As a
