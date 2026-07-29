@@ -12,6 +12,7 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.fragment.app.Fragment
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import app.drawbridge.herald.BrowserActivity
+import app.drawbridge.herald.Edition
 import app.drawbridge.herald.R
 import app.drawbridge.herald.bookmarks.BookmarkRepository
 import app.drawbridge.herald.downloads.DownloadService
@@ -180,14 +181,18 @@ class BrowserFragment :
             view = view,
         )
 
-        TabsToolbarFeature(
-            toolbar = toolbar,
-            store = components.core.store,
-            sessionId = sessionId,
-            lifecycleOwner = viewLifecycleOwner,
-            showTabs = ::showTabs,
-            countBasedOnSelectedTabType = false,
-        )
+        // The tab counter and the tray it opens. Mono has neither: one page at a
+        // time is the whole point of it.
+        if (Edition.hasTabs) {
+            TabsToolbarFeature(
+                toolbar = toolbar,
+                store = components.core.store,
+                sessionId = sessionId,
+                lifecycleOwner = viewLifecycleOwner,
+                showTabs = ::showTabs,
+                countBasedOnSelectedTabType = false,
+            )
+        }
 
         contextMenuFeature.set(
             feature = ContextMenuFeature(
@@ -199,7 +204,7 @@ class BrowserFragment :
                     contextMenuUseCases = components.useCases.contextMenuUseCases,
                     snackBarParentView = view,
                     downloadsLocation = components.downloads.location,
-                ),
+                ).filterNot { !Edition.hasTabs && it.id in TAB_OPENING_CANDIDATES },
                 engineView = engineView,
                 useCases = components.useCases.contextMenuUseCases,
                 tabId = sessionId,
@@ -422,6 +427,17 @@ class BrowserFragment :
 
     companion object {
         private const val ARG_SESSION_ID = "session_id"
+
+        /**
+         * Long-press entries that would open a tab. Removed in mono rather than
+         * left to fail quietly — a menu that offers to do something the browser
+         * cannot do is worse than one that does not offer it.
+         */
+        private val TAB_OPENING_CANDIDATES = setOf(
+            "mozac.feature.contextmenu.open_in_new_tab",
+            "mozac.feature.contextmenu.open_in_private_tab",
+            "mozac.feature.contextmenu.open_image_in_new_tab",
+        )
 
         fun create(sessionId: String? = null): BrowserFragment = BrowserFragment().apply {
             arguments = Bundle().apply { putString(ARG_SESSION_ID, sessionId) }

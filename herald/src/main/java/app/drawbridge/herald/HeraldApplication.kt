@@ -2,7 +2,9 @@ package app.drawbridge.herald
 
 import android.app.Application
 import android.content.res.Configuration
+import app.drawbridge.herald.browser.enforceSingleTab
 import app.drawbridge.herald.components.Components
+import app.drawbridge.herald.components.EngineProvider
 import app.drawbridge.herald.ext.preferredColorScheme
 import app.drawbridge.herald.search.SearchEngineCatalogue
 import app.drawbridge.herald.search.SearchEngineSelection
@@ -57,6 +59,8 @@ class HeraldApplication : Application() {
         PolicyWorker.schedule(this)
 
         components.core.engine.warmUp()
+        // After warmUp: the prefs go to a running Gecko.
+        EngineProvider.applySingleWindowPrefs()
         components.filter.install(components.core.engine)
         components.contentBlocker.install(components.core.engine)
 
@@ -70,6 +74,12 @@ class HeraldApplication : Application() {
             // uBO's popup is a popup, not a page: opening it in a tab would put
             // its element picker and per-site switches in the back stack.
             openPopupInTab = false,
+        )
+
+        enforceSingleTab(
+            applicationScope,
+            components.core.store,
+            components.useCases.tabsUseCases,
         )
 
         restoreBrowserState()

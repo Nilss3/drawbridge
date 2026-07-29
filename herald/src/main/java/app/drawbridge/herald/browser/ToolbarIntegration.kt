@@ -257,7 +257,7 @@ class ToolbarIntegration(
         return sessionItems + listOfNotNull(
             TextMenuCandidate(context.getString(R.string.menu_new_tab)) {
                 tabsUseCases.addTab.invoke("about:blank", selectTab = true)
-            },
+            }.takeIf { Edition.hasTabs },
             TextMenuCandidate(context.getString(R.string.menu_bookmarks)) {
                 context.startActivityNewTask(BookmarksActivity::class.java)
             },
