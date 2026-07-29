@@ -57,6 +57,32 @@
             android:visibility="gone" />
     </FrameLayout>
 
+    <!--
+        Mono's deliberate pause before a page appears. Above the new tab page
+        and below the toolbar in the child order: the address bar stays visible
+        so you can see where you are going while it holds, and the overlay is
+        clickable so the page underneath cannot be tapped before it settles.
+    -->
+    <FrameLayout
+        android:id="@+id/pauseOverlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="@dimen/browser_toolbar_height"
+        android:background="?android:attr/colorBackground"
+        android:clickable="true"
+        android:focusable="true"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/pauseHost"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:padding="32dp"
+            android:textAppearance="?attr/textAppearanceListItem"
+            android:textColor="@color/toolbar_hint" />
+    </FrameLayout>
+
     <mozilla.components.feature.findinpage.view.FindInPageBar
         android:id="@+id/findInPageBar"
         android:layout_width="match_parent"
