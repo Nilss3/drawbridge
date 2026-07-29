@@ -4,10 +4,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.widget.doAfterTextChanged
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -15,6 +17,8 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import app.drawbridge.herald.R
 import app.drawbridge.herald.ext.applySystemBarInsets
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 /**
@@ -36,8 +40,21 @@ abstract class EntryListActivity : AppCompatActivity() {
     protected abstract val titleResId: Int
     protected abstract val emptyMessageResId: Int
 
-    /** Loads the rows to display. Called on a background dispatcher. */
-    protected abstract suspend fun loadEntries(): List<Entry>
+    /**
+     * Hint for the search field. Screens that leave it null get no field, and
+     * are only ever asked for an empty query.
+     */
+    protected open val searchHintResId: Int? = null
+
+    /** Shown in place of [emptyMessageResId] when a search matched nothing. */
+    protected open val noResultsMessageResId: Int get() = emptyMessageResId
+
+    /**
+     * Loads the rows to display. Called on a background dispatcher. [query] is
+     * empty when nothing has been typed, which is the only value screens without
+     * a search field ever see.
+     */
+    protected abstract suspend fun loadEntries(query: String): List<Entry>
 
     /** Invoked when a row is tapped. Default: do nothing. */
     protected open fun onEntryClicked(entry: Entry) = Unit
@@ -50,6 +67,9 @@ abstract class EntryListActivity : AppCompatActivity() {
 
     private lateinit var adapter: EntryAdapter
     private lateinit var emptyView: TextView
+
+    private var query: String = ""
+    private var searchJob: Job? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -76,6 +96,26 @@ abstract class EntryListActivity : AppCompatActivity() {
 
         emptyView = findViewById<TextView>(R.id.emptyView).apply { setText(emptyMessageResId) }
 
+        findViewById<EditText>(R.id.searchField).apply {
+            val hint = searchHintResId
+            if (hint == null) {
+                visibility = View.GONE
+            } else {
+                visibility = View.VISIBLE
+                setHint(hint)
+                // Debounced: history search hits Places on every keystroke, and
+                // the storage call is not cheap on a list of any size.
+                doAfterTextChanged { text ->
+                    searchJob?.cancel()
+                    searchJob = lifecycleScope.launch {
+                        delay(SEARCH_DEBOUNCE_MS)
+                        query = text?.toString().orEmpty().trim()
+                        refresh()
+                    }
+                }
+            }
+        }
+
         adapter = EntryAdapter(
             onClick = { entry ->
                 onEntryClicked(entry)
@@ -100,9 +140,14 @@ abstract class EntryListActivity : AppCompatActivity() {
     }
 
     private suspend fun refresh() {
-        val entries = loadEntries()
+        val entries = loadEntries(query)
         adapter.submitList(entries)
+        emptyView.setText(if (query.isEmpty()) emptyMessageResId else noResultsMessageResId)
         emptyView.visibility = if (entries.isEmpty()) View.VISIBLE else View.GONE
+    }
+
+    private companion object {
+        const val SEARCH_DEBOUNCE_MS = 200L
     }
 }
 

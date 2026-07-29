@@ -18,11 +18,18 @@ class LoginsActivity : EntryListActivity() {
 
     override val titleResId = R.string.menu_passwords
     override val emptyMessageResId = R.string.logins_empty
+    override val searchHintResId = R.string.logins_search_hint
+    override val noResultsMessageResId = R.string.logins_no_results
 
     private val storage by lazy { components.core.loginsStorage }
 
-    override suspend fun loadEntries(): List<Entry> = withContext(Dispatchers.IO) {
+    override suspend fun loadEntries(query: String): List<Entry> = withContext(Dispatchers.IO) {
         storage.list()
+            .filter {
+                query.isEmpty() ||
+                    it.origin.contains(query, ignoreCase = true) ||
+                    it.username.contains(query, ignoreCase = true)
+            }
             .sortedBy { it.origin }
             .map { login ->
                 Entry(

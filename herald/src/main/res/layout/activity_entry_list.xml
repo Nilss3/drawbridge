@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -14,6 +15,29 @@
         android:background="@color/toolbar_background"
         app:navigationIcon="@drawable/ic_back"
         app:titleTextColor="@color/toolbar_text" />
+
+    <!-- Shown only on screens that declare a search hint; the rest never see it.
+         Toolbar-coloured because it reads as a second row of the chrome rather
+         than as the first row of the list. -->
+    <EditText
+        android:id="@+id/searchField"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/toolbar_background"
+        android:drawableStart="@drawable/ic_search"
+        android:drawablePadding="12dp"
+        android:importantForAutofill="no"
+        android:imeOptions="actionSearch"
+        android:inputType="text"
+        android:maxLines="1"
+        android:paddingStart="16dp"
+        android:paddingTop="10dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="10dp"
+        android:textColor="@color/toolbar_text"
+        android:textColorHint="@color/toolbar_hint"
+        android:visibility="gone"
+        tools:ignore="LabelFor" />
 
     <!-- The root is toolbar-coloured, so the strips it pads itself by under the
          system bars match the chrome. The content below the toolbar carries the

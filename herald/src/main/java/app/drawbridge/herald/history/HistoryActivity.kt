@@ -12,18 +12,38 @@ class HistoryActivity : EntryListActivity() {
 
     override val titleResId = R.string.menu_history
     override val emptyMessageResId = R.string.history_empty
+    override val searchHintResId = R.string.history_search_hint
+    override val noResultsMessageResId = R.string.history_no_results
 
     private val storage by lazy { components.core.historyStorage }
 
-    override suspend fun loadEntries(): List<Entry> = withContext(Dispatchers.IO) {
-        storage.getVisitsPaginated(offset = 0, count = PAGE_SIZE)
-            .map { visit ->
-                Entry(
-                    id = "${visit.url}@${visit.visitTime}",
-                    primary = visit.title?.takeIf { it.isNotBlank() } ?: visit.url,
-                    secondary = visit.url,
-                )
-            }
+    /**
+     * With no query this is the most recent page of visits. With one it is
+     * `getSuggestions`, which matches on title as well as URL and searches the
+     * whole of history rather than the page that happens to be loaded — the
+     * reason the search exists, since anything older than [PAGE_SIZE] visits is
+     * otherwise unreachable.
+     */
+    override suspend fun loadEntries(query: String): List<Entry> = withContext(Dispatchers.IO) {
+        if (query.isEmpty()) {
+            storage.getVisitsPaginated(offset = 0, count = PAGE_SIZE)
+                .map { visit ->
+                    Entry(
+                        id = "${visit.url}@${visit.visitTime}",
+                        primary = visit.title?.takeIf { it.isNotBlank() } ?: visit.url,
+                        secondary = visit.url,
+                    )
+                }
+        } else {
+            storage.getSuggestions(query, SEARCH_LIMIT)
+                .map { result ->
+                    Entry(
+                        id = result.id,
+                        primary = result.title?.takeIf { it.isNotBlank() } ?: result.url,
+                        secondary = result.url,
+                    )
+                }
+        }
     }
 
     override fun onEntryClicked(entry: Entry) {
@@ -49,5 +69,6 @@ class HistoryActivity : EntryListActivity() {
 
     private companion object {
         const val PAGE_SIZE = 500L
+        const val SEARCH_LIMIT = 200
     }
 }
