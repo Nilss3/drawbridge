@@ -62,6 +62,7 @@ class BrowserFragment :
     private val findInPageIntegration = ViewBoundFeatureWrapper<FindInPageIntegration>()
     private val readerViewIntegration = ViewBoundFeatureWrapper<ReaderViewIntegration>()
     private val newTabPageIntegration = ViewBoundFeatureWrapper<NewTabPageIntegration>()
+    private val greyscaleIntegration = ViewBoundFeatureWrapper<GreyscaleIntegration>()
     private val webExtensionToolbarFeature = ViewBoundFeatureWrapper<WebExtensionToolbarFeature>()
     private val extensionPopupObserver = ViewBoundFeatureWrapper<WebExtensionPopupObserver>()
     private val thumbnailsFeature = ViewBoundFeatureWrapper<BrowserThumbnails>()
@@ -318,6 +319,18 @@ class BrowserFragment :
                 overlay = view.findViewById(R.id.newTabOverlay),
                 list = view.findViewById(R.id.newTabBookmarks),
                 emptyView = view.findViewById(R.id.newTabEmpty),
+                sessionId = sessionId,
+            ),
+            owner = this,
+            view = view,
+        )
+
+        // Mono only; a no-op in the standard edition.
+        greyscaleIntegration.set(
+            feature = GreyscaleIntegration(
+                store = components.core.store,
+                engineView = engineView,
+                chrome = listOf(toolbar),
                 sessionId = sessionId,
             ),
             owner = this,

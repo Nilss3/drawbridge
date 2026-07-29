@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Mono's night chrome. See src/mono/res/values/colors.xml. -->
+    <color name="toolbar_background">#FF1A1A1A</color>
+    <color name="toolbar_text">#FFF2F2F2</color>
+    <color name="toolbar_hint">#FFA8A8A8</color>
+    <color name="menu_icon">#FFF2F2F2</color>
+
+    <color name="tab_item_background">#FF2E2E2E</color>
+    <color name="tab_item_selected_background">#FF4A4A4A</color>
+    <color name="tab_item_text">#FFF2F2F2</color>
+    <color name="tab_item_url">#FFA8A8A8</color>
+
+    <color name="mozac_ui_tabcounter_default_tint">@color/toolbar_text</color>
+    <color name="mozac_ui_tabcounter_default_text">@color/toolbar_text</color>
+</resources>

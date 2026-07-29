@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.widget.Toast
 import androidx.core.content.ContextCompat
+import app.drawbridge.herald.Edition
 import app.drawbridge.herald.R
 import app.drawbridge.herald.bookmarks.BookmarksActivity
 import app.drawbridge.herald.ext.components
@@ -243,6 +244,13 @@ class ToolbarIntegration(
                 TextMenuCandidate(context.getString(R.string.menu_reader_view_options)) {
                     ReaderViewIntegration.showControls?.invoke()
                 }.takeIf { session.readerState.active },
+                // Mono only, and only worth offering while the page is still
+                // grey: colour lasts until you navigate away, so an entry that
+                // said "show in colour" on an already-coloured page would be
+                // offering to do nothing.
+                TextMenuCandidate(context.getString(R.string.menu_show_colour)) {
+                    GreyscaleIntegration.current?.restoreColour()
+                }.takeIf { Edition.greyscale && GreyscaleIntegration.current?.isColourRestored == false },
             )
         }
 
