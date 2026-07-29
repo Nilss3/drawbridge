@@ -16,3 +16,6 @@ keys/
 # Release APKs: herald is ~230 MB per ABI, well over GitHub's 100 MB file limit.
 # They belong on a GitHub Release as assets, not in git history.
 dist/release/*.apk
+
+# Debug APKs staged by tools/stage-release.sh; never published.
+dist/debug/

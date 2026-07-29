@@ -45,6 +45,36 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    /**
+     * Two editions from one source tree.
+     *
+     * `mono` is the same browser with three things taken away — tabs, colour and
+     * the immediacy of a page load — so it shares essentially all of its source
+     * with `standard`. The differences are named once in `Edition` and switched
+     * on the BuildConfig flag below.
+     *
+     * This sets `applicationId` outright rather than an `applicationIdSuffix`.
+     * The distinction matters, and the ban on suffixes still holds: a suffix
+     * makes a *variant of the same app* that Device Owner and the policy would
+     * not recognise, which is what got a `.debug` herald uninstalled. A flavour
+     * with its own id is a deliberately separate app, and a managed device runs
+     * whichever one `allowed_browser_package` names — never both, because
+     * drawbridge removes every browser that is not the allowed one.
+     */
+    flavorDimensions += "edition"
+
+    productFlavors {
+        create("standard") {
+            dimension = "edition"
+            buildConfigField("boolean", "MONO", "false")
+        }
+        create("mono") {
+            dimension = "edition"
+            applicationId = "app.drawbridge.heraldmono"
+            buildConfigField("boolean", "MONO", "true")
+        }
+    }
+
     // GeckoView ships native libraries for every ABI; a universal APK would be
     // several hundred MB. Split per ABI instead.
     splits {

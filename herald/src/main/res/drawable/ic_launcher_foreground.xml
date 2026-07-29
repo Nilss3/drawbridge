@@ -17,21 +17,21 @@
 
     <!-- Tube, running from the mouthpiece up to the bell. -->
     <path
-        android:fillColor="#F7C948"
+        android:fillColor="@color/ic_launcher_foreground"
         android:pathData="M35.5,71.5 L64.5,42.5 L59.5,37.5 L30.5,66.5 Z" />
 
     <!-- Bell, flaring to the upper right. -->
     <path
-        android:fillColor="#F7C948"
+        android:fillColor="@color/ic_launcher_foreground"
         android:pathData="M64.5,42.5 L77.8,39.8 L62.2,24.2 L59.5,37.5 Z" />
 
     <!-- Mouthpiece. -->
     <path
-        android:fillColor="#F7C948"
+        android:fillColor="@color/ic_launcher_foreground"
         android:pathData="M33,63.2 a5.8,5.8 0 1,0 0.1,0 Z" />
 
     <!-- Banner hanging from the tube, swallow-tailed. -->
     <path
-        android:fillColor="#F7C948"
+        android:fillColor="@color/ic_launcher_foreground"
         android:pathData="M37,55 L59,55 L59,78 L48,71 L37,78 Z" />
 </vector>

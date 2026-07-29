@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- The mono edition's icon says what the browser is before it is opened:
+         the same herald's trumpet, drained of colour. Overrides the pair in
+         src/main so the drawing itself is not duplicated. -->
+    <color name="ic_launcher_background">#FF141414</color>
+    <color name="ic_launcher_foreground">#FFE8E8E8</color>
+</resources>
