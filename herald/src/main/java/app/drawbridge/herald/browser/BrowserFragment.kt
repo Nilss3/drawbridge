@@ -13,9 +13,11 @@ import androidx.fragment.app.Fragment
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import app.drawbridge.herald.BrowserActivity
 import app.drawbridge.herald.R
+import app.drawbridge.herald.bookmarks.BookmarkRepository
 import app.drawbridge.herald.downloads.DownloadService
 import app.drawbridge.herald.ext.applySystemBarInsets
 import app.drawbridge.herald.ext.requireComponents
+import app.drawbridge.herald.extensions.ExtensionPopupFragment
 import app.drawbridge.herald.tabs.TabsTrayFragment
 import mozilla.components.browser.state.selector.selectedTab
 import mozilla.components.browser.thumbnails.BrowserThumbnails
@@ -36,9 +38,11 @@ import mozilla.components.feature.session.SwipeRefreshFeature
 import mozilla.components.feature.sitepermissions.SitePermissionsFeature
 import mozilla.components.feature.tabs.WindowFeature
 import mozilla.components.feature.tabs.toolbar.TabsToolbarFeature
+import mozilla.components.feature.toolbar.WebExtensionToolbarFeature
 import mozilla.components.support.base.feature.ActivityResultHandler
 import mozilla.components.support.base.feature.UserInteractionHandler
 import mozilla.components.support.base.feature.ViewBoundFeatureWrapper
+import mozilla.components.support.webextensions.WebExtensionPopupObserver
 import mozilla.components.support.ktx.android.view.enterImmersiveMode
 import mozilla.components.support.ktx.android.view.exitImmersiveMode
 
@@ -57,6 +61,9 @@ class BrowserFragment :
     private val fullScreenFeature = ViewBoundFeatureWrapper<FullScreenFeature>()
     private val findInPageIntegration = ViewBoundFeatureWrapper<FindInPageIntegration>()
     private val readerViewIntegration = ViewBoundFeatureWrapper<ReaderViewIntegration>()
+    private val newTabPageIntegration = ViewBoundFeatureWrapper<NewTabPageIntegration>()
+    private val webExtensionToolbarFeature = ViewBoundFeatureWrapper<WebExtensionToolbarFeature>()
+    private val extensionPopupObserver = ViewBoundFeatureWrapper<WebExtensionPopupObserver>()
     private val thumbnailsFeature = ViewBoundFeatureWrapper<BrowserThumbnails>()
     private val sitePermissionsFeature = ViewBoundFeatureWrapper<SitePermissionsFeature>()
     private val swipeRefreshFeature = ViewBoundFeatureWrapper<SwipeRefreshFeature>()
@@ -67,6 +74,9 @@ class BrowserFragment :
             fullScreenFeature,
             findInPageIntegration,
             readerViewIntegration,
+            // Before sessionFeature: inside a folder on the new tab page, back
+            // steps out of the folder rather than out of the browser.
+            newTabPageIntegration,
             toolbarIntegration,
             sessionFeature,
         )
@@ -136,6 +146,34 @@ class BrowserFragment :
                 sessionUseCases = components.useCases.sessionUseCases,
                 tabsUseCases = components.useCases.tabsUseCases,
                 sessionId = sessionId,
+            ),
+            owner = this,
+            view = view,
+        )
+
+        // uBlock Origin's browser action: its icon, its blocked-request counter,
+        // and the popup with the per-site switches and the element picker. The
+        // only extension UI herald has, and the only one it wants — see
+        // ContentBlockerExtension.
+        webExtensionToolbarFeature.set(
+            feature = WebExtensionToolbarFeature(toolbar, components.core.store),
+            owner = this,
+            view = view,
+        )
+
+        // The other half of the button: Android Components parks the popup's
+        // engine session on the extension's state and leaves rendering it to the
+        // app. Without this the button opens nothing.
+        extensionPopupObserver.set(
+            // Named, because the trailing parameter is the dispatcher, not this.
+            feature = WebExtensionPopupObserver(
+                store = components.core.store,
+                onOpenPopup = { extension ->
+                    if (parentFragmentManager.findFragmentByTag(ExtensionPopupFragment.TAG) == null) {
+                        ExtensionPopupFragment.create(extension.id)
+                            .show(parentFragmentManager, ExtensionPopupFragment.TAG)
+                    }
+                },
             ),
             owner = this,
             view = view,
@@ -266,6 +304,21 @@ class BrowserFragment :
                 store = components.core.store,
                 sessionId = sessionId,
                 controlsView = readerViewControls,
+            ),
+            owner = this,
+            view = view,
+        )
+
+        newTabPageIntegration.set(
+            feature = NewTabPageIntegration(
+                context = requireContext(),
+                store = components.core.store,
+                sessionUseCases = components.useCases.sessionUseCases,
+                repository = BookmarkRepository(components.core.bookmarksStorage),
+                overlay = view.findViewById(R.id.newTabOverlay),
+                list = view.findViewById(R.id.newTabBookmarks),
+                emptyView = view.findViewById(R.id.newTabEmpty),
+                sessionId = sessionId,
             ),
             owner = this,
             view = view,

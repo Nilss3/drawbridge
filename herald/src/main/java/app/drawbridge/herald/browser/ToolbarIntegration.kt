@@ -2,6 +2,7 @@ package app.drawbridge.herald.browser
 
 import android.content.Context
 import android.content.Intent
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import app.drawbridge.herald.R
 import app.drawbridge.herald.bookmarks.BookmarksActivity
@@ -10,13 +11,14 @@ import app.drawbridge.herald.ext.share
 import app.drawbridge.herald.history.HistoryActivity
 import app.drawbridge.herald.logins.LoginsActivity
 import app.drawbridge.herald.settings.SettingsActivity
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import mozilla.appservices.places.BookmarkRoot
 import mozilla.components.browser.domains.autocomplete.ShippedDomainsProvider
 import mozilla.components.browser.menu2.BrowserMenuController
 import mozilla.components.browser.state.selector.selectedTab
@@ -63,9 +65,11 @@ class ToolbarIntegration(
 ) : LifecycleAwareFeature, UserInteractionHandler {
 
     private val scope = MainScope()
-    private val ioScope = CoroutineScope(Dispatchers.IO)
 
     private val shippedDomainsProvider = ShippedDomainsProvider().also { it.initialize(context) }
+
+    /** The selected tab's URL when it is already bookmarked; null otherwise. */
+    private var bookmarkedUrl: String? = null
 
     private val menuController: MenuController = BrowserMenuController()
 
@@ -131,6 +135,26 @@ class ToolbarIntegration(
                 .distinctUntilChanged()
                 .collect { menuController.submitList(menuItems(it)) }
         }
+
+        // Whether the page is already bookmarked decides one menu entry, and
+        // answering it means asking storage. Kept on its own collector keyed to
+        // the URL, so it runs once per page rather than on every progress and
+        // title update the tab emits while loading.
+        scope.launch {
+            store.flow()
+                .map { it.selectedTab?.content?.url }
+                .distinctUntilChanged()
+                .collect { url -> refreshBookmarkedUrl(url) }
+        }
+    }
+
+    private suspend fun refreshBookmarkedUrl(url: String?) {
+        bookmarkedUrl = url?.takeIf {
+            withContext(Dispatchers.IO) {
+                bookmarksStorage.getBookmarksWithUrl(it).getOrNull().orEmpty().isNotEmpty()
+            }
+        }
+        menuController.submitList(menuItems(store.state.selectedTab))
     }
 
     override fun start() = toolbarFeature.start()
@@ -141,7 +165,6 @@ class ToolbarIntegration(
 
     fun destroy() {
         scope.cancel()
-        ioScope.cancel()
     }
 
     private fun navigationRow(session: TabSessionState?): RowMenuCandidate {
@@ -184,8 +207,19 @@ class ToolbarIntegration(
         } else {
             listOfNotNull(
                 navigationRow(session),
-                TextMenuCandidate(context.getString(R.string.menu_add_bookmark)) {
-                    addBookmark(session.content.title, session.content.url)
+                // "Edit" rather than a second "Add" once the page is already
+                // bookmarked: adding twice made a duplicate with no way to see
+                // it had happened.
+                if (session.content.url == bookmarkedUrl) {
+                    TextMenuCandidate(context.getString(R.string.bookmark_edit)) {
+                        context.startActivity(
+                            BookmarksActivity.editIntent(context, session.content.url),
+                        )
+                    }
+                } else {
+                    TextMenuCandidate(context.getString(R.string.menu_add_bookmark)) {
+                        addBookmark(session.content.title, session.content.url)
+                    }
                 },
                 TextMenuCandidate(context.getString(R.string.menu_share)) {
                     context.share(session.content.url)
@@ -212,7 +246,7 @@ class ToolbarIntegration(
             )
         }
 
-        return sessionItems + listOf(
+        return sessionItems + listOfNotNull(
             TextMenuCandidate(context.getString(R.string.menu_new_tab)) {
                 tabsUseCases.addTab.invoke("about:blank", selectTab = true)
             },
@@ -225,6 +259,14 @@ class ToolbarIntegration(
             TextMenuCandidate(context.getString(R.string.menu_passwords)) {
                 context.startActivityNewTask(LoginsActivity::class.java)
             },
+            // uBlock Origin's own settings, opened as a tab because that is
+            // what it is: a moz-extension: page. Only offered once the
+            // extension has finished installing and has a base URL.
+            context.components.contentBlocker.dashboardUrl()?.let { url ->
+                TextMenuCandidate(context.getString(R.string.menu_ad_blocker_settings)) {
+                    tabsUseCases.addTab.invoke(url, selectTab = true)
+                }
+            },
             TextMenuCandidate(context.getString(R.string.menu_settings)) {
                 context.startActivityNewTask(SettingsActivity::class.java)
             },
@@ -232,13 +274,19 @@ class ToolbarIntegration(
     }
 
     private fun addBookmark(title: String, url: String) {
-        ioScope.launch {
-            bookmarksStorage.addItem(
-                parentGuid = mozilla.appservices.places.BookmarkRoot.Mobile.id,
-                url = url,
-                title = title.ifEmpty { url },
-                position = null,
-            )
+        scope.launch {
+            withContext(Dispatchers.IO) {
+                bookmarksStorage.addItem(
+                    parentGuid = BookmarkRoot.Mobile.id,
+                    url = url,
+                    title = title.ifEmpty { url },
+                    position = null,
+                )
+            }
+            Toast.makeText(context, R.string.bookmark_added, Toast.LENGTH_SHORT).show()
+            // So the entry becomes "Edit bookmark" without waiting for a
+            // navigation to re-trigger the lookup.
+            refreshBookmarkedUrl(url)
         }
     }
 

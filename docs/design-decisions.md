@@ -206,6 +206,21 @@ The menu entry only appears where Gecko reports the page as readerable, and the
 font and colour controls only once it is on, so neither shows on a page that has
 no article in it.
 
+### `ReaderViewMiddleware` is load-bearing, and its absence is silent
+
+`ReaderViewFeature` registers the content-script ports only when
+`readerState.connectRequired` is set, and re-runs the readability check only when
+`readerState.checkRequired` is. Both flags are set *exclusively* by
+`ReaderViewMiddleware`, on `SelectTabAction`, `LinkEngineSessionAction` and
+`UpdateUrlAction` — so a store without it has a reader view that works by
+accident when the first port happens to connect and never re-checks afterwards.
+
+Nothing warns about this: no exception, no log line, just a menu entry that
+appears on some pages and not others. It was found by reading the decompiled
+feature after a De Morgen article that Firefox offered reader mode for and herald
+did not — that URL serves a consent interstitial first and only then redirects to
+the article, so the article itself was never checked.
+
 ## A blocked iframe is denied, not given a block page
 
 `RequestInterceptor.onLoadRequest` fires for every document load, top-level and
@@ -222,6 +237,105 @@ only there is the blocked host the thing the reader asked for.
 
 A subframe that merely *fails* — a DNS-filtered tracker on a managed device —
 does not take the page down; that path is frame-scoped already.
+
+## uBlock Origin ships inside the APK
+
+A domain blocklist cannot block advertising properly, and no amount of list
+curation fixes that: an ad served from the same host as the article is
+indistinguishable from the article, and blocking a host outright leaves the empty
+box behind rather than removing it. uBO does the part the DNS layer and the
+shared blocklist structurally cannot — request rules with URL and type context,
+plus cosmetic filtering.
+
+It is installed with `installBuiltInWebExtension` from
+`resource://android/assets/extensions/ublock/` rather than fetched from AMO.
+Three reasons, in order of weight:
+
+- **A built-in cannot be disabled or removed from inside the browser**, and
+  herald exposes no add-on manager, so the only extension surface is uBO's own.
+  An AMO install brings the whole add-on machinery with it.
+- **No network on first run.** Installing over the wire would leave the browser
+  without ad blocking until a download completed, on a device whose own DNS
+  filter would first have to be told to allow `addons.mozilla.org`.
+- **No permission prompt.** GeckoView prompts before installing a signed add-on.
+  A permissions dialog at first launch, on a phone set up for someone else, is a
+  dialog that gets answered without context.
+
+The cost is that uBO only updates when herald does. Its *filter lists* still
+update themselves over the network as usual.
+
+`tools/vendor-ublock.sh` downloads a pinned build, checks it against a SHA-256 in
+the script and unpacks it, so what is committed is reproducible rather than a
+blob. The AMO signature block is dropped: it covers the packed XPI and means
+nothing once unpacked, since a built-in extension is trusted for having come out
+of the APK.
+
+### aapt silently drops `_locales`
+
+The first install failed with `Extension is invalid` and one line about
+`_locales/en/messages.json` not being found. aapt's default ignore list contains
+`<dir>_*`, which excludes *any* asset directory whose name starts with an
+underscore — so all 72 of uBO's translation folders were left out of the APK.
+`herald/build.gradle.kts` therefore sets `ignoreAssetsPatterns` to aapt's own
+default with that one pattern removed. Setting the list at all replaces the
+default wholesale, which is why the rest is repeated verbatim.
+
+### The popup needs a host, the dashboard does not
+
+`WebExtensionToolbarFeature` renders uBO's browser action into the toolbar, but
+tapping it only parks an `EngineSession` on `WebExtensionState.popupSession` —
+Android Components renders it nowhere. Without
+`extensions/ExtensionPopupFragment` the button appears to do nothing.
+
+The popup is a sheet rather than a tab so it stays out of the tab list and the
+back stack. The dashboard is the opposite case: it is an ordinary
+`moz-extension:` page, so the menu entry just opens it as a tab.
+`HeraldRequestInterceptor` only inspects `http`/`https`, so that scheme passes
+through untouched.
+
+The dashboard does contain a switch that turns uBO off globally, and a
+trusted-sites list. That is a deliberate trade — see the known gaps in the
+README — and it is worth being clear that it opens up advertising, not blocked
+content: the DNS layer and the shared blocklist sit underneath uBO and are not
+reachable from it.
+
+## Bookmarks are exchanged as Netscape HTML
+
+`bookmarks.html` — the format Firefox, Chrome, Safari and Edge all read and
+write — rather than anything herald-shaped, so a phone can be seeded from a
+parent's own browser export and an export is readable somewhere other than here.
+
+The format is nominally HTML and has never been valid HTML: `<DL>` is frequently
+never closed, `<DT>` never is, and Chrome emits a stray `<p>` after every list.
+Parsing it means being deliberately forgiving rather than correct, which is why
+`BookmarkHtml` is a hand-rolled scanner over the four tags that matter.
+
+Two decisions inside it are about safety rather than fidelity:
+
+- **Only `http` and `https` are imported.** Bookmark files can carry
+  `javascript:` bookmarklets and `file:` and `data:` URLs, and a filtering
+  browser should not be talked into storing any of them as a one-tap entry point
+  by being handed a file.
+- **Input is capped** at 8 MiB, 50 000 nodes and 32 levels, and a file that hits
+  a cap is reported as a truncated import rather than read whole. The file comes
+  from a picker, so it is untrusted.
+
+Imports land in a new `Imported <date>` folder rather than merging into the
+tree, so an import can be undone by deleting one folder and can never overwrite
+what is already there.
+
+## The bookmarks new tab page is an overlay, not a URL
+
+Showing bookmarks on a blank tab could have been a page at some `herald:` URL
+served by the request interceptor, the way the block page is. It is a view drawn
+over the engine instead, because the address bar of a new tab should be empty and
+ready to type in — a real URL would sit in it — and because a new internal scheme
+is one more thing that has to keep being carried past the interceptor, the
+filter and the app-links feature correctly.
+
+It is off by default. The setting exists because a curated bookmark list is the
+right home page for the device this is built for, and a blank page is the right
+one for a browser that is only closing the browser gap on someone else's phone.
 
 ## Blocklists are stored as hashes, not strings
 

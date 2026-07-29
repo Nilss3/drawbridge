@@ -107,6 +107,31 @@ android {
         buildConfig = true
     }
 
+    androidResources {
+        // aapt's default ignore list contains `<dir>_*`, which silently drops
+        // every asset directory whose name begins with an underscore. uBlock
+        // Origin keeps its translations in `_locales/`, so all 72 of them were
+        // left out of the APK and Gecko refused the extension as invalid with
+        // only a "messages.json not found" line to say why.
+        //
+        // This is aapt's own default with that one pattern removed; setting the
+        // list at all replaces the default wholesale, so the rest has to be
+        // repeated verbatim.
+        ignoreAssetsPatterns.addAll(
+            listOf(
+                "!.svn",
+                "!.git",
+                "!.ds_store",
+                "!*.scc",
+                ".*",
+                "!CVS",
+                "!thumbs.db",
+                "!picasa.ini",
+                "!*~",
+            ),
+        )
+    }
+
     packaging {
         resources.excludes += setOf(
             "META-INF/DEPENDENCIES",

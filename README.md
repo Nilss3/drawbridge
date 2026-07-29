@@ -8,7 +8,7 @@ Two apps in one repo:
 
 | | | |
 |---|---|---|
-| **herald** | `herald/` | A real browser (GeckoView) that enforces the blocklist on every page and subresource it loads. Tabs, bookmarks, history, saved passwords, reader view, day/night. |
+| **herald** | `herald/` | A real browser (GeckoView) that enforces the blocklist on every page and subresource it loads, with uBlock Origin built in. Tabs, bookmarks with folders and import/export, searchable history, saved passwords, reader view, day/night. |
 | **drawbridge** | `dpc/` | The device policy controller: a device-wide DNS filter, app blocking, and the restrictions that stop the whole thing being switched off. |
 | *policy* | `policy/` | Shared library: the signed policy document, blocklist compilation, and the update poller both apps use. |
 
@@ -38,6 +38,13 @@ shows a block page; a bundled web extension covers subresources. It exposes no
 "secure DNS" setting and no `about:config`, so it cannot resolve names behind an
 encrypted channel the DNS layer can't see.
 
+**Ads.** uBlock Origin ships inside herald as a built-in extension, doing the
+part a domain blocklist structurally cannot: request rules with URL and type
+context, and cosmetic filtering to remove the hole in the page rather than leave
+an empty box. It cannot be disabled or removed from inside the browser, and
+herald exposes no way to install any other extension — the whole extension
+surface is uBO's own popup and dashboard.
+
 **Apps.** drawbridge removes blocked packages the moment they finish installing,
 and removes *any* browser other than herald — detected by intent filter, not by a
 list of package names that would be out of date next month. Preinstalled browsers
@@ -57,8 +64,12 @@ run its own encrypted DNS.
   backstop there at all.
 - **Between boot and the filter starting**, DNS is briefly unfiltered. See
   [always-on VPN without lockdown](docs/design-decisions.md#always-on-vpn-runs-without-lockdown).
-- **Ad blocking is domain-level.** Empty placeholder boxes remain, and YouTube
-  ads are served from the same domains as the videos, so they are not blocked.
+- **YouTube ads are served from the same domains as the videos**, so neither the
+  DNS layer nor uBlock Origin's network rules separate them.
+- **uBlock Origin's own settings can switch it off** for a site or entirely.
+  That is the cost of shipping the dashboard rather than only the popup; the DNS
+  layer and the shared blocklist are underneath it either way, so what a child
+  can reach through this is advertising, not blocked content.
 
 ## Getting started
 
@@ -97,3 +108,11 @@ MIT. The DNS filter is written from scratch rather than adapted from DNS66 or
 personalDNSfilter, both of which are GPLv3 — they were read as references, not
 copied. GeckoView and Mozilla Android Components are MPL-2.0, which imposes no
 constraint on this project's own licence.
+
+herald ships an unmodified copy of **uBlock Origin**, which is GPLv3, under
+`herald/src/main/assets/extensions/ublock/` with its own `LICENSE.txt`. It is
+included as a separate program rather than built into herald's own code, so this
+is aggregation and herald stays MIT. Its source is
+[gorhill/uBlock](https://github.com/gorhill/uBlock); `tools/vendor-ublock.sh`
+records the exact build and its hash. See
+[design-decisions](docs/design-decisions.md#ublock-origin-ships-inside-the-apk).

@@ -24,6 +24,7 @@ import mozilla.components.support.base.log.sink.AndroidLogSink
 import mozilla.components.support.ktx.android.content.isMainProcess
 import mozilla.components.support.ktx.android.content.runOnlyInMainProcess
 import mozilla.components.support.rusthttp.RustHttpConfig
+import mozilla.components.support.webextensions.WebExtensionSupport
 import java.util.concurrent.TimeUnit
 
 class HeraldApplication : Application() {
@@ -57,6 +58,19 @@ class HeraldApplication : Application() {
 
         components.core.engine.warmUp()
         components.filter.install(components.core.engine)
+        components.contentBlocker.install(components.core.engine)
+
+        // Puts installed extensions into browser state, which is what renders
+        // uBO's toolbar button and its popup. Nothing web-initiated can install
+        // anything — EngineProvider sets extensionsWebAPIEnabled(false) — so
+        // this only ever sees the two extensions herald ships.
+        WebExtensionSupport.initialize(
+            runtime = components.core.engine,
+            store = components.core.store,
+            // uBO's popup is a popup, not a page: opening it in a tab would put
+            // its element picker and per-site switches in the back stack.
+            openPopupInTab = false,
+        )
 
         restoreBrowserState()
     }

@@ -26,6 +26,37 @@
             tools:ignore="Instantiatable" />
     </mozilla.components.ui.widgets.VerticalSwipeRefreshLayout>
 
+    <!--
+        The bookmarks new tab page, drawn over the engine view while the tab is
+        still blank. An overlay rather than a page at some herald: URL, so the
+        address bar stays empty and ready to type in, and so no new scheme has to
+        be carried past the request interceptor. Sits below the toolbar in the
+        child order, so the toolbar and the bars below stay on top of it.
+    -->
+    <FrameLayout
+        android:id="@+id/newTabOverlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="@dimen/browser_toolbar_height"
+        android:background="?android:attr/colorBackground"
+        android:visibility="gone">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/newTabBookmarks"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <TextView
+            android:id="@+id/newTabEmpty"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:padding="32dp"
+            android:text="@string/bookmarks_empty"
+            android:textAppearance="?attr/textAppearanceListItem"
+            android:visibility="gone" />
+    </FrameLayout>
+
     <mozilla.components.feature.findinpage.view.FindInPageBar
         android:id="@+id/findInPageBar"
         android:layout_width="match_parent"
