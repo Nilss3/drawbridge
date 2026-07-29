@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="browser_toolbar_height">56dp</dimen>
+    <dimen name="dialog_field_padding">24dp</dimen>
     <dimen name="tab_grid_item_height">190dp</dimen>
     <dimen name="tab_grid_padding">6dp</dimen>
 </resources>

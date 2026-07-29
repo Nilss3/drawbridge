@@ -10,6 +10,7 @@ import androidx.preference.Preference
 import androidx.preference.PreferenceCategory
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.PreferenceScreen
+import androidx.preference.SwitchPreferenceCompat
 import app.drawbridge.herald.HeraldPolicy
 import app.drawbridge.herald.R
 import app.drawbridge.herald.ext.requireComponents
@@ -40,6 +41,18 @@ class SettingsFragment : PreferenceFragmentCompat() {
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         val context = requireContext()
         val screen: PreferenceScreen = preferenceManager.createPreferenceScreen(context)
+
+        screen.addPreference(
+            PreferenceCategory(context).apply { setTitle(R.string.settings_category_general) },
+        )
+        screen.addPreference(
+            SwitchPreferenceCompat(context).apply {
+                key = HeraldSettings.KEY_NEW_TAB_BOOKMARKS
+                setTitle(R.string.settings_new_tab_bookmarks)
+                setSummary(R.string.settings_new_tab_bookmarks_summary)
+                setDefaultValue(HeraldSettings.NEW_TAB_BOOKMARKS_DEFAULT)
+            },
+        )
 
         screen.addPreference(
             PreferenceCategory(context).apply { setTitle(R.string.settings_category_search) },
