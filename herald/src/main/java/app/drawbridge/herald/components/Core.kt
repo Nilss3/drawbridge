@@ -25,6 +25,7 @@ import mozilla.components.feature.downloads.DownloadMiddleware
 import mozilla.components.feature.logins.exceptions.LoginExceptionStorage
 import mozilla.components.feature.media.MediaSessionFeature
 import mozilla.components.feature.prompts.file.FileUploadsDirCleaner
+import mozilla.components.feature.readerview.ReaderViewMiddleware
 import mozilla.components.feature.search.middleware.SearchMiddleware
 import mozilla.components.feature.session.HistoryDelegate
 import mozilla.components.feature.sitepermissions.OnDiskSitePermissionsStorage
@@ -76,6 +77,17 @@ class Core(private val context: Context, private val downloads: Downloads) {
                 ),
                 ThumbnailsMiddleware(thumbnailStorage),
                 SearchMiddleware(context),
+                // Load-bearing for reader view, not an optimisation.
+                // ReaderViewFeature registers its content-script ports only when
+                // `readerState.connectRequired` is set, and re-runs the
+                // readability check only when `readerState.checkRequired` is —
+                // and this middleware is the only thing that ever sets either,
+                // on tab selection, engine-session linking and URL change.
+                // Without it nothing re-checks a page after navigation, so the
+                // menu entry appeared or not more or less by accident: a site
+                // that redirects before showing its article — a consent gate,
+                // say — was never checked at all.
+                ReaderViewMiddleware(),
             ) + EngineMiddleware.create(engine),
         ).apply {
             icons.install(engine, this)
