@@ -12,29 +12,27 @@ machine, what was and was not verified, and what to do next.
 
 | | |
 |---|---|
-| Repo | https://github.com/Nilss3/drawbridge — public, `main`, 15 commits |
-| Release | v0.1.5 is **built and staged in `dist/release/`, not published**. The newest published release is still [v0.1.4](https://github.com/Nilss3/drawbridge/releases/tag/v0.1.4). Release URLs use `/releases/latest/`, so the QR and policy survive future releases unchanged. |
-| Live policy | version 13, signed at `dist/policy.signed.json` — **not yet pushed**, so devices still see 11 |
+| Repo | https://github.com/Nilss3/drawbridge — public, `main`, 22 commits |
+| Release | [v0.1.5](https://github.com/Nilss3/drawbridge/releases/tag/v0.1.5), 6 assets, published and not flagged. Release URLs use `/releases/latest/`, so the QR and policy survive future releases unchanged. |
+| Live policy | version 13, live at `dist/policy.signed.json` on `main` |
 | Apps | drawbridge `versionCode 6` / `0.1.5`; herald `versionCode 5` / `0.1.5` |
 | Tests | 200 unit tests, lint clean |
 
 ### Known gaps in the current release
 
-**v0.1.5 is built but not published.** Everything below is committed and the
-APKs are staged in `dist/release/` with a matching `SHA256SUMS`, signed with the
-keystore the provisioning QR pins. What has *not* happened is the last two
-commands of the release procedure:
+Nothing is stale: v0.1.5 carries everything on `main`, and policy 13 is live.
+The whole chain was checked against the *published* artefacts rather than the
+local ones — the policy fetched from `raw.githubusercontent.com` is version 13
+and its signature verifies, the `social.txt` behind it matches its pin and
+contains LinkedIn, and the herald APK downloaded from
+`/releases/latest/download/` hashes to exactly what `required_apps` names. A
+provisioned device would accept and install it.
 
-```bash
-git push && git push --tags
-gh release create v0.1.5 dist/release/*.apk dist/release/SHA256SUMS
-```
-
-Until both run, `raw.githubusercontent.com/.../main/dist/policy.signed.json`
-still serves policy 11 and `/releases/latest/` still resolves to v0.1.4, so a
-provisioned device sees no change at all. Push the commits and the release
-together — a pushed policy 13 without a published v0.1.5 would point
-`required_apps` at APKs that do not exist yet.
+The tag was pushed and the release published *before* `main`, so
+`/releases/latest` already resolved to v0.1.5 when policy 13 went live. The
+other order leaves a window in which the policy names APKs that do not exist
+yet; harmless, since a hash mismatch is a refused download and a retry, but
+avoidable for free.
 
 Build-order note, as designed: herald bundles policy **12** and drawbridge
 bundles **13**. `required_apps` pins herald by checksum and herald embeds the
@@ -62,12 +60,13 @@ compress into the APK.
 - **LinkedIn** joins the social list (`linkedin.com`, `licdn.com`, `lnkd.in`),
   and policy 13 carries the new list hash.
 
-Three things have still never run:
+`/releases/latest` was checked this time and resolves to v0.1.5. Keep it that
+way: GitHub excludes drafts and pre-releases, so flagging the newest release as
+either breaks provisioning and herald's auto-install. v0.1.0 is flagged
+pre-release, which is fine while a newer one is published.
 
-- **`/releases/latest` must resolve.** Every release URL depends on it. GitHub
-  excludes drafts and pre-releases, so flagging the newest release as either
-  breaks provisioning and herald's auto-install. v0.1.0 is flagged pre-release,
-  which is fine while v0.1.4 is the newest published one.
+Two things have still never run:
+
 - **The self-update path.** `app_update` is unset, so `checkAndInstallSelf` has
   nothing to do. Setting it is circular — drawbridge's own APK contains the
   policy that would name its hash — so it takes two rounds: publish the APK,
@@ -182,9 +181,9 @@ Not verified, and worth doing:
   appear on real devices.
 - **A live policy update.** The change-detection code was checked for not
   misfiring, but no device has actually received a *new* policy version and
-  rebuilt its tunnel in response. v0.1.4 publishes policy 11, so the first
-  provisioned device that polls will exercise this — including installing
-  herald `versionCode 4` through `required_apps`.
+  rebuilt its tunnel in response. Policy 13 is live, so the first provisioned
+  device that polls will exercise this — including installing herald
+  `versionCode 5` through `required_apps`.
 - **The self-update path.** `app_update` is unset in the policy, so
   `checkAndInstallSelf` has never had anything to do.
 
@@ -235,13 +234,10 @@ Carried over from the original design notes and never answered:
 
 ## Reasonable next steps
 
-1. **Publish v0.1.5** — push the commits and tag, then `gh release create`. The
-   artefacts are built and staged; nothing else is needed. Do not flag it as a
-   pre-release or leave it a draft.
-2. **Provision a real phone by QR** — the one major untested path, and the whole
+1. **Provision a real phone by QR** — the one major untested path, and the whole
    point of the release.
-3. **Back up both keys.**
-4. Then, in rough order of value:
+2. **Back up both keys.**
+3. Then, in rough order of value:
    - Decide whether the APK download path deserves the same allowlist treatment
      policy 12 gave the list-update paths. `required_apps` points at
      `github.com`, which redirects to a `*.githubusercontent.com` asset host
