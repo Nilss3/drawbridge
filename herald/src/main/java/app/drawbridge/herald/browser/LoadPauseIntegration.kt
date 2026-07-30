@@ -23,8 +23,8 @@ import mozilla.components.support.base.feature.LifecycleAwareFeature
  * The friction is the feature: a browser that answers instantly invites the
  * reflex to open it, and the pause is there to be felt rather than to save
  * anything. It is presentation only — the page loads underneath the whole time,
- * so nothing is slower, and the wait is the same two seconds whether the
- * network is fast or slow.
+ * so nothing is slower, and the wait is the same length whether the network is
+ * fast or slow.
  *
  * Deliberately *not* done by delaying the load itself. `RequestInterceptor` is
  * synchronous, so waiting inside it would block the thread Gecko calls it on,
@@ -46,8 +46,26 @@ class LoadPauseIntegration(
     private var scope: CoroutineScope? = null
     private var pause: Job? = null
 
+    /**
+     * When the current suppression expires.
+     *
+     * Entering reader view is itself a page load — of the extension page
+     * holding the stripped-down article — so without this a slow page would be
+     * paused twice: once on the way in, and again when the readability check
+     * finished and the article swapped itself in.
+     *
+     * A deadline rather than a "skip the next one" flag, because that flag went
+     * stale. Reader view does not always produce a load the flag could be spent
+     * on — the middleware rewrites the URL back to the article's own, so the
+     * change the pause watches for may never arrive — and the flag then sat
+     * there and swallowed the pause for the next page the reader actually asked
+     * for. A deadline cleans up after itself.
+     */
+    private var suppressUntil = 0L
+
     override fun start() {
         if (Edition.loadDelayMillis <= 0) return
+        current = this
 
         scope = MainScope().also { scope ->
             scope.launch {
@@ -70,6 +88,28 @@ class LoadPauseIntegration(
         scope?.cancel()
         scope = null
         overlay.visibility = View.GONE
+        current = null
+    }
+
+    /**
+     * Skips the pause for a load starting in the next moment — the swap into or
+     * out of reader view, which is not a page anyone navigated to.
+     */
+    fun skipImminentPause() {
+        suppressUntil = System.currentTimeMillis() + SUPPRESSION_WINDOW_MS
+    }
+
+    companion object {
+        /** Set while started, so reader view can suppress its own load. */
+        var current: LoadPauseIntegration? = null
+            private set
+
+        /**
+         * How long a suppression lasts. Long enough to cover the reader-view
+         * swap, short enough that a stale one cannot eat the pause for a page
+         * the reader actually asked for.
+         */
+        private const val SUPPRESSION_WINDOW_MS = 1_500L
     }
 
     /**
@@ -96,6 +136,11 @@ class LoadPauseIntegration(
         }
 
         hostLabel.text = ContentFilter.hostOf(url) ?: url
+
+        if (System.currentTimeMillis() < suppressUntil) {
+            hide()
+            return
+        }
 
         // Already holding: leave the running timer alone. Restarting it on
         // every change would turn a redirect chain into a multiple of the

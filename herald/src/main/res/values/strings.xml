@@ -16,6 +16,7 @@
     <string name="menu_reader_view">Reader view</string>
     <string name="menu_reader_view_options">Reader view options</string>
     <string name="menu_show_colour">Show this page in colour</string>
+    <string name="pause_message">Pause to think while loading</string>
     <string name="menu_bookmarks">Bookmarks</string>
     <string name="menu_history">History</string>
     <string name="menu_passwords">Saved passwords</string>

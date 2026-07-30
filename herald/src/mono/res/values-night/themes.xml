@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Mono's night theme. See src/mono/res/values/themes.xml. -->
+    <style name="Theme.Herald" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="android:statusBarColor" tools:targetApi="l">@color/toolbar_background</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowLightNavigationBar" tools:targetApi="o_mr1">false</item>
+
+        <item name="colorPrimary">#FFCFCFCF</item>
+        <item name="colorOnPrimary">#FF141414</item>
+        <item name="colorPrimaryContainer">#FF3F3F3F</item>
+        <item name="colorOnPrimaryContainer">#FFF2F2F2</item>
+        <item name="colorSecondary">#FFB0B0B0</item>
+        <item name="colorOnSecondary">#FF141414</item>
+        <item name="colorSecondaryContainer">#FF3A3A3A</item>
+        <item name="colorOnSecondaryContainer">#FFF2F2F2</item>
+        <item name="colorTertiary">#FFC0C0C0</item>
+        <item name="colorOnTertiary">#FF141414</item>
+    </style>
+</resources>

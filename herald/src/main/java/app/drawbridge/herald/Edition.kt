@@ -42,5 +42,17 @@ object Edition {
      * A pause you feel rather than a network delay: the page loads underneath
      * while the screen holds. The friction is the feature.
      */
-    val loadDelayMillis: Long get() = if (isMono) 2_000L else 0L
+    val loadDelayMillis: Long get() = if (isMono) 2_500L else 0L
+
+    /**
+     * Pages open stripped to their article wherever Gecko says that is
+     * possible, without being asked.
+     *
+     * The same Readability pass reader view has always used, applied by default
+     * rather than on request: an article without its navigation, promos and
+     * sidebars is the reading equivalent of one page at a time. Turning reader
+     * view off on a page is remembered until you navigate away, so the choice
+     * still belongs to the reader.
+     */
+    val autoReaderView: Boolean get() = isMono
 }

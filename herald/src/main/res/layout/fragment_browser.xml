@@ -73,14 +73,34 @@
         android:focusable="true"
         android:visibility="gone">
 
-        <TextView
-            android:id="@+id/pauseHost"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:padding="32dp"
-            android:textAppearance="?attr/textAppearanceListItem"
-            android:textColor="@color/toolbar_hint" />
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:padding="32dp">
+
+            <TextView
+                android:id="@+id/pauseMessage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/pause_message"
+                android:textAppearance="?attr/textAppearanceListItem"
+                android:textColor="@color/toolbar_text" />
+
+            <TextView
+                android:id="@+id/pauseHost"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:ellipsize="middle"
+                android:gravity="center"
+                android:maxLines="1"
+                android:textAppearance="?attr/textAppearanceListItemSecondary"
+                android:textColor="@color/toolbar_hint" />
+        </LinearLayout>
     </FrameLayout>
 
     <mozilla.components.feature.findinpage.view.FindInPageBar
