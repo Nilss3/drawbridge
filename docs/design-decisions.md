@@ -415,6 +415,20 @@ attempt used the URL and was wrong in a way only the device showed: the URL
 commits after the round trip, so the old page flashed up and the hold read as
 the new page stalling rather than as the browser being deliberate.
 
+**Nothing ends a running hold except its own timer.** That rule sounds obvious
+and was arrived at the hard way, after the pause turned out to be cut short
+exactly when moving between two reader-view pages — the case mono makes most
+common. Reader view engages *during* the pause for the page being entered, and
+it trips two separate cancels: the suppression that stops it being paused for
+twice, and the moment its URL is a `moz-extension:` one, before
+`ReaderViewMiddleware` rewrites it back to the article's own. Both used to call
+`hide()`. Each was individually reasonable and together they meant the hold
+survived on ordinary pages and collapsed on articles.
+
+Timed on the phone afterwards, tapping a link from one reader page to another:
+the overlay holds from 157 ms to 2,490 ms and the next article appears at
+2,897 ms.
+
 ## Mono keeps one tab by enforcing it, not by finding every path to it
 
 Removing the tab counter, the tray, "New tab" and the long-press entries removes

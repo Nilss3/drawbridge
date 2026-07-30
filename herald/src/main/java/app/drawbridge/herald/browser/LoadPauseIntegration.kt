@@ -88,6 +88,9 @@ class LoadPauseIntegration(
         scope?.cancel()
         scope = null
         overlay.visibility = View.GONE
+        wasLoading = false
+        lastUrl = null
+        suppressUntil = 0L
         current = null
     }
 
@@ -124,35 +127,53 @@ class LoadPauseIntegration(
      * The URL is still worth watching, because it arrives for navigations that
      * never flip `loading` — a restored session, a same-document change — and
      * because it is what names the destination on screen.
+     *
+     * Both are edge-triggered. `loading` staying true across several updates is
+     * one navigation, not several, and reacting to the level rather than the
+     * edge made the reader-view swap look like a fresh page.
      */
     private fun onNavigation(navigation: Navigation, scope: CoroutineScope) {
         val url = navigation.url
+        val beganLoading = navigation.loading && !wasLoading
+        val changedPage = url != lastUrl
+        wasLoading = navigation.loading
+        lastUrl = url
+
+        // Nothing below ends a hold that is already running. Only its own timer
+        // does, and `stop()`.
+        //
+        // That single rule is the whole fix for the pause being cut short
+        // between two reader-view pages, and it took two goes to find because
+        // there were two ways to cancel. Entering reader view happens *during*
+        // the pause for the page being entered, and it both trips the
+        // suppression and — before the middleware rewrites the URL back to the
+        // article's own — briefly makes the URL a `moz-extension:` one. Either
+        // path used to call `hide()`, so the article appeared the moment it was
+        // ready and the pause worked everywhere except on the pages most worth
+        // pausing for.
 
         // A blank tab is not a page anyone is waiting for, and neither is the
-        // extension page uBlock Origin's settings live at.
-        if (url == null || !url.startsWith("http", ignoreCase = true)) {
-            hide()
-            return
-        }
+        // extension page a reader view or uBlock Origin's settings live at.
+        if (url == null || !url.startsWith("http", ignoreCase = true)) return
 
-        hostLabel.text = ContentFilter.hostOf(url) ?: url
-
-        if (System.currentTimeMillis() < suppressUntil) {
-            hide()
-            return
-        }
+        if (!beganLoading && !changedPage) return
+        if (System.currentTimeMillis() < suppressUntil) return
 
         // Already holding: leave the running timer alone. Restarting it on
         // every change would turn a redirect chain into a multiple of the
         // pause — the wait belongs to the navigation, not to each hop of it.
         if (pause?.isActive == true) return
 
+        hostLabel.text = ContentFilter.hostOf(url) ?: url
         overlay.visibility = View.VISIBLE
         pause = scope.launch {
             delay(Edition.loadDelayMillis)
             hide()
         }
     }
+
+    private var wasLoading = false
+    private var lastUrl: String? = null
 
     private fun hide() {
         pause?.cancel()
