@@ -1,7 +1,7 @@
 {
-  "version": 13,
-  "issued_at": "2026-07-29T00:00:00Z",
-  "comment": "Adds LinkedIn to the social list and repoints required_apps at herald 0.1.5, which bundles uBlock Origin and fixes reader view. Carries policy 12's allowlist for the hosts the filters update from.",
+  "version": 14,
+  "issued_at": "2026-07-30T00:00:00Z",
+  "comment": "Repoints required_apps at herald 0.1.6. v0.1.6 also publishes herald mono, which is deliberately absent here: allowed_browser_package names herald, so listing mono would have drawbridge install it and then remove it again as a rogue browser. Switching a device to mono means changing allowed_browser_package, not adding an entry. Nothing about what is blocked changed.",
   "dns": {
     "upstreams": [
       "94.140.14.15",
@@ -141,23 +141,23 @@
   "required_apps": [
     {
       "package_name": "app.drawbridge.herald",
-      "version_code": 5,
+      "version_code": 6,
       "url": "https://github.com/Nilss3/drawbridge/releases/latest/download/herald-arm64-v8a-release.apk",
-      "sha256": "0d0ffb4c12a168b3a092baa195384951768c013e3d4acd16abdd827cd6909024",
+      "sha256": "a49b33487a4ff03113f08e67f1d5c5c527eb8898d72e7267023c17dd8de267dc",
       "abi": "arm64-v8a"
     },
     {
       "package_name": "app.drawbridge.herald",
-      "version_code": 5,
+      "version_code": 6,
       "url": "https://github.com/Nilss3/drawbridge/releases/latest/download/herald-armeabi-v7a-release.apk",
-      "sha256": "10a7911b595d522282651dcffcac9dd834bff790c39afb1c35e900063d2c26c8",
+      "sha256": "fd19fedcc4c4e62afa5173d8bcd4f37baec54c164342728947fd5a566d2805da",
       "abi": "armeabi-v7a"
     },
     {
       "package_name": "app.drawbridge.herald",
-      "version_code": 5,
+      "version_code": 6,
       "url": "https://github.com/Nilss3/drawbridge/releases/latest/download/herald-x86_64-release.apk",
-      "sha256": "9fd601cf879596e93fbd898b961259ec7efb3c596dc9950bebc11d6004fb0cba",
+      "sha256": "bc0cd12551ec347a09c54668b4a9322eb3cea4c0d25d56e6c440229b7eab476e",
       "abi": "x86_64"
     }
   ]
