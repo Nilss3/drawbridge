@@ -399,7 +399,7 @@ bitmap the extension supplies and no palette can reach it.
 
 ## The pause in mono is felt, not enforced
 
-The two-second wait is presentation. The page loads underneath it the whole
+The two-and-a-half-second wait is presentation. The page loads underneath it the whole
 time, so nothing is slower and the wait does not vary with the network.
 
 Delaying the load itself is possible and worse. `RequestInterceptor.onLoadRequest`

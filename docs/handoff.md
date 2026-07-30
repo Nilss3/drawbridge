@@ -48,9 +48,10 @@ compress into the APK.
 ### herald mono, unreleased on `main`
 
 A second edition of the browser for single-tasking: no tabs, everything in black
-and white, and a deliberate two-second pause before a page appears. Same
-filtering, same uBlock Origin, same bookmarks and history — it is a Gradle
-product flavour of `herald`, package `app.drawbridge.heraldmono`.
+and white, articles opened in reader view, and a deliberate two-and-a-half-second
+pause before a page appears. Same filtering, same uBlock Origin, same bookmarks
+and history — it is a Gradle product flavour of `herald`, package
+`app.drawbridge.heraldmono`.
 
 Not in any release, and **not yet installable on a managed device**: the policy's
 `allowed_browser_package` names `app.drawbridge.herald`, so drawbridge would
@@ -193,7 +194,9 @@ Verified on the `herald_test` emulator for herald mono:
 - **No tabs**: the counter and tray are gone, `target="_blank"` and both forms
   of `window.open` load in the current page with working back history, and the
   persisted session holds exactly one tab afterwards.
-- **The two-second pause**, naming the destination while it holds.
+- **The pause**, naming the destination while it holds, and **reader view
+  entering itself** on a readerable page — including that turning it off stays
+  off, and that entering it does not trigger a second pause.
 - **The standard edition is unchanged** — colour, tab counter, no pause — which
   is the regression that mattered most.
 

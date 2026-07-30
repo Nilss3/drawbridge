@@ -9,14 +9,14 @@ Two apps in one repo:
 | | | |
 |---|---|---|
 | **herald** | `herald/` | A real browser (GeckoView) that enforces the blocklist on every page and subresource it loads, with uBlock Origin built in. Tabs, bookmarks with folders and import/export, searchable history, saved passwords, reader view, day/night. |
-| **herald mono** | `herald/` | The same browser, built for single-tasking: no tabs, every page in black and white, and a deliberate two-second pause before a page appears. A product flavour of herald, not a fork. |
+| **herald mono** | `herald/` | The same browser, built for single-tasking: no tabs, every page in black and white, articles opened straight into reader view, and a deliberate pause before a page appears. A product flavour of herald, not a fork. |
 | **drawbridge** | `dpc/` | The device policy controller: a device-wide DNS filter, app blocking, and the restrictions that stop the whole thing being switched off. |
 | *policy* | `policy/` | Shared library: the signed policy document, blocklist compilation, and the update poller both apps use. |
 
 ## herald mono
 
-Same filtering, same ad blocking, same bookmarks and history — and three things
-taken away, for a phone that should be dull to pick up:
+Same filtering, same ad blocking, same bookmarks and history — and a browser
+stripped back, for a phone that should be dull to pick up:
 
 - **No tabs.** One page at a time. Links that ask for a new window open in the
   page you are on, and anything that manages to create a tab anyway is collapsed
@@ -24,9 +24,11 @@ taken away, for a phone that should be dull to pick up:
 - **No colour.** Pages, images and video all render in black and white. A menu
   entry restores colour for the page you are on — for the graph or map that
   cannot be read without it — and it lapses the moment you navigate away.
-- **A two-second pause** before a page appears, naming where you are going while
-  it waits. The page loads underneath, so nothing is actually slower; the
-  friction is the point.
+- **Reader view by default.** Any page Gecko can strip down to its article
+  opens that way. Turning it off on a page is remembered until you leave.
+- **A two-and-a-half-second pause** before a page appears, saying "Pause to
+  think while loading" and naming where you are going. The page loads
+  underneath, so nothing is actually slower; the friction is the point.
 
 It is a separate app with its own package, so a device runs herald *or* herald
 mono — whichever `allowed_browser_package` names — and never both.
