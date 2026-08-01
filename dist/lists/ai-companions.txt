@@ -7,6 +7,11 @@
 # General-purpose assistants (chatgpt.com, claude.ai, gemini.google.com) are
 # deliberately not listed — add them to `blocked_domains` in the policy if you
 # want them blocked too.
+#
+# Grok is the exception, and is here rather than left to that rule: it ships a
+# companion mode with deliberately unfiltered personas, which is the thing this
+# list is for. Its home inside X is already covered — x.com is on the social
+# list — so what these entries add is the standalone app and site.
 
 character.ai
 aidungeon.io
@@ -63,3 +68,7 @@ narrus.ai
 tavernai.net
 risuai.net
 sillytavern.app
+
+# xAI / Grok
+grok.com
+x.ai
