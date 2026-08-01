@@ -13,60 +13,48 @@ machine, what was and was not verified, and what to do next.
 | | |
 |---|---|
 | Repo | https://github.com/Nilss3/drawbridge — public, `main`, 41 commits |
-| Latest published release | [v0.1.6](https://github.com/Nilss3/drawbridge/releases/tag/v0.1.6), 9 assets |
-| Live policy | version **14** — what devices actually fetch |
-| **v0.1.7** | **built, signed and staged in `dist/release/`. Not committed, not pushed, not published.** |
-| Policy in the tree | version **19**, signed, bundled, pinning the 0.1.7 browsers |
+| Release | [v0.1.7](https://github.com/Nilss3/drawbridge/releases/tag/v0.1.7), 9 assets, published and not flagged |
+| Live policy | version **19**, live at `dist/policy.signed.json` on `main` |
 | Apps | drawbridge `versionCode 8` / `0.1.7`; herald and herald mono `versionCode 7` / `0.1.7` |
 | Tests | 282 unit tests across four build variants, lint clean |
 
-### v0.1.7 is cut but not out
+### v0.1.7 is out, and was checked from the outside
 
-Everything up to the last command of
-[the release procedure](policy.md#releases-are-cut-locally-not-in-ci) has been
-done, in order: both browsers built, staged under their published names, hashed
-into `required_apps`, the policy signed as 19 and copied into the bundled asset,
-then drawbridge built carrying it. `tools/stage-release.sh` reports every pinned
-APK present under the right name with a matching hash. All nine artefacts are
-signed with the release certificate `f662a801…`, which is the one the
-provisioning QR pins, so the existing QR stays valid.
+Published 2026-08-01, in two commits so the release existed before the policy
+named it: the code and `dist/policy.json` first, then `dist/policy.signed.json`
+and `dist/lists/ai-companions.txt` together once the assets were up. That order
+is worth repeating — `required_apps` points at `/releases/latest/download/`, and
+a policy that goes live first has every device fetching a 404 for as long as the
+upload takes.
 
-Three commands remain, and all three are outward-facing:
+Verified against the *published* artefacts rather than the local ones:
 
-```bash
-git add -A && git commit          # the source, the policy and dist/release/SHA256SUMS
-git push                          # publishes the policy and the blocklists
-gh release create v0.1.7 dist/release/*.apk dist/release/SHA256SUMS \
-    dist/release/provisioning-qr.json
-```
+- the policy fetched from `raw.githubusercontent.com` is version 19 and verifies
+  against the trusted keys in the APKs;
+- `ai-companions.txt` fetched from `main` hashes to exactly what that policy
+  pins, so devices accept it rather than silently dropping the category;
+- all six APKs in `required_apps` return 200 and hash to their pins;
+- the QR's own `dpc-release.apk` URL returns 200;
+- the release is neither a draft nor a pre-release, so `/releases/latest`
+  resolves to it.
 
-**Order matters between the last two.** `required_apps` in the pushed policy
-names APKs under `/releases/latest/download/`; if the policy goes live before the
-release exists, every device fetches a 404 until it does. Push and publish
-together, and do not leave the release a draft or a pre-release —
-`/releases/latest` skips both.
+### Live policy 19 uninstalls WhatsApp
 
-### The blocklist and the policy have to move together
-
-Policy 19 re-pins `ai-companions.txt` because Grok was added to it. That list is
-served from `main` and checked against the hash in the policy, so pushing one
-without the other means every device fetches a list whose checksum is wrong and
-**silently drops it** — losing the whole AI-companion category, not just Grok.
-One commit, both files.
-
-### Publishing policy 19 will uninstall WhatsApp
-
-Read this before pushing `dist/policy.signed.json`.
+This has now happened, or will at the next poll of any device that exists.
 
 Policy 19 puts `com.whatsapp` and `com.whatsapp.w4b` in `blocked_packages` and
 `whatsapp.com` / `whatsapp.net` / `wa.me` in `blocked_domains`, because the
 "Allow WhatsApp (14+)" option can only mean something if the base policy blocks
 what it allows. The option is `default_enabled: false`. So **any already
-provisioned device that polls will remove WhatsApp**, silently, within a day —
-and switching the option on afterwards does not reinstall it.
+provisioned device that polls removes WhatsApp**, silently, within a day — and
+switching the option on afterwards does not reinstall it. Intended, but not a
+no-op the way policy 14 was: if a device had WhatsApp and should keep it, switch
+the option on before it polls.
 
-That is the intended behaviour, but it is not a no-op the way policy 14 was.
-Either switch the option on before the device polls, or accept the removal.
+The same edit re-pinned `ai-companions.txt`, which is why the two files had to
+be published in one commit: a device that gets the policy without the matching
+list fails the checksum and drops the whole AI-companion category, not just
+Grok. Remember that for any future edit to a list this repo hosts.
 
 Signal goes the other way: `org.thoughtcrime.securesms` is now in
 `exempt_packages` and `signal.org` in `allowed_domains`, because the WhatsApp
@@ -81,11 +69,6 @@ that can exist on the phone" false on every device reading it — and that
 paragraph is the main thing a parent reads before locking. 19 is the fix, in all
 three languages. Worth remembering when changing what a policy *does*: the
 sentence describing it lives in the same file and does not update itself.
-
-Note also that the apps in the tree bundle policy 19 while the live document is
-14, so `PolicyManager.refresh` correctly refuses it as a rollback and logs
-`Served policy version 14 is older than the installed version 19`. That line in
-the state file is the expected steady state until 19 is pushed, not a fault.
 
 ### drawbridge is one screen and one button now
 
@@ -384,22 +367,19 @@ Each of these looks like a bug and is not, or bites silently:
 
 ## Reasonable next steps
 
-1. **Back up both keys, before publishing anything.** Still the largest risk in
-   the project, and the moment v0.1.7 is out there is the moment losing the
-   release keystore starts stranding real devices.
-2. **Publish v0.1.7, or decide not to.** It is built, signed and staged; the
-   three remaining commands are [at the top](#v017-is-cut-but-not-out). Two
-   things to weigh first: it removes WhatsApp from any device that polls (see
-   [above](#publishing-policy-19-will-uninstall-whatsapp)), and the policy and
-   `dist/lists/ai-companions.txt` have to go in the same commit.
-3. **Provision a real phone by QR** — the one major untested path, and the whole
-   point of the release. The Nothing A059 is available and unmanaged.
-4. **Use herald mono properly and decide whether it is right.** Specifically
+1. **Provision a real phone by QR** — the one major untested path, and the whole
+   point of the release. The Nothing A059 is available and unmanaged. Doing this
+   also exercises the two things v0.1.7 changed that no device owner has seen
+   yet: both browsers surviving the app blocker, and the new configuration
+   screen with Device Owner actually granted.
+2. **Keep both keys backed up.** They were backed up before v0.1.7 went out; from
+   here on every published release depends on that staying true.
+3. **Use herald mono properly and decide whether it is right.** Specifically
    whether the TextureView backend costs frame rate, whether 2.5 s is the right
    pause, and whether reader-view-by-default is too eager on news sites. If
    scrolling drags, the documented fallback is a CSS `filter: grayscale(1)`,
    which costs `position: fixed` breakage instead.
-5. Then, in rough order of value:
+4. Then, in rough order of value:
    - **Drop unused ABIs.** `armeabi-v7a` and `x86_64` have never been downloaded
      by anything, and now cost double what they did. Dropping both would take a
      release from ~1.1 GiB to ~450 MiB. `x86_64` was kept deliberately for
