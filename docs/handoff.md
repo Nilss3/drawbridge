@@ -219,9 +219,14 @@ brew install --cask android-commandlinetools
 ### Devices
 
 - **A real phone**: Nothing A059, Android 16, arm64, serial `00146151P000419`.
-  **Not managed** — no device owner. Both herald and herald mono 0.1.6 are
-  installed on it. This is now the only place rendering performance can be
-  judged.
+  **Not managed** — no device owner. Both herald and herald mono are installed,
+  on the **v0.1.7 release builds** as of 2026-08-01 (it had been on 0.1.5, not
+  the 0.1.6 an earlier version of this file claimed — check rather than trust
+  the note). This is still the only place rendering performance can be judged.
+
+  It comes up `unauthorized` after a while and needs the *Allow USB debugging*
+  prompt accepted on the phone before adb will talk to it. `adb kill-server`
+  then re-plugging is what makes the prompt reappear.
 - **Emulator `Medium_Phone_API_36.0`** — the *provisioned* one. drawbridge is
   device owner and the installed herald is a release build, so a debug herald
   cannot be installed over it.
@@ -270,6 +275,11 @@ Verified on the unprovisioned `herald_test` emulator for the new drawbridge UI:
   the loader then base64-encodes again — and doing so **in both light and dark
   mode**, showing the day scene and the night one respectively
 - **All three launcher icons** in the Pixel launcher's circular mask
+- **v0.1.7 on the Nothing A059**, installed from the published release APKs over
+  the 0.1.5 that was on it: both editions report `0.1.7` / `versionCode 7`, both
+  bundle policy 18 as designed, and the block page renders with the night scene —
+  the phone is in dark mode, so that is the theme switch working on real
+  hardware rather than on an emulator told what to think
 - **herald following drawbridge's switch, live.** WhatsApp Web blocked with the
   option off, loading with it on, blocked again with it off — all three in the
   *same herald process* (checked by pid), so it was the `ContentObserver` doing
