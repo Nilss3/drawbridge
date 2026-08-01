@@ -66,7 +66,22 @@ class ReaderViewIntegration(
         showControls = null
     }
 
-    override fun onBackPressed(): Boolean = feature.onBackPressed()
+    /**
+     * Back leaves reader view, and — in mono — has to be remembered as a
+     * dismissal or it does not appear to leave at all.
+     *
+     * `ReaderViewFeature.onBackPressed` hides reader view and reports that it
+     * handled the press. In mono that put a readerable page with reader view off
+     * in front of [onReaderStateChanged], which is exactly the condition it
+     * turns reader view *on* for — so the article came straight back and the
+     * button looked dead. A dismissal is a dismissal however it is made.
+     */
+    override fun onBackPressed(): Boolean {
+        val leavingReaderView = tab()?.readerState?.active == true
+        val handled = feature.onBackPressed()
+        if (handled && leavingReaderView) dismissedForPage = true
+        return handled
+    }
 
     /**
      * Enters reader view by itself once Gecko reports the page as readerable.

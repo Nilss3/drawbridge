@@ -2,6 +2,7 @@ package app.drawbridge.herald.filter
 
 import android.content.Context
 import app.drawbridge.herald.HeraldPolicy
+import app.drawbridge.herald.browser.LoadPauseIntegration
 import mozilla.components.browser.errorpages.ErrorPages
 import mozilla.components.browser.errorpages.ErrorType
 import mozilla.components.concept.engine.EngineSession
@@ -46,6 +47,12 @@ class HeraldRequestInterceptor(private val context: Context) : RequestIntercepto
         // tab — one blocked tracker frame, and an article the filter was happy
         // with disappeared. Deny cancels just that frame and leaves the page.
         if (isSubframeRequest) return RequestInterceptor.InterceptionResponse.Deny
+
+        // Mono holds the screen for a moment before a page appears. This page is
+        // not one anybody is waiting for, and pausing to think on the way to a
+        // wall is just a slow no. A no-op in the standard edition, which has no
+        // pause to cancel.
+        LoadPauseIntegration.current?.cancelForBlockedPage()
 
         return RequestInterceptor.InterceptionResponse.Content(
             data = BlockedPage.create(context, uri),

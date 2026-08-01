@@ -60,7 +60,11 @@ class LoadPauseIntegration(
      * change the pause watches for may never arrive — and the flag then sat
      * there and swallowed the pause for the next page the reader actually asked
      * for. A deadline cleans up after itself.
+     *
+     * Volatile because [cancelForBlockedPage] is called from the thread Gecko
+     * runs the request interceptor on, not from the main one.
      */
+    @Volatile
     private var suppressUntil = 0L
 
     override fun start() {
@@ -100,6 +104,25 @@ class LoadPauseIntegration(
      */
     fun skipImminentPause() {
         suppressUntil = System.currentTimeMillis() + SUPPRESSION_WINDOW_MS
+    }
+
+    /**
+     * Drops the pause for a page that is about to be blocked.
+     *
+     * The pause is meant to sit between wanting a page and getting it. There is
+     * nothing to think about on the way to a wall: holding the screen for two
+     * and a half seconds and *then* saying no reads as the browser being slow,
+     * and it made the block page feel like a punishment rather than a fact.
+     *
+     * Both halves are needed because the order is not fixed. The interceptor may
+     * run before the store reports the load, in which case the deadline stops
+     * the pause from starting; or after, in which case a hold is already on
+     * screen and has to come down. Called from Gecko's thread, so the hiding is
+     * posted rather than done here.
+     */
+    fun cancelForBlockedPage() {
+        suppressUntil = System.currentTimeMillis() + SUPPRESSION_WINDOW_MS
+        scope?.launch { hide() }
     }
 
     companion object {

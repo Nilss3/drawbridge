@@ -1,4 +1,4 @@
-# Handoff — state as of 2026-08-01
+# Handoff — state as of 2026-08-02
 
 Everything about *how the system works* lives in [README](../README.md),
 [design-decisions](design-decisions.md), [policy](policy.md),
@@ -16,7 +16,7 @@ machine, what was and was not verified, and what to do next.
 | Release | [v0.1.7](https://github.com/Nilss3/drawbridge/releases/tag/v0.1.7), 9 assets, published and not flagged |
 | Live policy | version **19**, live at `dist/policy.signed.json` on `main` |
 | Apps | drawbridge `versionCode 8` / `0.1.7`; herald and herald mono `versionCode 7` / `0.1.7` |
-| Tests | 282 unit tests across four build variants, lint clean |
+| Tests | 302 unit tests across four build variants, lint clean |
 
 ### v0.1.7 is out, and was checked from the outside
 
@@ -69,6 +69,23 @@ that can exist on the phone" false on every device reading it — and that
 paragraph is the main thing a parent reads before locking. 19 is the fix, in all
 three languages. Worth remembering when changing what a policy *does*: the
 sentence describing it lives in the same file and does not update itself.
+
+### Three browser bugs are fixed on `main` and not in v0.1.7
+
+Found by using the released build on the phone. All three are fixed, tested and
+committed; none of them is in anything a device can download. Cutting v0.1.8
+means the ordinary release procedure — and, because herald changed, a policy
+re-pin and re-sign with it.
+
+| | Where | Cause |
+|---|---|---|
+| The address bar cleared itself while typing | both editions | `ToolbarPresenter` calls `setSearchTerms` on every state update, which in edit mode replaces the field's text. Guarded by `EditSafeToolbar`. |
+| Back did nothing in reader view | mono | Back *did* leave reader view; the automatic entry put it straight back. Back now counts as a dismissal. |
+| The pause ran on the way to a blocked page | mono | Nothing to think about on the way to a wall. The interceptor cancels it. |
+
+Verified on the emulator: the block page arrives with no pause and a normal page
+still gets one; back leaves reader view and it stays left; and a URL typed while
+a page loads survives both the load and the reader-view swap that follows it.
 
 ### drawbridge is one screen and one button now
 
@@ -321,6 +338,11 @@ Not verified, and worth doing:
   first after provisioning.
 - **The Dutch and French translations by someone who reads them properly.** They
   are complete and lint-clean, not reviewed.
+- **Whether the address bar still clears.** Three bugs were found by using
+  v0.1.7 on the phone and are fixed on `main` but **not released** — see below.
+  Two of them are provably gone; the URL-bar one had one definite cause, which is
+  fixed and covered by a test, but it was reported as intermittent and only
+  sustained use will say whether that was the whole of it.
 - **herald mono under sustained real use.** It is installed on the phone but
   only briefly exercised. In particular **TextureView rendering performance** —
   mono moves GeckoView off its default SurfaceView, which copies a frame more.
@@ -369,6 +391,14 @@ Each of these looks like a bug and is not, or bites silently:
   `build/outputs` directly.
 - **`ReaderViewMiddleware` is load-bearing and fails silently.** Without it the
   reader feature never re-checks a page after navigation. No exception, no log.
+- **`ToolbarPresenter` writes into the field being typed in.** Every
+  `BrowserState` update calls `setSearchTerms`, and in edit mode that *replaces*
+  the text. `EditSafeToolbar` is the guard; anything that talks to the toolbar
+  through the `Toolbar` interface has to go through it, and it owns the single
+  `setOnEditListener` slot.
+- **In mono, anything that turns reader view off has to say so.** The automatic
+  entry re-reads `readerable && !active` and will put the article straight back,
+  which is what made the back button look dead. Set `dismissedForPage`.
 - **The phone sleeps mid-test**, which produces entirely black screenshots that
   look like a rendering bug. `adb shell svc power stayon usb` while testing, and
   set it back to `false` afterwards.

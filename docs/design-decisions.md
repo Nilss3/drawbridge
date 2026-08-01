@@ -443,6 +443,46 @@ watch for a flash on slow loads. Neither has been measured on real hardware.
 The toolbar is filtered too, because uBlock Origin's browser-action icon is a
 bitmap the extension supplies and no palette can reach it.
 
+## The address bar is wrapped so the library cannot empty it
+
+`ToolbarPresenter` re-renders on **every** `BrowserState` update, and one thing
+it does unconditionally is `toolbar.setSearchTerms(tab.searchTerms)`.
+`BrowserToolbar` applies that only while the toolbar is in edit mode — only while
+someone is typing — and applying it means `EditToolbar.editSuggestion`, which
+calls `updateUrl` and *replaces the field's text*.
+
+For an ordinary page the search terms are empty, so the field empties. That is
+the whole of "the URL bar sometimes clears while I type": intermittent only
+because it needs a state update to land mid-keystroke — a page still loading,
+uBlock Origin's badge counter ticking, the periodic session autosave, the
+reader-view swap. It affected both editions and was in every release up to and
+including v0.1.7.
+
+`EditSafeToolbar` holds those updates back while editing rather than dropping
+them, because `BrowserToolbar` keeps the last search terms it was given and uses
+them to prefill the field the next time edit mode is opened. Suppressing them
+outright would also fix the bug and would quietly lose that prefill; suppressing
+them only while editing keeps both, since a page that loads while nobody is
+typing still updates them.
+
+It is a wrapper and not a subclass because `BrowserToolbar` is final.
+`ToolbarFeature` takes the `Toolbar` *interface*, which is the seam. One
+consequence worth knowing: the wrapper owns the toolbar's single edit listener,
+so anything else that wants `setOnEditListener` has to go through it.
+
+## Leaving reader view by the back button counts as dismissing it
+
+`ReaderViewFeature.onBackPressed` hides reader view and reports that it handled
+the press. In mono that left a readerable page with reader view off — which is
+exactly the condition the automatic entry turns it back *on* for. The article
+returned immediately and the back button looked dead.
+
+The fix is not to special-case back but to treat it as what it is. The
+`dismissedForPage` flag that already stops automatic re-entry after an explicit
+toggle is now also set when back leaves reader view, so a dismissal is a
+dismissal however it is made. A second back press then goes back in history, and
+navigating anywhere clears the flag with the page it belonged to.
+
 ## The pause in mono is felt, not enforced
 
 The two-and-a-half-second wait is presentation. The page loads underneath it the whole
@@ -455,6 +495,15 @@ loses POST bodies on form submissions. Wrapping GeckoView's own navigation
 delegate — which *does* return a deferrable `GeckoResult` — would work, and takes
 herald off the Android Components abstraction it otherwise sits cleanly on top
 of.
+
+**There is no pause on the way to a wall.** A blocked page used to get the full
+two and a half seconds and then say no, which reads as the browser being slow
+rather than deliberate, and made the block page feel like a punishment. The
+interceptor already knows it is about to block, so it cancels the pause there.
+Both a running hold and one about to start have to be handled, because the
+interceptor and the store's `loading` flag do not arrive in a fixed order —
+hence a deadline *and* a hide, and a `@Volatile` field, since the interceptor
+runs on Gecko's thread.
 
 The pause begins when `loading` turns true, not when the URL changes. The first
 attempt used the URL and was wrong in a way only the device showed: the URL

@@ -74,8 +74,14 @@ class ToolbarIntegration(
 
     private val menuController: MenuController = BrowserMenuController()
 
+    /**
+     * The presenter writes into the toolbar on every state update, including
+     * into the field being typed in. [EditSafeToolbar] is what stops that; see
+     * its KDoc. Only this feature is wrapped — everything else here talks to the
+     * real toolbar.
+     */
     private val toolbarFeature = ToolbarFeature(
-        toolbar,
+        EditSafeToolbar(toolbar),
         store,
         sessionUseCases.loadUrl,
         { searchTerms -> context.components.useCases.searchUseCases.defaultSearch.invoke(searchTerms) },
