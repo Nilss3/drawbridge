@@ -46,7 +46,8 @@ hold, which is what makes replaying an old, permissive policy fail.
 | `blocked_domains` | Extra domains on top of the lists. Suffix matching: `example.com` covers `www.example.com`. |
 | `allowed_domains` | Wins over everything else, in the DNS filter and in herald alike. Use it to carve an exception out of a bulk list — and see the note below, because it is also what keeps the filter able to update itself. |
 | `blocked_packages` | Apps drawbridge removes on sight. |
-| `allowed_browser_package` | The one browser allowed to exist. Every other browser is removed or hidden. |
+| `allowed_browser_package` | The browser tapped links are handed to, and the first one installed. Always a member of the allowed set. |
+| `allowed_browser_packages` | Every browser allowed to exist. Anything else that registers a browser intent filter is removed or hidden. **Must agree with `required_apps`** — a browser named in one and not the other is installed and removed on a loop. Empty means "just `allowed_browser_package`". |
 | `exempt_packages` | Escape valve for a device-specific app that would otherwise be caught. |
 | `required_apps` | APKs drawbridge installs if missing — herald above all. Pinned by SHA-256, and filtered by `abi` so one policy serves all of herald's per-ABI splits. |
 | `browser.blocked_url_patterns` | Regexes matched against the full URL — path-level rules DNS cannot express. herald only. |
@@ -86,8 +87,14 @@ be the one list that never updates.
 
 ## Profiles: named variants of one policy
 
+> **The document says "profile"; drawbridge's screen says "policy".** From
+> inside, a profile is a variant of the one signed document. From outside, to
+> whoever is holding the phone, "the policy this phone runs" is the only phrase
+> that means anything — nobody sets up a child's first phone thinking about
+> variant selection. The field names below are what you write in the JSON.
+
 A policy can offer named variants — "Everyday", "Schoolwork only" — chosen on the
-device behind the parent's PIN, the same authority that removes drawbridge. Each
+device behind the parent's key, the same authority that removes drawbridge. Each
 profile overrides the fields it names and inherits the rest, so it reads as a
 diff rather than a second policy that can drift out of step:
 
@@ -99,7 +106,11 @@ diff rather than a second policy that can drift out of step:
     {
       "id": "everyday",
       "name": "Everyday",
-      "description": "The usual rules."
+      "subtitle": "For a first phone, roughly 10 to 14",
+      "description": "The usual rules.",
+      "name_i18n": { "nl": "Alledaags", "fr": "Au quotidien" },
+      "subtitle_i18n": { "nl": "Voor een eerste telefoon" },
+      "description_i18n": { "nl": "De gewone regels." }
     },
     {
       "id": "schoolwork",
@@ -111,6 +122,20 @@ diff rather than a second policy that can drift out of step:
   ]
 }
 ```
+
+`name`, `subtitle` and `description` are the three lines the picker shows, in
+that order: which profile this is, who it is for, and what it actually does.
+
+### Words in the policy carry their own translations
+
+drawbridge's own screens are translated in the APK, but a profile's name and
+description come from *this document*, so switching the app to Dutch would
+otherwise leave half the screen in English. Every human-readable field therefore
+has an optional `_i18n` sibling keyed by two-letter language code, as above. A
+missing entry falls back to the untranslated field rather than blanking, so a
+policy can add a language without every profile being retranslated in the same
+edit — and an older install reading a newer policy sees English rather than
+nothing.
 
 A profile may override `dns`, `blocklists`, `blocked_domains`, `allowed_domains`,
 `blocked_packages`, `allowed_packages` and `exempt_packages`. An empty list is an
@@ -129,9 +154,67 @@ does not allow, immediately. Choosing the looser one again does not reinstall
 anything — that is a property of removal, not of profiles. The device asks for
 confirmation and says so before applying.
 
-herald is not profile-aware: it keeps filtering on the base policy. On a managed
-device that costs nothing, because a profile's stricter lists are enforced at the
-DNS layer, which the browser's traffic goes through anyway.
+**herald follows the same selection.** On a managed device it asks drawbridge
+which profile and which options are in force, so the browser and the DNS layer
+enforce the same reading of this document. The standalone browser has nothing to
+ask and follows `default_profile` and the options' own `default_enabled`. See
+[design-decisions](design-decisions.md#herald-reads-drawbridges-selection-or-it-enforces-a-different-policy).
+
+## Options: one switch each
+
+The choice a parent actually wants to make is rarely "strict or relaxed" but
+"everything as it is, except this one app my child's class group runs on".
+Expressing that as a second profile means maintaining two near-identical copies
+of the policy that drift. An option keeps one policy and adds a switch:
+
+```jsonc
+{
+  "options": [
+    {
+      "id": "whatsapp",
+      "name": "Allow WhatsApp",
+      "recommended_age": 14,
+      "description": "Lets the WhatsApp app run and reach its servers.",
+      "default_enabled": false,
+      "exempt_packages": ["com.whatsapp", "com.whatsapp.w4b"],
+      "allowed_domains": ["whatsapp.com", "whatsapp.net", "wa.me"]
+    }
+  ]
+}
+```
+
+**An option only ever widens what is permitted.** It can exempt packages from
+removal, add to an allowlist a profile has already turned on, and name domains
+that must resolve. It cannot block anything. That is what makes the order of
+application irrelevant — profile first, then options — and makes the effect of
+switching one off easy to state: the base policy, unchanged.
+
+Which means **an option that allows something only means anything if the base
+policy blocks it**. `blocked_packages` has to name `com.whatsapp`, and
+`blocked_domains` has to name `whatsapp.com`, or the switch does nothing whether
+it is on or off. Get one of the two and not the other and you have an option that
+half works: the app installs but cannot reach its servers.
+
+An allowed app whose servers are on a blocklist is an app that opens and does
+nothing, so `allowed_domains` belongs with the package rather than in the base
+policy — putting it in the base would allow those hosts whether the switch is on
+or not.
+
+| Field | Effect |
+|---|---|
+| `recommended_age` | Shown beside the name as "14+". Advice, not enforcement: nothing on the device knows how old its owner is. |
+| `default_enabled` | Whether it is on before anyone has been asked. A device that has been asked stores its own answer, and an empty stored list means "the parent turned everything off", not "nobody has chosen". |
+| `exempt_packages` | Spares those packages from the app blocker, including from `blocked_packages`. This is the field that does the work. |
+| `allowed_packages` | Added to the allowed set, but **only** when the running profile is already in allowlist mode. An option cannot switch allowlisting on. |
+| `allowed_domains` | Must resolve while the option is on. Wins over blocklists, as allow rules always do. |
+
+Switching an option **on** applies immediately — nothing is downloaded, and
+nothing can get stricter. Switching one **off** is asked about first, because
+taking an app back means uninstalling it, and switching the option on again does
+not reinstall it.
+
+A stored option id the policy no longer offers is dropped, so a relaxation cannot
+outlive the option that justified it.
 
 ### Search engines are a filtering decision
 

@@ -1,6 +1,8 @@
 package app.drawbridge.herald.filter
 
 import android.content.Context
+import android.util.Base64
+import androidx.annotation.RawRes
 import app.drawbridge.herald.HeraldPolicy
 import app.drawbridge.herald.R
 
@@ -8,11 +10,23 @@ import app.drawbridge.herald.R
  * The page shown instead of blocked content.
  *
  * Built as a self-contained string rather than fetched, so it renders with no
- * network and no assets — the icon is inline SVG and the styles are inline. The
- * blocked host is repeated in the page body because the address bar shows the
- * `data:` URL the engine loaded, not the site that was requested.
+ * network and no assets — including the illustration, which is read out of
+ * `res/raw` and inlined as a `data:` URI. Nothing on this page can be reached
+ * from the network, which matters: the one page a blocked device is guaranteed
+ * to see should not itself depend on the connection working.
+ *
+ * The blocked host is repeated in the page body because the address bar shows
+ * the `data:` URL the engine loaded, not the site that was requested.
  */
 object BlockedPage {
+
+    /**
+     * The two illustrations, base64-encoded, held for the life of the process.
+     *
+     * Worth caching: the pictures are the same every time, and a child who has
+     * hit a wall tends to hit it repeatedly.
+     */
+    private val scenes = java.util.concurrent.ConcurrentHashMap<Int, String>()
 
     /**
      * Returns the page as plain HTML.
@@ -48,12 +62,15 @@ object BlockedPage {
                   .host { background: #42414d !important; }
                 }
                 .card {
-                  background: #fff; border-radius: 16px; padding: 32px 28px;
-                  max-width: 26rem; width: 100%; text-align: center;
+                  background: #fff; border-radius: 16px; overflow: hidden;
+                  max-width: 30rem; width: 100%; text-align: center;
                   box-shadow: 0 2px 16px rgba(0,0,0,.08);
                 }
-                .mark { margin-bottom: 16px; }
-                .mark svg { width: 64px; height: 64px; }
+                /* The scene is the top of the card rather than a small mark in
+                   it: at a phone's width a 64px icon reads as an error, and this
+                   is not an error. */
+                .scene { display: block; width: 100%; height: auto; }
+                .body { padding: 24px 28px 32px; }
                 h1 { font-size: 1.25rem; margin: 0 0 12px; }
                 p { margin: 0 0 16px; line-height: 1.5; opacity: .85; }
                 .host {
@@ -65,27 +82,43 @@ object BlockedPage {
             </head>
             <body>
               <div class="card">
-                <div class="mark">
-                  <!-- A drawbridge, raised: two gate towers, both leaves up on
-                       their chains, water below. -->
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                       stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
-                       aria-hidden="true">
-                    <path d="M7 18V6M17 18V6"/>
-                    <path d="M2 15h5M17 15h5"/>
-                    <path d="M7 15l4-6M17 15l-4-6"/>
-                    <path d="M7 7l4 2.6M17 7l-4 2.6"/>
-                    <path d="M2 20.6q1.6-1.4 3.2 0t3.2 0 3.2 0 3.2 0 3.2 0"/>
-                  </svg>
+                <!--
+                  Both times of day travel with the page, and the browser picks.
+                  A build-time choice would have been half the bytes and wrong
+                  the moment the phone crossed into dark mode with the block page
+                  still open — the card under it turns, and a picture that did
+                  not would be the only bright thing on the screen.
+                -->
+                <picture>
+                  <source srcset="${scene(context, R.raw.blocked_scene_night)}"
+                          media="(prefers-color-scheme: dark)">
+                  <img class="scene" alt="" src="${scene(context, R.raw.blocked_scene_day)}">
+                </picture>
+                <div class="body">
+                  <h1>${title.escapeHtml()}</h1>
+                  <p>${message.escapeHtml()}</p>
+                  <span class="host">${host.escapeHtml()}</span>
                 </div>
-                <h1>${title.escapeHtml()}</h1>
-                <p>${message.escapeHtml()}</p>
-                <span class="host">${host.escapeHtml()}</span>
               </div>
             </body>
             </html>
         """.trimIndent()
     }
+
+    /**
+     * One illustration as a `data:` URI, or an empty one if it cannot be read.
+     *
+     * A missing picture must not cost the page: the wording is what the page is
+     * for, and an exception thrown here would leave the engine showing the site
+     * that was supposed to be blocked.
+     */
+    private fun scene(context: Context, @RawRes resource: Int): String =
+        scenes.getOrPut(resource) {
+            runCatching {
+                val bytes = context.resources.openRawResource(resource).use { it.readBytes() }
+                "data:image/webp;base64,${Base64.encodeToString(bytes, Base64.NO_WRAP)}"
+            }.getOrDefault("")
+        }
 
     private fun String.escapeHtml(): String = this
         .replace("&", "&amp;")

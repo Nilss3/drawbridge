@@ -1,4 +1,4 @@
-# Handoff — state as of 2026-07-30
+# Handoff — state as of 2026-08-01
 
 Everything about *how the system works* lives in [README](../README.md),
 [design-decisions](design-decisions.md), [policy](policy.md),
@@ -12,17 +12,135 @@ machine, what was and was not verified, and what to do next.
 
 | | |
 |---|---|
-| Repo | https://github.com/Nilss3/drawbridge — public, `main`, 38 commits |
-| Release | [v0.1.6](https://github.com/Nilss3/drawbridge/releases/tag/v0.1.6), 9 assets, published and not flagged |
-| Live policy | version 14, live at `dist/policy.signed.json` on `main` |
-| Apps | drawbridge `versionCode 7` / `0.1.6`; herald and herald mono `versionCode 6` / `0.1.6` |
-| Tests | 252 unit tests across four build variants, lint clean |
+| Repo | https://github.com/Nilss3/drawbridge — public, `main`, 41 commits |
+| Latest published release | [v0.1.6](https://github.com/Nilss3/drawbridge/releases/tag/v0.1.6), 9 assets |
+| Live policy | version **14** — what devices actually fetch |
+| **v0.1.7** | **built, signed and staged in `dist/release/`. Not committed, not pushed, not published.** |
+| Policy in the tree | version **19**, signed, bundled, pinning the 0.1.7 browsers |
+| Apps | drawbridge `versionCode 8` / `0.1.7`; herald and herald mono `versionCode 7` / `0.1.7` |
+| Tests | 282 unit tests across four build variants, lint clean |
 
-Nothing is stale: v0.1.6 carries everything on `main`, and policy 14 is live.
-Checked against the *published* artefacts rather than the local ones — the
-policy fetched from `raw.githubusercontent.com` is version 14 and verifies, and
-the herald APK downloaded from `/releases/latest/download/` hashes to exactly
-what `required_apps` names.
+### v0.1.7 is cut but not out
+
+Everything up to the last command of
+[the release procedure](policy.md#releases-are-cut-locally-not-in-ci) has been
+done, in order: both browsers built, staged under their published names, hashed
+into `required_apps`, the policy signed as 19 and copied into the bundled asset,
+then drawbridge built carrying it. `tools/stage-release.sh` reports every pinned
+APK present under the right name with a matching hash. All nine artefacts are
+signed with the release certificate `f662a801…`, which is the one the
+provisioning QR pins, so the existing QR stays valid.
+
+Three commands remain, and all three are outward-facing:
+
+```bash
+git add -A && git commit          # the source, the policy and dist/release/SHA256SUMS
+git push                          # publishes the policy and the blocklists
+gh release create v0.1.7 dist/release/*.apk dist/release/SHA256SUMS \
+    dist/release/provisioning-qr.json
+```
+
+**Order matters between the last two.** `required_apps` in the pushed policy
+names APKs under `/releases/latest/download/`; if the policy goes live before the
+release exists, every device fetches a 404 until it does. Push and publish
+together, and do not leave the release a draft or a pre-release —
+`/releases/latest` skips both.
+
+### The blocklist and the policy have to move together
+
+Policy 19 re-pins `ai-companions.txt` because Grok was added to it. That list is
+served from `main` and checked against the hash in the policy, so pushing one
+without the other means every device fetches a list whose checksum is wrong and
+**silently drops it** — losing the whole AI-companion category, not just Grok.
+One commit, both files.
+
+### Publishing policy 19 will uninstall WhatsApp
+
+Read this before pushing `dist/policy.signed.json`.
+
+Policy 19 puts `com.whatsapp` and `com.whatsapp.w4b` in `blocked_packages` and
+`whatsapp.com` / `whatsapp.net` / `wa.me` in `blocked_domains`, because the
+"Allow WhatsApp (14+)" option can only mean something if the base policy blocks
+what it allows. The option is `default_enabled: false`. So **any already
+provisioned device that polls will remove WhatsApp**, silently, within a day —
+and switching the option on afterwards does not reinstall it.
+
+That is the intended behaviour, but it is not a no-op the way policy 14 was.
+Either switch the option on before the device polls, or accept the removal.
+
+Signal goes the other way: `org.thoughtcrime.securesms` is now in
+`exempt_packages` and `signal.org` in `allowed_domains`, because the WhatsApp
+option's own text tells the parent Signal is always allowed on this device. It
+was never blocked, but nothing stopped an upstream blocklist from starting to
+block it, and a claim on screen ought to be enforced rather than merely true so
+far.
+
+**The document's prose is UI, and it goes stale like UI.** 17 started installing
+both browsers, which made the profile description's "herald is the only browser
+that can exist on the phone" false on every device reading it — and that
+paragraph is the main thing a parent reads before locking. 19 is the fix, in all
+three languages. Worth remembering when changing what a policy *does*: the
+sentence describing it lives in the same file and does not update itself.
+
+Note also that the apps in the tree bundle policy 19 while the live document is
+14, so `PolicyManager.refresh` correctly refuses it as a rollback and logs
+`Served policy version 14 is older than the installed version 19`. That line in
+the state file is the expected steady state until 19 is pushed, not a fault.
+
+### drawbridge is one screen and one button now
+
+The PIN is gone. So are `SetupActivity`, `ProfilePicker` and
+`ParentCredentials` — replaced by a single configuration screen (language,
+policy, options, status, lock) and a `LockActivity` that mints the key on the way
+in and takes it back on the way out. `ParentKey` is what is left of the
+credential code, and it is about a third of the size.
+
+The reasoning is in
+[design-decisions](design-decisions.md#the-pin-is-gone-and-the-key-is-the-whole-credential).
+Four things will surprise someone reading the code cold:
+
+- **A fresh key is minted at every lock**, and no secret is stored at all while
+  the device is unlocked. `ParentKey.isLocked` is backed by the presence of the
+  key rather than a flag of its own.
+- **`ParentKey` also holds two timestamps**, and they outlive individual locks —
+  `unlock()` removes the hash and salt but not them. Only `clear()` takes
+  everything. See
+  [design-decisions](design-decisions.md#the-protected-since-date-is-the-cheap-tamper-check).
+- **Locking is the only button.** It applies the restrictions, starts the filter
+  and *then* seals the screen. There is no separate "turn on protection".
+- **`RemoveActivity` asks for nothing and lives in the overflow menu.** It is
+  only reachable from a screen that is already behind the key, so asking again
+  would be asking the same question twice.
+
+### The screen says "policy" where the document says "profile"
+
+They are the same thing. `Policy.profiles` is a list of variants of the one
+signed document; drawbridge's screen calls the selected one "the policy", because
+that is the phrase that means anything to a parent. The string resources are
+named `policy_*` and the model is still `Profile`. Do not "fix" one to match the
+other without deciding which audience the name is for.
+
+### There is artwork now, and it is generated
+
+Five painted illustrations live in `art/`: three icons and two scenes, the same
+place by day and by night.
+
+**herald's block page carries both** and lets its own `prefers-color-scheme`
+query choose, so the picture turns with the card under it — verified on device in
+both modes. They are two resources with distinct names rather than one name with
+a `-night` qualifier because both have to be inlined into the same document; a
+qualifier would give the page only one of them.
+
+**drawbridge takes the night one, always.** Its screen is read once, by a parent,
+deciding something; the time of day is not doing any work there.
+
+Nothing reads any of them at build time: `tools/make-artwork.sh` derives all
+three launcher icons, both block-page scenes and drawbridge's hero image from
+them. Run it after changing a master and commit what it writes.
+
+The old icon vectors were not deleted — they are the `<monochrome>` layer now,
+because a painting cannot be a themed icon. See
+[design-decisions](design-decisions.md#the-launcher-icons-are-paintings-the-themed-icons-are-still-vectors).
 
 ### There are now two browsers
 
@@ -32,22 +150,37 @@ view by default. It is a Gradle product flavour of the same module, package
 `app.drawbridge.heraldmono`, and shares essentially all of its source; what
 differs is named in `Edition` and switched on a `BuildConfig` flag.
 
-**A device runs one browser or the other, never both.**
-`allowed_browser_package` names one, and drawbridge removes every browser that
-is not it. This is why policy 14 lists **only herald** in `required_apps`:
-adding mono would have drawbridge install it and then remove it again as a rogue
-browser, on a loop. Switching a device to mono means changing
-`allowed_browser_package` — and then herald is the one that gets removed.
+**A managed device now gets both.** `allowed_browser_packages` names herald and
+herald mono, and `required_apps` installs both — six entries, three ABIs each.
+This used to be one browser or the other, and the reason was real: the app
+blocker removes browsers the policy does not name, so a browser in
+`required_apps` and not in the allowed list is installed and removed on a loop.
+The two lists have to agree. `allowed_browser_package` (singular) still decides
+which one tapped links open in.
 
-Both editions are published as installable APKs. Only herald is auto-installed.
+**herald obeys drawbridge's switches, not just the document.** The browser asks
+drawbridge which profile and which options are in force, over a read-only
+provider guarded by a `signature` permission. That is what makes "Allow
+WhatsApp" decide whether WhatsApp Web loads and not only whether the app
+survives. Without drawbridge — the standalone deliverable — there is nothing to
+ask and the browser follows the document's own defaults, which are the stricter
+reading.
 
 ### Build-order note, as designed
 
-herald and herald mono bundle policy **13**; drawbridge bundles **14**.
-`required_apps` pins the browsers by checksum and each browser embeds the
-policy, so the two are circular; the documented resolution is that the browsers
-ship one version behind. The bundled copy only applies until the first network
-poll.
+`required_apps` pins the browsers by checksum and each browser embeds the policy,
+so the two are circular; the documented resolution is that the browsers ship one
+version behind. The bundled copy only applies until the first network poll.
+
+In the staged v0.1.7 that offset came out right on its own, because the procedure
+produces it: **herald and herald mono bundle 18, drawbridge bundles 19** —
+verified by unzipping the built APKs, not assumed. Building the browsers before
+re-pinning and re-signing is what makes it happen, which is why the order in
+[policy.md](policy.md#releases-are-cut-locally-not-in-ci) is not a suggestion.
+
+(During development all three bundle whatever was last signed, since the asset
+lives in the shared `:policy` module. That is expected and not worth fixing
+between releases.)
 
 ### Sizes
 
@@ -126,10 +259,42 @@ Verified on the API 36 emulator, end to end, over several sessions:
   zero fallbacks across 20 lookups
 - Browser allowlisting — Chrome hidden, a rogue browser build uninstalled
 - PIN setup, recovery-code display, wrong-PIN rejection, removal without data
-  loss
+  loss — *for the credential scheme that has since been replaced; see below*
 - **The full auto-install path**: drawbridge fetched the policy from GitHub,
   downloaded the signed herald release, verified its SHA-256 and installed it
   silently in ~60 seconds
+
+Verified on the unprovisioned `herald_test` emulator for the new drawbridge UI:
+
+- **The whole lock cycle** — lock, key revealed once, *Done* disabled until the
+  checkbox is ticked, reopening lands on the challenge, a wrong key rejected
+  without clearing the real one, the real key accepted **in lower case and with
+  the dashes left out**, and the configuration screen back afterwards
+- **The protected-since date across a real `adb reboot`**: the phone came back
+  locked, with the same timestamp, and the lock screen showing it
+- **The option-toggle cancel path**, which used to re-fire the listener and read
+  a cancelled "turn it off" as switching it on
+- **`FLAG_SECURE` on the reveal**: `adb exec-out screencap` of that screen comes
+  back entirely black. Which also means you cannot screenshot the key while
+  testing — read it with `uiautomator dump`
+- **The configuration screen** in all three languages, including the profile card
+  and the option row, whose words come from the policy document rather than from
+  string resources
+- **The WhatsApp option** switching on and persisting to `state.json` as
+  `"optionIds":["whatsapp"]`
+- **The block page** rendering in GeckoView with the illustration inlined —
+  worth having checked, because the picture is base64-encoded into a page that
+  the loader then base64-encodes again — and doing so **in both light and dark
+  mode**, showing the day scene and the night one respectively
+- **All three launcher icons** in the Pixel launcher's circular mask
+- **herald following drawbridge's switch, live.** WhatsApp Web blocked with the
+  option off, loading with it on, blocked again with it off — all three in the
+  *same herald process* (checked by pid), so it was the `ContentObserver` doing
+  it rather than a restart. Then drawbridge uninstalled entirely: herald blocks
+  it again, which is the standalone fallback, and does not crash.
+- **The signature permission**: `dumpsys package app.drawbridge.herald` shows
+  `app.drawbridge.permission.READ_SELECTION: granted=true` on debug builds, where
+  both apps share the debug key
 
 Verified for the browser work:
 
@@ -148,9 +313,21 @@ Verified for the browser work:
 
 Not verified, and worth doing:
 
+- **The new drawbridge UI on a *provisioned* device.** Everything above was
+  exercised without Device Owner, so locking took the VPN-consent path rather
+  than the silent one, and no policy switch has actually swept apps. In
+  particular: applying a policy and turning the WhatsApp option **off** both run
+  `AppBlocker.sweep()`, and neither has been watched removing anything.
 - **QR provisioning on a real device.** The payload decodes and every URL it
   references returns 200, but no device has been provisioned by scanning it.
   This is still the single largest untested path.
+- **Both browsers actually surviving on a *provisioned* device.** The allowed set
+  and `required_apps` agree on paper and in the unit tests, but no device owner
+  has been watched installing herald mono and then *not* removing it. This is the
+  loop the old one-browser rule existed to prevent, so it is the thing to watch
+  first after provisioning.
+- **The Dutch and French translations by someone who reads them properly.** They
+  are complete and lint-clean, not reviewed.
 - **herald mono under sustained real use.** It is installed on the phone but
   only briefly exercised. In particular **TextureView rendering performance** —
   mono moves GeckoView off its default SurfaceView, which copies a frame more.
@@ -182,7 +359,12 @@ Each of these looks like a bug and is not, or bites silently:
   keys. Uninstall first, or build the variant that matches what is installed.
 - **The app blocker hides Chrome**, so hidden packages vanish from
   `pm list packages`; use `pm list packages -a`.
-- **Testing removal wipes the PIN.**
+- **Testing removal wipes the key**, and so does `pm clear`. Both leave the
+  device unlocked, which is right — but it means a test run never exercises the
+  challenge screen unless you lock again first.
+- **The reveal screen cannot be screenshotted.** `FLAG_SECURE` is on it
+  deliberately, so `screencap` returns black and there is no way to read the key
+  back out of an image. Use `adb shell uiautomator dump`, which is not blocked.
 - **aapt drops asset directories starting with an underscore.** Its default
   ignore list contains `<dir>_*`. This cost an afternoon when uBlock Origin's
   `_locales/` vanished from the APK and Gecko reported only
@@ -202,15 +384,22 @@ Each of these looks like a bug and is not, or bites silently:
 
 ## Reasonable next steps
 
-1. **Provision a real phone by QR** — the one major untested path, and the whole
+1. **Back up both keys, before publishing anything.** Still the largest risk in
+   the project, and the moment v0.1.7 is out there is the moment losing the
+   release keystore starts stranding real devices.
+2. **Publish v0.1.7, or decide not to.** It is built, signed and staged; the
+   three remaining commands are [at the top](#v017-is-cut-but-not-out). Two
+   things to weigh first: it removes WhatsApp from any device that polls (see
+   [above](#publishing-policy-19-will-uninstall-whatsapp)), and the policy and
+   `dist/lists/ai-companions.txt` have to go in the same commit.
+3. **Provision a real phone by QR** — the one major untested path, and the whole
    point of the release. The Nothing A059 is available and unmanaged.
-2. **Back up both keys.** Still the largest risk in the project.
-3. **Use herald mono properly and decide whether it is right.** Specifically
+4. **Use herald mono properly and decide whether it is right.** Specifically
    whether the TextureView backend costs frame rate, whether 2.5 s is the right
    pause, and whether reader-view-by-default is too eager on news sites. If
    scrolling drags, the documented fallback is a CSS `filter: grayscale(1)`,
    which costs `position: fixed` breakage instead.
-4. Then, in rough order of value:
+5. Then, in rough order of value:
    - **Drop unused ABIs.** `armeabi-v7a` and `x86_64` have never been downloaded
      by anything, and now cost double what they did. Dropping both would take a
      release from ~1.1 GiB to ~450 MiB. `x86_64` was kept deliberately for
@@ -221,8 +410,10 @@ Each of these looks like a bug and is not, or bites silently:
      `required_apps` points at `github.com`, which redirects to a
      `*.githubusercontent.com` asset host that has not been pinned down; a
      blocked redirect target would stop auto-install silently.
-   - **Localise to Dutch and French.** The UI is English-only and there are now
-     ~45 strings, many added by the bookmark and mono work.
+   - **Localise herald.** drawbridge is now English, Dutch and French; the
+     browser is still English-only, with ~45 strings. Note that drawbridge
+     cannot set it — the picker is a *per-app* locale and no API lets one app
+     set another's, so herald needs a picker of its own in its settings.
    - **Set `app_update`** so drawbridge can update itself. Circular, so it takes
      two rounds: publish the APK, then publish a policy naming its hash.
 
@@ -241,6 +432,8 @@ Each of these looks like a bug and is not, or bites silently:
 - `tools/vendor-ublock.sh` re-vendors uBlock Origin against a pinned hash. Do it
   as part of cutting a release; uBO's *code* is frozen until then, though its
   filter lists update themselves.
+- `tools/make-artwork.sh` regenerates every icon and scene from `art/`. It needs
+  ImageMagick and nothing else, and is never invoked by Gradle.
 - The emulator needs `-wipe-data` to test provisioning again, since device owner
   cannot be granted twice.
 - Watch the filter with

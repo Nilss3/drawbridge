@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    The languages drawbridge is translated into. From API 33 the system reads
+    this to build the per-app language entry in Settings, and to know which of
+    the phone's preferred locales this app can honour.
+
+    Keep it in step with Languages.supported; the picker inside the app and the
+    one in Settings are two doors onto the same setting.
+-->
+<locale-config xmlns:android="http://schemas.android.com/apk/res/android">
+    <locale android:name="en" />
+    <locale android:name="nl" />
+    <locale android:name="fr" />
+</locale-config>

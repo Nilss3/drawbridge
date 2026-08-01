@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="change_applied">
+        <item quantity="one">%1$s appliqué. 1 application retirée.</item>
+        <!-- French takes "de" from a million upwards. It will never come up here
+             — no phone has a million apps — but the category exists and leaving
+             it out is a lint error, so it is spelled correctly. -->
+        <item quantity="many">%1$s appliqué. %2$d d\'applications retirées.</item>
+        <item quantity="other">%1$s appliqué. %2$d applications retirées.</item>
+    </plurals>
+</resources>

@@ -25,27 +25,10 @@
             android:text="@string/remove_explanation"
             android:textAppearance="?attr/textAppearanceBodyMedium" />
 
-        <EditText
-            android:id="@+id/secretField"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:autofillHints="password"
-            android:hint="@string/remove_hint"
-            android:inputType="textVisiblePassword" />
-
-        <TextView
-            android:id="@+id/statusView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingTop="8dp"
-            android:textAppearance="?attr/textAppearanceBodyMedium"
-            android:textColor="?attr/colorError" />
-
         <Button
             android:id="@+id/removeButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
             android:text="@string/remove_action" />
 
         <Button

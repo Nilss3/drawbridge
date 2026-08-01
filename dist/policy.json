@@ -1,7 +1,7 @@
 {
-  "version": 14,
-  "issued_at": "2026-07-30T00:00:00Z",
-  "comment": "Repoints required_apps at herald 0.1.6. v0.1.6 also publishes herald mono, which is deliberately absent here: allowed_browser_package names herald, so listing mono would have drawbridge install it and then remove it again as a rogue browser. Switching a device to mono means changing allowed_browser_package, not adding an entry. Nothing about what is blocked changed.",
+  "version": 19,
+  "issued_at": "2026-08-01T00:00:00Z",
+  "comment": "v0.1.7. Blocks Grok: ai.x.grok joins blocked_packages, and grok.com and x.ai join the AI-companion list (whose sha256 is re-pinned below \u2014 the list and this document have to be pushed together or the checksum rejects it). Grok inside X needed nothing: com.twitter.android and x.com were already blocked. required_apps is re-pinned at herald 0.1.7, both editions and three ABIs each; every hash changed because the browsers were rebuilt.",
   "dns": {
     "upstreams": [
       "94.140.14.15",
@@ -50,7 +50,7 @@
       "url": "https://raw.githubusercontent.com/Nilss3/drawbridge/main/dist/lists/ai-companions.txt",
       "format": "domains",
       "category": "ai-companions",
-      "sha256": "b7ce385a74743d29d047a577efda103c66f6441dc7774f2c2da68b3b4b8f46dd"
+      "sha256": "68ea3a0782dae2e596b37c72e49c4969f78a121a0c0a51a1d77f77b88ce892f5"
     },
     {
       "id": "games",
@@ -60,7 +60,11 @@
       "sha256": "35669345fe5947f5231b848adaf3d020d1440c99c52870a2baacf90f624cf520"
     }
   ],
-  "blocked_domains": [],
+  "blocked_domains": [
+    "whatsapp.com",
+    "whatsapp.net",
+    "wa.me"
+  ],
   "allowed_domains": [
     "ublockorigin.github.io",
     "pgl.yoyo.org",
@@ -70,9 +74,15 @@
     "malware-filter.pages.dev",
     "curbengh.github.io",
     "raw.githubusercontent.com",
-    "blocklistproject.github.io"
+    "blocklistproject.github.io",
+    "signal.org",
+    "signal.me",
+    "signalcaptchas.org",
+    "whispersystems.org"
   ],
   "blocked_packages": [
+    "com.whatsapp",
+    "com.whatsapp.w4b",
     "com.facebook.katana",
     "com.facebook.lite",
     "com.facebook.orca",
@@ -82,6 +92,7 @@
     "com.ss.android.ugc.trill",
     "com.snapchat.android",
     "com.twitter.android",
+    "ai.x.grok",
     "com.reddit.frontpage",
     "com.google.android.youtube",
     "com.google.android.apps.youtube.music",
@@ -120,7 +131,56 @@
     "com.vrchat.mobile.playstore"
   ],
   "allowed_browser_package": "app.drawbridge.herald",
-  "exempt_packages": [],
+  "exempt_packages": [
+    "org.thoughtcrime.securesms"
+  ],
+  "profiles": [
+    {
+      "id": "default",
+      "name": "Default policy",
+      "subtitle": "Keeps out the toxic internet, for devices from 14yo minimum",
+      "description": "The web, filtered: adult sites, gambling, ads and trackers do not resolve, and safe search is forced on Google, Bing and YouTube. Social networks, video platforms, games and AI companions are blocked both as apps and as websites. herald and herald mono are the only browsers that can exist on the phone. All other apps \u2014 tools, productivity, streaming media and the like \u2014 stay untouched.",
+      "name_i18n": {
+        "nl": "Standaardbeleid",
+        "fr": "Politique par d\u00e9faut"
+      },
+      "subtitle_i18n": {
+        "nl": "Houdt het toxische internet buiten, voor toestellen vanaf minimum 14 jaar",
+        "fr": "Tient l'internet toxique \u00e0 distance, pour des appareils \u00e0 partir de 14 ans minimum"
+      },
+      "description_i18n": {
+        "nl": "Het web, gefilterd: pornosites, gokken, advertenties en trackers worden niet opgelost, en veilig zoeken staat vast aan op Google, Bing en YouTube. Sociale netwerken, videoplatformen, games en AI-gezelschapsapps zijn geblokkeerd, zowel als app als als website. herald en herald mono zijn de enige browsers die op de telefoon mogen bestaan. Alle andere apps \u2014 gereedschap, productiviteit, streamingdiensten en dergelijke \u2014 blijven ongemoeid.",
+        "fr": "Le web, filtr\u00e9 : les sites pour adultes, les jeux d'argent, la publicit\u00e9 et les traceurs ne se r\u00e9solvent pas, et la recherche s\u00e9curis\u00e9e est impos\u00e9e sur Google, Bing et YouTube. Les r\u00e9seaux sociaux, les plateformes vid\u00e9o, les jeux et les compagnons IA sont bloqu\u00e9s, en tant qu'applications comme en tant que sites. herald et herald mono sont les seuls navigateurs autoris\u00e9s sur le t\u00e9l\u00e9phone. Toutes les autres applications \u2014 outils, productivit\u00e9, services de streaming et autres \u2014 restent intactes."
+      }
+    }
+  ],
+  "default_profile": "default",
+  "options": [
+    {
+      "id": "whatsapp",
+      "name": "Allow WhatsApp",
+      "recommended_age": 14,
+      "description": "WhatsApp carries privacy risks, has toxic social media features and an annoying chatbot. Signal is always allowed on this device, even though as a group chat app with risk of cyberbullying we also recommend 14+ and/or parental guidance.",
+      "default_enabled": false,
+      "exempt_packages": [
+        "com.whatsapp",
+        "com.whatsapp.w4b"
+      ],
+      "allowed_domains": [
+        "whatsapp.com",
+        "whatsapp.net",
+        "wa.me"
+      ],
+      "name_i18n": {
+        "nl": "WhatsApp toestaan",
+        "fr": "Autoriser WhatsApp"
+      },
+      "description_i18n": {
+        "nl": "WhatsApp brengt privacyrisico's mee, heeft toxische socialemediafuncties en een vervelende chatbot. Signal is op dit toestel altijd toegelaten, al raden we ook daar 14+ en/of ouderlijke begeleiding aan: als groepschat-app draagt het een risico op cyberpesten.",
+        "fr": "WhatsApp comporte des risques pour la vie priv\u00e9e, des fonctions de r\u00e9seau social toxiques et un chatbot p\u00e9nible. Signal est toujours autoris\u00e9 sur cet appareil, m\u00eame si nous y recommandons aussi 14+ et/ou un accompagnement parental : en tant qu'application de discussion de groupe, elle comporte un risque de cyberharc\u00e8lement."
+      }
+    }
+  ],
   "browser": {
     "default_search_engine": "duckduckgo",
     "search_engines": [
@@ -141,24 +201,49 @@
   "required_apps": [
     {
       "package_name": "app.drawbridge.herald",
-      "version_code": 6,
+      "version_code": 7,
       "url": "https://github.com/Nilss3/drawbridge/releases/latest/download/herald-arm64-v8a-release.apk",
-      "sha256": "a49b33487a4ff03113f08e67f1d5c5c527eb8898d72e7267023c17dd8de267dc",
+      "sha256": "08ef5ac7d6052e39b890a35a22ff731bf811e95180f2e7288c22225507eecca2",
       "abi": "arm64-v8a"
     },
     {
       "package_name": "app.drawbridge.herald",
-      "version_code": 6,
+      "version_code": 7,
       "url": "https://github.com/Nilss3/drawbridge/releases/latest/download/herald-armeabi-v7a-release.apk",
-      "sha256": "fd19fedcc4c4e62afa5173d8bcd4f37baec54c164342728947fd5a566d2805da",
+      "sha256": "946974e62c702af3c2de8821bc01debdae399d9c8c64b19e8dc873c39ac950a6",
       "abi": "armeabi-v7a"
     },
     {
       "package_name": "app.drawbridge.herald",
-      "version_code": 6,
+      "version_code": 7,
       "url": "https://github.com/Nilss3/drawbridge/releases/latest/download/herald-x86_64-release.apk",
-      "sha256": "bc0cd12551ec347a09c54668b4a9322eb3cea4c0d25d56e6c440229b7eab476e",
+      "sha256": "e30457ce85219b832dea10ea5ca83fd125daea9050be8fdb2e0d8704c09fca13",
+      "abi": "x86_64"
+    },
+    {
+      "package_name": "app.drawbridge.heraldmono",
+      "version_code": 7,
+      "url": "https://github.com/Nilss3/drawbridge/releases/latest/download/herald-mono-arm64-v8a-release.apk",
+      "sha256": "72ce81f2a82660a646fb22de080cbc0f954fa4a32cba01f37ad7afb7d034b3ce",
+      "abi": "arm64-v8a"
+    },
+    {
+      "package_name": "app.drawbridge.heraldmono",
+      "version_code": 7,
+      "url": "https://github.com/Nilss3/drawbridge/releases/latest/download/herald-mono-armeabi-v7a-release.apk",
+      "sha256": "528e9a84a824362014d88db1911194d9214811ca057c8fa00af6cc88c617b015",
+      "abi": "armeabi-v7a"
+    },
+    {
+      "package_name": "app.drawbridge.heraldmono",
+      "version_code": 7,
+      "url": "https://github.com/Nilss3/drawbridge/releases/latest/download/herald-mono-x86_64-release.apk",
+      "sha256": "a3b27e4a5a5c662c4a3d659a16aaead0f06360ab14226033565f35bb7911a6b6",
       "abi": "x86_64"
     }
+  ],
+  "allowed_browser_packages": [
+    "app.drawbridge.herald",
+    "app.drawbridge.heraldmono"
   ]
 }

@@ -1,8 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">drawbridge</string>
+    <string name="app_name" translatable="false">drawbridge</string>
     <string name="admin_label">drawbridge parental controls</string>
-    <string name="admin_description">Keeps the content filter switched on and stops it from being removed without the parent PIN.</string>
+    <string name="admin_description">Keeps the content filter switched on and stops it from being removed without the parent key.</string>
+    <string name="permission_read_selection">read the chosen drawbridge policy and options</string>
+
+    <!-- Language, first on the screen: pick it before reading the rest. -->
+    <string name="language_heading">Language</string>
+    <string name="language_english" translatable="false">English</string>
+    <string name="language_dutch" translatable="false">Nederlands</string>
+    <string name="language_french" translatable="false">Français</string>
+
+    <string name="welcome_title">Welcome to drawbridge</string>
+    <string name="welcome_subtitle">Let\'s draw the bridge on the toxic addictive internet and keep our peace of mind.</string>
+    <string name="welcome_scene_description">A raised drawbridge at night, between a quiet moonlit park and a rocky shore where cartoon monsters are waiting.</string>
+
+    <!--
+        The signed document calls these "profiles" — variants of one policy — but
+        to whoever is holding the phone the useful phrase is "the policy this
+        phone runs", so that is what the screen says.
+    -->
+    <string name="policy_heading">Policy</string>
+    <string name="policy_none_available">This policy document offers nothing to choose from.</string>
+    <string name="policy_confirm_title">Switch to %1$s?</string>
+    <string name="policy_confirm_message">Apps this policy does not allow are removed straight away. Switching back later does not reinstall them.\n\nThe DNS resolver and the blocklists change with it.</string>
+    <string name="policy_confirm_apply">Switch</string>
+    <string name="policy_applying_title">Applying policy</string>
+    <string name="policy_applying_message">Downloading blocklists and checking installed apps…</string>
+    <string name="policy_apply_failed">That policy is no longer in the document.</string>
+
+    <string name="options_heading">Options</string>
+    <string name="options_explanation">Allow the following services at own peril.</string>
+    <string name="options_none_available">This policy offers nothing to switch on.</string>
+    <string name="options_footnote">The policy is inspired by best practices in digital minimalism and is a good choice for anyone, including adults. The ages are a recommendation by pediatricians, psychologists and neurologists.</string>
+    <string name="option_recommended_age" translatable="false">%1$d+</string>
+    <string name="option_change_failed">That option is no longer in the policy.</string>
+    <string name="option_disable_confirm_title">Turn off %1$s?</string>
+    <string name="option_disable_confirm_message">Apps this option allowed are removed straight away. Switching it back on later does not reinstall them.</string>
+    <string name="option_disable_confirm_yes">Turn off</string>
 
     <string name="status_heading">Device status</string>
     <string name="status_device_owner_yes">Managed: drawbridge is the device owner</string>
@@ -13,42 +48,49 @@
     <string name="status_policy_never">never</string>
     <string name="status_restrictions_none">No restrictions applied</string>
     <string name="status_restrictions_heading">Active restrictions</string>
+    <string name="status_protected_since">Protecting this phone since %1$s</string>
+    <string name="status_protected_never">This phone is not protected yet. Locking it starts the clock.</string>
 
-    <string name="action_setup">Set up parental controls</string>
+    <string name="action_lock">Lock drawbridge</string>
     <string name="action_refresh">Check for policy updates</string>
     <string name="action_remove">Remove parental controls</string>
 
     <string name="policy_refreshed">Policy updated (version %1$d)</string>
     <string name="policy_refresh_failed">Could not reach the policy server</string>
 
-    <string name="setup_title">Set a parent PIN</string>
-    <string name="setup_pin_hint">At least %1$d digits. You will need it to change or remove these controls.</string>
-    <string name="setup_pin">PIN</string>
-    <string name="setup_pin_confirm">Confirm PIN</string>
-    <string name="setup_continue">Continue</string>
-    <string name="setup_pin_too_short">The PIN must be at least %1$d digits.</string>
-    <string name="setup_pin_mismatch">The two PINs do not match.</string>
+    <!-- Locking -->
+    <string name="lock_confirm_title">Lock drawbridge?</string>
+    <string name="lock_confirm_message">This applies the policy, starts the content filter and seals this screen.\n\nYou will be shown a key. It is the only way back in, it is shown once, and there is no reset — not by email, not by us, not by anyone.\n\nWrite it down, or decide on purpose not to.</string>
+    <string name="lock_confirm_yes">Lock and show the key</string>
+    <string name="lock_needs_filter">The content filter has to be running before the phone can be locked.</string>
 
-    <string name="setup_recovery_title">Write this down now</string>
-    <string name="setup_recovery_explanation">This one-time recovery code is the only way back in if the PIN is forgotten. It is not stored anywhere you can read it again, and there is no email reset — that would mean tying this device to an account.</string>
-    <string name="setup_recovery_confirm">I have written down or printed this code</string>
-    <string name="setup_recovery_share">Print or save the recovery code</string>
-    <string name="setup_recovery_subject">drawbridge recovery code</string>
-    <string name="setup_recovery_body">drawbridge recovery code: %1$s\n\nKeep this somewhere safe and offline. It can be used once to remove parental controls without the PIN.</string>
-    <string name="setup_finish">Finish setup</string>
-    <string name="setup_done">Parental controls are active.</string>
-    <string name="setup_done_not_owner">PIN saved and the filter is starting, but drawbridge is not the device owner, so the restrictions are not enforced.</string>
+    <string name="lock_reveal_title">Write this down now</string>
+    <string name="lock_reveal_explanation">This key unlocks these settings. It is not stored anywhere you can read it again, and a new one is made every time you lock — so this one, on paper, is all there is.\n\nIf you would rather not be able to change your mind, that is a real choice. Close this without keeping the key and the settings stay as they are for good.</string>
+    <string name="lock_reveal_confirm">I have written down or printed this key</string>
+    <string name="lock_reveal_share">Print or save the key</string>
+    <string name="lock_reveal_subject">drawbridge key</string>
+    <string name="lock_reveal_body">drawbridge key: %1$s\n\nKeep this somewhere safe and offline. It unlocks the drawbridge settings on the phone.</string>
+    <string name="lock_reveal_finish">Done</string>
+    <string name="lock_reveal_discard_title">Close without the key?</string>
+    <string name="lock_reveal_discard_message">The settings on this phone will stay exactly as they are, and nobody will be able to change them again — including you.</string>
+    <string name="lock_reveal_discard_yes">Close anyway</string>
 
+    <string name="lock_challenge_title">drawbridge is locked</string>
+    <string name="lock_challenge_explanation">Type the key you were given when this phone was locked. Dashes and capitals do not matter.</string>
+    <string name="lock_challenge_hint">Key</string>
+    <string name="lock_challenge_action">Unlock</string>
+    <string name="lock_challenge_incorrect">That is not the key.</string>
+    <string name="lock_since_protected">Protecting this phone since %1$s</string>
+    <string name="lock_since_locked">Locked since %1$s</string>
+    <string name="lock_since_hint">If that does not match what you remember, this phone has been unlocked or reset since.</string>
+
+    <!-- Removal -->
     <string name="remove_title">Remove parental controls</string>
-    <string name="remove_explanation">Enter the parent PIN, or the one-time recovery code. This lifts every restriction and stops the filter. Nothing is erased and no factory reset is needed.</string>
-    <string name="remove_hint">PIN or recovery code</string>
+    <string name="remove_explanation">This lifts every restriction and stops the filter. Nothing is erased and no factory reset is needed.\n\nYou are already past the lock, so nothing more is asked.</string>
     <string name="remove_action">Remove</string>
     <string name="remove_cancel">Cancel</string>
-    <string name="remove_incorrect">That is not the PIN or the recovery code.</string>
-    <string name="remove_incorrect_locked">Incorrect. Try again in %1$d seconds.</string>
-    <string name="remove_locked_out">Too many attempts. Try again in %1$d seconds.</string>
     <string name="remove_confirm_title">Remove parental controls?</string>
-    <string name="remove_confirm_message">The content filter, app blocking and all device restrictions will be switched off. Apps that were hidden become available again. No data is lost.</string>
+    <string name="remove_confirm_message">The content filter, app blocking and all device restrictions will be switched off. Apps that were hidden become available again. No data is lost.\n\nThe record of how long this phone has been protected is cleared with it.</string>
     <string name="remove_confirm_yes">Remove</string>
     <string name="remove_done">Parental controls removed.</string>
     <string name="remove_done_not_owner">Filter stopped and settings cleared.</string>
@@ -57,21 +99,4 @@
     <string name="filter_channel_name">Content filter</string>
     <string name="filter_notification_title">Content filter active</string>
     <string name="filter_notification_text">Filtering DNS for every app on this device</string>
-    <!-- Policy profiles -->
-    <string name="status_profile">Profile: %1$s</string>
-    <string name="status_profile_none">Profile: single policy, no variants</string>
-    <string name="action_change_profile">Change policy profile</string>
-    <string name="profile_none_available">This policy offers no profiles to choose from.</string>
-    <string name="profile_pin_title">Parent PIN</string>
-    <string name="profile_pin_hint">PIN or recovery code</string>
-    <string name="profile_pin_continue">Continue</string>
-    <string name="profile_pin_incorrect">That is not the PIN.</string>
-    <string name="profile_pin_locked">Too many attempts. Try again in %1$d seconds.</string>
-    <string name="profile_choose_title">Choose a profile</string>
-    <string name="profile_confirm_title">Switch to %1$s?</string>
-    <string name="profile_confirm_message">Apps this profile does not allow are removed straight away. Switching back later does not reinstall them.\n\nThe DNS resolver and the blocklists change with it.</string>
-    <string name="profile_confirm_apply">Switch</string>
-    <string name="profile_applying_title">Applying profile</string>
-    <string name="profile_applying_message">Downloading blocklists and checking installed apps…</string>
-    <string name="profile_apply_failed">That profile is no longer in the policy.</string>
 </resources>

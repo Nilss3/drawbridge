@@ -3,8 +3,6 @@ package app.drawbridge.dpc.ui
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
-import android.widget.EditText
-import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -12,24 +10,24 @@ import app.drawbridge.dpc.DrawbridgeApplication
 import app.drawbridge.dpc.R
 import app.drawbridge.dpc.admin.DeviceOwnerManager
 import app.drawbridge.dpc.apps.AppBlocker
-import app.drawbridge.dpc.security.ParentCredentials
+import app.drawbridge.dpc.security.ParentKey
 import app.drawbridge.dpc.vpn.DnsFilterService
-import java.util.concurrent.TimeUnit
 
 /**
- * The sanctioned way out, gated behind the parent PIN or the printed recovery
- * code.
+ * The sanctioned way out. This lifts every restriction and gives up Device
+ * Owner without wiping the device — the child grows up, or the phone gets sold,
+ * and nothing is lost.
  *
- * This lifts every restriction and gives up Device Owner without wiping the
- * device — the child grows up, or the phone gets sold, and nothing is lost.
+ * It no longer asks for a secret. It used to, back when the configuration screen
+ * was open to anyone and this was the one door with a lock on it. Now the whole
+ * screen this is reached from is behind the key, so asking again would be asking
+ * the same question twice — and the answer to "is this person allowed to remove
+ * parental controls" was already given at the lock screen.
  */
 class RemoveActivity : AppCompatActivity() {
 
-    private val credentials by lazy { ParentCredentials(this) }
+    private val parentKey by lazy { ParentKey(this) }
     private val deviceOwner by lazy { DeviceOwnerManager(this) }
-
-    private lateinit var secretField: EditText
-    private lateinit var statusView: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,48 +35,8 @@ class RemoveActivity : AppCompatActivity() {
 
         findViewById<View>(R.id.root).applyScreenInsets()
 
-        secretField = findViewById(R.id.secretField)
-        statusView = findViewById(R.id.statusView)
-
-        findViewById<Button>(R.id.removeButton).setOnClickListener { attemptRemoval() }
+        findViewById<Button>(R.id.removeButton).setOnClickListener { confirmRemoval() }
         findViewById<Button>(R.id.cancelButton).setOnClickListener { finish() }
-    }
-
-    private fun attemptRemoval() {
-        val secret = secretField.text.toString().trim()
-        if (secret.isEmpty()) return
-
-        // Clear the previous message first: leaving "that is not the PIN" on
-        // screen while the confirmation dialog opens reads as a rejection.
-        statusView.text = ""
-
-        when (val result = credentials.verify(secret)) {
-            is ParentCredentials.VerifyResult.Correct -> confirmRemoval()
-
-            is ParentCredentials.VerifyResult.LockedOut -> {
-                statusView.text = getString(
-                    R.string.remove_locked_out,
-                    TimeUnit.MILLISECONDS.toSeconds(result.remainingMillis),
-                )
-            }
-
-            is ParentCredentials.VerifyResult.Incorrect -> {
-                // A wrong PIN might have been the recovery code instead, so try
-                // that before reporting a failure.
-                if (credentials.consumeRecoveryCode(secret)) {
-                    confirmRemoval()
-                } else {
-                    statusView.text = if (result.retryDelayMillis > 0) {
-                        getString(
-                            R.string.remove_incorrect_locked,
-                            TimeUnit.MILLISECONDS.toSeconds(result.retryDelayMillis),
-                        )
-                    } else {
-                        getString(R.string.remove_incorrect)
-                    }
-                }
-            }
-        }
     }
 
     private fun confirmRemoval() {
@@ -101,7 +59,7 @@ class RemoveActivity : AppCompatActivity() {
         val released = deviceOwner.releaseDeviceOwnership()
 
         DrawbridgeApplication.policy(this).clear()
-        credentials.clear()
+        parentKey.clear()
 
         val message = when {
             !wasOwner -> getString(R.string.remove_done_not_owner)

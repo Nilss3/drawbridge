@@ -2,6 +2,17 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <!--
+        Lets herald read which policy and options the parent chose. `signature`
+        means only a package signed with drawbridge's own release key can hold
+        it, which is herald and herald mono and nothing else — no declaration on
+        the phone, and no user prompt, can grant it to anything else.
+    -->
+    <permission
+        android:name="app.drawbridge.permission.READ_SELECTION"
+        android:label="@string/permission_read_selection"
+        android:protectionLevel="signature" />
+
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
@@ -39,14 +50,14 @@
         android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:localeConfig="@xml/locales_config"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Drawbridge">
 
         <activity
             android:name=".ui.MainActivity"
-            android:exported="true"
-            android:label="@string/app_name">
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -54,14 +65,27 @@
         </activity>
 
         <activity
-            android:name=".ui.SetupActivity"
-            android:exported="false"
-            android:label="@string/setup_title" />
+            android:name=".ui.LockActivity"
+            android:exported="false" />
 
         <activity
             android:name=".ui.RemoveActivity"
             android:exported="false"
             android:label="@string/remove_title" />
+
+        <!--
+            Below API 33 AppCompat stores the per-app locale itself, but only if
+            this metadata says so. Without it the language picker works until the
+            process dies and then silently forgets.
+        -->
+        <service
+            android:name="androidx.appcompat.app.AppLocalesMetadataHolderService"
+            android:enabled="false"
+            android:exported="false">
+            <meta-data
+                android:name="autoStoreLocales"
+                android:value="true" />
+        </service>
 
         <!--
             The component name here is part of the provisioning command
@@ -91,6 +115,17 @@
                 <action android:name="android.intent.action.LOCKED_BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
+
+        <!--
+            Read-only, and exported on purpose: herald is a separate app and has
+            no other way to learn what the parent chose. readPermission alone —
+            no writePermission — because there is deliberately no way to write.
+        -->
+        <provider
+            android:name=".policy.SelectionProvider"
+            android:authorities="app.drawbridge.dpc.selection"
+            android:exported="true"
+            android:readPermission="app.drawbridge.permission.READ_SELECTION" />
 
         <receiver
             android:name=".apps.PackageRemovalReceiver"

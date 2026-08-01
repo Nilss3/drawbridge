@@ -72,7 +72,7 @@ For a clean printout, use the vector version:
 The phone will then, on its own:
 
 1. Download and install drawbridge.
-2. Make drawbridge the device owner, so it cannot be removed without your PIN.
+2. Make drawbridge the device owner, so it cannot be removed without your key.
 3. Download and install **herald**, the filtered browser.
 4. Switch on the content filter and hide every other browser.
 
@@ -91,26 +91,66 @@ lose the protection described below.
 
 ---
 
-## Step 6 — Finish setup in the drawbridge app
+## Step 6 — Set the phone up in the drawbridge app
 
-Open the **drawbridge** app and tap **Set up parental controls**.
+Open the **drawbridge** app. Everything you decide is on that one screen.
 
-1. **Choose a PIN** of at least six digits. You will need it to change or remove
-   the controls.
-2. **Write down the recovery code.** It is shown once and once only. There is no
-   email reset — that would tie the phone to an account, which this project
-   exists to avoid.
-3. Allow the battery optimisation exemption when asked.
+1. **Pick your language** — English, Nederlands or Français. It is the first
+   thing on the screen, so everything below it is in the language you chose.
+2. **Read the policy.** It says who it is for and what it actually blocks. If
+   the document offers more than one, switching to a stricter one uninstalls the
+   apps it does not allow, straight away, and switching back does not reinstall
+   them.
+3. **Set the options** underneath it. Each allows one more thing on top of the
+   policy, with the age it is usually reckoned suitable from beside it —
+   *Allow WhatsApp 14+*, for instance.
 
-> **If you lose both the PIN and the recovery code, the only way to remove
-> drawbridge is to erase the phone again.** Put the code somewhere safe — a
-> drawer, a password manager, taped inside a cupboard.
+---
+
+## Step 7 — Lock it, and write down the key
+
+Tap **Lock drawbridge**. This is the one button that matters: it applies the
+policy, starts the content filter, and seals the screen. Allow the battery
+optimisation exemption when asked.
+
+You will then be shown a **key**: twenty characters in four groups, like
+`4XRZS-7QC9N-SPSH9-AWAAE`.
+
+**Write it down or print it before you close that screen.** It is shown once, it
+is not stored anywhere you can read it again, and there is no reset — not by
+email, not by anyone. That is deliberate: an email reset would tie the phone to
+an account, which this project exists to avoid. The *Print or save the key*
+button hands it to a printing or notes app; it is deliberately not offered to the
+clipboard, which anyone holding the phone can read.
+
+A **new key is minted every time you lock**, so a key that was photographed once
+stops working the next time you seal the phone.
+
+> **If you lose the key, the only way back into the settings is to erase the
+> phone.** Put it somewhere safe — a drawer, a password manager, taped inside a
+> cupboard.
+>
+> Choosing *not* to keep it is a real option, and the app will let you: the phone
+> stays exactly as you set it, for good, and nobody can change it again —
+> including you.
+
+To change anything later, open drawbridge and type the key.
 
 ---
 
 ## Checking it worked
 
-Open the drawbridge app. It should say:
+Open drawbridge. Before it asks for anything it tells you **how long it has been
+protecting this phone** — the date and time you locked it.
+
+That line is worth knowing about, because it is the cheapest tamper check there
+is. It survives reboots and it survives you unlocking to change a setting. The
+only things that clear it are removing drawbridge from inside the app and wiping
+the phone. So if you pick the phone up in six months and it says it has been
+protecting it since last Tuesday, it has been reset and set up again — whatever
+else it looks like.
+
+Type your key, and the screen behind it should say:
 
 - *Managed: drawbridge is the device owner*
 - *Content filter: running*
@@ -158,8 +198,9 @@ The phone must have **no accounts on it** for that second command to work.
 
 ## Removing it later
 
-Open drawbridge → **Remove parental controls** → enter your PIN or the recovery
-code.
+Open drawbridge, type your key, then **⋮ → Remove parental controls**. It lives
+in the overflow menu rather than on the screen: it happens once in the life of a
+phone and does not belong next to the button used every time.
 
 Everything is lifted, hidden apps come back, and **nothing is erased**. See
 [removal](removal.md) for the details.

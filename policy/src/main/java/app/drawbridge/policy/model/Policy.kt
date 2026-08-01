@@ -46,11 +46,27 @@ data class Policy(
     val blockedPackages: List<String> = emptyList(),
 
     /**
-     * The one browser allowed to exist on a managed device. Any other package
-     * that registers a browser intent filter is uninstalled or suspended.
+     * The browser tapped links are handed to, and the one drawbridge installs
+     * first. Also the fallback member of [browserPackages] when that is empty.
      */
     @SerialName("allowed_browser_package")
     val allowedBrowserPackage: String = DEFAULT_BROWSER_PACKAGE,
+
+    /**
+     * Every browser allowed to exist on a managed device. Any other package that
+     * registers a browser intent filter is uninstalled or suspended.
+     *
+     * This started as a single package, and the difference matters: `required_
+     * apps` and the app blocker have to agree, or drawbridge installs a browser
+     * and then removes it again as a rogue one, on a loop. Shipping both herald
+     * editions means naming both here *and* in `required_apps`, and leaving one
+     * out of either list is the failure that loop comes from.
+     *
+     * Empty means "just [allowedBrowserPackage]", which is what every policy
+     * written before this field existed says.
+     */
+    @SerialName("allowed_browser_packages")
+    val allowedBrowserPackages: List<String> = emptyList(),
 
     /**
      * When set, app control flips from "remove what is listed" to "remove what
@@ -86,6 +102,12 @@ data class Policy(
     @SerialName("default_profile")
     val defaultProfile: String? = null,
 
+    /**
+     * Individual relaxations the parent can switch on, on top of whichever
+     * profile is running. See [PolicyOption].
+     */
+    val options: List<PolicyOption> = emptyList(),
+
     val browser: BrowserPolicy = BrowserPolicy(),
 
     @SerialName("app_update")
@@ -102,6 +124,17 @@ data class Policy(
     @SerialName("required_apps")
     val requiredApps: List<AppUpdate> = emptyList(),
 ) {
+    /**
+     * Every browser this policy permits, with [allowedBrowserPackage] always a
+     * member. Ask this rather than either field: the app blocker removing a
+     * browser the installer is about to put back is the whole hazard here.
+     */
+    val browserPackages: Set<String>
+        get() = buildSet {
+            add(allowedBrowserPackage)
+            addAll(allowedBrowserPackages)
+        }
+
     companion object {
         const val DEFAULT_BROWSER_PACKAGE = "app.drawbridge.herald"
     }
@@ -130,6 +163,117 @@ data class Policy(
             exemptPackages = profile.exemptPackages ?: exemptPackages,
         )
     }
+
+    /**
+     * Which options are on, given what the device has stored.
+     *
+     * `null` means nobody has chosen yet, so the policy's own defaults apply.
+     * A stored id the policy no longer offers is dropped, which is what stops a
+     * relaxation outliving the option that justified it.
+     */
+    fun enabledOptionIds(stored: List<String>?): Set<String> {
+        val known = options.map { it.id }.toSet()
+        return stored?.filterTo(mutableSetOf()) { it in known }
+            ?: options.filter { it.defaultEnabled }.mapTo(mutableSetOf()) { it.id }
+    }
+
+    /**
+     * This policy with [enabledIds] applied on top.
+     *
+     * Options only ever *add* permission, never take it away, so they can be
+     * merged into whatever the profile left behind without having to reason
+     * about the order the two were applied in. Anything an option would have to
+     * un-block belongs in a second profile instead.
+     */
+    fun withOptions(enabledIds: Set<String>): Policy {
+        val enabled = options.filter { it.id in enabledIds }
+        if (enabled.isEmpty()) return this
+        return copy(
+            exemptPackages = (exemptPackages + enabled.flatMap { it.exemptPackages }).distinct(),
+            allowedDomains = (allowedDomains + enabled.flatMap { it.allowedDomains }).distinct(),
+            // Only in allowlist mode: adding names to a list that is null would
+            // switch allowlisting *on*, and an option that quietly started
+            // uninstalling everything unlisted would be the opposite of a
+            // relaxation.
+            allowedPackages = allowedPackages?.let { base ->
+                (base + enabled.flatMap { it.allowedPackages }).distinct()
+            },
+        )
+    }
+
+    /** The policy as it actually applies on a device: profile first, then options. */
+    fun effective(selectedProfileId: String?, enabledOptionIds: Set<String>): Policy =
+        withProfile(selectedProfileId).withOptions(enabledOptionIds)
+}
+
+/**
+ * One thing the parent can allow, on top of whichever profile is running.
+ *
+ * Options exist because the choice a parent actually wants to make is rarely
+ * "strict or relaxed" but "everything as it is, except this one app my child's
+ * class group runs on". Expressing that as a second profile means maintaining
+ * two near-identical copies of the policy that drift; expressing it as an option
+ * keeps one policy and a switch.
+ *
+ * An option can only widen what is permitted — it exempts packages from removal
+ * and names domains that must resolve. It cannot block anything, which is what
+ * makes the order of application irrelevant and the effect of turning one off
+ * easy to state: the base policy, unchanged.
+ */
+@Serializable
+data class PolicyOption(
+    val id: String,
+    /** Shown as the switch's label, e.g. "Allow WhatsApp". */
+    val name: String,
+    val description: String = "",
+
+    /** See [Profile.nameByLanguage]. */
+    @SerialName("name_i18n")
+    val nameByLanguage: Map<String, String> = emptyMap(),
+
+    @SerialName("description_i18n")
+    val descriptionByLanguage: Map<String, String> = emptyMap(),
+
+    /**
+     * The age this is usually reckoned suitable from, shown next to the name as
+     * "14+". Advice, not enforcement: nothing on the device knows how old its
+     * owner is, and the parent switching this on is the one who does.
+     */
+    @SerialName("recommended_age")
+    val recommendedAge: Int? = null,
+
+    /** Whether this is on before anyone has been asked. */
+    @SerialName("default_enabled")
+    val defaultEnabled: Boolean = false,
+
+    /**
+     * Packages this option spares from the app blocker, including from
+     * `blocked_packages`. This is the field that does the work for an option
+     * that allows an app: the base policy blocks it, and the exemption wins.
+     */
+    @SerialName("exempt_packages")
+    val exemptPackages: List<String> = emptyList(),
+
+    /**
+     * Packages added to the allowed set, and only when the running profile is in
+     * allowlist mode. [exemptPackages] is what an option normally needs; this is
+     * for the profile that names every app it permits.
+     */
+    @SerialName("allowed_packages")
+    val allowedPackages: List<String> = emptyList(),
+
+    /**
+     * Domains that must resolve while this is on. An allowed app whose servers
+     * are on a blocklist is an app that opens and then does nothing, so the
+     * hosts belong here alongside the package.
+     */
+    @SerialName("allowed_domains")
+    val allowedDomains: List<String> = emptyList(),
+) {
+    fun displayName(language: String): String = pick(name, nameByLanguage, language)
+
+    fun displayDescription(language: String): String =
+        pick(description, descriptionByLanguage, language)
 }
 
 /**
@@ -148,8 +292,37 @@ data class Policy(
 @Serializable
 data class Profile(
     val id: String,
+
+    /** The title in the picker, e.g. "Guarded". */
     val name: String,
+
+    /**
+     * One line under the title, read before the description is. Where [name]
+     * says which profile this is, this says who it is for.
+     */
+    val subtitle: String = "",
+
+    /** The paragraph under both, spelling out what the profile actually does. */
     val description: String = "",
+
+    /**
+     * Translations of [name], keyed by two-letter language code.
+     *
+     * drawbridge's own screens are translated in the APK, but half of what the
+     * profile picker shows comes from this document rather than from a string
+     * resource — so without these, switching the app to Dutch left the profile
+     * and its description in English, which is worse than not offering the
+     * switch. The untranslated field stays the fallback, so an older install
+     * reading a newer policy sees English rather than nothing.
+     */
+    @SerialName("name_i18n")
+    val nameByLanguage: Map<String, String> = emptyMap(),
+
+    @SerialName("subtitle_i18n")
+    val subtitleByLanguage: Map<String, String> = emptyMap(),
+
+    @SerialName("description_i18n")
+    val descriptionByLanguage: Map<String, String> = emptyMap(),
 
     val dns: DnsPolicy? = null,
     val blocklists: List<BlocklistSource>? = null,
@@ -169,7 +342,24 @@ data class Profile(
 
     @SerialName("exempt_packages")
     val exemptPackages: List<String>? = null,
-)
+) {
+    fun displayName(language: String): String = pick(name, nameByLanguage, language)
+
+    fun displaySubtitle(language: String): String = pick(subtitle, subtitleByLanguage, language)
+
+    fun displayDescription(language: String): String =
+        pick(description, descriptionByLanguage, language)
+}
+
+/**
+ * The translation for [language], or the untranslated original.
+ *
+ * A missing translation falls back rather than blanking, which is the behaviour
+ * that lets a policy add a language without every profile having to be
+ * retranslated in the same edit.
+ */
+internal fun pick(base: String, variants: Map<String, String>, language: String): String =
+    variants[language]?.takeIf { it.isNotBlank() } ?: base
 
 @Serializable
 data class DnsPolicy(

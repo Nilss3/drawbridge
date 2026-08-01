@@ -222,6 +222,15 @@ class PolicyStore(context: Context, private val config: PolicyConfig) {
         val lastError: String? = null,
         /** Selected policy profile, or null for the policy's own default. */
         val profileId: String? = null,
+
+        /**
+         * Policy options switched on, or null while nobody has chosen — which is
+         * not the same as an empty list. Null means "whatever the policy calls
+         * default"; empty means "the parent turned everything off", and a device
+         * that conflated the two would silently re-enable an option the parent
+         * had just cleared.
+         */
+        val optionIds: List<String>? = null,
     )
 
     companion object {

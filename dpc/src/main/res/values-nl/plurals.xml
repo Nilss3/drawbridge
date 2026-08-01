@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="change_applied">
+        <item quantity="one">%1$s toegepast. 1 app verwijderd.</item>
+        <item quantity="other">%1$s toegepast. %2$d apps verwijderd.</item>
+    </plurals>
+</resources>

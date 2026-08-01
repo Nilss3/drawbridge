@@ -50,13 +50,20 @@ class HeraldApplication : Application() {
 
         // Load the stored (or bundled) policy before anything can navigate, then
         // let the scheduled poll pick up changes.
-        val policy = PolicyManager.getInstance(this, HeraldPolicy.config)
+        val policy = HeraldPolicy.manager(this)
         applicationScope.launch { policy.ensureLoaded() }
         applicationScope.launch {
             policy.filterChanges.collect { components.filter.invalidateCache() }
         }
         applicationScope.launch { applyPolicySearchEngine(policy) }
         PolicyWorker.schedule(this)
+
+        // A parent switching an option in drawbridge expects the browser to obey
+        // before they hand the phone back, not at tomorrow's poll. Costs nothing
+        // on a phone with no drawbridge on it: nothing ever notifies.
+        DrawbridgeSelection(this).observe {
+            applicationScope.launch { policy.refreshSelection() }
+        }
 
         components.core.engine.warmUp()
         // After warmUp: the prefs go to a running Gecko.

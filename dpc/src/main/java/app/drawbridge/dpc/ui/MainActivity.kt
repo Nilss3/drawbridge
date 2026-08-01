@@ -2,80 +2,185 @@ package app.drawbridge.dpc.ui
 
 import android.content.Intent
 import android.os.Bundle
+import android.os.PowerManager
+import android.provider.Settings
 import android.text.format.DateUtils
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.widget.Button
+import android.widget.CompoundButton
+import android.widget.LinearLayout
+import android.widget.RadioButton
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.net.toUri
 import androidx.lifecycle.lifecycleScope
 import app.drawbridge.dpc.DrawbridgeApplication
 import app.drawbridge.dpc.R
 import app.drawbridge.dpc.admin.DeviceOwnerManager
-import app.drawbridge.dpc.security.ParentCredentials
+import app.drawbridge.dpc.apps.AppBlocker
+import app.drawbridge.dpc.policy.SelectionProvider
+import app.drawbridge.dpc.security.ParentKey
 import app.drawbridge.dpc.vpn.DnsFilterService
 import app.drawbridge.policy.PolicyManager
+import app.drawbridge.policy.model.PolicyOption
+import app.drawbridge.policy.model.Profile
+import com.google.android.material.card.MaterialCardView
+import com.google.android.material.materialswitch.MaterialSwitch
+import com.google.android.material.textfield.MaterialAutoCompleteTextView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 /**
- * The parent-facing status screen: what is protecting the device right now, and
- * the two actions that matter — refresh the policy, and remove the controls.
+ * drawbridge's configuration screen, and the only one a parent normally sees:
+ * what this phone is allowed to do, and the button that seals it.
+ *
+ * There is no separate setup wizard. A wizard is for a sequence that has to be
+ * walked once, and this is a page that has to be *re-read* — a year later, when
+ * the child is a year older and the answer to one of the switches has changed.
+ *
+ * There is also no "turn on protection" button any more. Protecting the phone
+ * and locking it were always the same intention, and splitting them into two
+ * buttons meant a phone could sit configured, unlocked and unfiltered while
+ * looking finished. [confirmLock] does both.
+ *
+ * When the device is locked this screen is not reachable at all: [onCreate]
+ * hands over to [LockActivity] before anything is drawn.
  */
 class MainActivity : AppCompatActivity() {
 
     private val deviceOwner by lazy { DeviceOwnerManager(this) }
-    private val credentials by lazy { ParentCredentials(this) }
+    private val parentKey by lazy { ParentKey(this) }
+    private val policy by lazy { DrawbridgeApplication.policy(this) }
 
+    private lateinit var protectedSinceStatus: TextView
     private lateinit var ownershipStatus: TextView
     private lateinit var filterStatus: TextView
     private lateinit var policyStatus: TextView
     private lateinit var restrictionsStatus: TextView
-    private lateinit var profileStatus: TextView
-    private lateinit var setupButton: Button
-    private lateinit var removeButton: Button
-    private lateinit var profileButton: Button
+    private lateinit var policyContainer: LinearLayout
+    private lateinit var optionContainer: LinearLayout
+    private lateinit var optionsExplanation: TextView
+    private lateinit var optionsFootnote: TextView
+
+    /**
+     * Consent for the VPN, needed only when drawbridge is *not* device owner —
+     * which is every unprovisioned install, including the one a parent tries
+     * before committing to a QR wipe. On a provisioned phone this never fires.
+     */
+    private val vpnConsent =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode != RESULT_OK) {
+                // Locking promises the filter is running. Sealing the screen
+                // after the parent declined it would make that a lie they could
+                // no longer check.
+                toast(getString(R.string.lock_needs_filter))
+                render()
+                return@registerForActivityResult
+            }
+            DnsFilterService.requestStart(this)
+            mintKey()
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Checked before the layout is set as well as in onResume, so a locked
+        // device does not flash the configuration on its way to the lock screen.
+        if (parentKey.isLocked) {
+            startActivity(Intent(this, LockActivity::class.java))
+            finish()
+            return
+        }
+
         setContentView(R.layout.activity_main)
 
         findViewById<View>(R.id.root).applyScreenInsets()
 
+        protectedSinceStatus = findViewById(R.id.protectedSinceStatus)
         ownershipStatus = findViewById(R.id.ownershipStatus)
         filterStatus = findViewById(R.id.filterStatus)
         policyStatus = findViewById(R.id.policyStatus)
         restrictionsStatus = findViewById(R.id.restrictionsStatus)
-        profileStatus = findViewById(R.id.profileStatus)
-        setupButton = findViewById(R.id.setupButton)
-        removeButton = findViewById(R.id.removeButton)
-        profileButton = findViewById(R.id.profileButton)
+        policyContainer = findViewById(R.id.policyContainer)
+        optionContainer = findViewById(R.id.optionContainer)
+        optionsExplanation = findViewById(R.id.optionsExplanation)
+        optionsFootnote = findViewById(R.id.optionsFootnote)
 
-        setupButton.setOnClickListener {
-            startActivity(Intent(this, SetupActivity::class.java))
-        }
+        bindLanguages(findViewById(R.id.languageField))
 
-        removeButton.setOnClickListener {
-            startActivity(Intent(this, RemoveActivity::class.java))
-        }
-
+        findViewById<Button>(R.id.lockButton).setOnClickListener { confirmLock() }
         findViewById<Button>(R.id.refreshButton).setOnClickListener { refreshPolicy() }
-
-        profileButton.setOnClickListener {
-            ProfilePicker(this, this) { render() }.start()
-        }
     }
 
     override fun onResume() {
         super.onResume()
+
+        if (isFinishing) return
+        if (parentKey.isLocked) {
+            startActivity(Intent(this, LockActivity::class.java))
+            finish()
+            return
+        }
         render()
     }
 
-    private fun render() {
-        val isOwner = deviceOwner.isDeviceOwner
+    /**
+     * Removal lives in the overflow menu rather than on the screen.
+     *
+     * It is the only way off a managed device that does not involve wiping it,
+     * so it has to exist — but it is a once-in-the-life-of-the-phone action and
+     * does not deserve a button next to the one used every time.
+     */
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.menu_main, menu)
+        return true
+    }
 
-        ownershipStatus.text = if (isOwner) {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean =
+        if (item.itemId == R.id.actionRemove) {
+            startActivity(Intent(this, RemoveActivity::class.java))
+            true
+        } else {
+            super.onOptionsItemSelected(item)
+        }
+
+    // --- Language ------------------------------------------------------------
+
+    private fun bindLanguages(field: MaterialAutoCompleteTextView) {
+        val labels = Languages.supported.map { getString(it.label) }.toTypedArray()
+        field.setSimpleItems(labels)
+
+        val current = Languages.current()
+        val index = Languages.supported.indexOfFirst { it.tag == current }
+        // The second argument suppresses filtering; without it, setting the text
+        // narrows the dropdown to the one entry that matches it.
+        field.setText(labels[index], false)
+
+        field.setOnItemClickListener { _, _, position, _ ->
+            val tag = Languages.supported[position].tag
+            if (tag != Languages.current()) Languages.select(tag)
+        }
+    }
+
+    // --- Rendering -----------------------------------------------------------
+
+    private fun render() {
+        protectedSinceStatus.text = parentKey.protectedSince.let { since ->
+            if (since > 0) {
+                getString(R.string.status_protected_since, formatMoment(since))
+            } else {
+                getString(R.string.status_protected_never)
+            }
+        }
+
+        ownershipStatus.text = if (deviceOwner.isDeviceOwner) {
             getString(R.string.status_device_owner_yes)
         } else {
             getString(R.string.status_device_owner_no)
@@ -87,12 +192,18 @@ class MainActivity : AppCompatActivity() {
             getString(R.string.status_filter_stopped)
         }
 
-        val policy = DrawbridgeApplication.policy(this)
+        val restrictions = deviceOwner.activeRestrictions()
+        restrictionsStatus.text = if (restrictions.isEmpty()) {
+            getString(R.string.status_restrictions_none)
+        } else {
+            restrictions.joinToString("\n") { "• ${it.removePrefix("no_")}" }
+        }
+
         lifecycleScope.launch {
             // The policy is loaded from disk asynchronously, so anything read
             // straight out of onResume would show the state before it arrived —
-            // which is how the profile line came to say "no variants" on a
-            // policy that had two.
+            // which is how the policy line came to say "no variants" on a
+            // document that had two.
             withContext(Dispatchers.IO) { policy.ensureLoaded() }
 
             val state = withContext(Dispatchers.IO) { policy.state() }
@@ -107,43 +218,297 @@ class MainActivity : AppCompatActivity() {
                 lastCheck,
             )
 
-            val profile = withContext(Dispatchers.IO) { policy.selectedProfile }
-            profileStatus.text = if (profile == null) {
-                getString(R.string.status_profile_none)
-            } else {
-                getString(R.string.status_profile, profile.name)
-            }
-
-            // Switching profile decides which apps may exist, so it is gated on
-            // the same PIN as removal and hidden until that PIN exists.
-            profileButton.visibility = if (policy.profiles.isNotEmpty() && credentials.isConfigured) {
-                View.VISIBLE
-            } else {
-                View.GONE
-            }
+            renderPolicies()
+            renderOptions()
         }
-
-        val restrictions = deviceOwner.activeRestrictions()
-        restrictionsStatus.text = if (restrictions.isEmpty()) {
-            getString(R.string.status_restrictions_none)
-        } else {
-            restrictions.joinToString("\n") { "• ${it.removePrefix("no_")}" }
-        }
-
-        setupButton.visibility = if (credentials.isConfigured) View.GONE else View.VISIBLE
-        removeButton.visibility = if (isOwner && credentials.isConfigured) View.VISIBLE else View.GONE
     }
+
+    /** Date and time, in whatever form the chosen language writes them. */
+    private fun formatMoment(millis: Long): String = DateUtils.formatDateTime(
+        this,
+        millis,
+        DateUtils.FORMAT_SHOW_DATE or DateUtils.FORMAT_SHOW_YEAR or DateUtils.FORMAT_SHOW_TIME,
+    )
+
+    /**
+     * Both selections are read off disk, so they are fetched on an IO thread
+     * rather than from whichever callback happens to want them.
+     */
+    private suspend fun selectedPolicyId(): String? =
+        withContext(Dispatchers.IO) { policy.selectedProfile?.id }
+
+    private suspend fun enabledOptionIds(): Set<String> =
+        withContext(Dispatchers.IO) { policy.enabledOptionIds }
+
+    private suspend fun renderPolicies() {
+        policyContainer.removeAllViews()
+
+        val choices = policy.profiles
+        if (choices.isEmpty()) {
+            policyContainer.addView(placeholder(R.string.policy_none_available))
+            return
+        }
+
+        val selected = selectedPolicyId()
+        val language = Languages.current()
+        val inflater = LayoutInflater.from(this)
+
+        for (choice in choices) {
+            val card = inflater.inflate(R.layout.item_policy, policyContainer, false)
+                as MaterialCardView
+
+            // The policy's own words come from the signed document, not from a
+            // string resource, so they carry their translations with them.
+            card.findViewById<TextView>(R.id.policyName).text = choice.displayName(language)
+            card.bindOptionalText(R.id.policySubtitle, choice.displaySubtitle(language))
+            card.bindOptionalText(R.id.policyDescription, choice.displayDescription(language))
+            card.findViewById<RadioButton>(R.id.policySelected).isChecked = choice.id == selected
+            card.isChecked = choice.id == selected
+
+            card.setOnClickListener {
+                if (choice.id != selected) confirmPolicy(choice)
+            }
+            policyContainer.addView(card)
+        }
+    }
+
+    private suspend fun renderOptions() {
+        optionContainer.removeAllViews()
+
+        val options = policy.options
+        val hasOptions = options.isNotEmpty()
+        optionsExplanation.visibility = if (hasOptions) View.VISIBLE else View.GONE
+        optionsFootnote.visibility = if (hasOptions) View.VISIBLE else View.GONE
+        if (!hasOptions) {
+            optionContainer.addView(placeholder(R.string.options_none_available))
+            return
+        }
+
+        val enabled = enabledOptionIds()
+        val language = Languages.current()
+        val inflater = LayoutInflater.from(this)
+
+        for (option in options) {
+            val row = inflater.inflate(R.layout.item_option, optionContainer, false)
+
+            row.findViewById<TextView>(R.id.optionName).text = label(option)
+            row.bindOptionalText(R.id.optionDescription, option.displayDescription(language))
+
+            val switch = row.findViewById<MaterialSwitch>(R.id.optionSwitch)
+            val listener = CompoundButton.OnCheckedChangeListener { _, checked ->
+                onOptionToggled(option, switch, checked)
+            }
+            switch.isChecked = option.id in enabled
+            switch.setOnCheckedChangeListener(listener)
+            optionContainer.addView(row)
+        }
+    }
+
+    /** "Allow WhatsApp  14+" — the age sits with the name, not in the body text. */
+    private fun label(option: PolicyOption): String {
+        val name = option.displayName(Languages.current())
+        val age = option.recommendedAge ?: return name
+        return "$name  ${getString(R.string.option_recommended_age, age)}"
+    }
+
+    private fun placeholder(textId: Int): TextView =
+        TextView(this).apply {
+            setText(textId)
+            setTextAppearance(com.google.android.material.R.style.TextAppearance_Material3_BodyMedium)
+        }
+
+    private fun View.bindOptionalText(id: Int, text: String) {
+        findViewById<TextView>(id).apply {
+            this.text = text
+            visibility = if (text.isBlank()) View.GONE else View.VISIBLE
+        }
+    }
+
+    // --- Locking -------------------------------------------------------------
+
+    private fun confirmLock() {
+        AlertDialog.Builder(this)
+            .setTitle(R.string.lock_confirm_title)
+            .setMessage(R.string.lock_confirm_message)
+            .setPositiveButton(R.string.lock_confirm_yes) { _, _ -> lockDevice() }
+            .setNegativeButton(android.R.string.cancel, null)
+            .show()
+    }
+
+    /**
+     * Applies the restrictions, starts the filter, and only then mints the key.
+     *
+     * Order matters: everything that needs this screen has to be done before the
+     * screen is sealed, and the VPN-consent dialog is the one step that can come
+     * back later — hence [vpnConsent] finishing the job.
+     */
+    private fun lockDevice() {
+        deviceOwner.applyManagedDevicePolicy()
+        requestBatteryOptimisationExemption()
+
+        // Device Owner is consent enough for the VPN. Anything else has to ask.
+        val consent = DnsFilterService.requestStart(this)
+        if (consent != null) {
+            vpnConsent.launch(consent)
+            return
+        }
+        mintKey()
+    }
+
+    private fun mintKey() {
+        startActivity(LockActivity.mintKey(this))
+        finish()
+    }
+
+    /**
+     * Asks to be exempted from battery optimisation, so the policy poller and
+     * the filter service survive on aggressive OEM builds.
+     *
+     * Xiaomi, Huawei and Oppo/Realme also run proprietary "autostart" managers
+     * that no API can reach; those need a manual step, documented in the setup
+     * guide rather than attempted here.
+     */
+    private fun requestBatteryOptimisationExemption() {
+        val power = getSystemService(PowerManager::class.java)
+        if (power.isIgnoringBatteryOptimizations(packageName)) return
+
+        runCatching {
+            startActivity(
+                Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS)
+                    .setData("package:$packageName".toUri()),
+            )
+        }.onFailure {
+            // Some ROMs do not implement the dialog; not fatal, and the always-on
+            // VPN keeps the process alive on a properly provisioned device.
+        }
+    }
+
+    // --- Policy and options --------------------------------------------------
+
+    /**
+     * The confirmation is not ceremony. Applying a policy runs the app blocker
+     * immediately, and an app it does not allow is uninstalled — choosing the
+     * looser one again will not bring it back.
+     */
+    private fun confirmPolicy(choice: Profile) {
+        AlertDialog.Builder(this)
+            .setTitle(
+                getString(R.string.policy_confirm_title, choice.displayName(Languages.current())),
+            )
+            .setMessage(R.string.policy_confirm_message)
+            .setPositiveButton(R.string.policy_confirm_apply) { _, _ -> applyPolicy(choice) }
+            // Nothing to undo on cancel: the cards are only ever checked from
+            // the stored selection, so tapping one does not move the tick.
+            .setNegativeButton(android.R.string.cancel, null)
+            .show()
+    }
+
+    private fun applyPolicy(choice: Profile) {
+        val progress = AlertDialog.Builder(this)
+            .setTitle(R.string.policy_applying_title)
+            .setMessage(R.string.policy_applying_message)
+            .setCancelable(false)
+            .show()
+
+        lifecycleScope.launch {
+            // selectProfile syncs the blocklists before swapping the filter, so
+            // the app sweep below runs against the policy that is actually in
+            // force rather than the one being replaced.
+            val selected = policy.selectProfile(choice.id)
+            val removed = if (selected) sweep() else 0
+            if (selected) SelectionProvider.notifyChanged(this@MainActivity)
+
+            progress.dismiss()
+            if (selected) {
+                toast(applied(choice.displayName(Languages.current()), removed))
+            } else {
+                toast(getString(R.string.policy_apply_failed))
+            }
+            render()
+        }
+    }
+
+    /**
+     * Switching an option on only ever widens what is allowed, so it applies
+     * straight away. Switching one off takes something back, and taking an app
+     * back means uninstalling it — so that direction asks first.
+     */
+    private fun onOptionToggled(option: PolicyOption, view: CompoundButton, checked: Boolean) {
+        if (checked) {
+            applyOption(option, true)
+            return
+        }
+
+        // Putting the switch back has to go through restore(), not through
+        // isChecked: assigning it fires this listener again, and cancelling
+        // "turn it off" would then be read as switching it on.
+        val restore = { view.setCheckedWithoutFiring(true) { c -> onOptionToggled(option, view, c) } }
+
+        AlertDialog.Builder(this)
+            .setTitle(
+                getString(
+                    R.string.option_disable_confirm_title,
+                    option.displayName(Languages.current()),
+                ),
+            )
+            .setMessage(R.string.option_disable_confirm_message)
+            .setPositiveButton(R.string.option_disable_confirm_yes) { _, _ ->
+                applyOption(option, false)
+            }
+            .setNegativeButton(android.R.string.cancel) { _, _ -> restore() }
+            .setOnCancelListener { restore() }
+            .show()
+    }
+
+    private fun applyOption(option: PolicyOption, enabled: Boolean) {
+        lifecycleScope.launch {
+            if (!policy.setOptionEnabled(option.id, enabled)) {
+                toast(getString(R.string.option_change_failed))
+                renderOptions()
+                return@launch
+            }
+
+            // herald filters on this same choice, and hears about it here or
+            // not at all until its next daily poll.
+            SelectionProvider.notifyChanged(this@MainActivity)
+
+            // No blocklist changes with an option, so there is nothing to
+            // download and nothing to wait for — but an option turned *off*
+            // leaves an app on the device that policy no longer allows.
+            val removed = if (enabled) 0 else sweep()
+            toast(applied(option.displayName(Languages.current()), removed))
+            renderOptions()
+        }
+    }
+
+    private fun CompoundButton.setCheckedWithoutFiring(
+        checked: Boolean,
+        listener: (Boolean) -> Unit,
+    ) {
+        setOnCheckedChangeListener(null)
+        isChecked = checked
+        setOnCheckedChangeListener { _, value -> listener(value) }
+    }
+
+    private suspend fun sweep(): Int =
+        withContext(Dispatchers.IO) { AppBlocker(this@MainActivity).sweep().size }
+
+    private fun applied(name: String, removed: Int): String =
+        resources.getQuantityString(R.plurals.change_applied, removed, name, removed)
 
     private fun refreshPolicy() {
         lifecycleScope.launch {
-            val message = when (val outcome = DrawbridgeApplication.policy(this@MainActivity).refresh()) {
+            val message = when (val outcome = policy.refresh()) {
                 is PolicyManager.RefreshOutcome.Success ->
                     getString(R.string.policy_refreshed, outcome.version)
                 is PolicyManager.RefreshOutcome.Failure ->
                     getString(R.string.policy_refresh_failed)
             }
-            Toast.makeText(this@MainActivity, message, Toast.LENGTH_SHORT).show()
+            toast(message)
             render()
         }
     }
+
+    private fun toast(message: String) =
+        Toast.makeText(this, message, Toast.LENGTH_LONG).show()
 }

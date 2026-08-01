@@ -33,6 +33,20 @@ older child.
 through the app and its own domains. Blocking Snapchat covers it. There is no way
 to keep Snapchat while removing My AI from outside the app.
 
+### Grok
+
+**Blocked as a standalone app and site; inside X it was already covered.** Grok
+lives in two places. The standalone app (`ai.x.grok`) and its own sites
+(`grok.com`, `x.ai`) are now blocked directly. The version built into X needs
+nothing new: `com.twitter.android` has always been on the package list and
+`x.com` on the social list, so the whole surface goes with them.
+
+It sits on the AI-companion list rather than being left to the "general-purpose
+assistants are not blocked" rule, and that is a judgement rather than a
+technicality — Grok ships a companion mode with deliberately unfiltered personas,
+which is the thing that list exists for. ChatGPT, Claude and Gemini stay
+unblocked; if you want them gone, `blocked_domains` is where they go.
+
 ### Minecraft: Bedrock servers
 
 **Partially blocked, and this one deserves attention.** Minecraft itself is left
@@ -60,7 +74,12 @@ phone was ever going to run it.
 ## Deliberate omissions
 
 - **Minecraft** — see above.
-- **WhatsApp** was not on the list and is not blocked.
+- **WhatsApp** is blocked, and can be allowed again with the "Allow WhatsApp
+  (14+)" option on drawbridge's configuration screen. It is the one thing on this
+  list a parent can switch back on without editing the policy.
+- **Signal** is deliberately left alone, and now explicitly so: it is in
+  `exempt_packages` and `signal.org` is in `allowed_domains`, so no upstream
+  blocklist can quietly start blocking it.
 
 ## Packages not on the Play Store
 

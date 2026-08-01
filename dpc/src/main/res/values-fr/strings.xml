@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Français. Les noms « drawbridge » et « herald » ne sont pas traduits : ce
+    sont les noms des applications tels qu\'ils apparaissent dans le lanceur.
+-->
+<resources>
+    <string name="admin_label">contrôle parental drawbridge</string>
+    <string name="admin_description">Maintient le filtre de contenu actif et empêche de le retirer sans la clé parentale.</string>
+    <string name="permission_read_selection">lire la politique drawbridge choisie et ses options</string>
+
+    <string name="language_heading">Langue</string>
+
+    <string name="welcome_title">Bienvenue dans drawbridge</string>
+    <string name="welcome_subtitle">Levons le pont face à l\'internet toxique et addictif, et gardons notre tranquillité d\'esprit.</string>
+    <string name="welcome_scene_description">Un pont-levis relevé la nuit, entre un parc paisible éclairé par la lune et une rive rocheuse où attendent des monstres de dessin animé.</string>
+
+    <string name="policy_heading">Politique</string>
+    <string name="policy_none_available">Ce document de politique ne propose aucun choix.</string>
+    <string name="policy_confirm_title">Passer à %1$s ?</string>
+    <string name="policy_confirm_message">Les applications que cette politique n\'autorise pas sont retirées immédiatement. Revenir en arrière plus tard ne les réinstalle pas.\n\nLe résolveur DNS et les listes de blocage changent avec elle.</string>
+    <string name="policy_confirm_apply">Changer</string>
+    <string name="policy_applying_title">Application de la politique</string>
+    <string name="policy_applying_message">Téléchargement des listes de blocage et vérification des applications installées…</string>
+    <string name="policy_apply_failed">Cette politique ne figure plus dans le document.</string>
+
+    <string name="options_heading">Options</string>
+    <string name="options_explanation">Autorisez les services suivants à vos propres risques.</string>
+    <string name="options_none_available">Cette politique ne propose rien à activer.</string>
+    <string name="options_footnote">La politique s\'inspire des bonnes pratiques du minimalisme numérique et constitue un bon choix pour tout le monde, adultes compris. Les âges sont une recommandation de pédiatres, de psychologues et de neurologues.</string>
+    <string name="option_change_failed">Cette option ne figure plus dans la politique.</string>
+    <string name="option_disable_confirm_title">Désactiver %1$s ?</string>
+    <string name="option_disable_confirm_message">Les applications que cette option autorisait sont retirées immédiatement. La réactiver plus tard ne les réinstalle pas.</string>
+    <string name="option_disable_confirm_yes">Désactiver</string>
+
+    <string name="status_heading">État de l\'appareil</string>
+    <string name="status_device_owner_yes">Géré : drawbridge est propriétaire de l\'appareil</string>
+    <string name="status_device_owner_no">Non géré — les restrictions ne peuvent pas être appliquées. Provisionnez d\'abord avec adb ou un code QR.</string>
+    <string name="status_filter_running">Filtre de contenu : actif</string>
+    <string name="status_filter_stopped">Filtre de contenu : arrêté</string>
+    <string name="status_policy">Politique version %1$d, mise à jour %2$s. Vérifiée automatiquement une fois par jour.</string>
+    <string name="status_policy_never">jamais</string>
+    <string name="status_restrictions_none">Aucune restriction appliquée</string>
+    <string name="status_restrictions_heading">Restrictions actives</string>
+    <string name="status_protected_since">Protège ce téléphone depuis le %1$s</string>
+    <string name="status_protected_never">Ce téléphone n\'est pas encore protégé. Le verrouiller lance le compteur.</string>
+
+    <string name="action_lock">Verrouiller drawbridge</string>
+    <string name="action_refresh">Rechercher des mises à jour de politique</string>
+    <string name="action_remove">Retirer le contrôle parental</string>
+
+    <string name="policy_refreshed">Politique mise à jour (version %1$d)</string>
+    <string name="policy_refresh_failed">Le serveur de politique est injoignable</string>
+
+    <!-- Verrouillage -->
+    <string name="lock_confirm_title">Verrouiller drawbridge ?</string>
+    <string name="lock_confirm_message">Ceci applique la politique, démarre le filtre de contenu et scelle cet écran.\n\nUne clé va vous être montrée. C\'est le seul retour possible, elle n\'est affichée qu\'une fois, et il n\'existe aucune réinitialisation — ni par e-mail, ni par nous, ni par personne.\n\nNotez-la, ou décidez délibérément de ne pas le faire.</string>
+    <string name="lock_confirm_yes">Verrouiller et montrer la clé</string>
+    <string name="lock_needs_filter">Le filtre de contenu doit fonctionner avant que le téléphone puisse être verrouillé.</string>
+
+    <string name="lock_reveal_title">Notez ceci maintenant</string>
+    <string name="lock_reveal_explanation">Cette clé déverrouille ces réglages. Elle n\'est stockée nulle part où vous pourriez la relire, et une nouvelle est créée à chaque verrouillage — donc celle-ci, sur papier, est tout ce qui existe.\n\nSi vous préférez ne pas pouvoir changer d\'avis, c\'est un choix légitime. Fermez sans garder la clé et les réglages resteront tels quels pour de bon.</string>
+    <string name="lock_reveal_confirm">J\'ai noté ou imprimé cette clé</string>
+    <string name="lock_reveal_share">Imprimer ou enregistrer la clé</string>
+    <string name="lock_reveal_subject">clé drawbridge</string>
+    <string name="lock_reveal_body">Clé drawbridge : %1$s\n\nConservez-la en lieu sûr et hors ligne. Elle déverrouille les réglages drawbridge sur le téléphone.</string>
+    <string name="lock_reveal_finish">Terminé</string>
+    <string name="lock_reveal_discard_title">Fermer sans la clé ?</string>
+    <string name="lock_reveal_discard_message">Les réglages de ce téléphone resteront exactement tels quels, et plus personne ne pourra les modifier — vous non plus.</string>
+    <string name="lock_reveal_discard_yes">Fermer quand même</string>
+
+    <string name="lock_challenge_title">drawbridge est verrouillé</string>
+    <string name="lock_challenge_explanation">Tapez la clé reçue au moment du verrouillage. Les tirets et les majuscules n\'ont pas d\'importance.</string>
+    <string name="lock_challenge_hint">Clé</string>
+    <string name="lock_challenge_action">Déverrouiller</string>
+    <string name="lock_challenge_incorrect">Ce n\'est pas la clé.</string>
+    <string name="lock_since_protected">Protège ce téléphone depuis le %1$s</string>
+    <string name="lock_since_locked">Verrouillé depuis le %1$s</string>
+    <string name="lock_since_hint">Si cela ne correspond pas à vos souvenirs, ce téléphone a été déverrouillé ou réinitialisé depuis.</string>
+
+    <!-- Retrait -->
+    <string name="remove_title">Retirer le contrôle parental</string>
+    <string name="remove_explanation">Ceci lève toutes les restrictions et arrête le filtre. Rien n\'est effacé et aucune réinitialisation d\'usine n\'est nécessaire.\n\nVous avez déjà passé le verrou : rien de plus ne vous sera demandé.</string>
+    <string name="remove_action">Retirer</string>
+    <string name="remove_cancel">Annuler</string>
+    <string name="remove_confirm_title">Retirer le contrôle parental ?</string>
+    <string name="remove_confirm_message">Le filtre de contenu, le blocage des applications et toutes les restrictions seront désactivés. Les applications masquées redeviennent disponibles. Aucune donnée n\'est perdue.\n\nLe relevé de la durée de protection de ce téléphone disparaît avec eux.</string>
+    <string name="remove_confirm_yes">Retirer</string>
+    <string name="remove_done">Contrôle parental retiré.</string>
+    <string name="remove_done_not_owner">Filtre arrêté et réglages effacés.</string>
+    <string name="remove_failed">Impossible d\'abandonner la propriété de l\'appareil. Consultez le journal.</string>
+
+    <string name="filter_channel_name">Filtre de contenu</string>
+    <string name="filter_notification_title">Filtre de contenu actif</string>
+    <string name="filter_notification_text">Filtre le DNS de toutes les applications de cet appareil</string>
+</resources>

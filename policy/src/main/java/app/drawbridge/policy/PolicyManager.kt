@@ -3,6 +3,7 @@ package app.drawbridge.policy
 import android.content.Context
 import android.util.Log
 import app.drawbridge.policy.model.Policy
+import app.drawbridge.policy.model.PolicyOption
 import app.drawbridge.policy.model.Profile
 import app.drawbridge.policy.net.Downloader
 import kotlinx.coroutines.Dispatchers
@@ -44,10 +45,11 @@ class PolicyManager private constructor(
     private val _policy = MutableStateFlow(Policy(version = 0))
 
     /**
-     * The active policy, with the selected profile already applied. Emits a new
-     * value whenever one is installed or the profile changes, so every consumer
-     * — DNS filter, app blocker, restrictions — sees the effective policy
-     * without knowing profiles exist.
+     * The active policy, with the selected profile and the switched-on options
+     * already applied. Emits a new value whenever a policy is installed, the
+     * profile changes or an option is toggled, so every consumer — DNS filter,
+     * app blocker, restrictions — sees the effective policy without knowing that
+     * either profiles or options exist.
      */
     val policy: StateFlow<Policy> = _policy.asStateFlow()
 
@@ -59,7 +61,13 @@ class PolicyManager private constructor(
     val profiles: List<Profile> get() = baseline.profiles
 
     /** The profile in force, or null when the policy defines none. */
-    val selectedProfile: Profile? get() = baseline.profileFor(store.readState().profileId)
+    val selectedProfile: Profile? get() = baseline.profileFor(selection().first)
+
+    /** The options the current policy offers, in document order. */
+    val options: List<PolicyOption> get() = baseline.options
+
+    /** Which of [options] are switched on right now. */
+    val enabledOptionIds: Set<String> get() = baseline.enabledOptionIds(selection().second)
 
     private val _filterChanges = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
 
@@ -183,6 +191,29 @@ class PolicyManager private constructor(
         true
     }
 
+    /**
+     * Switches one policy option on or off and re-applies the policy.
+     *
+     * Unlike a profile switch this changes no blocklist, so there is nothing to
+     * download and nothing that has to happen before the new rules take effect.
+     * It also cannot make the device stricter — an option only ever widens what
+     * is allowed — so unlike [selectProfile] it needs no confirmation and no
+     * app sweep. Returns false if the policy does not offer [optionId].
+     */
+    suspend fun setOptionEnabled(optionId: String, enabled: Boolean): Boolean =
+        withContext(Dispatchers.IO) {
+            if (baseline.options.none { it.id == optionId }) return@withContext false
+
+            refreshMutex.withLock {
+                val state = store.readState()
+                val current = baseline.enabledOptionIds(state.optionIds)
+                val next = if (enabled) current + optionId else current - optionId
+                store.writeState(state.copy(optionIds = next.toList()))
+                applyPolicy(baseline)
+            }
+            true
+        }
+
     fun isHostBlocked(host: String): Boolean = filterLock.read { filter.isHostBlocked(host) }
 
     fun isUrlBlocked(url: String): Boolean = filterLock.read { filter.isUrlBlocked(url) }
@@ -201,9 +232,38 @@ class PolicyManager private constructor(
         _policy.value = Policy(version = 0)
     }
 
+    /**
+     * Re-reads the selection and re-applies the policy without fetching
+     * anything.
+     *
+     * For an app whose selection lives elsewhere: drawbridge changes a switch,
+     * herald hears about it, and this is what turns that into a new filter. A
+     * no-op before the first load, because there would be no baseline to apply
+     * it to.
+     */
+    suspend fun refreshSelection() = withContext(Dispatchers.IO) {
+        if (!loaded) return@withContext
+        refreshMutex.withLock { applyPolicy(baseline) }
+    }
+
+    /**
+     * The profile and options in force, from whichever app owns that decision.
+     *
+     * An unreadable external source falls back to this app's own stored state
+     * rather than to nothing, so a browser that momentarily cannot reach
+     * drawbridge keeps filtering on the document's defaults instead of losing
+     * its rules.
+     */
+    private fun selection(): Pair<String?, List<String>?> {
+        config.selectionSource?.read()?.let { return it.profileId to it.optionIds }
+        val state = store.readState()
+        return state.profileId to state.optionIds
+    }
+
     private fun applyPolicy(published: Policy) {
         baseline = published
-        val policy = published.withProfile(store.readState().profileId)
+        val (profileId, optionIds) = selection()
+        val policy = published.effective(profileId, published.enabledOptionIds(optionIds))
         val compiled = store.openBlocklist()
         val next = ContentFilter.create(
             compiledBlocklist = compiled,

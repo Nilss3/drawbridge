@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <plurals name="profile_applied">
+    <!-- Shown after a profile switch or an option change. The count is the point:
+         both can uninstall apps, and saying how many is the difference between
+         "something happened" and knowing what. -->
+    <plurals name="change_applied">
         <item quantity="one">%1$s applied. 1 app removed.</item>
         <item quantity="other">%1$s applied. %2$d apps removed.</item>
     </plurals>

@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- The same deep blue herald uses, so the pair reads as one system. -->
-    <color name="ic_launcher_background">#FF2F3B6E</color>
+    <!--
+        The average colour of the illustration in art/drawbridge-icon.webp. The
+        painted foreground covers the whole layer, so this is only ever seen in
+        the frame or two of a launcher animating the two layers apart — which is
+        exactly why it should be the picture's own colour rather than a brand one
+        that would flash.
+    -->
+    <color name="ic_launcher_background">#FF9B958C</color>
 </resources>

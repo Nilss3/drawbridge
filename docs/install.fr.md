@@ -77,7 +77,7 @@ Le téléphone effectue ensuite tout seul les opérations suivantes :
 
 1. Télécharger et installer drawbridge.
 2. Faire de drawbridge le propriétaire de l'appareil, pour qu'il ne puisse pas
-   être supprimé sans votre code PIN.
+   être supprimé sans votre clé.
 3. Télécharger et installer **herald**, le navigateur filtré.
 4. Activer le filtre de contenu et masquer tous les autres navigateurs.
 
@@ -96,34 +96,74 @@ Play Store, mais vous perdez alors la protection décrite ci-dessous.
 
 ---
 
-## Étape 6 — Terminez la configuration dans l'application drawbridge
+## Étape 6 — Configurez le téléphone dans l'application drawbridge
 
-Ouvrez l'application **drawbridge** et appuyez sur **Set up parental controls**
-(*Configurer le contrôle parental*).
+Ouvrez l'application **drawbridge**. Tout ce que vous décidez tient sur cet écran.
 
-> L'application n'existe pour l'instant qu'en anglais ; les libellés des boutons
-> sont donc donnés en anglais, avec la traduction à côté.
+1. **Choisissez votre langue** — English, Nederlands ou Français. C'est la
+   première chose à l'écran, pour que tout ce qui suit soit dans votre langue.
+   L'application est entièrement traduite en français.
+2. **Lisez la politique.** Elle indique à qui elle s'adresse et ce qu'elle
+   bloque réellement. Si le document en propose plusieurs, passer à une
+   politique plus stricte désinstalle immédiatement les applications qu'elle
+   n'autorise pas, et revenir en arrière ne les réinstalle pas.
+3. **Réglez les options en dessous.** Chacune autorise une chose de plus
+   par-dessus la politique, avec à côté l'âge à partir duquel on la juge
+   habituellement adaptée — *Autoriser WhatsApp 14+*, par exemple.
 
-1. **Choisissez un code PIN** d'au moins six chiffres. Il vous servira à modifier
-   ou à supprimer le contrôle.
-2. **Notez le code de récupération.** Il n'est affiché qu'une seule fois. Il n'y a
-   pas de réinitialisation par e-mail : cela lierait le téléphone à un compte, ce
-   que ce projet cherche précisément à éviter.
-3. Acceptez l'exemption d'optimisation de la batterie lorsqu'elle est proposée.
+---
 
-> **Si vous perdez à la fois le code PIN et le code de récupération, le seul moyen
-> de supprimer drawbridge est d'effacer à nouveau le téléphone.** Rangez le code
-> en lieu sûr — un tiroir, un gestionnaire de mots de passe, collé dans une
-> armoire.
+## Étape 7 — Verrouillez, et notez la clé
+
+Appuyez sur **Verrouiller drawbridge**. C'est le seul bouton qui compte : il
+applique la politique, démarre le filtre de contenu et scelle l'écran. Acceptez
+l'exemption d'optimisation de la batterie lorsqu'elle est proposée.
+
+Une **clé** vous est ensuite montrée : vingt caractères en quatre groupes, comme
+`4XRZS-7QC9N-SPSH9-AWAAE`.
+
+**Notez-la ou imprimez-la avant de fermer cet écran.** Elle n'est affichée
+qu'une seule fois, elle n'est stockée nulle part où vous pourriez la relire, et
+il n'existe aucune réinitialisation — ni par e-mail, ni par personne. C'est
+délibéré : une réinitialisation par e-mail lierait le téléphone à un compte, ce
+que ce projet cherche précisément à éviter. Le bouton *Imprimer ou enregistrer la
+clé* la transmet à une application d'impression ou de notes ; elle n'est
+volontairement pas proposée au presse-papiers, que peut lire quiconque tient le
+téléphone.
+
+**Une nouvelle clé est créée à chaque verrouillage**, donc une clé dont on a pris
+une photo cesse de fonctionner au verrouillage suivant.
+
+> **Si vous perdez la clé, le seul moyen de revenir aux réglages est d'effacer le
+> téléphone.** Rangez-la en lieu sûr — un tiroir, un gestionnaire de mots de
+> passe, collée dans une armoire.
+>
+> Choisir délibérément de *ne pas* la garder est une option légitime, et
+> l'application le permet : le téléphone reste exactement tel que vous l'avez
+> configuré, définitivement, et plus personne ne pourra le modifier — vous non
+> plus.
+
+Pour changer quoi que ce soit plus tard, ouvrez drawbridge et saisissez la clé.
 
 ---
 
 ## Vérifier que tout fonctionne
 
-Ouvrez l'application drawbridge. Elle devrait indiquer :
+Ouvrez drawbridge. Avant même de vous demander quoi que ce soit, l'application
+indique **depuis quand elle protège ce téléphone** — la date et l'heure du
+verrouillage.
 
-- *Managed: drawbridge is the device owner* — géré, drawbridge est propriétaire
-- *Content filter: running* — le filtre de contenu tourne
+Cette ligne est la vérification la moins coûteuse qui soit. Elle survit à un
+redémarrage, et elle survit à un déverrouillage pour changer un réglage. Seuls le
+retrait de drawbridge depuis l'application et l'effacement du téléphone la
+remettent à zéro. Si dans six mois elle annonce une protection qui ne date que de
+mardi dernier, le téléphone a été réinitialisé puis reconfiguré — quelle que soit
+son apparence.
+
+Saisissez votre clé, et l'écran derrière devrait indiquer :
+
+- *Géré : drawbridge est propriétaire de l'appareil*
+- *Filtre de contenu : actif*
 - une version de la politique et une mise à jour récente
 
 Ouvrez ensuite **herald** et essayez de visiter un site bloqué. Vous devriez
@@ -174,9 +214,9 @@ compte**.
 
 ## Le supprimer plus tard
 
-Ouvrez drawbridge → **Remove parental controls**
-(*Supprimer le contrôle parental*) → saisissez votre code PIN
-ou le code de récupération.
+Ouvrez drawbridge, saisissez votre clé, puis choisissez **⋮ → Retirer le contrôle
+parental**. C'est dans le menu de débordement plutôt que sur l'écran : cela
+n'arrive qu'une fois dans la vie d'un téléphone.
 
 Toutes les restrictions sont levées, les applications masquées réapparaissent, et
 **rien n'est effacé**. Voir [suppression](removal.md) pour les détails.

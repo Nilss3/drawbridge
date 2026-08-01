@@ -1,10 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Heraldic gold on deep blue. Fixed in both day and night: a launcher icon
-         does not follow the app's theme.
+    <!-- The average colour of art/herald-icon.webp. The painted foreground covers
+         the whole layer, so this shows only while a launcher animates the two
+         apart; taking it from the picture means nothing flashes. -->
+    <color name="ic_launcher_background">#FFD88010</color>
+
+    <!-- The themed (monochrome) layer is still the old trumpet vector, and the
+         system reads only its alpha — but a vector needs a fill colour to be a
+         valid drawable, and this is the one it was drawn in.
 
          Named rather than inlined in the vector so the mono edition can restate
          the pair without duplicating the drawing. -->
-    <color name="ic_launcher_background">#FF2F3B6E</color>
     <color name="ic_launcher_foreground">#FFF7C948</color>
 </resources>

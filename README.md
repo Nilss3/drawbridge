@@ -10,7 +10,7 @@ Two apps in one repo:
 |---|---|---|
 | **herald** | `herald/` | A real browser (GeckoView) that enforces the blocklist on every page and subresource it loads, with uBlock Origin built in. Tabs, bookmarks with folders and import/export, searchable history, saved passwords, reader view, day/night. |
 | **herald mono** | `herald/` | The same browser, built for single-tasking: no tabs, every page in black and white, articles opened straight into reader view, and a deliberate pause before a page appears. A product flavour of herald, not a fork. |
-| **drawbridge** | `dpc/` | The device policy controller: a device-wide DNS filter, app blocking, and the restrictions that stop the whole thing being switched off. |
+| **drawbridge** | `dpc/` | The device policy controller: a device-wide DNS filter, app blocking, and the restrictions that stop the whole thing being switched off. One configuration screen — language, profile, options — and a key that seals it. English, Dutch and French. |
 | *policy* | `policy/` | Shared library: the signed policy document, blocklist compilation, and the update poller both apps use. |
 
 ## herald mono
@@ -30,15 +30,49 @@ stripped back, for a phone that should be dull to pick up:
   think while loading" and naming where you are going. The page loads
   underneath, so nothing is actually slower; the friction is the point.
 
-It is a separate app with its own package, so a device runs herald *or* herald
-mono — whichever `allowed_browser_package` names — and never both.
+It is a separate app with its own package, and a managed device gets both
+installed. The policy names both as allowed browsers and pulls both down, so
+which one gets opened is the child's choice, made one app icon at a time.
+
+## Setting it up
+
+drawbridge has one screen and one button. The screen shows what this phone is
+allowed to do — the **policy**, and the **options** you can switch on top of it,
+each with the age it is usually reckoned suitable from. The button is **Lock**,
+and it does everything: applies the policy, starts the filter, and seals the
+screen behind a key. Protecting the phone and locking it were never two
+decisions, and splitting them into two buttons let a phone sit configured,
+unlocked and unfiltered while looking finished.
+
+Locking mints a **key**: twenty characters, shown once, never stored anywhere
+readable, and the only way back into that screen. A new one is minted every time
+you lock, so a key photographed once stops working at the next lock. There is no
+reset — not by email, not by anyone — which means writing it down matters, and
+also means *not* writing it down is a legitimate way to make a decision
+permanent on purpose. The screen says so before it mints anything.
+
+There is no PIN. There used to be, with the key demoted to a recovery code
+behind it; that was one secret too many, and the six digits a parent can
+remember needed lockout throttling that the key does not. See
+[design-decisions](docs/design-decisions.md#the-pin-is-gone-and-the-key-is-the-whole-credential).
+
+The lock screen also says **how long this phone has been protected**. That date
+survives reboots and survives unlocking, and the only things that clear it are
+removing drawbridge from inside the app or wiping the phone — so a phone that
+was reset and quietly set up again says so, at a glance, however innocent it
+looks.
 
 They ship as two deliverables:
 
-1. **Full package** — drawbridge + herald on a device drawbridge fully manages.
-   Filtering happens at the DNS layer for *every* app, and again inside herald.
+1. **Full package** — drawbridge + both browsers on a device drawbridge fully
+   manages. Filtering happens at the DNS layer for *every* app, and again inside
+   the browser — and the browser follows drawbridge's own switches, so turning
+   *Allow WhatsApp* on is what lets WhatsApp Web load and turning it off is what
+   stops it.
 2. **Standalone browser** — herald on its own, for a phone that already has app
-   blocking (Family Link or similar) and only needs the browser gap closed.
+   blocking (Family Link or similar) and only needs the browser gap closed. With
+   no drawbridge to ask, it follows the policy document's own defaults, which are
+   the stricter reading.
 
 ## How it filters
 
@@ -119,9 +153,18 @@ herald/       the browser
 dpc/          the device policy controller
 policy/       shared: signed policy, blocklists, update poller
 dist/         the published policy document and the lists it references
-tools/        policytool.py (sign policy), qrpayload.py (provisioning QR)
+art/          the illustrations every icon and hero image is derived from
+tools/        policytool.py (sign policy), qrpayload.py (provisioning QR),
+              make-artwork.sh (icons and scenes from art/)
 keys/         signing keys — never committed
 ```
+
+Nothing under `art/` is read at build time. `tools/make-artwork.sh` derives the
+adaptive-icon layers, herald's block-page scene and drawbridge's hero image from
+it and writes them into the two apps; run it after changing a master and commit
+what it writes. The two scenes are the same place by day and by night: herald's
+block page carries both and turns with the phone's light or dark mode,
+drawbridge's welcome screen keeps the night one.
 
 ## Licence
 

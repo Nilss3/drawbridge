@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    One policy in the picker: title, the line that says who it is for, and the
+    paragraph that says what it actually does.
+
+    (The signed document calls these "profiles" — variants of one policy
+    document. The screen says "policy", because that is the word for it from the
+    outside.)
+
+    A card rather than a list row because this is a decision with consequences —
+    switching to a stricter one uninstalls apps and does not put them back — and
+    it deserves more room than a radio button in a dialog gave it.
+-->
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="12dp"
+    android:checkable="true"
+    app:cardElevation="0dp"
+    app:checkedIcon="@null"
+    app:strokeWidth="1dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="16dp">
+
+        <!-- The card is what is tapped; this only reports which one is chosen,
+             so it takes no touches of its own. -->
+        <RadioButton
+            android:id="@+id/policySelected"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:clickable="false"
+            android:focusable="false" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/policyName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="?attr/textAppearanceTitleMedium" />
+
+            <TextView
+                android:id="@+id/policySubtitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="?attr/textAppearanceBodyMedium"
+                android:textColor="?attr/colorPrimary" />
+
+            <TextView
+                android:id="@+id/policyDescription"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="6dp"
+                android:textAppearance="?attr/textAppearanceBodySmall" />
+        </LinearLayout>
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

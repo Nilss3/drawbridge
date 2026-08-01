@@ -23,6 +23,19 @@ data class PolicyConfig(
 
     val connectTimeoutMillis: Int = 15_000,
     val readTimeoutMillis: Int = 60_000,
+
+    /**
+     * Where the chosen profile and options come from, when they come from
+     * somewhere other than this app.
+     *
+     * herald sets this to drawbridge's selection, so that a browser on a managed
+     * device enforces what the parent actually chose rather than the document's
+     * defaults — turning "Allow WhatsApp" on has to unblock WhatsApp Web, and
+     * the browser has no other way to know it was turned on. Null, which is what
+     * the standalone browser and drawbridge itself use, means "read the
+     * selection this app stores for itself".
+     */
+    val selectionSource: SelectionSource? = null,
 ) {
     companion object {
         /**

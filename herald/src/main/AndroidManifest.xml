@@ -10,6 +10,24 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
+    <!--
+        Reads which policy and which options the parent chose, from drawbridge.
+        The permission is declared by drawbridge at `signature` level, so this is
+        granted only when both apps carry the same signing key — and simply never
+        granted on a phone where drawbridge is not installed, which is the
+        standalone browser and works fine.
+    -->
+    <uses-permission android:name="app.drawbridge.permission.READ_SELECTION" />
+
+    <!--
+        Package visibility: without this, querying drawbridge's provider returns
+        nothing at all on API 30+, and the browser would silently filter on the
+        document's defaults on a managed device.
+    -->
+    <queries>
+        <provider android:authorities="app.drawbridge.dpc.selection" />
+    </queries>
+
     <application
         android:name=".HeraldApplication"
         android:allowBackup="false"

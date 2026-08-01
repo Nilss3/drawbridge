@@ -3,11 +3,15 @@
     A herald's trumpet with its banner: the app announces what is allowed
     through, which is where the name comes from.
 
-    Adaptive icon foreground. The viewport is 108dp but launchers mask it down to
-    a shape inscribed in the middle 66dp, so every point here stays inside a
-    circle of radius ~32 around (54,54) — a horizontal trumpet was wide enough to
-    have its bell cropped off, hence the diagonal. One colour throughout, so the
-    same drawable serves as the themed (monochrome) layer.
+    This was the whole icon until the painted lantern replaced it; it is now the
+    themed (monochrome) layer, which a painting cannot be — the system reads only
+    the alpha and fills it with the wallpaper's colour, so the themed icon has to
+    be a stencil.
+
+    The viewport is 108dp but launchers mask it down to a shape inscribed in the
+    middle 66dp, so every point here stays inside a circle of radius ~32 around
+    (54,54) — a horizontal trumpet was wide enough to have its bell cropped off,
+    hence the diagonal.
 -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="108dp"

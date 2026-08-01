@@ -1,5 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+    The configuration screen: everything the parent decides, in the order they
+    decide it.
+
+    Language is first, above the welcome rather than under it, because every word
+    below it is a word they have to read — including the illustration's caption
+    and the policy's own description, which come out of the signed document.
+
+    The policy cards and the option switches are inflated into their containers
+    at runtime from item_policy.xml and item_option.xml, because both lists come
+    out of that document rather than out of this file.
+-->
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -9,82 +22,177 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="24dp">
+        android:paddingTop="8dp"
+        android:paddingBottom="32dp">
 
         <TextView
-            android:layout_width="wrap_content"
+            style="@style/TextAppearance.Drawbridge.SectionHeading"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingBottom="16dp"
-            android:text="@string/status_heading"
+            android:text="@string/language_heading" />
+
+        <!-- No hint: the section heading above already says "Language", and a
+             floating label would say it a second time. -->
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="24dp"
+            android:layout_marginBottom="28dp">
+
+            <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                android:id="@+id/languageField"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="none" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:layout_marginHorizontal="24dp"
+            android:layout_marginBottom="20dp"
+            android:contentDescription="@string/welcome_scene_description"
+            android:scaleType="centerCrop"
+            android:src="@drawable/welcome_scene"
+            app:shapeAppearanceOverlay="@style/ShapeAppearance.Drawbridge.Hero" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="24dp"
+            android:paddingBottom="8dp"
+            android:text="@string/welcome_title"
             android:textAppearance="?attr/textAppearanceHeadlineSmall" />
 
         <TextView
-            android:id="@+id/ownershipStatus"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingBottom="8dp"
-            android:textAppearance="?attr/textAppearanceBodyLarge" />
-
-        <TextView
-            android:id="@+id/filterStatus"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingBottom="8dp"
-            android:textAppearance="?attr/textAppearanceBodyLarge" />
-
-        <TextView
-            android:id="@+id/policyStatus"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingBottom="24dp"
-            android:textAppearance="?attr/textAppearanceBodyLarge" />
-
-        <TextView
-            android:id="@+id/profileStatus"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingBottom="24dp"
-            android:textAppearance="?attr/textAppearanceBodyLarge" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingBottom="8dp"
-            android:text="@string/status_restrictions_heading"
-            android:textAppearance="?attr/textAppearanceTitleMedium" />
-
-        <TextView
-            android:id="@+id/restrictionsStatus"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingBottom="24dp"
+            android:layout_marginHorizontal="24dp"
+            android:paddingBottom="28dp"
+            android:text="@string/welcome_subtitle"
             android:textAppearance="?attr/textAppearanceBodyMedium" />
 
-        <Button
-            android:id="@+id/setupButton"
+        <TextView
+            style="@style/TextAppearance.Drawbridge.SectionHeading"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/action_setup" />
+            android:text="@string/policy_heading" />
 
-        <Button
-            android:id="@+id/refreshButton"
-            style="?attr/materialButtonOutlinedStyle"
+        <LinearLayout
+            android:id="@+id/policyContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/action_refresh" />
+            android:layout_marginBottom="28dp"
+            android:orientation="vertical"
+            android:paddingHorizontal="24dp" />
 
-        <Button
-            android:id="@+id/profileButton"
-            style="?attr/materialButtonOutlinedStyle"
+        <TextView
+            style="@style/TextAppearance.Drawbridge.SectionHeading"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/action_change_profile" />
+            android:text="@string/options_heading" />
 
-        <Button
-            android:id="@+id/removeButton"
-            style="?attr/materialButtonOutlinedStyle"
+        <TextView
+            android:id="@+id/optionsExplanation"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/action_remove" />
+            android:layout_marginHorizontal="24dp"
+            android:paddingBottom="8dp"
+            android:text="@string/options_explanation"
+            android:textAppearance="?attr/textAppearanceBodyMedium" />
+
+        <LinearLayout
+            android:id="@+id/optionContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="24dp" />
+
+        <TextView
+            android:id="@+id/optionsFootnote"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="24dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="28dp"
+            android:alpha="0.75"
+            android:text="@string/options_footnote"
+            android:textAppearance="?attr/textAppearanceBodySmall" />
+
+        <TextView
+            style="@style/TextAppearance.Drawbridge.SectionHeading"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/status_heading" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="28dp"
+            android:orientation="vertical"
+            android:paddingHorizontal="24dp">
+
+            <TextView
+                android:id="@+id/protectedSinceStatus"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="8dp"
+                android:textAppearance="?attr/textAppearanceBodyLarge" />
+
+            <TextView
+                android:id="@+id/ownershipStatus"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="4dp"
+                android:textAppearance="?attr/textAppearanceBodyMedium" />
+
+            <TextView
+                android:id="@+id/filterStatus"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="4dp"
+                android:textAppearance="?attr/textAppearanceBodyMedium" />
+
+            <TextView
+                android:id="@+id/policyStatus"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="12dp"
+                android:textAppearance="?attr/textAppearanceBodyMedium" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingBottom="4dp"
+                android:text="@string/status_restrictions_heading"
+                android:textAppearance="?attr/textAppearanceTitleSmall" />
+
+            <TextView
+                android:id="@+id/restrictionsStatus"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="?attr/textAppearanceBodyMedium" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="24dp">
+
+            <Button
+                android:id="@+id/lockButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/action_lock" />
+
+            <Button
+                android:id="@+id/refreshButton"
+                style="?attr/materialButtonOutlinedStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/action_refresh" />
+        </LinearLayout>
     </LinearLayout>
 </ScrollView>

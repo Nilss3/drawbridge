@@ -238,6 +238,52 @@ only there is the blocked host the thing the reader asked for.
 A subframe that merely *fails* — a DNS-filtered tracker on a managed device —
 does not take the page down; that path is frame-scoped already.
 
+## The block page carries its picture inside itself
+
+The block page is built as a string and handed to the engine as a `data:` URL, so
+it renders with no network and no assets — which matters, because the one page a
+blocked device is guaranteed to see should not depend on the connection working.
+The illustration keeps that property by being read out of `res/raw` and inlined
+as a base64 `data:` URI, which means it is base64-encoded twice: once into the
+page, and again by GeckoView's loader when it takes the whole document. That is
+why the file is 1000px of WebP at ~42 KB rather than the 1.9 MB master, and why
+it is cached for the life of the process — a child who has hit a wall tends to
+hit it repeatedly.
+
+If the resource cannot be read the page still renders, without the picture. An
+exception thrown while building the block page would leave the engine showing the
+site that was supposed to be blocked.
+
+**Both times of day travel with the page.** herald ships a daylit scene and a
+night one, and a `<picture>` element lets the browser's own
+`prefers-color-scheme` choose — the same switch the card's colours already
+follow. Picking one in Kotlin would have been half the bytes and wrong the moment
+the phone crossed into dark mode with the block page still open: everything
+around the picture turns, and it would be the only bright thing left on screen.
+This is also why they are two resources with distinct names rather than one name
+with a `-night` qualifier, which would give the page only whichever one matched
+at the time it was built.
+
+drawbridge does not do this. Its screen is read once, by a parent, deciding
+something, and a picture that changed with the hour would be decoration for its
+own sake.
+
+## The language picker changes drawbridge, and only drawbridge
+
+drawbridge's screens are offered in English, Dutch and French, through
+`AppCompatDelegate.setApplicationLocales` — a *per-app* locale. Device Owner
+privilege does not extend to setting the system language; there is no such API,
+and there is no way to set herald's locale from another app either. So the picker
+changes what the parent reads on the configuration screen, and nothing else.
+
+Below API 33 AppCompat only persists the choice if
+`AppLocalesMetadataHolderService` is declared with `autoStoreLocales`; without it
+the picker works until the process dies and then silently forgets.
+
+Half of the configuration screen is not string resources at all — the profile's
+name and description come from the signed policy document. Those carry their own
+translations; see [policy.md](policy.md#words-in-the-policy-carry-their-own-translations).
+
 ## uBlock Origin ships inside the APK
 
 A domain blocklist cannot block advertising properly, and no amount of list
@@ -444,6 +490,170 @@ marked experimental, and if it changes or stops working the invariant still
 holds. `TabIntentProcessor`'s third parameter is `isPrivate`, not `openNewTab`;
 it has no option to load in place, which is what made the invariant necessary
 rather than merely tidy.
+
+## The PIN is gone, and the key is the whole credential
+
+drawbridge used to have two secrets: a six-digit parent PIN, and a twenty-
+character recovery code sitting behind it for when the PIN was forgotten. The
+PIN is now gone and the key does everything.
+
+The PIN was never carrying its weight. Six digits is ten thousand possibilities —
+an afternoon of tapping — so it needed lockout throttling, four free attempts and
+a delay doubling to thirty minutes. It needed the recovery code underneath it
+anyway, because a forgotten PIN could not be allowed to strand the parent. And
+the recovery code, being the real backstop, had to be as strong as if the PIN
+were not there. So the PIN bought convenience, and paid for it with a second
+secret, a throttling mechanism, a change-PIN path, and a lockout that could shut
+the parent out of their own phone for half an hour.
+
+The key is twenty Crockford base-32 characters: a hundred bits. Guessing is not a
+threat model, which is why there is no throttling any more — and removing it
+removed the failure mode where the only way in was temporarily unavailable.
+
+Two consequences worth stating:
+
+- **A fresh key is minted at every lock.** The alternative — one key for the life
+  of the install — meant a key photographed once was a key forever. Minting on
+  lock also guarantees the reveal screen always has something to show, and that
+  nothing is stored at all while the device is unlocked.
+- **Removal no longer asks for anything.** It used to be the one door with a lock
+  on it, back when the configuration screen was open to whoever picked the phone
+  up. Now that whole screen is behind the key, so asking again at the removal
+  screen would be asking the same question twice.
+
+There is still no reset, by design, and now the consequence is blunter: lose the
+key and the settings are frozen as they stand. The reveal screen says so, and
+lets the parent close it without keeping the key — deliberately making the
+configuration permanent is a legitimate thing to want, and the second dialog is
+there so it cannot happen by accident.
+
+## herald reads drawbridge's selection, or it enforces a different policy
+
+Both apps fetch the same signed document, and for a long time that was assumed to
+be enough. It is not: the document is only half the answer. Which profile is
+running and which options are on is a *selection*, it lives on the device, and
+only drawbridge holds it.
+
+So the browser filtered on the document's defaults while the DNS layer filtered
+on what the parent had actually switched on. Mostly invisible, because on a
+managed device DNS blocks first and the browser never gets the chance to
+disagree — until an option *allowed* something, at which point the two layers
+wanted opposite things and the stricter one won. "Allow WhatsApp" on, and
+WhatsApp Web still refused to load in the browser.
+
+drawbridge now publishes the selection through a read-only `ContentProvider`
+guarded by a `signature` permission it declares itself. Both apps are signed with
+the same release key, so herald and herald mono are the only packages on the
+phone that can hold it — no manifest declaration and no user prompt can grant it
+to anything else. There is deliberately no write path: a browser that could
+change the selection would be a way around the lock.
+
+Three properties are load-bearing:
+
+- **A missing provider means "no selection", not "no rules".** The standalone
+  browser has no drawbridge to ask, and neither does one whose drawbridge is
+  mid-upgrade. Both fall back to the document's own defaults, which are the
+  *strict* reading — so the failure mode is a browser that blocks more than it
+  needs to, never less.
+- **An empty answer is not a missing one.** `option_ids=""` means the parent
+  turned everything off; a missing column means nobody answered. Conflating them
+  would silently re-enable every default-on option.
+- **herald needs `<queries>` for the authority.** Without it, API 30+ package
+  visibility makes the provider invisible and the query returns nothing — which
+  looks exactly like the standalone case, on a managed device, with no error
+  anywhere.
+
+Changes are pushed rather than polled: drawbridge calls `notifyChange` and herald
+holds a `ContentObserver`. Without that the browser would keep the old answer
+until its next daily poll, and a parent who flips a switch and hands the phone
+back would be handing back a browser that disagrees with the switch.
+
+## Both herald editions may exist, and the two lists have to agree
+
+`allowed_browser_package` was a single package, on the reasoning that a device
+runs one browser or the other and never both. Shipping both means
+`allowed_browser_packages` — a list — and it comes with a trap worth naming.
+
+`required_apps` installs what is missing, and the app blocker removes browsers
+the policy does not name. If those two disagree, drawbridge installs a browser
+and then removes it as a rogue one, and reinstalls it at the next poll, forever.
+That is precisely why herald mono was left out of `required_apps` until now. Name
+a browser in one list and not the other and you get the loop.
+
+`Policy.browserPackages` folds `allowed_browser_package` into the list so the
+default link handler cannot be uninstalled by an incomplete list, which is the
+likeliest way to write the field wrong.
+
+## Locking is the only button, because protecting was never a separate decision
+
+drawbridge briefly had two buttons: *Turn on protection*, which applied the
+restrictions and started the filter, and *Lock drawbridge*, which sealed the
+configuration screen. Nobody wants one without the other, and a phone that had
+been given the first and not the second sat configured, unlocked and unfiltered
+while looking finished. Now *Lock* does both, in that order, and the order
+matters: everything that needs the configuration screen happens before the
+screen is sealed.
+
+The one step that can come back later is the VPN-consent dialog, which only
+appears when drawbridge is *not* device owner. If the parent declines it, the
+phone is deliberately **not** locked — sealing the screen would turn "locked
+means filtered" into a promise they could no longer check.
+
+## The protected-since date is the cheap tamper check
+
+The lock screen says how long this phone has been protected, before it asks for
+anything. Two timestamps sit behind it: one written at the *first* lock and never
+touched again, one rewritten at every lock.
+
+The first is the one that matters, and it is deliberately not re-stamped — if it
+moved every time a parent changed a setting on a Tuesday evening, it would say
+nothing about the Saturday the phone was wiped. Nothing clears it but removing
+drawbridge from inside the app or a factory reset, which is exactly the event
+worth catching: a child who finds a recovery-mode wipe and sets the phone up
+again cannot make that date old.
+
+It is not authenticated and does not try to be. A child holding the key can
+unlock and re-lock, which moves the second date and leaves the first alone — so
+what the pair actually distinguishes is "someone opened this" from "this is not
+the same installation any more". Both are worth knowing and neither was visible
+before.
+
+## An option widens; only a profile can narrow
+
+Profiles and options are both "the parent chooses", but they are not two flavours
+of the same mechanism. A profile replaces fields. An option may only add to
+`exempt_packages`, `allowed_domains` and an *already-enabled* allowlist.
+
+That asymmetry buys three things. The order of application stops mattering
+(profile first, then options, and no option can undo what a profile decided).
+The effect of switching an option off is exactly "the base policy", with nothing
+to reason about. And an option cannot turn allowlist mode *on* — which, if it
+could, would mean a switch labelled as a relaxation quietly uninstalling every
+app not on a list.
+
+The cost is that an option only means something if the base policy blocks what it
+allows: `blocked_packages` has to name `com.whatsapp` for "Allow WhatsApp" to be
+more than decoration. That is a policy-authoring trap rather than a code one, and
+it is written down in [policy.md](policy.md#options-one-switch-each).
+
+## The launcher icons are paintings; the themed icons are still vectors
+
+All three apps now use a painted illustration as their adaptive-icon foreground.
+A themed (monochrome) icon cannot be one: the system reads only the alpha channel
+and fills it with the wallpaper's colour, so a painting comes out as a solid
+blob. The vectors that used to be the icons were kept and demoted to the
+`<monochrome>` layer, which is why the themed variants are still a trumpet and a
+line-drawn drawbridge.
+
+An adaptive icon is also not the square the illustrations were drawn as. The
+launcher draws the 108dp layer and masks it with a shape inscribed in the middle
+**72dp**, so stretching the art across the layer would throw a third of it away.
+`tools/make-artwork.sh` draws each picture at 72dp in the middle, where the mask
+is, and fills the 18dp of bleed around it with a blurred, blown-up copy of the
+same picture — so a squircle mask finds matching colour where a circle finds
+nothing. Two of the masters arrive as finished rounded-square icons, meaning
+white in the corners; those corners are flood-filled to transparent first, or
+they would show through a squircle as four white slivers.
 
 ## Blocklists are stored as hashes, not strings
 

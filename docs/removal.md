@@ -5,8 +5,13 @@ other wipes the phone.
 
 ## The sanctioned way
 
-Open **drawbridge** → *Remove parental controls* → enter the parent PIN or the
-one-time recovery code.
+Open **drawbridge**, type the key you were given when the phone was locked, then
+**⋮ → Remove parental controls**. It is in the overflow menu rather than on the
+screen, because it happens once in the life of a phone.
+
+Nothing else is asked for. Getting past the lock screen already answered the only
+question there is, and asking the same thing twice is ceremony rather than
+security.
 
 This lifts every restriction, stops the filter, un-hides any system browser that
 was hidden, and gives up Device Owner. **No wipe, no data loss, no factory
@@ -18,19 +23,22 @@ Apps that were *uninstalled* do not come back on their own; reinstall them
 normally. Apps that were *hidden* — preinstalled browsers, mostly — reappear
 immediately.
 
-### If the PIN is forgotten
+It also clears the record of how long the phone has been protected, which is the
+one thing here that cannot be undone. Removing and setting up again reads, to
+anyone who looks at that date afterwards, exactly like a factory reset — because
+from the record's point of view it is one.
 
-Use the recovery code printed during setup. It works once, then stops working.
+### If the key is gone
 
-Wrong attempts are throttled: four free tries, then a lockout that doubles with
-each further failure up to thirty minutes. A six-digit PIN is otherwise a few
-minutes of tapping to exhaust.
+There is no way back in. This is a deliberate design choice, and the price of
+having no account: an email reset would reintroduce exactly the dependency the
+project exists to avoid. Your only remaining option is the destructive path
+below.
 
-### If both the PIN and the recovery code are gone
-
-There is no way back in. This is a deliberate design choice: an email or
-account-based reset would reintroduce exactly the account dependency the project
-exists to avoid. Your only remaining option is the destructive path below.
+Wrong attempts are **not** throttled, and do not need to be. The key is twenty
+Crockford base-32 characters — a hundred bits — so guessing is not a threat
+model, and a lockout on the only way in would strand you for half an hour with
+nothing else to try. That was a real cost of the six-digit PIN this replaced.
 
 ## The destructive way
 

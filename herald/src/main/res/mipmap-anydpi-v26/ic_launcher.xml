@@ -1,6 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+    The foreground is a painted illustration rather than a vector, which is why
+    the background colour underneath it is never seen: `make-artwork.sh` draws
+    the picture across the whole 108dp layer, so whatever shape the launcher
+    masks with lands on paint. The colour is still stated, and still sampled from
+    the illustration, because a launcher that animates the two layers apart shows
+    it for a frame.
+
+    The monochrome layer cannot be the illustration — a themed icon is a stencil,
+    and the system reads only its alpha. The vector that used to be the icon
+    serves that purpose, so the themed variant is still a herald's trumpet.
+-->
 <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
     <background android:drawable="@color/ic_launcher_background" />
-    <foreground android:drawable="@drawable/ic_launcher_foreground" />
-    <monochrome android:drawable="@drawable/ic_launcher_foreground" />
+    <foreground android:drawable="@mipmap/ic_launcher_foreground" />
+    <monochrome android:drawable="@drawable/ic_launcher_monochrome" />
 </adaptive-icon>

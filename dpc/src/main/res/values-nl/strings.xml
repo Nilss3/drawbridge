@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Nederlands. De naam "drawbridge" en "herald" blijven onvertaald: het zijn de
+    namen van de apps zoals ze in de launcher staan.
+-->
+<resources>
+    <string name="admin_label">drawbridge ouderlijk toezicht</string>
+    <string name="admin_description">Houdt de inhoudsfilter aan en zorgt dat die niet verwijderd kan worden zonder de oudersleutel.</string>
+    <string name="permission_read_selection">het gekozen drawbridge-beleid en de opties lezen</string>
+
+    <string name="language_heading">Taal</string>
+
+    <string name="welcome_title">Welkom bij drawbridge</string>
+    <string name="welcome_subtitle">Laten we de brug ophalen voor het toxische, verslavende internet en onze gemoedsrust bewaren.</string>
+    <string name="welcome_scene_description">Een opgehaalde ophaalbrug bij nacht, tussen een rustig maanverlicht park en een rotsige oever waar tekenfilmmonsters staan te wachten.</string>
+
+    <string name="policy_heading">Beleid</string>
+    <string name="policy_none_available">Dit beleidsdocument biedt niets om uit te kiezen.</string>
+    <string name="policy_confirm_title">Overschakelen naar %1$s?</string>
+    <string name="policy_confirm_message">Apps die dit beleid niet toelaat worden meteen verwijderd. Later terugschakelen installeert ze niet opnieuw.\n\nDe DNS-resolver en de bloklijsten veranderen mee.</string>
+    <string name="policy_confirm_apply">Overschakelen</string>
+    <string name="policy_applying_title">Beleid toepassen</string>
+    <string name="policy_applying_message">Bloklijsten downloaden en geïnstalleerde apps nakijken…</string>
+    <string name="policy_apply_failed">Dat beleid staat niet meer in het document.</string>
+
+    <string name="options_heading">Opties</string>
+    <string name="options_explanation">Sta de volgende diensten toe op eigen risico.</string>
+    <string name="options_none_available">Dit beleid biedt niets om aan te zetten.</string>
+    <string name="options_footnote">Het beleid is geïnspireerd op de beste praktijken uit het digitale minimalisme en is een goede keuze voor iedereen, ook voor volwassenen. De leeftijden zijn een aanbeveling van kinderartsen, psychologen en neurologen.</string>
+    <string name="option_change_failed">Die optie staat niet meer in het beleid.</string>
+    <string name="option_disable_confirm_title">%1$s uitzetten?</string>
+    <string name="option_disable_confirm_message">Apps die deze optie toeliet worden meteen verwijderd. Later weer aanzetten installeert ze niet opnieuw.</string>
+    <string name="option_disable_confirm_yes">Uitzetten</string>
+
+    <string name="status_heading">Toestand van het toestel</string>
+    <string name="status_device_owner_yes">Beheerd: drawbridge is de eigenaar van het toestel</string>
+    <string name="status_device_owner_no">Niet beheerd — beperkingen kunnen niet afgedwongen worden. Richt eerst in met adb of een QR-code.</string>
+    <string name="status_filter_running">Inhoudsfilter: actief</string>
+    <string name="status_filter_stopped">Inhoudsfilter: gestopt</string>
+    <string name="status_policy">Beleidsversie %1$d, laatst bijgewerkt %2$s. Wordt eenmaal per dag automatisch nagekeken.</string>
+    <string name="status_policy_never">nooit</string>
+    <string name="status_restrictions_none">Geen beperkingen toegepast</string>
+    <string name="status_restrictions_heading">Actieve beperkingen</string>
+    <string name="status_protected_since">Beschermt deze telefoon sinds %1$s</string>
+    <string name="status_protected_never">Deze telefoon is nog niet beschermd. Vergrendelen zet de klok in gang.</string>
+
+    <string name="action_lock">drawbridge vergrendelen</string>
+    <string name="action_refresh">Controleren op beleidsupdates</string>
+    <string name="action_remove">Ouderlijk toezicht verwijderen</string>
+
+    <string name="policy_refreshed">Beleid bijgewerkt (versie %1$d)</string>
+    <string name="policy_refresh_failed">De beleidsserver was niet bereikbaar</string>
+
+    <!-- Vergrendelen -->
+    <string name="lock_confirm_title">drawbridge vergrendelen?</string>
+    <string name="lock_confirm_message">Dit past het beleid toe, start de inhoudsfilter en verzegelt dit scherm.\n\nJe krijgt een sleutel te zien. Dat is de enige weg terug, hij wordt één keer getoond, en er is geen herstel — niet per e-mail, niet door ons, door niemand.\n\nSchrijf hem op, of beslis bewust van niet.</string>
+    <string name="lock_confirm_yes">Vergrendel en toon de sleutel</string>
+    <string name="lock_needs_filter">De inhoudsfilter moet draaien voor de telefoon vergrendeld kan worden.</string>
+
+    <string name="lock_reveal_title">Schrijf dit nu op</string>
+    <string name="lock_reveal_explanation">Deze sleutel ontgrendelt deze instellingen. Hij wordt nergens bewaard waar je hem nog kunt lezen, en bij elke vergrendeling wordt een nieuwe gemaakt — dus deze, op papier, is alles wat er is.\n\nAls je liever niet meer van gedacht kunt veranderen, is dat een echte keuze. Sluit dit zonder de sleutel te bewaren en de instellingen blijven voorgoed zoals ze zijn.</string>
+    <string name="lock_reveal_confirm">Ik heb deze sleutel opgeschreven of afgedrukt</string>
+    <string name="lock_reveal_share">Sleutel afdrukken of bewaren</string>
+    <string name="lock_reveal_subject">drawbridge-sleutel</string>
+    <string name="lock_reveal_body">drawbridge-sleutel: %1$s\n\nBewaar dit ergens veilig en offline. Hiermee ontgrendel je de drawbridge-instellingen op de telefoon.</string>
+    <string name="lock_reveal_finish">Klaar</string>
+    <string name="lock_reveal_discard_title">Sluiten zonder de sleutel?</string>
+    <string name="lock_reveal_discard_message">De instellingen op deze telefoon blijven precies zoals ze zijn, en niemand zal ze nog kunnen wijzigen — jij ook niet.</string>
+    <string name="lock_reveal_discard_yes">Toch sluiten</string>
+
+    <string name="lock_challenge_title">drawbridge is vergrendeld</string>
+    <string name="lock_challenge_explanation">Typ de sleutel die je kreeg toen deze telefoon vergrendeld werd. Streepjes en hoofdletters maken niet uit.</string>
+    <string name="lock_challenge_hint">Sleutel</string>
+    <string name="lock_challenge_action">Ontgrendelen</string>
+    <string name="lock_challenge_incorrect">Dat is de sleutel niet.</string>
+    <string name="lock_since_protected">Beschermt deze telefoon sinds %1$s</string>
+    <string name="lock_since_locked">Vergrendeld sinds %1$s</string>
+    <string name="lock_since_hint">Klopt dat niet met wat je je herinnert, dan is deze telefoon sindsdien ontgrendeld of teruggezet.</string>
+
+    <!-- Verwijderen -->
+    <string name="remove_title">Ouderlijk toezicht verwijderen</string>
+    <string name="remove_explanation">Dit heft elke beperking op en stopt de filter. Er wordt niets gewist en een fabrieksreset is niet nodig.\n\nJe bent al voorbij de vergrendeling, dus er wordt niets meer gevraagd.</string>
+    <string name="remove_action">Verwijderen</string>
+    <string name="remove_cancel">Annuleren</string>
+    <string name="remove_confirm_title">Ouderlijk toezicht verwijderen?</string>
+    <string name="remove_confirm_message">De inhoudsfilter, de app-blokkering en alle beperkingen worden uitgeschakeld. Verborgen apps worden weer beschikbaar. Er gaan geen gegevens verloren.\n\nHet register van hoelang deze telefoon beschermd is, verdwijnt mee.</string>
+    <string name="remove_confirm_yes">Verwijderen</string>
+    <string name="remove_done">Ouderlijk toezicht verwijderd.</string>
+    <string name="remove_done_not_owner">Filter gestopt en instellingen gewist.</string>
+    <string name="remove_failed">Kon het eigenaarschap van het toestel niet vrijgeven. Bekijk het logboek.</string>
+
+    <string name="filter_channel_name">Inhoudsfilter</string>
+    <string name="filter_notification_title">Inhoudsfilter actief</string>
+    <string name="filter_notification_text">Filtert DNS voor elke app op dit toestel</string>
+</resources>

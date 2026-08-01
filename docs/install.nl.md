@@ -74,7 +74,7 @@ Om netjes af te drukken, gebruik de vectorversie:
 De telefoon doet daarna vanzelf het volgende:
 
 1. drawbridge downloaden en installeren.
-2. drawbridge eigenaar van het toestel maken, zodat het niet zonder uw pincode
+2. drawbridge eigenaar van het toestel maken, zodat het niet zonder uw sleutel
    verwijderd kan worden.
 3. **herald**, de gefilterde browser, downloaden en installeren.
 4. De inhoudsfilter inschakelen en elke andere browser verbergen.
@@ -94,32 +94,71 @@ maar dan verliest u de bescherming die hieronder beschreven staat.
 
 ---
 
-## Stap 6 — Rond de installatie af in de drawbridge-app
+## Stap 6 — Stel de telefoon in in de drawbridge-app
 
-Open de app **drawbridge** en tik op **Set up parental controls** (*Ouderlijk toezicht instellen*).
+Open de app **drawbridge**. Alles wat u beslist staat op dat ene scherm.
 
-> De app zelf is voorlopig enkel in het Engels; de knopteksten hieronder staan
-> daarom in het Engels, met de vertaling ernaast.
+1. **Kies uw taal** — English, Nederlands of Français. Het staat bovenaan het
+   scherm, zodat alles eronder in uw taal staat. De app is volledig in het
+   Nederlands vertaald.
+2. **Lees het beleid.** Er staat bij voor wie het bedoeld is en wat het precies
+   blokkeert. Biedt het document er meer dan één, dan verwijdert overschakelen
+   naar een strenger beleid de apps die het niet toelaat, meteen — en
+   terugschakelen installeert ze niet opnieuw.
+3. **Zet de opties eronder goed.** Elke optie laat één ding extra toe bovenop
+   het beleid, met de leeftijd ernaast waarvan men die gewoonlijk geschikt acht
+   — *WhatsApp toestaan 14+* bijvoorbeeld.
 
-1. **Kies een pincode** van minstens zes cijfers. U hebt die nodig om het toezicht
-   te wijzigen of te verwijderen.
-2. **Schrijf de herstelcode op.** Die wordt maar één keer getoond. Er is geen
-   herstel via e-mail — dat zou de telefoon aan een account koppelen, en net dat
-   wil dit project vermijden.
-3. Sta de uitzondering op batterijoptimalisatie toe wanneer daarom gevraagd wordt.
+---
 
-> **Bent u zowel de pincode als de herstelcode kwijt, dan kunt u drawbridge enkel
-> verwijderen door de telefoon opnieuw te wissen.** Bewaar de code op een veilige
-> plaats — een lade, een wachtwoordbeheerder, geplakt in een kast.
+## Stap 7 — Vergrendel, en schrijf de sleutel op
+
+Tik op **drawbridge vergrendelen**. Dat is de enige knop die telt: hij past het
+beleid toe, start de inhoudsfilter en verzegelt het scherm. Sta de uitzondering
+op batterijoptimalisatie toe wanneer daarom gevraagd wordt.
+
+Daarna krijgt u een **sleutel** te zien: twintig tekens in vier groepen, zoals
+`4XRZS-7QC9N-SPSH9-AWAAE`.
+
+**Schrijf hem op of druk hem af vóór u dat scherm sluit.** Hij wordt maar één
+keer getoond, hij wordt nergens bewaard waar u hem nog kunt lezen, en er is geen
+herstel — niet via e-mail, door niemand. Dat is met opzet: herstel via e-mail zou
+de telefoon aan een account koppelen, en net dat wil dit project vermijden. De
+knop *Sleutel afdrukken of bewaren* geeft hem door aan een afdruk- of
+notitie-app; hij wordt bewust niet naar het klembord gezet, want dat kan iedereen
+lezen die de telefoon vasthoudt.
+
+Bij **elke vergrendeling wordt een nieuwe sleutel gemaakt**, dus een sleutel
+waarvan ooit een foto is genomen werkt de volgende keer niet meer.
+
+> **Bent u de sleutel kwijt, dan komt u alleen nog bij de instellingen door de
+> telefoon te wissen.** Bewaar hem op een veilige plaats — een lade, een
+> wachtwoordbeheerder, geplakt in een kast.
+>
+> Hem bewust *niet* bewaren is een echte keuze, en de app laat dat toe: de
+> telefoon blijft precies zoals u hem hebt ingesteld, voorgoed, en niemand kan er
+> nog iets aan wijzigen — u ook niet.
+
+Om later iets te wijzigen: open drawbridge en typ de sleutel in.
 
 ---
 
 ## Controleren of het gelukt is
 
-Open de drawbridge-app. Er zou moeten staan:
+Open drawbridge. Nog voor er iets gevraagd wordt, staat er **hoelang de app deze
+telefoon al beschermt** — de datum en het uur waarop u vergrendeld hebt.
 
-- *Managed: drawbridge is the device owner* — beheerd, drawbridge is eigenaar
-- *Content filter: running* — de inhoudsfilter draait
+Die regel is de goedkoopste controle die er is. Ze overleeft een herstart, en ze
+overleeft dat u even ontgrendelt om iets te wijzigen. Enkel het verwijderen van
+drawbridge in de app zelf en het wissen van de telefoon zetten ze terug op nul.
+Staat er over een halfjaar dus dat de bescherming pas sinds vorige dinsdag loopt,
+dan is de telefoon teruggezet en opnieuw ingericht — hoe onschuldig hij er ook
+uitziet.
+
+Typ uw sleutel in, en op het scherm erachter zou moeten staan:
+
+- *Beheerd: drawbridge is de eigenaar van het toestel*
+- *Inhoudsfilter: actief*
 - een versienummer van het beleid en een recent tijdstip van bijwerken
 
 Open daarna **herald** en probeer een geblokkeerde site te bezoeken. U zou een
@@ -166,8 +205,9 @@ Voor dat tweede commando mag er **geen enkel account** op de telefoon staan.
 
 ## Later verwijderen
 
-Open drawbridge → **Remove parental controls** (*Ouderlijk toezicht verwijderen*) → geef uw pincode of de
-herstelcode in.
+Open drawbridge, typ uw sleutel in, en kies daarna **⋮ → Ouderlijk toezicht
+verwijderen**. Het staat in het overloopmenu en niet op het scherm zelf: het
+gebeurt één keer in het leven van een telefoon.
 
 Alle beperkingen vervallen, verborgen apps komen terug, en **er wordt niets
 gewist**. Zie [verwijderen](removal.md) voor de details.

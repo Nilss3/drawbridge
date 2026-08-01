@@ -17,7 +17,8 @@ import app.drawbridge.policy.model.Policy
  *
  * Three rules, all driven by the shared policy document:
  *  - anything whose package name is on `blocked_packages`;
- *  - any browser other than the one allowed browser;
+ *  - any browser the policy does not name — one or several, see
+ *    [Policy.browserPackages];
  *  - in allowlist mode (`allowed_packages` set, typically by a profile), any
  *    *user-installed* app that is not on the list.
  *
@@ -43,7 +44,8 @@ class AppBlocker(context: Context) {
 
         val reason = when {
             packageName in policy.blockedPackages -> "on the blocked package list"
-            isBrowser(packageName) -> "is a browser other than ${policy.allowedBrowserPackage}"
+            isBrowser(packageName) ->
+                "is a browser, and policy allows only ${policy.browserPackages.joinToString()}"
             notAllowed(packageName, policy) -> "not on this profile's allowed list"
             else -> return Action.NONE
         }
@@ -159,7 +161,7 @@ class AppBlocker(context: Context) {
 
     private fun isProtected(packageName: String, policy: Policy): Boolean =
         packageName == appContext.packageName ||
-            packageName == policy.allowedBrowserPackage ||
+            packageName in policy.browserPackages ||
             packageName == BuildConfig.ALLOWED_BROWSER_PACKAGE ||
             packageName in policy.exemptPackages ||
             packageName in NEVER_TOUCH ||

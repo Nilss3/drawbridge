@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Removal is the only way off a managed device short of wiping it, so it has to
+    be reachable — but it happens once in the life of a phone, and it does not
+    belong beside the button that gets pressed every time. Overflow only.
+-->
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/actionRemove"
+        android:title="@string/action_remove"
+        app:showAsAction="never" />
+</menu>

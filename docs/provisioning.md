@@ -72,13 +72,17 @@ there.
 
 ## After provisioning
 
-1. Open **drawbridge** and run *Set up parental controls*.
-2. Choose a PIN of at least 6 digits.
-3. **Write down the recovery code it shows you.** It is displayed once and only
-   its hash is stored. There is no email reset — that would tie the device to an
-   account, which this project exists to avoid. Lose both the PIN and the code
-   and the only way out is a destructive recovery wipe.
-4. Accept the battery-optimisation exemption when prompted.
+1. Open **drawbridge**. Everything is on one screen: language, policy, options,
+   status.
+2. Pick the language, read the policy, and set the options under it.
+3. Tap *Lock drawbridge*. That one button applies the restrictions, starts the
+   filter and seals the screen; accept the battery-optimisation exemption when
+   prompted.
+4. **Write down the key it shows you.** It is displayed once and only its hash is
+   stored. There is no email reset — that would tie the device to an account,
+   which this project exists to avoid. Lose the key and the only way back into
+   that screen is a destructive recovery wipe. A fresh key is minted at every
+   lock, so an old one stops working.
 5. herald installs itself. drawbridge downloads it from the `required_apps` list
    in the policy as soon as it becomes device owner — it has to, because by then
    every other browser has been removed or hidden and nothing else on the device

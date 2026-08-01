@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
     A raised drawbridge: two gate towers, both leaves up on their chains, water
-    below. The same motif herald shows on its block page.
+    below — the line-drawing version of the painting that is now the icon.
 
-    Adaptive icon foreground. The viewport is 108dp and launchers may mask
-    anything outside the middle 66dp, so the drawing stays inside roughly
-    x/y 21..87. Strokes rather than fills, and one colour, so the same drawable
-    serves as the themed (monochrome) layer.
+    This was the whole icon until that painting replaced it; it is now the themed
+    (monochrome) layer, which a painting cannot be — the system reads only the
+    alpha and fills it with the wallpaper's colour, so the themed icon has to be
+    a stencil.
+
+    The viewport is 108dp and launchers may mask anything outside the middle
+    66dp, so the drawing stays inside roughly x/y 21..87.
 -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="108dp"

@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Both halves of the lock, in one layout: the reveal shown once when the key is
+    minted, and the challenge shown every time afterwards. Only one is ever
+    visible.
+
+    They share a file because they are the same screen at two moments, and
+    because putting the illustration in one place keeps the two looking like each
+    other rather than like two apps.
+-->
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingBottom="32dp">
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:layout_width="match_parent"
+            android:layout_height="180dp"
+            android:layout_marginHorizontal="24dp"
+            android:layout_marginBottom="24dp"
+            android:contentDescription="@string/welcome_scene_description"
+            android:scaleType="centerCrop"
+            android:src="@drawable/welcome_scene"
+            app:shapeAppearanceOverlay="@style/ShapeAppearance.Drawbridge.Hero" />
+
+        <LinearLayout
+            android:id="@+id/revealStep"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="24dp"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingBottom="8dp"
+                android:text="@string/lock_reveal_title"
+                android:textAppearance="?attr/textAppearanceHeadlineSmall" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="24dp"
+                android:text="@string/lock_reveal_explanation"
+                android:textAppearance="?attr/textAppearanceBodyMedium" />
+
+            <TextView
+                android:id="@+id/keyView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?attr/colorSurfaceVariant"
+                android:fontFamily="monospace"
+                android:gravity="center"
+                android:letterSpacing="0.05"
+                android:padding="16dp"
+                android:textAppearance="?attr/textAppearanceTitleLarge"
+                android:textIsSelectable="true" />
+
+            <Button
+                android:id="@+id/shareKeyButton"
+                style="?attr/materialButtonOutlinedStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/lock_reveal_share" />
+
+            <CheckBox
+                android:id="@+id/keyConfirmed"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="@string/lock_reveal_confirm" />
+
+            <Button
+                android:id="@+id/revealDoneButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/lock_reveal_finish" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/challengeStep"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="24dp"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingBottom="8dp"
+                android:text="@string/lock_challenge_title"
+                android:textAppearance="?attr/textAppearanceHeadlineSmall" />
+
+            <!--
+                The two dates a caregiver checks, above the field rather than
+                below it: they are the reason to pick the phone up, and the key
+                is only what you do about them.
+            -->
+            <TextView
+                android:id="@+id/protectedSince"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="?attr/textAppearanceBodyLarge" />
+
+            <TextView
+                android:id="@+id/lockedSince"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="2dp"
+                android:textAppearance="?attr/textAppearanceBodyLarge" />
+
+            <TextView
+                android:id="@+id/sinceHint"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:alpha="0.75"
+                android:paddingTop="6dp"
+                android:paddingBottom="24dp"
+                android:text="@string/lock_since_hint"
+                android:textAppearance="?attr/textAppearanceBodySmall" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="24dp"
+                android:text="@string/lock_challenge_explanation"
+                android:textAppearance="?attr/textAppearanceBodyMedium" />
+
+            <EditText
+                android:id="@+id/keyField"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:autofillHints="password"
+                android:fontFamily="monospace"
+                android:hint="@string/lock_challenge_hint"
+                android:inputType="textVisiblePassword" />
+
+            <TextView
+                android:id="@+id/challengeError"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="8dp"
+                android:textAppearance="?attr/textAppearanceBodyMedium"
+                android:textColor="?attr/colorError" />
+
+            <Button
+                android:id="@+id/unlockButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="@string/lock_challenge_action" />
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>
