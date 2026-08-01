@@ -15,7 +15,8 @@ machine, what was and was not verified, and what to do next.
 | Repo | https://github.com/Nilss3/drawbridge — public, `main`, 41 commits |
 | Release | [v0.1.7](https://github.com/Nilss3/drawbridge/releases/tag/v0.1.7), 9 assets, published and not flagged |
 | Live policy | version **19**, live at `dist/policy.signed.json` on `main` |
-| Apps | drawbridge `versionCode 8` / `0.1.7`; herald and herald mono `versionCode 7` / `0.1.7` |
+| Apps, published | drawbridge `0.1.7`; herald and herald mono `0.1.7` |
+| Apps, in the tree and on the phone | herald and herald mono **`0.1.8`** — unpublished. drawbridge unchanged at `0.1.7`. |
 | Tests | 302 unit tests across four build variants, lint clean |
 
 ### v0.1.7 is out, and was checked from the outside
@@ -70,22 +71,35 @@ paragraph is the main thing a parent reads before locking. 19 is the fix, in all
 three languages. Worth remembering when changing what a policy *does*: the
 sentence describing it lives in the same file and does not update itself.
 
-### Three browser bugs are fixed on `main` and not in v0.1.7
+### Start here: back in mono's reader view is still broken
 
-Found by using the released build on the phone. All three are fixed, tested and
-committed; none of them is in anything a device can download. Cutting v0.1.8
-means the ordinary release procedure — and, because herald changed, a policy
-re-pin and re-sign with it.
+**[reader-view-back.md](reader-view-back.md)** — the one thing actively wrong.
+Two attempts are in `main`, the second is on the phone, and it does not work.
+That file has the evidence, the three dead ends not to walk again, a real defect
+in the current attempt, and why every adb-driven check of it so far was
+worthless.
+
+### Three browser bugs found by using v0.1.7; two fixed
+
+None of this is in anything a device can download. Cutting v0.1.8 means the
+ordinary release procedure — and, because herald changed, a policy re-pin and
+re-sign with it. Worth waiting until the third one is settled.
 
 | | Where | Cause |
 |---|---|---|
 | The address bar cleared itself while typing | both editions | `ToolbarPresenter` calls `setSearchTerms` on every state update, which in edit mode replaces the field's text. Guarded by `EditSafeToolbar`. |
-| Back did nothing in reader view | mono | Back *did* leave reader view; the automatic entry put it straight back. Back now counts as a dismissal. |
 | The pause ran on the way to a blocked page | mono | Nothing to think about on the way to a wall. The interceptor cancels it. |
+| Back did nothing in reader view | mono | **Still open** — see [reader-view-back.md](reader-view-back.md). |
 
-Verified on the emulator: the block page arrives with no pause and a normal page
-still gets one; back leaves reader view and it stays left; and a URL typed while
-a page loads survives both the load and the reader-view swap that follows it.
+The first two are verified on the emulator: the block page arrives with no pause
+and a normal page still gets one, and a URL typed while a page loads survives
+both the load and the reader-view swap that follows it. The block-page one is
+verified on the phone as well.
+
+All three changes are on the phone, on **herald and herald mono 0.1.8**,
+release-signed and installed in place so no bookmarks, history or session were
+lost. That version is *not* published — `/releases/latest` is still v0.1.7, so
+anything drawbridge auto-installs is the old build.
 
 ### drawbridge is one screen and one button now
 
@@ -407,19 +421,25 @@ Each of these looks like a bug and is not, or bites silently:
 
 ## Reasonable next steps
 
-1. **Provision a real phone by QR** — the one major untested path, and the whole
+1. **Finish the reader-view back bug** —
+   [reader-view-back.md](reader-view-back.md). It is the only thing actively
+   broken, it is on the phone, and the first move is a diagnostic question
+   rather than code: was the article reached from inside the browser, or opened
+   from another app? If the latter there is no history behind it and back cannot
+   go anywhere, which every automated check here mistook for the bug.
+2. **Provision a real phone by QR** — the one major untested path, and the whole
    point of the release. The Nothing A059 is available and unmanaged. Doing this
    also exercises the two things v0.1.7 changed that no device owner has seen
    yet: both browsers surviving the app blocker, and the new configuration
    screen with Device Owner actually granted.
-2. **Keep both keys backed up.** They were backed up before v0.1.7 went out; from
+3. **Keep both keys backed up.** They were backed up before v0.1.7 went out; from
    here on every published release depends on that staying true.
-3. **Use herald mono properly and decide whether it is right.** Specifically
+4. **Use herald mono properly and decide whether it is right.** Specifically
    whether the TextureView backend costs frame rate, whether 2.5 s is the right
    pause, and whether reader-view-by-default is too eager on news sites. If
    scrolling drags, the documented fallback is a CSS `filter: grayscale(1)`,
    which costs `position: fixed` breakage instead.
-4. Then, in rough order of value:
+5. Then, in rough order of value:
    - **Drop unused ABIs.** `armeabi-v7a` and `x86_64` have never been downloaded
      by anything, and now cost double what they did. Dropping both would take a
      release from ~1.1 GiB to ~450 MiB. `x86_64` was kept deliberately for
