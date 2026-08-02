@@ -71,35 +71,56 @@ paragraph is the main thing a parent reads before locking. 19 is the fix, in all
 three languages. Worth remembering when changing what a policy *does*: the
 sentence describing it lives in the same file and does not update itself.
 
-### Start here: back in mono's reader view is still broken
+### Reader view is fixed, and was fixed by reading with it
 
-**[reader-view-back.md](reader-view-back.md)** — the one thing actively wrong.
-Two attempts are in `main`, the second is on the phone, and it does not work.
-That file has the evidence, the three dead ends not to walk again, a real defect
-in the current attempt, and why every adb-driven check of it so far was
-worthless.
+**[reader-view-back.md](reader-view-back.md)** — three bugs, all the same shape:
+state that cannot be believed yet. That file has the evidence, the two dead ends
+not to walk again, and the adb traps that made three earlier rounds of testing
+lie.
 
-### Three browser bugs found by using v0.1.7; two fixed
+The short version of all three:
+
+- **Back stopped at the plain article** because the second history step was
+  `sessionUseCases.goBack.invoke(sessionId)`, and `sessionId` is null outside a
+  custom tab. `GoBackUseCase.invoke` defaults its tab to the selected one but
+  returns immediately on an explicit null, so the step was never taken. It also
+  waited on `canGoForward`, which is ~400 ms early; it now waits for the load to
+  end and names the tab.
+- **Reader view often did not trigger** because the readability check is asked
+  once, at the moment the URL changes — before the page exists to measure. Two
+  Wikipedia articles that score well above Readability's threshold were being
+  reported as not readerable, one of them every single time. herald now asks
+  again after the page settles, up to four times at 700 ms.
+- **And that fix caused a third bug**, found by using it on the phone: the
+  readability answer names no page, so a late *yes* arriving during a navigation
+  is an answer about the page being left — and entering reader view on it is a
+  navigation, which loaded the old article over the one just asked for. Every
+  click handed the previous page back. Reader view now waits for the browser to
+  be idle before it comes on.
+
+### Five browser bugs found by using v0.1.7 and v0.1.8; all fixed
 
 None of this is in anything a device can download. Cutting v0.1.8 means the
 ordinary release procedure — and, because herald changed, a policy re-pin and
-re-sign with it. Worth waiting until the third one is settled.
+re-sign with it.
 
 | | Where | Cause |
 |---|---|---|
 | The address bar cleared itself while typing | both editions | `ToolbarPresenter` calls `setSearchTerms` on every state update, which in edit mode replaces the field's text. Guarded by `EditSafeToolbar`. |
 | The pause ran on the way to a blocked page | mono | Nothing to think about on the way to a wall. The interceptor cancels it. |
-| Back did nothing in reader view | mono | **Still open** — see [reader-view-back.md](reader-view-back.md). |
+| Back stopped at the plain article in reader view | mono | A `goBack` given a null tab id, which does nothing. See [reader-view-back.md](reader-view-back.md). |
+| Reader view often did not trigger | both editions | The readability check is asked before the page can be measured, and never asked again. Same file. |
+| Clicking a link put you back on the page you left | mono | A late readability answer, acted on during a navigation. Same file. |
 
 The first two are verified on the emulator: the block page arrives with no pause
 and a normal page still gets one, and a URL typed while a page loads survives
 both the load and the reader-view swap that follows it. The block-page one is
 verified on the phone as well.
 
-All three changes are on the phone, on **herald and herald mono 0.1.8**,
-release-signed and installed in place so no bookmarks, history or session were
-lost. That version is *not* published — `/releases/latest` is still v0.1.7, so
-anything drawbridge auto-installs is the old build.
+All of it is on the phone, on **herald and herald mono 0.1.8**, release-signed
+and installed in place so no bookmarks, history or session were lost — and the
+third bug above was found there, by reading with it, after the first two were
+called done on the emulator.
 
 ### drawbridge is one screen and one button now
 
@@ -352,9 +373,10 @@ Not verified, and worth doing:
   first after provisioning.
 - **The Dutch and French translations by someone who reads them properly.** They
   are complete and lint-clean, not reviewed.
-- **Whether the address bar still clears.** Three bugs were found by using
-  v0.1.7 on the phone and are fixed on `main` but **not released** — see below.
-  Two of them are provably gone; the URL-bar one had one definite cause, which is
+- **Reader view over a slow connection.** Everything now waits for a page to
+  settle before reader view comes on, and every measurement was made on a fast
+  network. How long the plain article shows first, on a bad one, is unknown.
+- **Whether the address bar still clears.** It had one definite cause, which is
   fixed and covered by a test, but it was reported as intermittent and only
   sustained use will say whether that was the whole of it.
 - **herald mono under sustained real use.** It is installed on the phone but
@@ -405,6 +427,15 @@ Each of these looks like a bug and is not, or bites silently:
   `build/outputs` directly.
 - **`ReaderViewMiddleware` is load-bearing and fails silently.** Without it the
   reader feature never re-checks a page after navigation. No exception, no log.
+- **`SessionUseCases.goBack.invoke(null)` does nothing**, silently. The parameter
+  *defaults* to the selected tab, but an explicit null returns before dispatching
+  anything — and `sessionId` is null in every browser fragment that is not a
+  custom tab. This cost two rounds on the reader-view back bug; pass `tab.id`.
+- **The readability check is asked once and dropped if nothing answers.**
+  `ReaderViewMiddleware` asks at the URL change, before the page exists;
+  `checkReaderState` clears `checkRequired` whether or not a port was connected
+  to hear it. Anything that wants a true answer has to ask again — see
+  [reader-view-back.md](reader-view-back.md).
 - **`ToolbarPresenter` writes into the field being typed in.** Every
   `BrowserState` update calls `setSearchTerms`, and in edit mode that *replaces*
   the text. `EditSafeToolbar` is the guard; anything that talks to the toolbar
@@ -421,13 +452,7 @@ Each of these looks like a bug and is not, or bites silently:
 
 ## Reasonable next steps
 
-1. **Finish the reader-view back bug** —
-   [reader-view-back.md](reader-view-back.md). It is the only thing actively
-   broken, it is on the phone, and the first move is a diagnostic question
-   rather than code: was the article reached from inside the browser, or opened
-   from another app? If the latter there is no history behind it and back cannot
-   go anywhere, which every automated check here mistook for the bug.
-2. **Provision a real phone by QR** — the one major untested path, and the whole
+1. **Provision a real phone by QR** — the one major untested path, and the whole
    point of the release. The Nothing A059 is available and unmanaged. Doing this
    also exercises the two things v0.1.7 changed that no device owner has seen
    yet: both browsers surviving the app blocker, and the new configuration

@@ -1,166 +1,199 @@
-# Open bug: back in mono's reader view
+# Reader view: back, and when a page is an article
 
-**Status: not fixed.** Two attempts are in `main`; the second is the one running
-now and it does not work on the phone. This file exists so the next go starts
-from evidence rather than from my guesses, and so the three dead ends below are
-not walked again.
+**Status: fixed, and confirmed on the phone.** Three bugs, all the same shape —
+state that cannot be believed yet. Back in mono's reader view stopped at the
+plain article; reader view often failed to trigger at all; and the fix for the
+second caused a third, where clicking a link put you back on the page you had
+just left.
 
-## What is wrong
+Kept because three attempts were spent on the first one, and because the dead
+ends below are expensive to walk twice.
 
-In **herald mono**, reader view enters by itself on any readerable page. Pressing
-back does not take you back. The reported symptom, twice: "it brings you to
-current page".
+## What was wrong, and why
 
-herald standard is not affected and should be left alone: there, reader view is
-something the reader chose from the menu, so back undoing it is right.
+### Back stopped at the plain article
 
-## What is known, with evidence
+Showing reader view is a navigation — `ReaderViewFeature` loads the reader
+extension's own page — so an article read in reader view occupies two history
+entries. In mono, where reader view is not something anyone asked for, one press
+has to undo both. `hideReaderView` steps out of the reader's entry itself; the
+second step was the problem.
 
-**Showing reader view is a navigation.** It occupies a history entry. Watched
-live: entering reader view flipped `canGoBack` from false to true, and the tab's
-URL briefly became `moz-extension://…` before `ReaderViewMiddleware` rewrote it
-back to the article's own.
+Two things were wrong with the previous attempt, and the first is the whole bug:
 
-**`ReaderViewFeature.hideReaderView(tab)` retreats out of that entry itself.**
-From the bytecode in `feature-readerview-153.0.aar`, in order:
+- **`sessionUseCases.goBack.invoke(sessionId)` with `sessionId == null` does
+  nothing at all.** `GoBackUseCase.invoke` *defaults* its tab to the selected
+  one, but an explicit null returns before dispatching:
+
+  ```kotlin
+  fun invoke(tabId: String? = store.state.selectedTabId, userInteraction: Boolean = true) {
+      if (tabId == null) return
+      store.dispatch(EngineAction.GoBackAction(tabId, userInteraction))
+  }
+  ```
+
+  `sessionId` is null in the ordinary browser fragment — it is only set for
+  custom tabs. So the second step was never taken in any normal session, however
+  correctly the rest of the mechanism ran. That is why the logs looked right:
+  the collector *did* fire, at the right moment, into a no-op.
+
+- **`canGoForward` is about four hundred milliseconds early.** Measured across
+  one back press: the position moved at 17.031 s, `canGoForward` turned true at
+  17.039 s, and the article's load ended at 17.441 s. A `goBack` issued in that
+  window is spent against a traversal already in flight and is lost. Waiting for
+  `loading` to turn false lands it about 700 ms after the press, and it was
+  accepted first time in every run.
+
+The fix is both: wait for the load, and name the tab. Back out of reader view
+now leaves the page in one press, three runs out of three, and the plain article
+shows for about that 700 ms on the way past.
+
+### Reader view often did not trigger
+
+Readability is a single question put to a content script, and `ReaderViewMiddleware`
+asks it the moment the URL changes — before the page it is asking about exists.
+Whichever port is connected then answers: the outgoing document, or the incoming
+one before it has been laid out. Readability decides by measuring rendered
+paragraphs (`clientHeight > 0`), so a page asked too early says *no* about
+itself. `checkRequired` is then cleared whether or not anything answered, and
+nothing asks again.
+
+Measured: `en.wikipedia.org/wiki/Ostend` scores 28.5 and `.../Marcel_Keizer`
+23.5 against Readability's threshold of 20 once their DOM has settled — both
+articles, comfortably. herald reported Marcel_Keizer as not readerable **six
+times out of six** and Ostend about half the time, entirely according to how
+fast the page came out of the cache.
+
+The fix asks again after the load ends, up to four times at 700 ms. Once was not
+enough, and there is no single moment to ask at instead: on a cached page
+`loading` turns false about fifty milliseconds after the navigation, and
+`firstContentfulPaint` and `progress` were both still carrying the *previous*
+page's values at that point in every trace.
+
+After: 7 of 8 Wikipedia articles enter reader view unprompted, and
+Marcel_Keizer — which had never once worked — 4 times out of 4. In the standard
+edition the same change is what makes the reader-view menu entry appear on
+pages that are articles.
+
+### And then it put you back on the page you had just left
+
+Asking repeatedly made late answers ordinary, and the readability answer **names
+no page** — it is a bare boolean against the tab. So an answer arriving during a
+navigation is an answer about the page being left, and acting on it enters
+reader view on *that* article. Entering reader view is itself a navigation, so
+it loads the old article's reader page over the one that was asked for. Every
+click handed you the previous page back. From the phone's log:
 
 ```
-dispatch UpdateReaderActiveAction(tab.id, false)
-dispatch UpdateReaderableAction(tab.id, false)
-dispatch ClearReaderActiveUrlAction(tab.id)
-if (tab.content.canGoBack) engineSession.goBack(false)
+42.706  LocationChange = .../Execution_by_shooting          ← the page clicked to
+42.810  PageStart      = readerview.html?url=...Peter_Arshinov   ← reader view for the page before it
 ```
 
-The three dispatches happen **before** the retreat is asked for. That ordering is
-the whole reason attempt 1 failed.
+This reads at first as the URL bar failing to update. It is not: the bar is
+correctly showing the page herald pulled you to.
 
-**`ReaderViewFeature.onBackPressed()` hides reader view and returns true** when
-`readerState.active`, having first hidden the controls if they were up. So the
-library always spends the press on leaving reader view.
+The guard is to enter reader view only when nothing is loading, and to stop
+asking about a page once it starts loading again. Late answers then cost
+nothing. The trade is that reader view waits for a page to settle before it
+comes on, so a slow page shows plain for a moment first.
 
-**`content.history.items` is empty** — size 0, `currentIndex` 0. History state is
-not tracked in herald, so `goToHistoryIndex` is not usable without turning that
-on first. `canGoBack` / `canGoForward` *are* tracked and are reliable.
+## Dead ends
 
-## What has been tried
-
-**Attempt 1 — treat back as a dismissal** (`d11a42a`, released behaviour).
-Back leaves reader view and sets `dismissedForPage` so the automatic entry does
-not put it straight back. Verified working on the emulator. Rejected on review:
-it costs two presses to leave an article, and the first one looks like it did
-nothing.
-
-**Attempt 2 — hide, then go back again** (`f9a90a2`, current). `onBackPressed`
-sets the dismissal, records that a history step is owed, and calls
-`hideReaderView`. The collector fires the second `goBack` when the retreat has
-landed. Keying that off the reader flag fired it 6 ms later, while the engine was
-still on the reader's entry — two `goBack`s against the same position move one
-place between them — so the signal is `canGoForward` instead: reader view is
-always the newest entry when it enters by itself, so nothing can go forward from
-it, and the moment something can, the retreat has landed.
-
-**The two-step mechanism was observed firing correctly**, which is what makes
-this puzzling. Logged snapshots across one back press:
+**Do not make reader view replace the article's history entry.** This is the
+tidiest idea available — `LOAD_FLAGS_REPLACE_HISTORY` on the reader page's load
+gives mono one history entry per page, holding the page as mono shows it, and
+makes back an ordinary back with no second step and no timing at all. It was
+built, and it works exactly as designed until you press back, at which point
+Gecko throws inside its own location reporting:
 
 ```
-active=false readerable=false fwd=false back=true  owed=true    <- hide dispatched, still on the reader entry
-active=false readerable=false fwd=true  back=false owed=true    <- retreat landed
-active=false readerable=true  fwd=true  back=false owed=false   <- second goBack fired
+GeckoView:PageStart uri=https://example.org/
+JavaScript Error: "TypeError: can't access property "nodePrincipal", this.contentDocument is null"
+  get contentPrincipal@chrome://global/content/elements/browser-custom-element.mjs:687
+  onLocationChange@resource://gre/modules/GeckoViewNavigation.sys.mjs:707
 ```
 
-Note `back=false` on the last two lines. In that run the article was the *first*
-entry in the session, so the second `goBack` had nowhere to go and correctly did
-nothing. **The mechanism has never been observed with a real page behind the
-article.**
+The engine navigates and paints the right page; the app is never told. `content.url`,
+the toolbar and `readerState.active` stay on the article for ever, and `loading`
+stays true. Traversing out of the reader page *without* the flag produces no
+error at all, so it is the cross-process replace that Gecko does not survive.
 
-## First thing to check next time
+**`content.history` is real but about ten seconds stale.** `goToHistoryIndex`
+would make the second step one atomic navigation, which is what this bug wants.
+The list arrives — while in reader view it read `size=2, currentIndex=1`, with
+the reader page as the current entry, so `currentIndex - 2` is the right target
+— but it arrives around ten seconds after the navigation, in the same update as
+`UpdateEngineSessionStateAction`. Anyone pressing back before then would be
+computing from the previous page's history.
 
-**Ask how the article was reached.** If it was opened from another app, there is
-no history behind it and back cannot go anywhere — the phone would sit on the
-plain article, which looks exactly like the bug and is not one. Every automated
-run so far hit this. A real test needs the previous page to have been reached
-*inside* the browser: a tapped link, or a second URL typed into the bar.
+**These were the earlier attempts**, both in `main`'s history: `d11a42a` treated
+back as a dismissal, which costs two presses to leave an article; `f9a90a2` is
+the two-step mechanism above, with the null tab id.
 
-If the article did have a page behind it and back still does not leave it, the
-mechanism is failing somewhere it has not been watched, and the instrumentation
-below is the way to see it.
+## Things that make adb-driven testing lie
 
-## A real defect in attempt 2, worth fixing regardless
-
-In `ReaderViewIntegration.onReaderStateChanged`:
-
-```kotlin
-if (goBackWhenReaderCloses && !snapshot.active) {
-    if (!snapshot.canGoForward) return      // <- returns before everything else
-    ...
-}
-```
-
-If `canGoForward` never becomes true, that `return` runs on **every subsequent
-snapshot**, so `lastUrl` is never updated, `dismissedForPage` is never cleared,
-and **automatic reader view stops working for the rest of the session**. The flag
-needs a way out — clear it on a URL change, or on the next navigation, rather
-than letting it latch.
-
-## Why the automated checks were useless
-
-Three things each produced a convincing false negative. Do not trust an
-adb-driven run that has not accounted for all three:
+Each of these produced a convincing false negative:
 
 - **The soft keyboard swallows the back press.** After typing in the URL bar,
-  `input keyevent KEYCODE_BACK` goes to the IME and never reaches the activity.
-  Twenty `KEYCODE_ESCAPE` presses did not dismiss it; `mInputShown` stayed true.
-- **`am start -a VIEW` replaces the session** rather than extending its history.
-  Two intents in a row leave `canGoBack` false, so there is nothing to go back
-  to. This is what made the mechanism look broken when it was working.
+  `input keyevent KEYCODE_BACK` goes to the IME. `adb shell ime disable
+  com.google.android.inputmethod.latin/com.android.inputmethod.latin.LatinIME`
+  is the fix — `input text` still works without an IME. Re-enable it afterwards.
+- **The first back press after typing a URL is eaten anyway**, by the toolbar
+  leaving edit mode. Press twice, and read the log rather than the screen.
+- **`am start -a VIEW` replaces the session** rather than extending its history,
+  so `canGoBack` stays false and there is nothing to go back to. Use it once to
+  start a session and navigate inside the browser after that.
+- **`am start` with the URL already showing does not reload**, so a test that
+  repeats a page measures nothing. `am force-stop` first.
 - **URL normalisation adds entries.** Typing `example.org` produces both
-  `https://example.org` and `https://example.org/`, so a back press that worked
-  looks like one that did not. Wikipedia redirects do the same.
-
-The reliable setup is a person pressing back while `adb logcat` runs.
+  `https://example.org` and `https://example.org/`.
 
 ## Instrumentation that works
 
-Drop this at the top of `onReaderStateChanged`, build mono, install, and read
-`adb logcat -s herald-rv:I` while pressing back by hand:
+A collector over the whole tab, logged on change, is what made all of this
+visible:
 
 ```kotlin
-android.util.Log.i(
-    "herald-rv",
-    "snap active=${snapshot.active} readerable=${snapshot.readerable} " +
-        "fwd=${snapshot.canGoForward} back=${tab()?.content?.canGoBack} " +
-        "owed=$goBackWhenReaderCloses url=${snapshot.url.take(60)}",
-)
+scope.launch {
+    store.flow()
+        .map { state ->
+            currentTab(state.selectedTabId)?.let { tab ->
+                "url=${tab.content.url.take(60)} loading=${tab.content.loading} " +
+                    "readerable=${tab.readerState.readerable} active=${tab.readerState.active} " +
+                    "chk=${tab.readerState.checkRequired} " +
+                    "back=${tab.content.canGoBack} fwd=${tab.content.canGoForward} " +
+                    "hist=${tab.content.history.items.size}/${tab.content.history.currentIndex}"
+            }
+        }
+        .distinctUntilChanged()
+        .collect { android.util.Log.i("herald-rv", "snap $it") }
+}
 ```
 
-A matching line in `onBackPressed` showing `canGoBack` at press time is worth
-having too. What to look for: whether a snapshot with `active=false` and
-`canGoForward=true` ever arrives, and what `canGoBack` is at that moment. If it
-is false, there was no history and the bug is the test. If it is true and the
-page still does not change, the second `goBack` is being lost and the next thing
-to try is `goToHistoryIndex` — which needs history-state tracking enabled first,
-since `content.history.items` is currently empty.
+Read with `adb logcat -s herald-rv:I`. A middleware logging every action's class
+name is the other half, for the times when the store is not being told something
+it should be.
 
-## If it cannot be made to work
-
-Attempt 1 is a defensible fallback: back leaves reader view and stays left, at
-the cost of a second press to leave the page. It is committed history
-(`d11a42a`) and was verified working. Reverting to it is a small change to
-`onBackPressed` plus deleting `goBackWhenReaderCloses`.
-
-The other option not yet explored is stopping reader view from taking a history
-entry at all, which would make all of this unnecessary. That means not using
-`ReaderViewFeature.showReaderView` — the entry comes from the extension
-navigating to its own page — and is a much larger change.
+Readability's own arithmetic can be checked outside the phone, which is faster
+than another build: load the page in any browser at a mobile viewport and run
+`isProbablyReaderable`'s scoring loop from
+`assets/extensions/readerview/readability/readability-readerable-0.4.2.js`
+inside the AAR, with `visibilityChecker = n => n.clientHeight > 0 && n.clientWidth > 0`.
+That is how the 28.5 and 23.5 above were measured, and it is what proved the
+pages were articles and herald was asking at the wrong time.
 
 ## Where the code is
 
 | | |
 |---|---|
-| `herald/src/main/java/app/drawbridge/herald/browser/ReaderViewIntegration.kt` | `onBackPressed`, `onReaderStateChanged`, `goBackWhenReaderCloses` |
+| `herald/src/main/java/app/drawbridge/herald/browser/ReaderViewIntegration.kt` | `onBackPressed`, `leavePageWhenArticleIsBack`, `ArticleReturn`, `askWhetherItIsAnArticle` |
+| `herald/src/test/java/app/drawbridge/herald/browser/ReaderViewIntegrationTest.kt` | the two timing rules, pinned |
 | `herald/src/main/java/app/drawbridge/herald/browser/BrowserFragment.kt` | `backHandlers` order — reader view runs before `sessionFeature` |
-| `herald/src/main/res/layout/fragment_browser.xml` | `readerViewControls`, `android:visibility="gone"` — checked, not the cause |
 
-The phone (Nothing A059) has **herald mono 0.1.8** with attempt 2 on it,
-release-signed, installed in place. herald standard 0.1.8 is on it too and is
-unaffected by any of this.
+## Verified
+
+On the API 36 emulator, and then by reading with it on the Nothing A059 —
+which is where all three were reported and where the third was found. What has
+*not* been measured is how the delay before reader view appears feels over a
+slow connection: the whole mechanism now waits for a page to settle, and every
+measurement here was made on a fast one.
