@@ -1,7 +1,7 @@
 {
-  "version": 19,
-  "issued_at": "2026-08-01T00:00:00Z",
-  "comment": "v0.1.7. Blocks Grok: ai.x.grok joins blocked_packages, and grok.com and x.ai join the AI-companion list (whose sha256 is re-pinned below \u2014 the list and this document have to be pushed together or the checksum rejects it). Grok inside X needed nothing: com.twitter.android and x.com were already blocked. required_apps is re-pinned at herald 0.1.7, both editions and three ABIs each; every hash changed because the browsers were rebuilt.",
+  "version": 20,
+  "issued_at": "2026-08-02T00:00:00Z",
+  "comment": "v0.1.8. required_apps is re-pinned at herald 0.1.8, both editions and three ABIs each; every hash changed because the browsers were rebuilt. Nothing about what is blocked has changed \u2014 this release is browser fixes only: reader view in mono now leaves the page on one back press, both editions offer reader view on pages that are articles rather than roughly half of them, the address bar no longer clears itself mid-typing, and the deliberate pause no longer runs on the way to a blocked page.",
   "dns": {
     "upstreams": [
       "94.140.14.15",
@@ -201,44 +201,44 @@
   "required_apps": [
     {
       "package_name": "app.drawbridge.herald",
-      "version_code": 7,
+      "version_code": 8,
       "url": "https://github.com/Nilss3/drawbridge/releases/latest/download/herald-arm64-v8a-release.apk",
-      "sha256": "08ef5ac7d6052e39b890a35a22ff731bf811e95180f2e7288c22225507eecca2",
+      "sha256": "164c5f90c9821696de039f740ff7342e3c3bcb4f7db8797b8716fc80a984c0f6",
       "abi": "arm64-v8a"
     },
     {
       "package_name": "app.drawbridge.herald",
-      "version_code": 7,
+      "version_code": 8,
       "url": "https://github.com/Nilss3/drawbridge/releases/latest/download/herald-armeabi-v7a-release.apk",
-      "sha256": "946974e62c702af3c2de8821bc01debdae399d9c8c64b19e8dc873c39ac950a6",
+      "sha256": "8ad20d22b2f55633b39255a8d40b72c74d2c35fcb74b8fdbc29b7046f56bf7b2",
       "abi": "armeabi-v7a"
     },
     {
       "package_name": "app.drawbridge.herald",
-      "version_code": 7,
+      "version_code": 8,
       "url": "https://github.com/Nilss3/drawbridge/releases/latest/download/herald-x86_64-release.apk",
-      "sha256": "e30457ce85219b832dea10ea5ca83fd125daea9050be8fdb2e0d8704c09fca13",
+      "sha256": "20212a9244132b2d32a03c8678d74f394549da3dcdb715fa88047adf72e3998d",
       "abi": "x86_64"
     },
     {
       "package_name": "app.drawbridge.heraldmono",
-      "version_code": 7,
+      "version_code": 8,
       "url": "https://github.com/Nilss3/drawbridge/releases/latest/download/herald-mono-arm64-v8a-release.apk",
-      "sha256": "72ce81f2a82660a646fb22de080cbc0f954fa4a32cba01f37ad7afb7d034b3ce",
+      "sha256": "ed0f6bc8a83ed35ee30051e2b7e85d720f46517eb63b78c7dd88b3c5f8f6e746",
       "abi": "arm64-v8a"
     },
     {
       "package_name": "app.drawbridge.heraldmono",
-      "version_code": 7,
+      "version_code": 8,
       "url": "https://github.com/Nilss3/drawbridge/releases/latest/download/herald-mono-armeabi-v7a-release.apk",
-      "sha256": "528e9a84a824362014d88db1911194d9214811ca057c8fa00af6cc88c617b015",
+      "sha256": "6345e82eb095bfef189785d48cecb0b8e3dc016e76af429f63c8068b1fa2c93d",
       "abi": "armeabi-v7a"
     },
     {
       "package_name": "app.drawbridge.heraldmono",
-      "version_code": 7,
+      "version_code": 8,
       "url": "https://github.com/Nilss3/drawbridge/releases/latest/download/herald-mono-x86_64-release.apk",
-      "sha256": "a3b27e4a5a5c662c4a3d659a16aaead0f06360ab14226033565f35bb7911a6b6",
+      "sha256": "317f6eb02ce188911327941dfcd1ffb79eb9686f077418bbf65afef98c09a2c8",
       "abi": "x86_64"
     }
   ],
