@@ -12,32 +12,37 @@ machine, what was and was not verified, and what to do next.
 
 | | |
 |---|---|
-| Repo | https://github.com/Nilss3/drawbridge — public, `main`, 41 commits |
-| Release | [v0.1.7](https://github.com/Nilss3/drawbridge/releases/tag/v0.1.7), 9 assets, published and not flagged |
-| Live policy | version **19**, live at `dist/policy.signed.json` on `main` |
-| Apps, published | drawbridge `0.1.7`; herald and herald mono `0.1.7` |
-| Apps, in the tree and on the phone | herald and herald mono **`0.1.8`** — unpublished. drawbridge unchanged at `0.1.7`. |
-| Tests | 302 unit tests across four build variants, lint clean |
+| Repo | https://github.com/Nilss3/drawbridge — public, `main`, 44 commits |
+| Release | [v0.1.8](https://github.com/Nilss3/drawbridge/releases/tag/v0.1.8), 9 assets, published and not flagged |
+| Live policy | version **20**, live at `dist/policy.signed.json` on `main` |
+| Apps, published | drawbridge, herald and herald mono, all `0.1.8` |
+| Tests | 313 unit tests across four build variants, lint clean |
 
-### v0.1.7 is out, and was checked from the outside
+### v0.1.8 is out, and was checked from the outside
 
-Published 2026-08-01, in two commits so the release existed before the policy
+Published 2026-08-02, in two commits so the release existed before the policy
 named it: the code and `dist/policy.json` first, then `dist/policy.signed.json`
-and `dist/lists/ai-companions.txt` together once the assets were up. That order
-is worth repeating — `required_apps` points at `/releases/latest/download/`, and
-a policy that goes live first has every device fetching a 404 for as long as the
-upload takes.
+once the assets were up. That order is worth repeating — `required_apps` points
+at `/releases/latest/download/`, and a policy that goes live first has every
+device fetching a 404 for as long as the upload takes.
+
+**Browser fixes only.** Policy 20 differs from 19 in `required_apps` and nothing
+else: both editions of herald were rebuilt, so every hash moved. Nothing about
+what is blocked changed, and no device loses an app over this one.
 
 Verified against the *published* artefacts rather than the local ones:
 
-- the policy fetched from `raw.githubusercontent.com` is version 19 and verifies
-  against the trusted keys in the APKs;
-- `ai-companions.txt` fetched from `main` hashes to exactly what that policy
-  pins, so devices accept it rather than silently dropping the category;
-- all six APKs in `required_apps` return 200 and hash to their pins;
-- the QR's own `dpc-release.apk` URL returns 200;
-- the release is neither a draft nor a pre-release, so `/releases/latest`
-  resolves to it.
+- `/releases/latest` resolves to v0.1.8, which is neither a draft nor a
+  pre-release;
+- all six APKs in `required_apps` return 200, and their published sizes match
+  what was staged; the two arm64 ones — the only ABI any real device here uses
+  — were downloaded in full and hash to their pins;
+- the QR's own `dpc-release.apk` URL returns 200 and matches;
+- herald and herald mono bundle policy 19 and drawbridge bundles 20, checked by
+  unzipping the built APKs.
+
+The other four ABIs were checked by size and status rather than by hash. If one
+of them ever matters, download and hash it before trusting it.
 
 ### Live policy 19 uninstalls WhatsApp
 
