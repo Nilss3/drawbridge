@@ -3,6 +3,10 @@
 What the current policy blocks, and — more usefully — where a requested item
 could not be blocked exactly as asked.
 
+For the plain list of every blocked package, see
+[blocked-apps](blocked-apps.md). This file is the reasoning; that one is the
+inventory.
+
 Package IDs were verified against the Play Store rather than written from
 memory; a wrong package ID is invisible, because the app blocker simply never
 matches it.
@@ -83,17 +87,63 @@ phone was ever going to run it.
 
 ## Packages not on the Play Store
 
-Three entries could not be confirmed by a Play Store lookup, and are included
-deliberately:
+Four entries do not resolve to a Play listing, and are included deliberately —
+a package that is not on Play can still be sideloaded:
 
 | Package | Why |
 |---|---|
-| `com.epicgames.fortnite`, `com.epicgames.portal` | Fortnite has never been on Play; it is sideloaded through the Epic Games app. Both are blocked so neither the launcher nor the game can install. |
-| `com.ss.android.ugc.trill` | A second TikTok build used in some regions. |
+| `com.epicgames.portal` | The Epic Games launcher has never been on Play. Blocked so it cannot sideload anything. |
 | `com.AgainstGravity.RecRoom` | Rec Room's Play listing does not resolve from here; the ID is the one its store URL uses. Worth re-checking if Rec Room ever appears on the device. |
+| `com.vkontakte.android` | VK, delisted from Play in the EU. The package is still valid for a sideloaded build. |
+| `ai.nomi.twa` | Nomi's original TWA build, since delisted. Its replacement, `nomi.ai.friend.chat`, is blocked alongside it. |
+
+**Two entries this table used to claim were unlisted now resolve**, checked
+2026-08-03: `com.epicgames.fortnite` is back on Play following the Epic v.
+Google ruling, and `com.ss.android.ugc.trill` — a second TikTok build used in
+some regions, not a duplicate of `com.zhiliaoapp.musically` — resolves normally.
+Both stay blocked; only the note about them was wrong.
 
 A package ID that turns out to be wrong costs nothing except that the app is not
 blocked — the blocker matches on exact package name and ignores everything else.
+The reverse is not free, though.
+
+## A wrong domain is not free, unlike a wrong package
+
+`anima.ai` was on `ai-companions.txt` from the beginning and was **removed in
+policy 21**. It is a venture studio for nature-inspired innovation — no
+connection to the companion app at all. The Anima in question is `myanima.ai`,
+which is what replaced it.
+
+The failure is worth naming because it is the mirror image of the one above. A
+wrong *package* is inert: nothing matches it and no app is affected. A wrong
+*domain* is not — it blocks a real, unrelated site for as long as nobody
+notices, and nothing on the device reports it. The app itself was never blocked
+at the domain layer during that whole time, so the entry managed to do only
+harm.
+
+Resolve a domain and look at what answers before adding it. Several candidates
+were dropped from `games.txt` on exactly this basis: `frostpunkmobile.com` has
+lapsed to a gambling site, `wwemayhem.com` is a fan forum, `nuverse.com` is a
+financial advisory firm rather than the games publisher.
+
+## The European Parent Safety Catalogue
+
+Policy 21 added 109 packages from the catalogue — 104 Android games and 15 AI
+companions, of which 10 were already blocked — plus the matching publisher and
+game domains. [blocked-apps](blocked-apps.md) is the resulting inventory.
+
+Two judgement calls in that import are worth recording:
+
+- **Minecraft stayed unblocked**, though the catalogue lists it. The catalogue's
+  own risk note — that the content is fine and third-party servers with
+  unmoderated chat are the problem — is an argument for the arrangement already
+  in place, not against it. See above.
+- **The three baseline entries are blocked anyway.** Subway Surfers, Toca Boca
+  World and Slay the Spire appear in the catalogue as examples of what a
+  low-risk game looks like, Slay the Spire explicitly as "the profile to look
+  for". They are blocked at the owner's explicit request. Anyone reading the
+  catalogue later and wondering why the control group is on the blocklist: that
+  is why, and removing them is a one-line change each.
 
 ## Two layers, and what each one catches
 

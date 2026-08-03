@@ -141,6 +141,7 @@ Then:
   ([Nederlands](docs/install.nl.md) · [Français](docs/install.fr.md))
 - [docs/provisioning.md](docs/provisioning.md) — the same thing for developers, plus adb
 - [docs/policy.md](docs/policy.md) — changing what is blocked
+- [docs/blocked-apps.md](docs/blocked-apps.md) — every blocked app, as a quick-reference list
 - [docs/blocklist-notes.md](docs/blocklist-notes.md) — what is on the list, and what could not be blocked as asked
 - [docs/removal.md](docs/removal.md) — taking it off again
 - [docs/design-decisions.md](docs/design-decisions.md) — why it works the way it does

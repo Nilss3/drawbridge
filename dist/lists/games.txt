@@ -63,3 +63,144 @@ play.galaxite.net
 play.nethergames.org
 play.inpvp.net
 mineville.org
+
+# ---------------------------------------------------------------------------
+# European Parent Safety Catalogue — added with policy 21.
+#
+# Publisher domains where the publisher only makes games, game domains where
+# the game has its own site. Every entry below was resolved before being added;
+# candidates that had lapsed to squatters or to an unrelated business were
+# dropped rather than listed. Notably absent for that reason: frostpunkmobile.com
+# (now a gambling site, and covered by the gambling list anyway), wwemayhem.com
+# (a fan forum), nuverse.com (a financial firm, not the games publisher).
+# ---------------------------------------------------------------------------
+
+# Crime sandbox / GTA-likes
+gameloft.com
+naxeex.com
+poxelstudios.com
+madout2.com
+apex-designs.net
+
+# Military and PvP shooters
+krafton.com
+battlegroundsmobileindia.com
+axlebolt.com
+azurgames.com
+forgegames.net
+blayzegames.com
+criticalforce.fi
+criticalops.com
+levelinfinite.com
+arenabreakout.com
+warface.com
+my.games
+wildlifestudios.com
+gameinsight.com
+
+# Zombie and survival
+madfingergames.com
+pikpok.com
+intothedead.com
+feelingtouch.com
+badflyinteractive.com
+kefirgames.com
+funplus.com
+stateofsurvivalgame.com
+decagames.com
+nextgames.com
+skybound.com
+telltale.com
+11bitstudios.com
+thiswarofmine.com
+com2us.com
+klei.com
+
+# Horror
+scottgames.com
+fivenightsatfreddys.com
+keplerians.com
+mobentertainment.com
+poppyplaytime.com
+joeydrewstudios.com
+basicallygames.com
+baldisbasics.com
+skytecgames.com
+neteasegames.com
+identityv.com
+
+# Fighting
+mortalkombat.com
+nekki.com
+shadowfight.com
+reliancegames.com
+kabam.com
+playcontestofchampions.com
+
+# Gacha and loot-box RPGs
+mihoyo.com
+hoyoverse.com
+fate-go.us
+blizzard.com
+battle.net
+plarium.com
+raidshadowlegends.com
+dislyte.com
+
+# Social-casino mechanics
+moonactive.net
+coinmaster.com
+scopely.com
+monopolygo.com
+
+# Sports and competitive
+ea.com
+easports.com
+konami.com
+mobilelegends.com
+riotgames.com
+leagueoflegends.com
+
+# Roguelike and premium ports
+playdigious.com
+deadcells.com
+motiontwin.com
+nussygame.com
+megacrit.com
+slaythespire.com
+humblegames.com
+
+# Avatar worlds and open chat
+lockwoodpublishing.com
+avakinlife.com
+sulake.com
+hotelhideaway.com
+afterverse.com
+pkxdgame.com
+kitkagames.com
+stumbleguys.com
+
+# Interactive story and life sim
+episodeinteractive.com
+pixelberrystudios.com
+playchoices.com
+crazymaplestudio.com
+candywriter.com
+bitlifeapp.com
+thesims.com
+3minutegames.com
+square-enix.com
+square-enix-games.com
+
+# Casual
+miniclip.com
+8ballpool.com
+sybogames.com
+subwaysurfers.com
+tocaboca.com
+tocalifeworld.com
+
+# Simulation
+simcitybuildit.com
+eveechoes.com
+eveonline.com

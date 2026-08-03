@@ -51,7 +51,7 @@ chub.ai
 figgs.ai
 moemate.io
 botify.ai
-anima.ai
+myanima.ai
 paradot.ai
 ourdream.ai
 soulgen.ai
@@ -72,3 +72,17 @@ sillytavern.app
 # xAI / Grok
 grok.com
 x.ai
+
+# ---------------------------------------------------------------------------
+# European Parent Safety Catalogue — added with policy 21.
+#
+# anima.ai was REMOVED in the same edit. It is a venture studio for
+# nature-inspired innovation and has nothing to do with the companion app;
+# the Anima in the catalogue is myanima.ai, which is what replaced it. The
+# package (anima.virtual.ai.robot.friend) is blocked either way, so the wrong
+# entry blocked an unrelated business without ever blocking the app.
+# ---------------------------------------------------------------------------
+
+evaapp.ai
+simsimi.com
+igirl.ai
