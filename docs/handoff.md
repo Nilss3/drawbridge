@@ -392,8 +392,12 @@ Not verified, and worth doing:
 - **A live policy update.** No device has yet received a *new* policy version
   and rebuilt its tunnel in response. Policy 14 is live, so the first
   provisioned device that polls will exercise it.
-- **The self-update path.** `app_update` is unset, so `checkAndInstallSelf` has
-  never had anything to do.
+- **The self-update path.** `app_update` is set as of policy 22, but it pins the
+  version already installed (`version_code` 9), so `checkAndInstallSelf` still
+  returns `UpToDate` without downloading anything. The path is armed, not
+  exercised. The first release that raises the version code is what will test
+  it, and that is also the first chance to get the publish order wrong — see
+  [policy.md](policy.md#drawbridge-updates-itself-the-way-it-updates-herald).
 - **uBlock Origin on a managed device.** Its filter-list hosts were checked
   against the live blocklists and none are blocked, and policy 12 allowlisted
   them so an upstream list cannot start blocking them later — but no managed
@@ -484,8 +488,19 @@ Each of these looks like a bug and is not, or bites silently:
      browser is still English-only, with ~45 strings. Note that drawbridge
      cannot set it — the picker is a *per-app* locale and no API lets one app
      set another's, so herald needs a picker of its own in its settings.
-   - **Set `app_update`** so drawbridge can update itself. Circular, so it takes
-     two rounds: publish the APK, then publish a policy naming its hash.
+   - **Exercise the self-update path.** `app_update` is set as of policy 22, but
+     pins the running version, so nothing has ever downloaded through it. The
+     next release is the test: publish the APK, *then* the policy naming its
+     version code and hash.
+   - **Finish the curfew.** The model, window arithmetic and Device Owner calls
+     are drafted and tested; nothing calls them. What is left is the UI, and
+     three wiring points: `CurfewController.apply` from `BootReceiver` and after
+     a policy refresh, and a `<receiver>` entry for `CurfewReceiver`. See
+     [policy.md](policy.md#curfew-an-evening-with-no-internet) and
+     [design-decisions](design-decisions.md#the-curfew-is-that-same-lockdown-used-on-purpose).
+     **Nothing has ever been on a device**, and the one thing worth watching for
+     first is a curfew that will not lift — a failure to *leave* lockdown is a
+     phone with no internet and no way to fix it from the phone.
 
 ---
 

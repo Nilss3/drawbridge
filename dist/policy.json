@@ -1,7 +1,7 @@
 {
-  "version": 21,
-  "issued_at": "2026-08-02T00:00:00Z",
-  "comment": "Policy 21. Adds the European Parent Safety Catalogue: 104 Android games and 15 AI-companion package ids, plus the matching publisher and game domains in games.txt and ai-companions.txt. Minecraft is deliberately still not blocked as a package \u2014 only Realms and the large public Bedrock servers, as before. Also corrects one wrong entry in ai-companions.txt: anima.ai is an unrelated venture studio; the Anima companion app is myanima.ai. required_apps is unchanged from 20, so no device downloads anything for this update.",
+  "version": 22,
+  "issued_at": "2026-08-03T00:00:00Z",
+  "comment": "Policy 22. Arms app_update, which was never set, so drawbridge can install its own updates the way it already installs herald's. It names the currently published dpc-release.apk (version_code 9, v0.1.8), so it is a no-op on every existing device: checkAndInstallSelf compares version codes before downloading anything, and 9 is not newer than 9. From the next release on, publish the APK first and then a policy naming its version_code and hash \u2014 the same order required_apps already needs, and for the same reason. Nothing about what is blocked changed from 21.",
   "dns": {
     "upstreams": [
       "94.140.14.15",
@@ -306,6 +306,12 @@
     "blocked_page_message": "This website was denied access to your device, life and soul.",
     "blocked_url_patterns": [],
     "blocked_hosts": []
+  },
+  "app_update": {
+    "package_name": "app.drawbridge.dpc",
+    "version_code": 9,
+    "url": "https://github.com/Nilss3/drawbridge/releases/latest/download/dpc-release.apk",
+    "sha256": "0a01743dd52855921f3de66d9233f66635afd1967c9705a84a7ca8030ee73614"
   },
   "required_apps": [
     {

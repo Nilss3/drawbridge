@@ -82,6 +82,86 @@ class DeviceOwnerManager(context: Context) {
     }
 
     /**
+     * Turns the whole device's internet off, or back on.
+     *
+     * This is the same lockdown flag [enableAlwaysOnVpn] deliberately leaves
+     * off, used on purpose. Permanently on it is a broken phone; for a bounded
+     * window it is exactly a curfew — every non-DNS packet dropped, every
+     * `connect()` failing with EPERM, in every app.
+     *
+     * **Calls and SMS are unaffected**, being carrier-side rather than IP, which
+     * is what makes this safe to leave running overnight on a child's phone.
+     *
+     * [allowedPackages] survive the lockdown, for a messaging app that should
+     * stay reachable. The allowlist overload landed in API 29; on 28 it is
+     * dropped and the curfew is absolute, which is the stricter reading and so
+     * the right way to fail.
+     *
+     * @return true if the requested state was applied.
+     */
+    fun setNetworkLockdown(
+        enabled: Boolean,
+        allowedPackages: Set<String> = emptySet(),
+        vpnPackage: String = appContext.packageName,
+    ): Boolean {
+        if (!isDeviceOwner) return false
+        return try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                dpm.setAlwaysOnVpnPackage(admin, vpnPackage, enabled, allowedPackages)
+            } else {
+                if (enabled && allowedPackages.isNotEmpty()) {
+                    Log.w(TAG, "Lockdown allowlist needs API 29; enforcing an absolute curfew")
+                }
+                dpm.setAlwaysOnVpnPackage(admin, vpnPackage, enabled)
+            }
+            Log.i(TAG, "Network lockdown ${if (enabled) "on" else "off"}")
+            true
+        } catch (e: Exception) {
+            // A device whose VPN stack refuses lockdown throws here. Failing to
+            // *enter* a curfew is a policy that did not apply; failing to leave
+            // one is a bricked phone, so both are logged loudly.
+            Log.e(TAG, "Could not set network lockdown to $enabled", e)
+            false
+        }
+    }
+
+    /**
+     * Pins the clock, so a wall-clock curfew means something.
+     *
+     * Without this the window is advisory: changing the device clock walks
+     * straight out of it. [UserManager.DISALLOW_CONFIG_DATE_TIME] covers date,
+     * time *and* time zone.
+     *
+     * Auto-time is set as well as locked where the API exists (30+), because
+     * forbidding edits only freezes whatever the clock already said — a device
+     * whose clock was wrong when the restriction landed would stay wrong.
+     *
+     * Applied only when a curfew is configured, so a policy without one leaves
+     * the restriction set exactly as it was.
+     */
+    fun applyClockLock() {
+        if (!isDeviceOwner) return
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            runCatching { dpm.setAutoTimeEnabled(admin, true) }
+                .onFailure { Log.e(TAG, "Could not force network time", it) }
+            runCatching { dpm.setAutoTimeZoneEnabled(admin, true) }
+                .onFailure { Log.e(TAG, "Could not force the network time zone", it) }
+        }
+        runCatching { dpm.addUserRestriction(admin, UserManager.DISALLOW_CONFIG_DATE_TIME) }
+            .onFailure { Log.e(TAG, "Could not lock the clock", it) }
+    }
+
+    fun clearClockLock() {
+        if (!isDeviceOwner) return
+        runCatching { dpm.clearUserRestriction(admin, UserManager.DISALLOW_CONFIG_DATE_TIME) }
+            .onFailure { Log.e(TAG, "Could not unlock the clock", it) }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            runCatching { dpm.setAutoTimeEnabled(admin, false) }
+            runCatching { dpm.setAutoTimeZoneEnabled(admin, false) }
+        }
+    }
+
+    /**
      * Applies the restriction set.
      *
      * Three of these are easy to leave out and each one on its own defeats the
@@ -193,9 +273,13 @@ class DeviceOwnerManager(context: Context) {
         if (!isDeviceOwner) return false
         return try {
             clearDefaultBrowser()
+            // Clears lockdown with it, by dropping the always-on package
+            // entirely. A removal that left lockdown set would hand back a phone
+            // with no internet and nothing left on it able to undo that.
             disableAlwaysOnVpn()
             unlockAccounts()
             clearUserRestrictions()
+            clearClockLock()
             @Suppress("DEPRECATION")
             dpm.clearDeviceOwnerApp(appContext.packageName)
             true
@@ -210,8 +294,11 @@ class DeviceOwnerManager(context: Context) {
         if (!isDeviceOwner) return emptyList()
         val userManager = appContext.getSystemService(Context.USER_SERVICE) as UserManager
         val restrictions = userManager.userRestrictions
-        return (MANAGED_RESTRICTIONS + UserManager.DISALLOW_MODIFY_ACCOUNTS)
-            .filter { restrictions.getBoolean(it, false) }
+        return (
+            MANAGED_RESTRICTIONS +
+                UserManager.DISALLOW_MODIFY_ACCOUNTS +
+                UserManager.DISALLOW_CONFIG_DATE_TIME
+            ).filter { restrictions.getBoolean(it, false) }
     }
 
     companion object {

@@ -49,6 +49,8 @@ hold, which is what makes replaying an old, permissive policy fail.
 | `allowed_browser_package` | The browser tapped links are handed to, and the first one installed. Always a member of the allowed set. |
 | `allowed_browser_packages` | Every browser allowed to exist. Anything else that registers a browser intent filter is removed or hidden. **Must agree with `required_apps`** — a browser named in one and not the other is installed and removed on a loop. Empty means "just `allowed_browser_package`". |
 | `exempt_packages` | Escape valve for a device-specific app that would otherwise be caught. |
+| `curfew` | A nightly window with no internet at all. **Drafted, not enforced** — see below. |
+| `app_update` | drawbridge's own APK. Same shape as a `required_apps` entry. Installed only when its `version_code` is **higher** than what is running, so pinning the current version is a deliberate no-op. |
 | `required_apps` | APKs drawbridge installs if missing — herald above all. Pinned by SHA-256, and filtered by `abi` so one policy serves all of herald's per-ABI splits. |
 | `browser.blocked_url_patterns` | Regexes matched against the full URL — path-level rules DNS cannot express. herald only. |
 | `browser.default_search_engine` | Selected until someone picks another in herald's settings, after which the choice is theirs. Matched loosely, so `duckduckgo` finds `ddg`. |
@@ -333,6 +335,92 @@ flavour dimension would otherwise rename them; it fails loudly if any APK the
 signed policy names is missing or stale. Run it after each build step.
 
 CI still runs tests and lint on every push, which is what it is good for.
+
+## Curfew: an evening with no internet
+
+> **Drafted, not enforced.** The schema below parses, the window arithmetic is
+> tested, and the Device Owner calls exist — but nothing invokes them on a live
+> device and no published policy carries a `curfew`. Writing one into
+> `dist/policy.json` today does nothing. Turning it on means calling
+> `CurfewController.apply` from `BootReceiver`, after a policy refresh, and
+> registering `CurfewReceiver` in the manifest.
+
+```jsonc
+{
+  "curfew": {
+    "start": "21:00",
+    "end": "07:00",
+    "days": ["mon", "tue", "wed", "thu", "sun"],
+    "allowed_packages": ["org.thoughtcrime.securesms"],
+    "enabled": true
+  }
+}
+```
+
+| Field | Effect |
+|---|---|
+| `start`, `end` | Local wall-clock `HH:mm`, 24-hour. Start is inclusive, end exclusive. An `end` earlier than `start` means the window crosses midnight. |
+| `days` | Days the window **starts** on — `mon`, `monday`, any case. Empty means every day. |
+| `allowed_packages` | Packages that keep working during the window. Needs API 29; below that it is ignored and the curfew is absolute. |
+| `enabled` | Lets a policy carry a curfew without it being in force. |
+
+A profile may override `curfew`, so a stricter "school nights" variant is a
+field rather than a second policy.
+
+**What it actually does** is turn on the always-on VPN's lockdown flag, which
+drops every packet not going through the tunnel — and since this filter routes
+only DNS into its tunnel, that is every packet. **Calls and SMS keep working**,
+being carrier-side rather than IP.
+
+Two things follow from that, and both are easy to get wrong:
+
+- **`days` names the evening, not the night.** `21:00`–`07:00` on `fri` covers
+  Friday evening *and* Saturday morning. Saturday is not named and starts
+  nothing of its own. Listing every day of the week a child is asleep will give
+  you one extra window, not the one you meant.
+- **A curfew pins the clock.** A wall-clock window is meaningless if the clock
+  can be edited, so a configured curfew applies `DISALLOW_CONFIG_DATE_TIME` and
+  forces network time. Removing the curfew from the policy lifts both.
+
+Removing a `curfew` field is a real operation, not an absence: the next time a
+device applies the policy it lifts the lockdown and unlocks the clock. That is
+deliberate — see
+[design-decisions](design-decisions.md#the-window-is-evaluated-never-remembered).
+
+## drawbridge updates itself the way it updates herald
+
+`app_update` names drawbridge's own APK, and `UpdateWorker` installs it in the
+same daily pass that installs herald — silently, being Device Owner, after
+checking the SHA-256 against the pin.
+
+The gate is the version code, and it is checked **before anything is
+downloaded**:
+
+```kotlin
+if (update.versionCode <= versionCodeOf(appContext.packageName)) return UpToDate
+```
+
+That is what makes the circularity survivable. drawbridge cannot ship a policy
+naming its own hash — hashing the APK changes nothing about the APK, but
+rebuilding it to carry the new policy changes the hash. So the resolution is the
+same one `required_apps` uses: **the APK ships one policy version behind**, and
+the policy that names it is published afterwards.
+
+Which gives the release order:
+
+1. Build drawbridge carrying the *current* signed policy.
+2. Publish the release, so `/latest/download/dpc-release.apk` is the new APK.
+3. Write its `version_code` and SHA-256 into `app_update`, bump `version`, sign,
+   publish.
+
+Between steps 2 and 3 the published APK is newer than the policy describes.
+Nothing goes wrong: devices still read the old `app_update`, whose version code
+is not greater than what they are running, so they never reach the download.
+Getting this backwards — policy first — is what breaks, exactly as it does for
+`required_apps`, and for the same reason.
+
+A policy that pins the version already installed is therefore a valid, inert
+state, and it is the right thing to leave in place between releases.
 
 ## Build order matters when `required_apps` changes
 

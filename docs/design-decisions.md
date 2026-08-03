@@ -28,6 +28,96 @@ falls back to the system resolvers unfiltered.
 If that window ever matters, closing it means phase 2 — full packet capture,
 built on NetGuard or RethinkDNS rather than from scratch.
 
+## The curfew is that same lockdown, used on purpose
+
+*Drafted, not enabled.* The model, the window arithmetic and the Device Owner
+calls exist and are tested; nothing reads a curfew on a live device and no
+published policy carries one.
+
+The bug above is the feature. "Every non-DNS packet dropped, every `connect()`
+failing with EPERM, in every app" is a broken phone as a permanent state and an
+exact description of what an evening internet curfew should do. So the curfew
+does not introduce a mechanism — it calls
+`setAlwaysOnVpnPackage(admin, package, lockdownEnabled = true)` at the start of
+the window and passes `false` at the end.
+
+The consequences worth knowing:
+
+- **Calls and SMS keep working.** They are carrier-side, not IP, so lockdown
+  does not touch them. That is what makes this safe to leave running overnight
+  on a child's phone, and it is a property of the mechanism rather than
+  something the implementation had to arrange.
+- **The allowlist is API 29+.** `setAlwaysOnVpnPackage` has an overload taking
+  packages that survive lockdown — a messaging app a parent wants reachable at
+  night. On API 28 the overload does not exist, so the allowlist is dropped and
+  the curfew is absolute. That is the stricter reading, which is the right way
+  to degrade.
+- **No new manifest permission.** `INTERNET` was already declared for the policy
+  fetch and the VPN, lockdown is a Device Owner API rather than a permission,
+  and the clock lock below is a user restriction. The declared permission set is
+  unchanged — which matters more than it sounds, because that set is the main
+  thing Play Protect's classifier weighs. A feature this invasive costing zero
+  permissions is worth knowing about before designing an alternative.
+- **Failing to leave a curfew is worse than failing to enter one**, so both
+  outcomes are logged, and `releaseDeviceOwnership` clears the always-on package
+  outright. A removal that left lockdown set would hand back a phone with no
+  internet and nothing on it still privileged enough to undo that.
+
+### A wall-clock window needs a clock that cannot be edited
+
+Otherwise the curfew is advisory: changing the device clock walks straight out
+of it. `DISALLOW_CONFIG_DATE_TIME` covers date, time and time zone.
+
+It is applied **only when a curfew is configured**, not added to
+`MANAGED_RESTRICTIONS`, so a policy without one leaves the restriction set
+exactly as it was and no existing device changes behaviour.
+
+Locking is not sufficient on its own, because forbidding edits only freezes
+whatever the clock already said — a device whose clock was wrong when the
+restriction landed would stay wrong. So `setAutoTimeEnabled` and
+`setAutoTimeZoneEnabled` are set alongside it where the API exists (30+),
+forcing network time rather than merely preventing changes.
+
+Note that the device cannot reach an NTP server *during* a curfew, since
+lockdown drops that traffic too. This does not matter: the RTC keeps running
+across the window and across reboots, and the clock only needs to be right to
+the minute.
+
+### The window is evaluated, never remembered
+
+Every run asks the policy what the window is, asks the clock where we are in it,
+and sets the device to match. There is no "curfew is running" flag, because a
+flag is a second source of truth that goes stale — after a reboot mid-window, a
+policy that changed the hours, or an alarm that never fired.
+
+That is also why a *null* curfew actively lifts lockdown rather than doing
+nothing. Dropping the curfew from a policy has to release the last device that
+applied it, and only an unconditional "set it to what the policy says now" does
+that.
+
+Boundaries are scheduled with `setAndAllowWhileIdle` rather than an exact alarm.
+Exact alarms need `SCHEDULE_EXACT_ALARM` from API 31, which is a user-visible
+grant and a Play-policy-restricted permission — a real cost for something that
+does not need second accuracy. Doze may defer a boundary by a few minutes, and a
+curfew starting at 21:03 instead of 21:00 is not a defect worth a permission
+for. The alarm is a backstop rather than the mechanism: because state is
+recomputed from the clock on every run, a dropped alarm is corrected at the next
+boot or policy refresh instead of stranding the device.
+
+### Named days are the days a window *starts* on
+
+A curfew of 21:00–07:00 on `fri` runs from Friday evening into Saturday morning.
+Saturday is not named and starts nothing, but Saturday's early hours still
+belong to Friday's window. Naming `sat` as well would add a second window, not
+extend the first.
+
+This is the one piece of arithmetic with real edge cases, so
+`nextChangeAfter` finds the next boundary by stepping a minute at a time over a
+week rather than computing it directly. The direct version has to reason about
+midnight crossings, unnamed days on either side, and the week wrapping — three
+chances to be subtly wrong on exactly one day of the week. A week of minutes is
+~10k comparisons of a pure function, at a once-per-boundary rate.
+
 ## The encrypted upstream uses DoT, not DoH
 
 The upstream resolver is reached over DNS-over-TLS (`tls://all.dns.mullvad.net`),

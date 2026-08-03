@@ -110,6 +110,12 @@ data class Policy(
 
     val browser: BrowserPolicy = BrowserPolicy(),
 
+    /**
+     * A nightly window with no internet at all. Null means none, which is the
+     * shipped state — see [Curfew], which is drafted but not yet enforced.
+     */
+    val curfew: Curfew? = null,
+
     @SerialName("app_update")
     val appUpdate: AppUpdate? = null,
 
@@ -161,6 +167,7 @@ data class Policy(
             blockedPackages = profile.blockedPackages ?: blockedPackages,
             allowedPackages = profile.allowedPackages ?: allowedPackages,
             exemptPackages = profile.exemptPackages ?: exemptPackages,
+            curfew = profile.curfew ?: curfew,
         )
     }
 
@@ -342,6 +349,14 @@ data class Profile(
 
     @SerialName("exempt_packages")
     val exemptPackages: List<String>? = null,
+
+    /**
+     * Overrides the base [Policy.curfew]. Null inherits it, which means a
+     * profile cannot currently *remove* a curfew the base policy sets — the same
+     * shape as every other override here, where null is "inherit" rather than
+     * "none".
+     */
+    val curfew: Curfew? = null,
 ) {
     fun displayName(language: String): String = pick(name, nameByLanguage, language)
 
