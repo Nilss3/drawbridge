@@ -1,8 +1,8 @@
 # drawbridge
 
-Content filtering for an Android device you manage on someone else's behalf.
-Blocks adult content, gambling, social media, AI companion chats and a chosen
-set of games — without an account, a backend, or a subscription.
+Content filtering for an Android device — someone else's to manage, or your own
+to lock down. Blocks adult content, gambling, social media, AI companion chats
+and a chosen set of games — without an account, a backend, or a subscription.
 
 Two apps in one repo:
 
