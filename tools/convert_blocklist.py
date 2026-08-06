@@ -186,14 +186,11 @@ def build_fragment() -> str:
             i += 1
         out.append(f"<p>{inline(' '.join(para_lines))}</p>")
 
+    # The heading and the summary above it are page chrome, and the same
+    # summary is shown in three languages, so build-site.py owns them. This
+    # returns only the table of contents and the converted document.
     toc_html = "\n".join(f'<a href="#{a}">{html.escape(label)}</a>' for a, label in toc)
-    intro = (
-        '<p class="lede">The evidence behind every category and app drawbridge blocks — official ratings, '
-        "independent reviews, regulator findings and cited research. This page grows as the list does; "
-        "treat it as a reference rather than something finished.</p>"
-        f'<nav class="toc">{toc_html}</nav>'
-    )
-    return "<h1>The blocklist and the why</h1>\n" + intro + "\n" + "\n".join(out)
+    return f'<nav class="toc">{toc_html}</nav>\n' + "\n".join(out)
 
 
 if __name__ == "__main__":

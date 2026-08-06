@@ -770,25 +770,37 @@ def render_faq(lang: str) -> str:
 WHY_TITLE = "The blocklist and the why — drawbridge"
 WHY_DESCRIPTION = "The evidence behind every category and app drawbridge blocks: official ratings, independent reviews, regulator findings and cited research."
 
+# The summary, in every language. One source of truth: it opens the English
+# blocklist page and *is* the Dutch and French pages, so it cannot be allowed
+# to drift between the two.
+WHY_INTRO = {
+    "en": [
+        "Drawbridge blocks six categories: pornography, gambling, scams, algorithmic social media, AI companions, and games with addictive mechanics or grooming risk. Everything else keeps working normally: tools, office software, weather, banking, public transport, school and work. The list is not configurable, and that is the point, because any setting you can change yourself is also a setting you can argue about.",
+        "Every entry on the list rests on public sources: official age ratings (PEGI, ESRB), independent reviews such as Common Sense Media, regulator findings from bodies like the Belgian Gaming Commission, the European Commission and Australia's eSafety Commissioner, and guidance from medical and child-psychiatric organisations such as AACAP, the APA and the WHO. The pattern that recurs most: the store's age label often sits years below what independent reviewers advise, and says nothing at all about chat with strangers or paid random rewards.",
+    ],
+    "nl": [
+        "Drawbridge houdt zes categorieën tegen: pornografie, gokken, oplichterij, algoritmische social media, AI companions, en games met verslavende mechanismen of een risico op grooming. Al de rest blijft gewoon werken: gereedschap, kantoorsoftware, weerbericht, bankieren, openbaar vervoer, school en werk. De lijst is niet configureerbaar: dat is precies het punt, want elke instelling die je zelf kan aanpassen is er ook één waarover discussie mogelijk is.",
+        "Elke keuze op de lijst steunt op openbare bronnen: officiële leeftijdslabels (PEGI, ESRB), onafhankelijke beoordelingen zoals Common Sense Media, uitspraken van toezichthouders zoals de Belgische Kansspelcommissie, de Europese Commissie en de Australische eSafety Commissioner, en richtlijnen van medische en kinderpsychiatrische organisaties zoals AACAP, de APA en de WHO. Wat daarbij het vaakst terugkomt: het officiële leeftijdslabel in de winkel ligt vaak jaren lager dan wat onafhankelijke beoordelaars aanraden, en het label zegt bovendien niets over chatfuncties met vreemden of over betaalde willekeurige beloningen.",
+    ],
+    "fr": [
+        "Drawbridge bloque six catégories : la pornographie, les jeux d'argent, les arnaques, les réseaux sociaux algorithmiques, les compagnons IA, et les jeux aux mécanismes addictifs ou présentant un risque de grooming. Tout le reste continue de fonctionner normalement : outils, bureautique, météo, banque, transports en commun, école et travail. La liste n'est pas configurable, et c'est précisément l'intérêt : tout réglage que l'on peut modifier soi-même est aussi un réglage dont on peut débattre.",
+        "Chaque entrée de la liste s'appuie sur des sources publiques : les classifications officielles par âge (PEGI, ESRB), des évaluations indépendantes comme Common Sense Media, des décisions de régulateurs comme la Commission belge des jeux de hasard, la Commission européenne et l'eSafety Commissioner australien, ainsi que les recommandations d'organisations médicales et pédopsychiatriques comme l'AACAP, l'APA et l'OMS. Le constat qui revient le plus souvent : l'âge affiché sur la boutique est souvent inférieur de plusieurs années à ce que recommandent les évaluateurs indépendants, et il ne dit rien des fonctions de discussion avec des inconnus ni des récompenses aléatoires payantes.",
+    ],
+}
+
+# Page chrome for the standalone Dutch and French summary pages. English has
+# no entry here: its /why-blocked/ is the full cited document, not a summary.
 WHY_SUMMARY = {
     "nl": dict(
         title="Wat wordt geblokkeerd, en waarom — drawbridge",
         description="Een korte samenvatting van wat drawbridge tegenhoudt en op welke basis, met een link naar de volledige lijst met bronnen.",
         h1="Wat wordt geblokkeerd, en waarom",
-        paragraphs=[
-            "Drawbridge houdt zes categorieën tegen: pornografie, gokken, oplichterij, algoritmische social media, AI companions, en games met verslavende mechanismen of een risico op grooming. Al de rest blijft gewoon werken — gereedschap, kantoorsoftware, weerbericht, bankieren, openbaar vervoer, school en werk. De lijst is niet configureerbaar: dat is precies het punt, want elke instelling die je zelf kan aanpassen is er ook één waarover discussie mogelijk is.",
-            "Elke keuze op de lijst steunt op openbare bronnen: officiële leeftijdslabels (PEGI, ESRB), onafhankelijke beoordelingen zoals Common Sense Media, uitspraken van toezichthouders zoals de Belgische Kansspelcommissie, de Europese Commissie en de Australische eSafety Commissioner, en richtlijnen van medische en kinderpsychiatrische organisaties zoals AACAP, de APA en de WHO. Wat daarbij het vaakst terugkomt: het officiële leeftijdslabel in de winkel ligt vaak jaren lager dan wat onafhankelijke beoordelaars aanraden, en het label zegt bovendien niets over chatfuncties met vreemden of over betaalde willekeurige beloningen.",
-        ],
         cta="Lees de volledige lijst met alle bronnen (Engels)",
     ),
     "fr": dict(
         title="Ce qui est bloqué, et pourquoi — drawbridge",
         description="Un résumé de ce que drawbridge bloque et sur quelles bases, avec un lien vers la liste complète et ses sources.",
         h1="Ce qui est bloqué, et pourquoi",
-        paragraphs=[
-            "Drawbridge bloque six catégories : la pornographie, les jeux d'argent, les arnaques, les réseaux sociaux algorithmiques, les compagnons IA, et les jeux aux mécanismes addictifs ou présentant un risque de grooming. Tout le reste continue de fonctionner normalement : outils, bureautique, météo, banque, transports en commun, école et travail. La liste n'est pas configurable, et c'est précisément l'intérêt : tout réglage que l'on peut modifier soi-même est aussi un réglage dont on peut débattre.",
-            "Chaque entrée de la liste s'appuie sur des sources publiques : les classifications officielles par âge (PEGI, ESRB), des évaluations indépendantes comme Common Sense Media, des décisions de régulateurs comme la Commission belge des jeux de hasard, la Commission européenne et l'eSafety Commissioner australien, ainsi que les recommandations d'organisations médicales et pédopsychiatriques comme l'AACAP, l'APA et l'OMS. Le constat qui revient le plus souvent : l'âge affiché sur la boutique est souvent inférieur de plusieurs années à ce que recommandent les évaluateurs indépendants, et il ne dit rien des fonctions de discussion avec des inconnus ni des récompenses aléatoires payantes.",
-        ],
         cta="Lire la liste complète avec toutes les sources (en anglais)",
     ),
 }
@@ -796,7 +808,7 @@ WHY_SUMMARY = {
 
 def render_why_summary(lang: str) -> str:
     c = WHY_SUMMARY[lang]
-    paragraphs = "\n      ".join(f"<p>{p}</p>" for p in c["paragraphs"])
+    paragraphs = "\n      ".join(f"<p>{p}</p>" for p in WHY_INTRO[lang])
     body = f"""
   <section class="section">
     <div class="wrap">
@@ -818,9 +830,13 @@ def render_why_summary(lang: str) -> str:
 
 
 def render_why_blocked(content_fragment: str) -> str:
+    paragraphs = "\n      ".join(f"<p>{p}</p>" for p in WHY_INTRO["en"])
     body = f"""
   <section class="section">
     <div class="wrap wrap--wide">
+      <h1>The blocklist and the why</h1>
+      {paragraphs}
+      <p class="footnote">This page grows as the list does; treat it as a reference rather than something finished.</p>
 {content_fragment}
     </div>
   </section>
