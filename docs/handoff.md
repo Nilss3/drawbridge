@@ -1,4 +1,4 @@
-# Handoff — state as of 2026-08-02
+# Handoff — state as of 2026-08-06
 
 Everything about *how the system works* lives in [README](../README.md),
 [design-decisions](design-decisions.md), [policy](policy.md),
@@ -12,11 +12,106 @@ machine, what was and was not verified, and what to do next.
 
 | | |
 |---|---|
-| Repo | https://github.com/Nilss3/drawbridge — public, `main`, 44 commits |
+| Repo | https://github.com/Nilss3/drawbridge — public, `main`, 60 commits |
 | Release | [v0.1.8](https://github.com/Nilss3/drawbridge/releases/tag/v0.1.8), 9 assets, published and not flagged |
-| Live policy | version **20**, live at `dist/policy.signed.json` on `main` |
+| Live policy | version **23**, live at `dist/policy.signed.json` on `main` |
 | Apps, published | drawbridge, herald and herald mono, all `0.1.8` |
-| Tests | 313 unit tests across four build variants, lint clean |
+| Website | trilingual, generated into `site/`, on Cloudflare Pages |
+| Tests | 372 unit tests across four build variants, lint clean |
+
+### The one thing that could stop everything: the DPC allowlist
+
+**Google Play Protect now blocks custom device policy controllers during
+enrollment**, with *"App blocked to protect your device"*. Only DPCs on the
+[Android Enterprise allowlist](https://support.google.com/work/android/answer/16694822)
+may install during provisioning. This went live during 2025 with no notice and
+community reports of blocked enrollments run through 2026. drawbridge is a
+self-built DPC on nobody's allowlist, and the Nothing A059 and the Moto G15 are
+both GMS-certified, so both are in scope.
+
+This is the QR path specifically. `adb shell dpm set-device-owner` is unaffected
+and is the documented workaround.
+
+**An appeal was filed** on 2026-08-06 via
+`support.google.com/googleplay/android-developer/contact/protectappeals` — that
+form is the only channel, framed as an "appeal" even with nothing yet rejected.
+It wanted the package name, the APK's SHA-256, a public download URL, and a
+VirusTotal report; VirusTotal came back **clean**, with no engine flagging it.
+
+**There will be no reply.** The form states outright that decisions are final
+and no response is sent. The only way to learn the outcome is to retry
+provisioning and see. So: retry every couple of weeks, with the same package and
+signing certificate, and treat a second failure as inconclusive — it could mean
+rejected, still queued, or lost.
+
+Two things follow. Publishing on Play would **not** help: the gate is the
+Android Enterprise allowlist, not Play distribution. And the durable answer is
+to not need the allowlist at all — `dpm set-device-owner` is AOSP rather than
+GMS, and non-GMS devices (LineageOS, /e/OS, GrapheneOS) have no allowlist to
+enforce.
+
+Separately, **Android developer verification does not affect drawbridge**: apps
+installed by a DPC on managed devices are exempt indefinitely, as are ADB
+installs.
+
+### There is a website now, and it is generated
+
+Trilingual (EN/NL/FR), static, on Cloudflare Pages, deploying from `main` on
+every push. No framework, no client-side JS, no webfonts, no third-party
+requests — the same "nothing leaves the device" posture as the app.
+
+- `site/` is **generated output**. Edit `site-src/` and `tools/build-site.py`,
+  rerun `python3 tools/build-site.py`, commit the result. Editing the HTML
+  directly works for trying wording in a browser but vanishes at the next
+  build; port it back. This has already happened once.
+- Cloudflare needs **no build step**: framework preset None, build command
+  empty, output directory `site`. Full setup in
+  [site-src/DEPLOY.md](../site-src/DEPLOY.md).
+- **Do not use the Workers flow.** Its form demands a required "Deploy command"
+  and gets the output directory from a committed `wrangler.jsonc`; the Pages
+  flow needs neither and no repo changes at all.
+- The `.pages.dev` subdomain comes from the project name and **cannot be
+  renamed** — delete and recreate the project to change it.
+- `tools/convert_blocklist.py` mechanically converts `site-src/block-list.md`
+  (~200 rows, several hundred citation links) into the English blocklist page.
+  Never transcribe those by hand.
+- The full cited page is **English only, permanently**. Dutch and French get a
+  short summary at the same path that links to it. That is not a stub to fill
+  in later.
+- `build-site.py` fails the build on any internal link with no file behind it,
+  added after `/nl/why-blocked/` and `/fr/why-blocked/` shipped as 404s.
+
+### Policy 21–23: what changed
+
+- **21** — the European Parent Safety Catalogue: 109 new packages (48 → 157)
+  and 141 domains. Every package id was resolved against the Play Store rather
+  than trusted from the source spreadsheet; all 119 rows named the app they
+  claimed. Minecraft is still deliberately *not* blocked as a package. The
+  catalogue's three baseline entries (Subway Surfers, Toca Boca World, Slay the
+  Spire) *are* blocked, at the owner's explicit request, despite being listed
+  there as examples of low-risk games. Also removed `anima.ai` from
+  `ai-companions.txt`: it is a venture studio, not the companion app, and had
+  been blocking an unrelated business since the beginning while never blocking
+  Anima.
+- **22** — armed `app_update`, which had never been set, pinned at the running
+  `version_code` so it is inert. Drafted the curfew: schema and code exist,
+  nothing reads it, no published policy carries one.
+- **23** — repointed two HaGeZi blocklists that had been **404ing on every
+  device**. See below.
+
+### A signed policy is not necessarily a working one
+
+HaGeZi moved `domains/` to `wildcard/`, and the ads/tracker/malware list and the
+encrypted-DNS list 404'd on every device until someone happened to click one.
+Nothing failed loudly: `PolicyStore` logs the download error, falls back to a
+stale cache if it has one, and compiles whatever is left. Mullvad's `all`
+upstream covers ads, trackers and malware at the resolver, which hid the gap
+further.
+
+`policytool.py sign` now fetches every URL the document names and refuses to
+sign a dead third-party blocklist. Repo-hosted lists and
+`required_apps`/`app_update` are warnings instead, because both legitimately
+404 before the matching push. `--skip-url-check` signs offline.
 
 ### v0.1.8 is out, and was checked from the outside
 
@@ -44,7 +139,7 @@ Verified against the *published* artefacts rather than the local ones:
 The other four ABIs were checked by size and status rather than by hash. If one
 of them ever matters, download and hash it before trusting it.
 
-### Live policy 19 uninstalls WhatsApp
+### WhatsApp is uninstalled, and has been since policy 19
 
 This has now happened, or will at the next poll of any device that exists.
 
@@ -291,7 +386,14 @@ brew install --cask android-commandlinetools
   work: same system image, 4 cores and 4 GB, no device owner. The Homebrew
   `avdmanager` has its own SDK root and cannot see the system images under
   `~/Library/Android/sdk`, which is why it was not created with the tool. Delete
-  it if the disk is wanted back; nothing depends on it.
+  it if the disk is wanted back; nothing depends on it. **Wiped 2026-08-06**
+  while attempting a QR provisioning test, so its browser state is gone.
+
+  Both AVDs are `google_apis_playstore` images, so Play Protect is present —
+  but see the trap above: that is still not enough to test QR provisioning.
+- **A Moto G15**, ordered 2026-08-06 and not yet arrived. Bought as a
+  disposable provisioning target so no phone anyone depends on gets wiped.
+  This is what the next-steps sequence is written for.
 
 ---
 
@@ -390,8 +492,16 @@ Not verified, and worth doing:
   Scrolling a long image-heavy page and playing fullscreen video are the things
   to watch. Nothing an emulator says about this is meaningful.
 - **A live policy update.** No device has yet received a *new* policy version
-  and rebuilt its tunnel in response. Policy 14 is live, so the first
-  provisioned device that polls will exercise it.
+  and rebuilt its tunnel in response. Policy 23 is live, so the first
+  provisioned device that polls will exercise it — and it will sweep 157
+  packages rather than 48, so that first sweep is worth watching.
+- **The curfew.** Drafted in policy 22 and never run on a device. Nothing
+  reads it and no published policy carries one; wiring it up means calling
+  `CurfewController.apply` from `BootReceiver` and after a policy refresh.
+  The failure that matters is one that does not lift.
+- **The 109 packages added in policy 21 actually being removed.** They are
+  verified as *correct package ids* against the Play Store, which is a
+  different claim from having watched the app blocker uninstall any of them.
 - **The self-update path.** `app_update` is set as of policy 22, but it pins the
   version already installed (`version_code` 9), so `checkAndInstallSelf` still
   returns `UpToDate` without downloading anything. The path is armed, not
@@ -456,16 +566,61 @@ Each of these looks like a bug and is not, or bites silently:
 - **The phone sleeps mid-test**, which produces entirely black screenshots that
   look like a rendering bug. `adb shell svc power stayon usb` while testing, and
   set it back to `false` afterwards.
+- **A wrong package id is inert; a wrong *domain* is not.** `anima.ai` sat on
+  `ai-companions.txt` from the beginning: it is a venture studio, so it blocked
+  an unrelated business for months while never blocking the Anima app, which is
+  `myanima.ai`. Nothing reports this. Resolve a domain and look at what answers
+  before adding it — several `games.txt` candidates were dropped the same way
+  (`frostpunkmobile.com` had lapsed to a gambling site, `nuverse.com` is a
+  financial firm).
+- **Upstream blocklist URLs rot silently.** See policy 23. `sign` now checks
+  them, but the deeper lesson is that a valid signature says nothing about
+  whether the internet still agrees with the document.
+- **`site/` is generated.** Hand-edited HTML disappears at the next
+  `build-site.py` run, with no error. It has happened once already.
+- **The Play-image emulator cannot test QR provisioning.** No consumer Setup
+  Wizard, no `DISPATCH_PROVISIONING_MESSAGE` for adb shell, and `adb root` is
+  refused. Rooting requires a non-Play image, which has no Play Protect —
+  the thing under test. See next steps.
+- **Cloudflare's Workers flow is not the Pages flow.** Workers demands a
+  required "Deploy command" and a committed `wrangler.jsonc`; Pages needs
+  neither. If the form asks for a deploy command, you are in the wrong one.
 
 ---
 
 ## Reasonable next steps
 
-1. **Provision a real phone by QR** — the one major untested path, and the whole
-   point of the release. The Nothing A059 is available and unmanaged. Doing this
-   also exercises the two things v0.1.7 changed that no device owner has seen
-   yet: both browsers surviving the app blocker, and the new configuration
-   screen with Device Owner actually granted.
+1. **Provision the Moto G15** — bought for exactly this, so no device anyone
+   depends on has to be wiped. It is the one major untested path and the whole
+   point of the release. Do it in this order, because one factory reset covers
+   both:
+
+   1. Reset, and **skip every account sign-in** — `dpm set-device-owner`
+      refuses once an account exists.
+   2. Try the QR from the setup wizard (six taps on the welcome screen). Either
+      it works, or you get *"App blocked to protect your device"* — which is
+      the DPC allowlist, and is worth a screenshot for the appeal thread.
+   3. Either way, continue setup without an account, enable USB debugging, and
+      provision over adb. A blocked QR wastes nothing: the reset already put
+      the device in the state adb provisioning needs.
+
+   Install both browsers **before** provisioning — `DISALLOW_DEBUGGING_FEATURES`
+   kills adb the moment it applies.
+
+   This also exercises everything no device owner has ever seen: both browsers
+   surviving the app blocker, the configuration screen with Device Owner
+   actually granted, the first live policy update, and a 157-package sweep.
+
+   **The emulator cannot substitute for this.** Its system image ships no
+   consumer Setup Wizard, so there is no six-tap QR flow; the trusted-source
+   provisioning intent needs `DISPATCH_PROVISIONING_MESSAGE`, which adb shell
+   does not hold; and Play images refuse `adb root`, so it cannot be granted.
+   An image you *can* root is one without Play Protect, which is the thing
+   being tested. That is a dead end — do not spend an afternoon on it again.
+
+2. **Retry the QR every couple of weeks** until it works or you give up on it.
+   There is no notification when an allowlist appeal succeeds.
+
 3. **Keep both keys backed up.** They were backed up before v0.1.7 went out; from
    here on every published release depends on that staying true.
 4. **Use herald mono properly and decide whether it is right.** Specifically
@@ -484,6 +639,25 @@ Each of these looks like a bug and is not, or bites silently:
      `required_apps` points at `github.com`, which redirects to a
      `*.githubusercontent.com` asset host that has not been pinned down; a
      blocked redirect target would stop auto-install silently.
+   - **Build the WebADB installer.** The `/install/` page has a visibly
+     disabled "Install over USB" button waiting for it. A static page using
+     [ya-webadb](https://github.com/yume-chan/ya-webadb) can push the DPC APK
+     and run `dpm set-device-owner` over WebUSB from Chrome or Edge, with no
+     local software. **This is the hedge against the DPC allowlist**: nothing
+     in that flow asks Play Services for permission, so a rejected appeal
+     stops being a release blocker.
+
+     The Windows driver problem that looked like a blocker **is not one**:
+     Josh Gao added Microsoft OS Descriptors to the adb gadget in Android 10
+     (API 29) with a CTS test, so every certified device since advertises
+     `WINUSB` and Windows binds `winusb.sys` automatically. No Google USB
+     driver, no Zadig. Zadig only matters pre-Android-10, or where an OEM
+     driver already claimed the interface.
+
+     Real constraints: Chromium and an HTTPS origin; no local `adb` server
+     running (it claims the device exclusively); the device must have no
+     account yet; and it is one-shot, since `DISALLOW_DEBUGGING_FEATURES`
+     kills adb the moment provisioning applies.
    - **Localise herald.** drawbridge is now English, Dutch and French; the
      browser is still English-only, with ~45 strings. Note that drawbridge
      cannot set it — the picker is a *per-app* locale and no API lets one app
@@ -513,7 +687,15 @@ Each of these looks like a bug and is not, or bites silently:
   `tools/stage-release.sh` after the builds.
 - `python3 tools/policytool.py sign --key-id drawbridge-2026-07` then `verify`
   after any `dist/policy.json` edit, and copy the result over
-  `policy/src/main/assets/drawbridge/default-policy.json`.
+  `policy/src/main/assets/drawbridge/default-policy.json`. `sign` now fetches
+  every URL the policy names and refuses to sign a dead third-party blocklist;
+  `--skip-url-check` to sign offline.
+- `python3 tools/build-site.py` after any website change, and commit what it
+  writes. `site/` is generated; hand-edited HTML is silently overwritten.
+- **Re-signing an unchanged policy still rewrites the file**, because ECDSA
+  signatures are non-deterministic. If the base64 payload is identical, restore
+  the published signature rather than committing a new one — there is no reason
+  to churn a file every device fetches.
 - `tools/vendor-ublock.sh` re-vendors uBlock Origin against a pinned hash. Do it
   as part of cutting a release; uBO's *code* is frozen until then, though its
   filter lists update themselves.
