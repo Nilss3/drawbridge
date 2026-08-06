@@ -755,16 +755,66 @@ def render_faq(lang: str) -> str:
 
 
 # ---------------------------------------------------------------------------
-# Why-blocked page: converted from block list.md. English only, deliberately
-# — around 200 rows of cited legal and clinical claims across jurisdictions,
-# not something to machine-translate without review, and the content is
-# expected to keep evolving rather than settle into something worth
-# maintaining in three languages. See convert_blocklist.py for the
-# markdown → HTML conversion.
+# Why-blocked. The full cited list is English only, deliberately — around 200
+# rows of legal and clinical claims across jurisdictions, not something to
+# machine-translate without review, and expected to keep evolving rather than
+# settle into something worth maintaining in three languages. See
+# convert_blocklist.py for the markdown → HTML conversion.
+#
+# Dutch and French get a short summary page at the same path instead, ending
+# in a link to the English original. That exists because the homepage and
+# install page both link here with a language prefix: without these pages
+# those links 404, which is worse than a summary that admits its own limits.
 # ---------------------------------------------------------------------------
 
 WHY_TITLE = "The blocklist and the why — drawbridge"
 WHY_DESCRIPTION = "The evidence behind every category and app drawbridge blocks: official ratings, independent reviews, regulator findings and cited research."
+
+WHY_SUMMARY = {
+    "nl": dict(
+        title="Wat wordt geblokkeerd, en waarom — drawbridge",
+        description="Een korte samenvatting van wat drawbridge tegenhoudt en op welke basis, met een link naar de volledige lijst met bronnen.",
+        h1="Wat wordt geblokkeerd, en waarom",
+        paragraphs=[
+            "Drawbridge houdt zes categorieën tegen: pornografie, gokken, oplichterij, algoritmische social media, AI companions, en games met verslavende mechanismen of een risico op grooming. Al de rest blijft gewoon werken — gereedschap, kantoorsoftware, weerbericht, bankieren, openbaar vervoer, school en werk. De lijst is niet configureerbaar: dat is precies het punt, want elke instelling die je zelf kan aanpassen is er ook één waarover discussie mogelijk is.",
+            "Elke keuze op de lijst steunt op openbare bronnen: officiële leeftijdslabels (PEGI, ESRB), onafhankelijke beoordelingen zoals Common Sense Media, uitspraken van toezichthouders zoals de Belgische Kansspelcommissie, de Europese Commissie en de Australische eSafety Commissioner, en richtlijnen van medische en kinderpsychiatrische organisaties zoals AACAP, de APA en de WHO. Wat daarbij het vaakst terugkomt: het officiële leeftijdslabel in de winkel ligt vaak jaren lager dan wat onafhankelijke beoordelaars aanraden, en het label zegt bovendien niets over chatfuncties met vreemden of over betaalde willekeurige beloningen.",
+        ],
+        cta="Lees de volledige lijst met alle bronnen (Engels)",
+    ),
+    "fr": dict(
+        title="Ce qui est bloqué, et pourquoi — drawbridge",
+        description="Un résumé de ce que drawbridge bloque et sur quelles bases, avec un lien vers la liste complète et ses sources.",
+        h1="Ce qui est bloqué, et pourquoi",
+        paragraphs=[
+            "Drawbridge bloque six catégories : la pornographie, les jeux d'argent, les arnaques, les réseaux sociaux algorithmiques, les compagnons IA, et les jeux aux mécanismes addictifs ou présentant un risque de grooming. Tout le reste continue de fonctionner normalement : outils, bureautique, météo, banque, transports en commun, école et travail. La liste n'est pas configurable, et c'est précisément l'intérêt : tout réglage que l'on peut modifier soi-même est aussi un réglage dont on peut débattre.",
+            "Chaque entrée de la liste s'appuie sur des sources publiques : les classifications officielles par âge (PEGI, ESRB), des évaluations indépendantes comme Common Sense Media, des décisions de régulateurs comme la Commission belge des jeux de hasard, la Commission européenne et l'eSafety Commissioner australien, ainsi que les recommandations d'organisations médicales et pédopsychiatriques comme l'AACAP, l'APA et l'OMS. Le constat qui revient le plus souvent : l'âge affiché sur la boutique est souvent inférieur de plusieurs années à ce que recommandent les évaluateurs indépendants, et il ne dit rien des fonctions de discussion avec des inconnus ni des récompenses aléatoires payantes.",
+        ],
+        cta="Lire la liste complète avec toutes les sources (en anglais)",
+    ),
+}
+
+
+def render_why_summary(lang: str) -> str:
+    c = WHY_SUMMARY[lang]
+    paragraphs = "\n      ".join(f"<p>{p}</p>" for p in c["paragraphs"])
+    body = f"""
+  <section class="section">
+    <div class="wrap">
+      <h1>{c['h1']}</h1>
+      {paragraphs}
+      <div class="btn-row">
+        <a class="btn btn--primary" href="/why-blocked/">{c['cta']}</a>
+      </div>
+    </div>
+  </section>
+"""
+    return render_page(
+        lang=lang,
+        path="why-blocked/",
+        title=c["title"],
+        description=c["description"],
+        body=body,
+    )
 
 
 def render_why_blocked(content_fragment: str) -> str:
@@ -775,16 +825,12 @@ def render_why_blocked(content_fragment: str) -> str:
     </div>
   </section>
 """
-    # Every language's switcher on this page stays put — there is only one
-    # version of this page, so NL/FR resolve to the same English URL.
-    targets = {code: "/why-blocked/" for code in LANGUAGES}
     return render_page(
         lang="en",
         path="why-blocked/",
         title=WHY_TITLE,
         description=WHY_DESCRIPTION,
         body=body,
-        lang_switch_targets=targets,
     )
 
 
@@ -818,8 +864,40 @@ def build_all() -> None:
         write(base / "index.html", render_home(lang))
         write(base / "install" / "index.html", render_install(lang))
         write(base / "faq" / "index.html", render_faq(lang))
+        if lang in WHY_SUMMARY:
+            write(base / "why-blocked" / "index.html", render_why_summary(lang))
 
+    check_internal_links()
     print(f"Built {len(LANGUAGES)} languages into {SITE_OUT}")
+
+
+def check_internal_links() -> None:
+    """Fails the build on a site-internal link with no file behind it.
+
+    Added after the homepage and install page shipped pointing at
+    /nl/why-blocked/ and /fr/why-blocked/, which did not exist: the nav had
+    been special-cased to the English URL but the in-page buttons had not.
+    A 404 in generated output is exactly the kind of thing a generator
+    should catch rather than a person.
+    """
+    import re
+
+    broken: list[str] = []
+    for page in sorted(SITE_OUT.rglob("*.html")):
+        html = page.read_text(encoding="utf-8")
+        for href in re.findall(r'href="(/[^"#]*)"', html):
+            target = SITE_OUT / href.lstrip("/")
+            if target.suffix:           # a file, e.g. /assets/css/style.css
+                ok = target.exists()
+            else:                       # a directory URL, e.g. /nl/faq/
+                ok = (target / "index.html").exists()
+            if not ok:
+                broken.append(f"{page.relative_to(SITE_OUT)} -> {href}")
+
+    if broken:
+        raise SystemExit(
+            "Broken internal links:\n  " + "\n  ".join(broken)
+        )
 
 
 if __name__ == "__main__":
