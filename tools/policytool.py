@@ -103,6 +103,80 @@ def pin_local_lists(document: dict) -> None:
         source["sha256"] = digest
 
 
+def check_urls_resolve(document: dict) -> None:
+    """Fetch every URL the policy names, and refuse to sign a dead one.
+
+    A signed, verifying policy is not necessarily a working one: the
+    signature covers what the document *says*, not whether the internet still
+    agrees. HaGeZi restructured its repository and moved `domains/` to
+    `wildcard/`, and two blocklists 404'd on every device for as long as
+    nobody happened to click them. Nothing failed loudly, because
+    PolicyStore drops an unreachable source and compiles the rest.
+
+    Failure is fatal for third-party blocklists, which is the case that bit,
+    and a warning for anything this repo publishes itself:
+
+    - Lists under LOCAL_LIST_URL_PREFIX are pinned from the working tree by
+      pin_local_lists() and legitimately 404 until the commit is pushed. A
+      brand-new list *always* would.
+    - `required_apps` and `app_update` point at /releases/latest/download/,
+      which 404s until the release assets are uploaded. The documented order
+      publishes the release first, so a warning here flags getting that
+      backwards without blocking a legitimate re-sign.
+
+    Use --skip-url-check to sign offline.
+    """
+    import urllib.error
+    import urllib.request
+
+    def reachable(url: str) -> tuple[bool, str]:
+        # HEAD first; some hosts refuse it, so fall back to a ranged GET
+        # rather than pulling a 200k-line blocklist just to see a status.
+        for method, headers in (("HEAD", {}), ("GET", {"Range": "bytes=0-0"})):
+            try:
+                request = urllib.request.Request(
+                    url, method=method, headers={"User-Agent": "drawbridge-policytool", **headers}
+                )
+                with urllib.request.urlopen(request, timeout=30) as response:
+                    return True, str(response.status)
+            except urllib.error.HTTPError as e:
+                if method == "HEAD" and e.code in (403, 405, 501):
+                    continue  # HEAD not allowed here; try the ranged GET
+                return False, str(e.code)
+            except Exception as e:  # DNS failure, TLS error, timeout
+                return False, type(e).__name__
+        return False, "unreachable"
+
+    targets: list[tuple[str, str, bool]] = []  # (label, url, fatal)
+    for source in document.get("blocklists", []):
+        url = source.get("url", "")
+        own = url.startswith(LOCAL_LIST_URL_PREFIX)
+        targets.append((f"blocklist {source.get('id')!r}", url, not own))
+    for app in document.get("required_apps", []):
+        targets.append((f"required_app {app.get('package_name')} ({app.get('abi')})", app.get("url", ""), False))
+    if document.get("app_update"):
+        targets.append(("app_update", document["app_update"].get("url", ""), False))
+
+    failures: list[str] = []
+    warnings: list[str] = []
+    for label, url, fatal in targets:
+        ok, detail = reachable(url)
+        if ok:
+            continue
+        message = f"{label}: {detail} for {url}"
+        (failures if fatal else warnings).append(message)
+
+    for message in warnings:
+        print(f"  warning: unreachable, not yet published? {message}")
+    if failures:
+        sys.exit(
+            "Refusing to sign: these URLs do not resolve.\n  "
+            + "\n  ".join(failures)
+            + "\n(--skip-url-check to sign anyway)"
+        )
+    print(f"  checked {len(targets)} URLs")
+
+
 def cmd_sign(args: argparse.Namespace) -> None:
     payload = pathlib.Path(args.input).read_bytes()
 
@@ -111,6 +185,8 @@ def cmd_sign(args: argparse.Namespace) -> None:
         sys.exit("Policy document has no 'version' field")
 
     pin_local_lists(document)
+    if not args.skip_url_check:
+        check_urls_resolve(document)
 
     # Re-emit canonically so the signed bytes and the on-disk source agree.
     payload = (json.dumps(document, indent=2) + "\n").encode()
@@ -185,6 +261,8 @@ def main() -> None:
     sign.add_argument("--key-id", required=True)
     sign.add_argument("--key", help="path to the private key PEM")
     sign.add_argument("--in", dest="input", default=str(REPO_ROOT / "dist" / "policy.json"))
+    sign.add_argument("--skip-url-check", action="store_true",
+                      help="do not fetch the URLs the policy names (for signing offline)")
     sign.add_argument("--out", dest="output",
                       default=str(REPO_ROOT / "dist" / "policy.signed.json"))
     sign.set_defaults(func=cmd_sign)

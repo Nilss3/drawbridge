@@ -257,6 +257,26 @@ every day. They are protected by HTTPS and by the signed policy that names them.
 Unpinned lists are re-fetched once a day; pinned ones only when their hash
 changes.
 
+### A signed policy is not necessarily a working one
+
+The signature covers what the document *says*, not whether those URLs still
+exist. HaGeZi moved `domains/` to `wildcard/` and two blocklists 404'd on every
+device until someone happened to click one — silently, because `PolicyStore`
+logs the failure, falls back to a stale cache if it has one, and compiles
+whatever is left.
+
+`sign` therefore fetches every URL the document names and **refuses to sign a
+dead third-party blocklist**. Two things are a warning rather than an error,
+because both legitimately 404 before the corresponding push:
+
+- lists this repo hosts, which are pinned from the working tree and do not
+  exist at their published URL until the commit lands;
+- `required_apps` and `app_update`, which point at `/releases/latest/download/`
+  and 404 until the assets are uploaded. Publishing the release first is the
+  documented order, so a warning here means you have it backwards.
+
+`--skip-url-check` signs without the network.
+
 ## Signing and publishing
 
 ```bash
