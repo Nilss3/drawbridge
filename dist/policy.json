@@ -1,7 +1,7 @@
 {
-  "version": 22,
-  "issued_at": "2026-08-03T00:00:00Z",
-  "comment": "Policy 22. Arms app_update, which was never set, so drawbridge can install its own updates the way it already installs herald's. It names the currently published dpc-release.apk (version_code 9, v0.1.8), so it is a no-op on every existing device: checkAndInstallSelf compares version codes before downloading anything, and 9 is not newer than 9. From the next release on, publish the APK first and then a policy naming its version_code and hash \u2014 the same order required_apps already needs, and for the same reason. Nothing about what is blocked changed from 21.",
+  "version": 23,
+  "issued_at": "2026-08-06T00:00:00Z",
+  "comment": "Policy 23. Repoints the two HaGeZi blocklists, which had been returning 404 on every device: the upstream repo dropped its domains/ directory in favour of wildcard/, so domains/pro.txt and domains/doh.txt no longer exist. The replacements are the -onlydomains variants, which are plain domain-per-line and so still match format 'domains'; wildcard/pro.txt itself now carries '*.' prefixes and would not parse. Nothing else changed. Devices degraded quietly rather than failing -- PolicyStore logs the download error and falls back to a stale cache or drops the list -- so a freshly provisioned device had no ads/tracker/malware list and no encrypted-DNS bypass list, while Mullvad's 'all' upstream continued to cover ads, trackers and malware at the resolver.",
   "dns": {
     "upstreams": [
       "94.140.14.15",
@@ -28,13 +28,13 @@
     },
     {
       "id": "ads",
-      "url": "https://raw.githubusercontent.com/hagezi/dns-blocklists/main/domains/pro.txt",
+      "url": "https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/pro-onlydomains.txt",
       "format": "domains",
       "category": "ads"
     },
     {
       "id": "encrypted-dns",
-      "url": "https://raw.githubusercontent.com/hagezi/dns-blocklists/main/domains/doh.txt",
+      "url": "https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/doh-onlydomains.txt",
       "format": "domains",
       "category": "encrypted-dns"
     },
