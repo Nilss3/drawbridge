@@ -194,7 +194,7 @@ HOME = {
     "nl": dict(
         title="drawbridge — bescherm je Android-toestel tegen schadelijke inhoud",
         description="Een gratis, open source, waterdichte contentfilter voor Android. Voor jezelf, of voor een toestel dat je voor iemand anders beheert. Geen account, geen backend, geen telemetrie.",
-        beta="Stapsgewijs in publieke beta. Als het goed werkt, krijgt deze site een echt domein.",
+        beta="Bijna in publieke beta. Als het goed werkt, krijgt deze site een echt domein.",
         h1="Welkom bij het drawbridge-project",
         lede="Drawbridge beschermt jou en je Android-toestel tegen schadelijke inhoud, zodat je je focus en gemoedsrust behoudt.",
         p1='Maak van je telefoon een drawbridge-telefoon: een telefoon vrij van social media en andere schadelijke tijdverspillers. Een drawbridge-telefoon kan gebruikt worden voor jezelf, en/of voor je tiener, als een gratis, betere en onderhoudsarme alternatief voor parental controls. De bescherming is gebaseerd op de beste praktijken van digitaal minimalisme en wordt ondersteund door neurowetenschap en ouderverenigingen. Drawbridge is gratis, open source, zonder franjes, waterdicht, en respecteert je privacy. Er is geen account nodig, en er wordt nooit data geüpload.',
@@ -625,11 +625,11 @@ FAQ = {
         h1="Q&A",
         blocks=[
             ("h2", "Welke apps en websites worden tegengehouden?"),
-            ("p", "Voor het beschermen van je welzijn en je toestel, houdt drawbridge de volgende categorieën tegen: porno, gokken, advertenties en trackers (waaronder ook malware, phishing en oplichterij), algoritmische social media, AI companions, games met verslavende mechanismen of gevaar voor grooming. Over sommige social media bestaat discussie: bv. Reddit en Discord hebben een sterke communitywerking waar soms streng gemodereerd wordt, maar er blijft ook veel extreem gore content beschikbaar en toxische commentaren. In elk geval worden zo'n websites beter op een pc bezocht, er is geen enkele reden waarom je die moet meedragen in je zak."),
+            ("p", "Voor het beschermen van je mentaal welzijn en je toestel, houdt drawbridge de volgende categorieën tegen: porno, gokken, advertenties en trackers (waaronder ook malware, phishing en oplichterij), algoritmische social media, AI companions, games met verslavende mechanismen of gevaar voor grooming. Over sommige social media bestaat discussie: bv. Reddit en Discord hebben een sterke communitywerking waar soms streng gemodereerd wordt, maar er blijft ook veel extreem gore content beschikbaar en toxische commentaren. In elk geval worden zo'n websites beter op een pc bezocht, er is geen enkele reden waarom je die moet meedragen in je zak."),
             ("p", "Alle andere websites en apps werken gewoon: tools, office, weerbericht, banking, publiek transport, school, werk, etc."),
 
             ("h2", "Voor wie is drawbridge?"),
-            ("p", "Drawbridge is er voor iedereen die om een of andere reden een smartphone moet bijhebben maar via die smartphone geen ruimte of tijd wil geven aan schadelijke en verslavende apps en websites. Dat kunnen volwassenen zijn, voor zichzelf, of mensen die het toestel van een andere persoon beheren (bv. een kind)."),
+            ("p", "Drawbridge is er voor iedereen die om een of andere reden een smartphone moet bijhebben maar geen ruimte of tijd wil geven aan schadelijke en verslavende apps en websites. Dat kunnen volwassenen zijn voor zichzelf, of om het toestel van een andere persoon beheren (bv. een ouder voor een kind)."),
 
             ("h2", "Waarom niet gewoon parental controls of een app blocker gebruiken?"),
             ("p", "Parental controls hebben veel nadelen:"),
