@@ -35,6 +35,11 @@
       <h1>Installing drawbridge</h1>
       <p class="lede">One of two paths, depending on whether your device's setup wizard offers a QR scanner.</p>
 
+      <div class="callout callout--alpha">
+        <strong>This is still in early alpha testing!!</strong>
+        <p style="margin: 0.5rem 0 0;">Provisioning has not yet been confirmed working on a real phone. Expect it to fail, and do not use a device you depend on.</p>
+      </div>
+
       <h2>The standard way: QR code</h2>
       <ol class="steps">
 <li><span class="num">1</span><div><strong>Start from a fresh device, or do a factory reset.</strong> Back up your data first, since a reset wipes it.</div></li>
@@ -42,6 +47,11 @@
 <li><span class="num">3</span><div>Scan the drawbridge QR code.</div></li>
 <li><span class="num">4</span><div>Wait for setup to finish — the device downloads, verifies and installs everything on its own.</div></li>
 </ol>
+
+      <figure class="qr-figure">
+        <img src="/assets/img/provisioning-qr.png" alt="The drawbridge provisioning QR code." width="776" height="776" />
+        <figcaption>Scan this code during set-up.</figcaption>
+      </figure>
 
       <h2>If the QR code doesn't work</h2>
       <p>Some devices ship a setup wizard without the six-tap gesture, or skip the QR scanner entirely. There is a second way in, over USB, that works regardless.</p>

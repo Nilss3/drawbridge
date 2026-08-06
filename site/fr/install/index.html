@@ -35,6 +35,11 @@
       <h1>Installer drawbridge</h1>
       <p class="lede">Deux méthodes possibles, selon que l'assistant de configuration de votre appareil propose ou non un lecteur de QR code.</p>
 
+      <div class="callout callout--alpha">
+        <strong>Ceci est encore en phase de test alpha !!</strong>
+        <p style="margin: 0.5rem 0 0;">Le déploiement n'a pas encore été confirmé sur un vrai téléphone. Attendez-vous à ce que cela échoue, et n'utilisez pas un appareil dont vous dépendez.</p>
+      </div>
+
       <h2>La méthode standard : QR code</h2>
       <ol class="steps">
 <li><span class="num">1</span><div><strong>Partez d'un appareil neuf, ou faites une réinitialisation aux paramètres d'usine.</strong> Sauvegardez d'abord vos données, car une réinitialisation efface tout.</div></li>
@@ -42,6 +47,11 @@
 <li><span class="num">3</span><div>Scannez le QR code de drawbridge.</div></li>
 <li><span class="num">4</span><div>Attendez la fin de l'installation — l'appareil télécharge, vérifie et installe tout automatiquement.</div></li>
 </ol>
+
+      <figure class="qr-figure">
+        <img src="/assets/img/provisioning-qr.png" alt="Le QR code d'installation de drawbridge." width="776" height="776" />
+        <figcaption>Scannez ce code pendant la configuration.</figcaption>
+      </figure>
 
       <h2>Si le QR code ne fonctionne pas</h2>
       <p>Certains appareils ont un assistant de configuration sans le geste des 6 tapotements, ou ignorent complètement le lecteur de QR code. Il existe une seconde voie, par USB, qui fonctionne dans tous les cas.</p>

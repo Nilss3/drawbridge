@@ -404,7 +404,11 @@ INSTALL = {
         description="How to install drawbridge: scan the QR code, or use the USB fallback if the QR code doesn't work on your device.",
         h1="Installing drawbridge",
         lede="One of two paths, depending on whether your device's setup wizard offers a QR scanner.",
+        alpha_warning="This is still in early alpha testing!!",
+        alpha_detail="Provisioning has not yet been confirmed working on a real phone. Expect it to fail, and do not use a device you depend on.",
         qr_h2="The standard way: QR code",
+        qr_caption="Scan this code during set-up.",
+        qr_alt="The drawbridge provisioning QR code.",
         qr_steps=[
             "<strong>Start from a fresh device, or do a factory reset.</strong> Back up your data first, since a reset wipes it.",
             "On the welcome screen, tap the same spot <strong>6 times</strong> to reveal a hidden QR scanner.",
@@ -435,7 +439,11 @@ INSTALL = {
         description="Hoe je drawbridge installeert: scan de QR-code, of gebruik de USB-methode als de QR-code niet werkt op je toestel.",
         h1="Drawbridge installeren",
         lede="Twee mogelijke paden, afhankelijk van of de installatiewizard van je toestel een QR-scanner aanbiedt.",
+        alpha_warning="Dit zit nog volop in vroege alfatesting!!",
+        alpha_detail="Het uitrollen is nog niet bevestigd op een echte telefoon. Ga ervan uit dat het kan mislukken, en gebruik geen toestel waar je van afhangt.",
         qr_h2="De standaardmanier: QR-code",
+        qr_caption="Scan deze code tijdens de installatie.",
+        qr_alt="De drawbridge-QR-code voor installatie.",
         qr_steps=[
             "<strong>Begin met een vers toestel, of doe een factory reset.</strong> Maak eerst een back-up van je data, want een reset wist alles.",
             "Tik op het welkomstscherm <strong>6 keer</strong> op dezelfde plek om een verborgen QR-scanner tevoorschijn te halen.",
@@ -466,7 +474,11 @@ INSTALL = {
         description="Comment installer drawbridge : scannez le QR code, ou utilisez la méthode USB si le QR code ne fonctionne pas sur votre appareil.",
         h1="Installer drawbridge",
         lede="Deux méthodes possibles, selon que l'assistant de configuration de votre appareil propose ou non un lecteur de QR code.",
+        alpha_warning="Ceci est encore en phase de test alpha !!",
+        alpha_detail="Le déploiement n'a pas encore été confirmé sur un vrai téléphone. Attendez-vous à ce que cela échoue, et n'utilisez pas un appareil dont vous dépendez.",
         qr_h2="La méthode standard : QR code",
+        qr_caption="Scannez ce code pendant la configuration.",
+        qr_alt="Le QR code d'installation de drawbridge.",
         qr_steps=[
             "<strong>Partez d'un appareil neuf, ou faites une réinitialisation aux paramètres d'usine.</strong> Sauvegardez d'abord vos données, car une réinitialisation efface tout.",
             "Sur l'écran d'accueil, tapez <strong>6 fois</strong> au même endroit pour révéler un lecteur de QR code caché.",
@@ -507,8 +519,18 @@ def render_install(lang: str) -> str:
       <h1>{c['h1']}</h1>
       <p class="lede">{c['lede']}</p>
 
+      <div class="callout callout--alpha">
+        <strong>{c['alpha_warning']}</strong>
+        <p style="margin: 0.5rem 0 0;">{c['alpha_detail']}</p>
+      </div>
+
       <h2>{c['qr_h2']}</h2>
       {steps_html(c['qr_steps'])}
+
+      <figure class="qr-figure">
+        <img src="/assets/img/provisioning-qr.png" alt="{c['qr_alt']}" width="776" height="776" />
+        <figcaption>{c['qr_caption']}</figcaption>
+      </figure>
 
       <h2>{c['fallback_h2']}</h2>
       <p>{c['fallback_intro']}</p>

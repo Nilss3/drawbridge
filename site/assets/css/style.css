@@ -224,6 +224,35 @@ p { margin: 0 0 1rem; }
 }
 .callout--coming-soon { border-left-color: var(--rust); }
 
+/* Alpha warning: louder than the coming-soon note, because it is telling
+   someone not to wipe a phone they depend on. */
+.callout--alpha {
+  border-left-width: 4px;
+  border-left-color: var(--rust);
+  background: color-mix(in srgb, var(--rust) 7%, var(--paper));
+}
+.callout--alpha strong { color: var(--rust); }
+
+/* The provisioning QR. Never wider than it needs to be — it scans fine at
+   this size and blowing it up just pushes the steps below it off screen.
+   Deliberately left on default (smooth) image-rendering: the source is
+   776px being scaled down, and nearest-neighbour downscaling can land
+   module boundaries unevenly at fractional device-pixel ratios. The white
+   padded background is the quiet zone scanners need, which matters because
+   the page background is tinted. */
+.qr-figure { margin: 1.4rem 0; text-align: center; }
+.qr-figure img {
+  width: 100%;
+  max-width: 260px;
+  height: auto;
+  margin: 0 auto;
+  padding: 0.9rem;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+.qr-figure figcaption { margin-top: 0.6rem; font-size: 0.9rem; color: var(--ink-soft); }
+
 .footnote { font-size: 0.85rem; color: var(--ink-soft); }
 
 /* tables (why-blocked page) */
