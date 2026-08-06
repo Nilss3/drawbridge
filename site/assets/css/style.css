@@ -1,0 +1,274 @@
+/* drawbridge — site stylesheet. No framework, no webfonts, no third-party
+   requests: the site keeps the same "nothing leaves the device" spirit as
+   the app it describes. */
+
+/* Light-green theme. The variable names are historical (--cream, --wood,
+   --slate): they name the *role* a colour plays, not its hue, so the palette
+   can be re-tinted here without touching a single rule below. */
+
+:root {
+  --cream: #eef3e6;          /* page background */
+  --paper: #f7faf2;          /* cards, raised surfaces */
+  --ink: #1f2a20;            /* body text */
+  --ink-soft: #556354;       /* secondary text */
+  --slate: #4a6b4d;          /* step markers, accents */
+  --slate-dark: #2f4a33;     /* links */
+  --wood: #4c7a4f;           /* primary button */
+  --wood-dark: #3a5f3d;      /* primary button, hover */
+  --olive: #6d8a4a;          /* "works well" accent */
+  --line: #d5e2c9;           /* borders, rules */
+  --rust: #a2544a;           /* warnings, "coming soon" */
+  --radius: 10px;
+  --max: 920px;
+  --shadow: 0 1px 2px rgba(31, 42, 32, 0.06), 0 8px 24px rgba(31, 42, 32, 0.07);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --cream: #161b16;
+    --paper: #1c221c;
+    --ink: #e4ecdf;
+    --ink-soft: #a7b3a2;
+    --slate: #9dbb9f;
+    --slate-dark: #c6dcc5;
+    --wood: #8fc192;
+    --wood-dark: #a9d5ab;
+    --olive: #a2b87a;
+    --line: #2e372e;
+    --rust: #d98a7c;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.3);
+  }
+}
+
+* { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--cream);
+  color: var(--ink);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  line-height: 1.6;
+  font-size: 17px;
+}
+
+img { max-width: 100%; display: block; }
+
+a { color: var(--slate-dark); text-decoration-color: var(--line); text-underline-offset: 3px; }
+a:hover { text-decoration-color: currentColor; }
+
+h1, h2, h3 { line-height: 1.2; letter-spacing: -0.01em; color: var(--ink); }
+h1 { font-size: clamp(2rem, 5vw, 2.9rem); margin: 0 0 0.5rem; }
+h2 { font-size: 1.6rem; margin: 2.4rem 0 0.9rem; }
+h3 { font-size: 1.15rem; margin: 1.8rem 0 0.5rem; }
+
+p { margin: 0 0 1rem; }
+.lede { font-size: 1.15rem; color: var(--ink-soft); }
+
+.wrap { max-width: var(--max); margin: 0 auto; padding: 0 1.5rem; }
+.wrap--wide { max-width: 1100px; }
+
+/* header */
+
+.site-header {
+  border-bottom: 1px solid var(--line);
+  padding: 1.1rem 0;
+}
+.site-header .wrap { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+.brand { display: flex; align-items: center; gap: 0.6rem; font-weight: 600; font-size: 1.15rem; color: var(--ink); text-decoration: none; }
+.brand img { width: 28px; height: 28px; border-radius: 6px; }
+.header-right { display: flex; align-items: center; gap: 1.4rem; flex-wrap: wrap; }
+.nav { display: flex; gap: 1.4rem; font-size: 0.95rem; flex-wrap: wrap; }
+.nav a { color: var(--ink-soft); text-decoration: none; }
+.nav a:hover, .nav a[aria-current="page"] { color: var(--ink); }
+.lang-switch { display: flex; gap: 0.3rem; font-size: 0.82rem; }
+.lang-switch a { color: var(--ink-soft); text-decoration: none; padding: 0.15rem 0.4rem; border-radius: 4px; }
+.lang-switch a:hover { color: var(--ink); }
+.lang-switch a.lang-current { color: var(--ink); background: var(--paper); border: 1px solid var(--line); font-weight: 600; }
+
+/* hero */
+
+.hero { padding: 3.5rem 0 2.5rem; }
+.hero-art { border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); margin: 1.6rem 0; }
+.hero-art picture, .hero-art img { display: block; width: 100%; height: auto; }
+.beta-note {
+  display: inline-block;
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 0.3rem 0.8rem;
+  margin-bottom: 1rem;
+}
+
+/* buttons */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.3rem;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 1rem;
+  text-decoration: none;
+  border: 1px solid transparent;
+  cursor: pointer;
+}
+.btn--primary { background: var(--wood); color: #fff; }
+.btn--primary:hover { background: var(--wood-dark); }
+@media (prefers-color-scheme: dark) { .btn--primary { color: #201914; } }
+.btn--ghost { background: transparent; border-color: var(--line); color: var(--ink); }
+.btn--ghost:hover { border-color: var(--ink-soft); }
+.btn--disabled {
+  background: var(--paper);
+  border: 1px dashed var(--line);
+  color: var(--ink-soft);
+  cursor: default;
+}
+.btn-row { display: flex; gap: 0.8rem; flex-wrap: wrap; margin: 1.2rem 0; }
+
+/* sections / cards */
+
+.section { padding: 2.5rem 0; }
+.section--alt { background: var(--paper); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+
+/* "How it works": text beside the phone illustration. The image is square,
+   so it is capped rather than stretched — a full-column square would tower
+   over the three paragraphs next to it. */
+.how-grid { display: grid; grid-template-columns: 1.35fr 1fr; gap: 2rem; align-items: center; margin-top: 1.2rem; }
+.how-art img { width: 100%; max-width: 340px; height: auto; margin: 0 auto; border-radius: var(--radius); }
+@media (max-width: 780px) {
+  .how-grid { grid-template-columns: 1fr; gap: 1.4rem; }
+  .how-art img { max-width: 280px; }
+}
+
+.steps { list-style: none; margin: 1.2rem 0; padding: 0; display: grid; gap: 0.9rem; }
+.steps li {
+  display: flex;
+  gap: 0.9rem;
+  align-items: flex-start;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 0.9rem 1.1rem;
+}
+.steps .num {
+  flex: 0 0 auto;
+  width: 1.7rem; height: 1.7rem;
+  border-radius: 50%;
+  background: var(--slate);
+  color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.85rem; font-weight: 700;
+}
+@media (prefers-color-scheme: dark) { .steps .num { color: #12181f; } }
+
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.1rem; margin: 1.2rem 0; }
+@media (max-width: 780px) { .grid-3 { grid-template-columns: 1fr; } }
+.card {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 1.2rem;
+}
+.card h3 { margin-top: 0; }
+
+.device-lists { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; margin: 1.2rem 0; }
+@media (max-width: 780px) { .device-lists { grid-template-columns: 1fr; } }
+.device-lists .card--good { border-left: 3px solid var(--olive); }
+.device-lists .card--warn { border-left: 3px solid var(--rust); }
+
+.browser-card {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 1.3rem 1.4rem;
+  margin: 1.4rem 0;
+}
+.browser-card-head { display: flex; align-items: center; gap: 0.8rem; margin-bottom: 0.6rem; }
+.browser-card-icon { width: 44px; height: 44px; border-radius: 10px; flex: 0 0 auto; box-shadow: var(--shadow); }
+.browser-card-head h3 { margin: 0; }
+/* Emoji bullets instead of discs. Markers live in CSS rather than in the
+   content strings so the same text stays reusable and the list keeps its
+   real <ul>/<li> semantics for screen readers. */
+.browser-card ul { margin: 0.6rem 0 0; padding-left: 0; list-style: none; }
+.browser-card ul ul { margin: 0.4rem 0 0; }
+.browser-card li { margin: 0.35rem 0; position: relative; padding-left: 1.9rem; }
+.browser-card li::before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  top: 0;
+  color: var(--wood);
+  font-weight: 700;
+  line-height: inherit;
+}
+/* The nested note is an aside, not another feature, so it gets an info mark
+   rather than a tick. */
+.browser-card ul ul li::before {
+  content: "ℹ";
+  color: var(--slate);
+  font-weight: 400;
+}
+
+.callout {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--slate);
+  border-radius: var(--radius);
+  padding: 1rem 1.2rem;
+  margin: 1.2rem 0;
+}
+.callout--coming-soon { border-left-color: var(--rust); }
+
+.footnote { font-size: 0.85rem; color: var(--ink-soft); }
+
+/* tables (why-blocked page) */
+
+.table-scroll { overflow-x: auto; margin: 1rem 0 1.8rem; border: 1px solid var(--line); border-radius: var(--radius); }
+table { border-collapse: collapse; width: 100%; font-size: 0.92rem; }
+caption { text-align: left; font-weight: 600; padding: 0.7rem 0.9rem; background: var(--paper); border-bottom: 1px solid var(--line); }
+th, td { text-align: left; padding: 0.6rem 0.8rem; border-bottom: 1px solid var(--line); vertical-align: top; }
+thead th { background: var(--paper); white-space: nowrap; font-size: 0.82rem; color: var(--ink-soft); text-transform: uppercase; letter-spacing: 0.03em; }
+tbody tr:last-child td { border-bottom: none; }
+tbody tr:hover { background: var(--paper); }
+td:first-child, th:first-child { white-space: nowrap; }
+
+.source-links { white-space: nowrap; }
+.source-links a { margin-right: 0.4rem; }
+
+.app-entry { border: 1px solid var(--line); border-radius: var(--radius); padding: 1.1rem 1.3rem; margin: 1rem 0; background: var(--paper); }
+.app-entry h4 { margin: 0 0 0.5rem; font-size: 1.05rem; }
+.app-entry dl { margin: 0.6rem 0 0; display: grid; grid-template-columns: max-content 1fr; gap: 0.35rem 1rem; font-size: 0.93rem; }
+.app-entry dt { color: var(--ink-soft); }
+.app-entry dd { margin: 0; }
+
+.lang-note {
+  display: inline-block;
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 0.25rem 0.75rem;
+  margin-bottom: 1rem;
+}
+
+/* footer */
+
+.site-footer {
+  border-top: 1px solid var(--line);
+  padding: 2rem 0;
+  margin-top: 2rem;
+  font-size: 0.9rem;
+  color: var(--ink-soft);
+}
+.site-footer a { color: inherit; }
+.site-footer .wrap { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
+.footer-main { display: flex; flex-direction: column; gap: 0.2rem; }
+
+.toc { columns: 2; column-gap: 2rem; margin: 1rem 0 2rem; }
+@media (max-width: 780px) { .toc { columns: 1; } }
+.toc a { display: block; padding: 0.15rem 0; font-size: 0.95rem; text-decoration: none; }

@@ -155,8 +155,11 @@ dpc/          the device policy controller
 policy/       shared: signed policy, blocklists, update poller
 dist/         the published policy document and the lists it references
 art/          the illustrations every icon and hero image is derived from
+site/         the project website — generated, do not hand-edit
+site-src/     the website's source: content drafts and the sourced blocklist
 tools/        policytool.py (sign policy), qrpayload.py (provisioning QR),
-              make-artwork.sh (icons and scenes from art/)
+              make-artwork.sh (icons and scenes from art/),
+              build-site.py (generates site/ from site-src/)
 keys/         signing keys — never committed
 ```
 
