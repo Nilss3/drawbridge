@@ -17,6 +17,7 @@ class DrawbridgeDeviceAdminReceiver : DeviceAdminReceiver() {
 
     override fun onEnabled(context: Context, intent: Intent) {
         Log.i(TAG, "Device admin enabled")
+        ProvisioningLog.record(context, "onEnabled")
         DrawbridgeApplication.onAdminEnabled(context)
     }
 
@@ -31,6 +32,7 @@ class DrawbridgeDeviceAdminReceiver : DeviceAdminReceiver() {
      */
     override fun onProfileProvisioningComplete(context: Context, intent: Intent) {
         Log.i(TAG, "Provisioning complete")
+        ProvisioningLog.record(context, "onProfileProvisioningComplete")
         DeviceOwnerManager(context).applyManagedDevicePolicy()
         DrawbridgeApplication.onAdminEnabled(context)
     }

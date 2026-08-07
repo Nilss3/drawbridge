@@ -39,6 +39,30 @@ class DeviceOwnerManager(context: Context) {
             return
         }
 
+        // Not while the setup wizard is still running.
+        //
+        // This used to fire straight from onProfileProvisioningComplete, which
+        // meant a QR-provisioned device applied every restriction, brought up an
+        // always-on VPN and started a ~470 MiB download from *inside* the
+        // wizard. On a Moto G15 on 2026-08-07 that wizard then never finished:
+        // Device Owner was granted and the policy compiled, but
+        // USER_SETUP_COMPLETE stayed 0, so the phone had no notification shade,
+        // Settings closed itself on launch, and the next reboot showed "This
+        // phone may be unsafe" and offered a factory reset. Continuing setup
+        // from there tore Device Owner back out.
+        //
+        // The platform hands a DPC an `is_setup_wizard` flag in its provisioning
+        // handoffs precisely because it is expected to hold back here. Nothing is
+        // lost by waiting: the parent locks the device deliberately, from a
+        // screen they have to open anyway, and every path that reaches this
+        // method runs again afterwards -- process start, boot, and the lock
+        // button itself.
+        if (!ProvisioningLog.isSetupComplete(appContext)) {
+            ProvisioningLog.record(appContext, "applyManagedDevicePolicy DEFERRED (setup running)")
+            return
+        }
+
+        ProvisioningLog.record(appContext, "applyManagedDevicePolicy applying")
         applyUserRestrictions()
         enableAlwaysOnVpn(vpnPackage)
         setDefaultBrowser()

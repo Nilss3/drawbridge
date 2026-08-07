@@ -37,6 +37,8 @@ class ProvisioningModeActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        ProvisioningLog.record(this, "GET_PROVISIONING_MODE received")
+
         // Present from Android 12; absent on 11, where fully managed is the only
         // thing this activity is ever launched for. A missing extra therefore
         // means "no constraint stated" rather than "nothing allowed".
@@ -49,12 +51,14 @@ class ProvisioningModeActivity : Activity() {
             !allowed.contains(DevicePolicyManager.PROVISIONING_MODE_FULLY_MANAGED_DEVICE)
         ) {
             Log.e(TAG, "Fully managed device not offered (allowed modes: $allowed); refusing")
+            ProvisioningLog.record(this, "GET_PROVISIONING_MODE REFUSED, allowed=$allowed")
             setResult(RESULT_CANCELED)
             finish()
             return
         }
 
         Log.i(TAG, "Requesting provisioning as a fully managed device")
+        ProvisioningLog.record(this, "GET_PROVISIONING_MODE -> fully managed device")
         setResult(
             RESULT_OK,
             Intent().putExtra(

@@ -27,7 +27,9 @@ class PolicyComplianceActivity : Activity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        ProvisioningLog.record(this, "ADMIN_POLICY_COMPLIANCE received")
         Log.i(TAG, "Reporting policy compliance; provisioning can finish")
+        ProvisioningLog.record(this, "ADMIN_POLICY_COMPLIANCE -> RESULT_OK")
         setResult(RESULT_OK)
         finish()
     }
