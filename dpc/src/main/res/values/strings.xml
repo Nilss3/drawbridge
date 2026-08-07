@@ -76,14 +76,14 @@
     <string name="lock_needs_filter">The content filter has to be running before the phone can be locked.</string>
 
     <string name="lock_reveal_title">Write this down now</string>
-    <string name="lock_reveal_explanation">This key unlocks these settings. It is not stored anywhere you can read it again, and a new one is made every time you lock — so this one, on paper, is all there is.\n\nIf you would rather not be able to change your mind, that is a real choice. Close this without keeping the key and the settings stay as they are for good.</string>
+    <string name="lock_reveal_explanation">This key unlocks these settings. It is not stored anywhere you can read it again, and a new one is made every time you lock — so this one, on paper, is all there is.\n\nIf you would rather not be able to change your mind, that is a real choice. Close this without keeping the key and these settings can never be changed again — though the phone can still be factory reset, which removes drawbridge and everything else on it.</string>
     <string name="lock_reveal_confirm">I have written down or printed this key</string>
     <string name="lock_reveal_share">Print or save the key</string>
     <string name="lock_reveal_subject">drawbridge key</string>
     <string name="lock_reveal_body">drawbridge key: %1$s\n\nKeep this somewhere safe and offline. It unlocks the drawbridge settings on the phone.</string>
     <string name="lock_reveal_finish">Done</string>
     <string name="lock_reveal_discard_title">Close without the key?</string>
-    <string name="lock_reveal_discard_message">The settings on this phone will stay exactly as they are, and nobody will be able to change them again — including you.</string>
+    <string name="lock_reveal_discard_message">The settings on this phone will stay exactly as they are, and nobody will be able to change them again — including you.\n\nThe phone is not stuck: a factory reset still works, from Settings or from recovery, and takes drawbridge with it. It also erases everything else on the device.</string>
     <string name="lock_reveal_discard_yes">Close anyway</string>
 
     <string name="lock_challenge_title">drawbridge is locked</string>

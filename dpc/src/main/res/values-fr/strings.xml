@@ -58,14 +58,14 @@
     <string name="lock_needs_filter">Le filtre de contenu doit fonctionner avant que le téléphone puisse être verrouillé.</string>
 
     <string name="lock_reveal_title">Notez ceci maintenant</string>
-    <string name="lock_reveal_explanation">Cette clé déverrouille ces réglages. Elle n\'est stockée nulle part où vous pourriez la relire, et une nouvelle est créée à chaque verrouillage — donc celle-ci, sur papier, est tout ce qui existe.\n\nSi vous préférez ne pas pouvoir changer d\'avis, c\'est un choix légitime. Fermez sans garder la clé et les réglages resteront tels quels pour de bon.</string>
+    <string name="lock_reveal_explanation">Cette clé déverrouille ces réglages. Elle n\'est stockée nulle part où vous pourriez la relire, et une nouvelle est créée à chaque verrouillage — donc celle-ci, sur papier, est tout ce qui existe.\n\nSi vous préférez ne pas pouvoir changer d\'avis, c\'est un choix légitime. Fermez sans garder la clé et ces réglages ne pourront plus jamais être modifiés — le téléphone peut toutefois toujours être réinitialisé, ce qui supprime drawbridge et tout le reste.</string>
     <string name="lock_reveal_confirm">J\'ai noté ou imprimé cette clé</string>
     <string name="lock_reveal_share">Imprimer ou enregistrer la clé</string>
     <string name="lock_reveal_subject">clé drawbridge</string>
     <string name="lock_reveal_body">Clé drawbridge : %1$s\n\nConservez-la en lieu sûr et hors ligne. Elle déverrouille les réglages drawbridge sur le téléphone.</string>
     <string name="lock_reveal_finish">Terminé</string>
     <string name="lock_reveal_discard_title">Fermer sans la clé ?</string>
-    <string name="lock_reveal_discard_message">Les réglages de ce téléphone resteront exactement tels quels, et plus personne ne pourra les modifier — vous non plus.</string>
+    <string name="lock_reveal_discard_message">Les réglages de ce téléphone resteront exactement tels quels, et plus personne ne pourra les modifier — vous non plus.\n\nLe téléphone n\'est pas bloqué : une réinitialisation d\'usine fonctionne toujours, depuis les réglages ou depuis le mode recovery, et emporte drawbridge avec elle. Elle efface aussi tout le reste de l\'appareil.</string>
     <string name="lock_reveal_discard_yes">Fermer quand même</string>
 
     <string name="lock_challenge_title">drawbridge est verrouillé</string>

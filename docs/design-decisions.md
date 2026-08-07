@@ -790,6 +790,41 @@ install locking is meant to trigger. The explicit trigger carries a flag saying
 "the parent asked for this"; the timestamp says "this phone is already
 protected"; either is sufficient.
 
+## drawbridge does not prevent a factory reset
+
+An earlier version set `DISALLOW_FACTORY_RESET`. Its documentation says it stops
+a user factory resetting *from Settings*, and [removal](removal.md) said for
+months that the recovery-mode path could not be blocked by any app.
+
+Both were wrong, measured on a Moto G15 on 2026-08-07. With the restriction in
+force the hardware recovery menu offered no "Wipe data/factory reset" and no
+"Wipe cache partition" at all — the entries were simply absent — and they
+reappeared the moment drawbridge gave up Device Owner. A phone whose key had been
+lost was reclaimable only by sideloading firmware from a PC.
+
+That is not a price a parent should pay for mislaying a piece of paper, so the
+restriction is gone. It is also listed in `RETIRED_RESTRICTIONS` and actively
+cleared on every apply, because dropping an entry from the applied set does
+nothing for the devices that already carry it — and those are exactly the devices
+that must not stay stuck.
+
+**What replaces it is not prevention but detection and consequence:**
+
+- **Factory Reset Protection.** A reset from recovery is "untrusted" and leaves
+  the phone demanding a Google account that was on it beforehand. This is why
+  [provisioning](provisioning.md) asks for the parent's account and only the
+  parent's: a child's own account, even as a secondary, lets them satisfy FRP
+  themselves and walk away with a clean phone.
+- **The protected-since date.** It cannot survive a wipe, so a phone that was
+  protected for a year and now reports a date from Tuesday has been reset,
+  whatever else it looks like. See below.
+
+The honest trade is that a determined child who knows the screen lock can now
+factory reset the phone from Settings. They end up with a wiped device, an FRP
+challenge only the parent can answer, and a date that gives them away. That is a
+worse outcome for them than it was, and a far better one for a parent who simply
+lost the key.
+
 ## The protected-since date is the cheap tamper check
 
 The lock screen says how long this phone has been protected, before it asks for

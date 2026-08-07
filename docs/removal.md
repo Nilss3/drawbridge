@@ -42,10 +42,14 @@ from the record's point of view it is one.
 
 ### If the key is gone
 
-There is no way back in. This is a deliberate design choice, and the price of
-having no account: an email reset would reintroduce exactly the dependency the
-project exists to avoid. Your only remaining option is the destructive path
-below.
+There is no way back into the *settings*. This is a deliberate design choice, and
+the price of having no account: an email reset would reintroduce exactly the
+dependency the project exists to avoid.
+
+The phone itself is not lost, though. A factory reset — from Settings or from
+recovery — always works and always has drawbridge off the other side of it. You
+lose the data on the device, which is the same thing you would lose by replacing
+the phone, and nothing more. See the destructive path below.
 
 Wrong attempts are **not** throttled, and do not need to be. The key is twenty
 Crockford base-32 characters — a hundred bits — so guessing is not a threat
@@ -55,9 +59,23 @@ nothing else to try. That was a real cost of the six-digit PIN this replaced.
 ## The destructive way
 
 Booting into hardware recovery mode (usually power + volume) and choosing "Wipe
-data / factory reset" removes everything, including drawbridge.
-`DISALLOW_FACTORY_RESET` only hides the option inside Settings; it cannot block
-the recovery-mode path, and no app can.
+data / factory reset" removes everything, including drawbridge. A factory reset
+from Settings does the same.
+
+**Both routes stay open on purpose.** drawbridge does not set
+`DISALLOW_FACTORY_RESET`, and an earlier version that did has been corrected —
+that restriction turned out to strip the wipe entry out of the *recovery menu*
+too, not merely out of Settings, which is documented nowhere and was measured on
+a Moto G15 on 2026-08-07. A phone whose key had been lost was then reclaimable
+only by reflashing firmware from a PC. Nothing this project protects is worth a
+dead handset, so nothing prevents a reset any more.
+
+What holds the line instead is Factory Reset Protection and the protected-since
+date, both described below.
+
+If you are looking at a phone provisioned by an older build and it still refuses
+to offer a reset, open drawbridge once: the restriction is cleared on sight from
+version 0.2.0 onwards.
 
 What happens next depends on the device:
 

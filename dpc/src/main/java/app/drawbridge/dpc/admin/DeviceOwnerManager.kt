@@ -236,6 +236,24 @@ class DeviceOwnerManager(context: Context) {
             runCatching { dpm.addUserRestriction(admin, restriction) }
                 .onFailure { Log.e(TAG, "Could not set restriction $restriction", it) }
         }
+        clearRetiredRestrictions()
+    }
+
+    /**
+     * Actively removes restrictions older versions applied and this one does not.
+     *
+     * Dropping an entry from [MANAGED_RESTRICTIONS] stops it being *set* on new
+     * devices and does nothing at all for devices that already carry it — and
+     * [DISALLOW_FACTORY_RESET] is the one restriction where that gap is
+     * unacceptable, since a phone still carrying it cannot be wiped from
+     * recovery. Clearing it here means any device picks up the fix on its next
+     * apply, which is every process start on a locked phone.
+     */
+    private fun clearRetiredRestrictions() {
+        RETIRED_RESTRICTIONS.forEach { restriction ->
+            runCatching { dpm.clearUserRestriction(admin, restriction) }
+                .onFailure { Log.e(TAG, "Could not clear retired restriction $restriction", it) }
+        }
     }
 
     private fun restrictionsToApply(): List<String> =
@@ -248,7 +266,7 @@ class DeviceOwnerManager(context: Context) {
 
     fun clearUserRestrictions() {
         if (!isDeviceOwner) return
-        MANAGED_RESTRICTIONS.forEach { restriction ->
+        (MANAGED_RESTRICTIONS + RETIRED_RESTRICTIONS).forEach { restriction ->
             runCatching { dpm.clearUserRestriction(admin, restriction) }
                 .onFailure { Log.e(TAG, "Could not clear restriction $restriction", it) }
         }
@@ -354,6 +372,7 @@ class DeviceOwnerManager(context: Context) {
         val restrictions = userManager.userRestrictions
         return (
             MANAGED_RESTRICTIONS +
+                RETIRED_RESTRICTIONS +
                 UserManager.DISALLOW_MODIFY_ACCOUNTS +
                 UserManager.DISALLOW_CONFIG_DATE_TIME
             ).filter { restrictions.getBoolean(it, false) }
@@ -369,7 +388,6 @@ class DeviceOwnerManager(context: Context) {
          */
         val MANAGED_RESTRICTIONS: List<String> = buildList {
             add(UserManager.DISALLOW_CONFIG_VPN)
-            add(UserManager.DISALLOW_FACTORY_RESET)
             add(UserManager.DISALLOW_DEBUGGING_FEATURES)
             add(UserManager.DISALLOW_SAFE_BOOT)
             add(UserManager.DISALLOW_ADD_USER)
@@ -396,5 +414,26 @@ class DeviceOwnerManager(context: Context) {
                 add(UserManager.DISALLOW_CONFIG_PRIVATE_DNS)
             }
         }
+
+        /**
+         * Applied by earlier versions, and now removed on sight.
+         *
+         * [UserManager.DISALLOW_FACTORY_RESET] does far more than its name and
+         * documentation suggest. It does not merely hide the entry in Settings:
+         * measured on a Moto G15 on 2026-08-07, it strips "Wipe data/factory
+         * reset" out of the **hardware recovery menu** as well, and the entry
+         * reappears the moment drawbridge gives up Device Owner. A phone whose
+         * key is lost is then reclaimable only by reflashing firmware from a PC.
+         *
+         * That is not a price a parent should pay for mislaying a piece of
+         * paper, so drawbridge no longer sets it. What holds the line instead is
+         * Factory Reset Protection, which is why
+         * [provisioning](../../../../../../../docs/provisioning.md) asks for the
+         * parent's Google account and only theirs, and the protected-since date,
+         * which makes a reset visible after the fact.
+         */
+        val RETIRED_RESTRICTIONS: List<String> = listOf(
+            UserManager.DISALLOW_FACTORY_RESET,
+        )
     }
 }

@@ -58,14 +58,14 @@
     <string name="lock_needs_filter">De inhoudsfilter moet draaien voor de telefoon vergrendeld kan worden.</string>
 
     <string name="lock_reveal_title">Schrijf dit nu op</string>
-    <string name="lock_reveal_explanation">Deze sleutel ontgrendelt deze instellingen. Hij wordt nergens bewaard waar je hem nog kunt lezen, en bij elke vergrendeling wordt een nieuwe gemaakt — dus deze, op papier, is alles wat er is.\n\nAls je liever niet meer van gedacht kunt veranderen, is dat een echte keuze. Sluit dit zonder de sleutel te bewaren en de instellingen blijven voorgoed zoals ze zijn.</string>
+    <string name="lock_reveal_explanation">Deze sleutel ontgrendelt deze instellingen. Hij wordt nergens bewaard waar je hem nog kunt lezen, en bij elke vergrendeling wordt een nieuwe gemaakt — dus deze, op papier, is alles wat er is.\n\nAls je liever niet meer van gedacht kunt veranderen, is dat een echte keuze. Sluit dit zonder de sleutel te bewaren en deze instellingen kunnen nooit meer gewijzigd worden — al kan de telefoon nog altijd teruggezet worden naar fabrieksinstellingen, wat drawbridge en al de rest erop wist.</string>
     <string name="lock_reveal_confirm">Ik heb deze sleutel opgeschreven of afgedrukt</string>
     <string name="lock_reveal_share">Sleutel afdrukken of bewaren</string>
     <string name="lock_reveal_subject">drawbridge-sleutel</string>
     <string name="lock_reveal_body">drawbridge-sleutel: %1$s\n\nBewaar dit ergens veilig en offline. Hiermee ontgrendel je de drawbridge-instellingen op de telefoon.</string>
     <string name="lock_reveal_finish">Klaar</string>
     <string name="lock_reveal_discard_title">Sluiten zonder de sleutel?</string>
-    <string name="lock_reveal_discard_message">De instellingen op deze telefoon blijven precies zoals ze zijn, en niemand zal ze nog kunnen wijzigen — jij ook niet.</string>
+    <string name="lock_reveal_discard_message">De instellingen op deze telefoon blijven precies zoals ze zijn, en niemand zal ze nog kunnen wijzigen — jij ook niet.\n\nDe telefoon zit niet vast: een fabrieksreset werkt nog altijd, via de instellingen of via recovery, en neemt drawbridge mee. Die wist ook al de rest op het toestel.</string>
     <string name="lock_reveal_discard_yes">Toch sluiten</string>
 
     <string name="lock_challenge_title">drawbridge is vergrendeld</string>
