@@ -572,6 +572,7 @@ FAQ = {
             ("h2", "Which apps and websites are blocked?"),
             ("p", 'To protect your wellbeing and your device, drawbridge blocks the following categories: porn, gambling, ads and trackers (which also covers malware, phishing and scam domains), algorithmic social media, AI companions, and games with addictive mechanics or grooming risk. Some social media is genuinely debatable: Reddit and Discord, for instance, have strong community moderation in places, but they also still host a lot of extreme gore content and toxic comments. Either way, sites like that are better visited on a PC. There is no reason to carry them around in your pocket.'),
             ("p", 'Everything else works normally: tools, office apps, weather, banking, public transport, school, work, and so on.'),
+            ("p", 'Every social network, game and AI companion on that list has its own entry explaining what the evidence against it is, with sources: <a href="/why-blocked/">what is blocked, and why</a>. It covers the harms to adults as well as to teenagers.'),
 
             ("h2", "Who is drawbridge for?"),
             ("p", "Drawbridge is for anyone who needs to carry a smartphone but doesn't want that phone to make room or time for harmful and addictive apps and websites. That can be an adult protecting themselves, or someone managing another person's device (a child, for instance)."),
@@ -627,6 +628,7 @@ FAQ = {
             ("h2", "Welke apps en websites worden tegengehouden?"),
             ("p", "Voor het beschermen van je mentaal welzijn en je toestel, houdt drawbridge de volgende categorieën tegen: porno, gokken, advertenties en trackers (waaronder ook malware, phishing en oplichterij), algoritmische social media, AI companions, games met verslavende mechanismen of gevaar voor grooming. Over sommige social media bestaat discussie: bv. Reddit en Discord hebben een sterke communitywerking waar soms streng gemodereerd wordt, maar er blijft ook veel extreem gore content beschikbaar en toxische commentaren. In elk geval worden zo'n websites beter op een pc bezocht, er is geen enkele reden waarom je die moet meedragen in je zak."),
             ("p", "Alle andere websites en apps werken gewoon: tools, office, weerbericht, banking, publiek transport, school, werk, etc."),
+            ("p", 'Elk sociaal netwerk, spel en AI-companion op die lijst heeft een eigen bespreking met bronnen: <a href="/why-blocked/">wat wordt geblokkeerd, en waarom</a> (in het Engels). Het gaat ook over de schade bij volwassenen, niet alleen bij tieners.'),
 
             ("h2", "Voor wie is drawbridge?"),
             ("p", "Drawbridge is er voor iedereen die om een of andere reden een smartphone moet bijhebben maar geen ruimte of tijd wil geven aan schadelijke en verslavende apps en websites. Dat kunnen volwassenen zijn voor zichzelf, of om het toestel van een andere persoon beheren (bv. een ouder voor een kind)."),
@@ -682,6 +684,7 @@ FAQ = {
             ("h2", "Quelles applications et quels sites sont bloqués ?"),
             ("p", "Pour protéger votre bien-être et votre appareil, drawbridge bloque les catégories suivantes : pornographie, jeux d'argent, publicité et traceurs (ce qui couvre aussi les domaines de logiciels malveillants, d'hameçonnage et d'arnaque), réseaux sociaux algorithmiques, compagnons IA, et jeux aux mécanismes addictifs ou présentant un risque de grooming. Certains réseaux sociaux font débat : Reddit et Discord, par exemple, ont par endroits une forte modération communautaire, mais ils hébergent aussi encore beaucoup de contenu extrêmement violent et de commentaires toxiques. Dans tous les cas, ce genre de site se visite mieux sur un PC. Rien ne justifie de le transporter dans sa poche."),
             ("p", "Tout le reste fonctionne normalement : outils, bureautique, météo, banque, transports en commun, école, travail, etc."),
+            ("p", 'Chaque réseau social, jeu et compagnon IA de cette liste a sa propre notice, avec ses sources : <a href="/why-blocked/">ce qui est bloqué, et pourquoi</a> (en anglais). Elle traite aussi des effets sur les adultes, pas seulement sur les adolescents.'),
 
             ("h2", "Pour qui est drawbridge ?"),
             ("p", "Drawbridge s'adresse à toute personne qui doit, pour une raison ou une autre, avoir un smartphone sur soi, mais qui ne veut pas que ce téléphone laisse de la place ou du temps à des applications et des sites nuisibles et addictifs. Cela peut être un adulte qui se protège lui-même, ou une personne qui gère l'appareil de quelqu'un d'autre (un enfant, par exemple)."),
