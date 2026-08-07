@@ -4,8 +4,8 @@
     sont les noms des applications tels qu\'ils apparaissent dans le lanceur.
 -->
 <resources>
-    <string name="admin_label">contrôle parental drawbridge</string>
-    <string name="admin_description">Maintient le filtre de contenu actif et empêche de le retirer sans la clé parentale.</string>
+    <string name="admin_label">restrictions drawbridge</string>
+    <string name="admin_description">Maintient le filtre de contenu actif et empêche de le retirer sans la clé.</string>
     <string name="permission_read_selection">lire la politique drawbridge choisie et ses options</string>
 
     <string name="language_heading">Langue</string>
@@ -46,7 +46,7 @@
 
     <string name="action_lock">Verrouiller drawbridge</string>
     <string name="action_refresh">Rechercher des mises à jour de politique</string>
-    <string name="action_remove">Retirer le contrôle parental</string>
+    <string name="action_remove">Désactiver les restrictions drawbridge</string>
 
     <string name="policy_refreshed">Politique mise à jour (version %1$d)</string>
     <string name="policy_refresh_failed">Le serveur de politique est injoignable</string>
@@ -78,14 +78,14 @@
     <string name="lock_since_hint">Si cela ne correspond pas à vos souvenirs, ce téléphone a été déverrouillé ou réinitialisé depuis.</string>
 
     <!-- Retrait -->
-    <string name="remove_title">Retirer le contrôle parental</string>
-    <string name="remove_explanation">Ceci lève toutes les restrictions et arrête le filtre. Rien n\'est effacé et aucune réinitialisation d\'usine n\'est nécessaire.\n\nVous avez déjà passé le verrou : rien de plus ne vous sera demandé.</string>
-    <string name="remove_action">Retirer</string>
+    <string name="remove_title">Désactiver les restrictions drawbridge</string>
+    <string name="remove_explanation">Ceci lève toutes les restrictions et arrête le filtre. Rien n\'est effacé et aucune donnée n\'est perdue.\n\nCette décision est sans retour. Pour réactiver les restrictions, il faudra une réinitialisation d\'usine complète et une nouvelle installation de drawbridge !</string>
+    <string name="remove_action">Désactiver</string>
     <string name="remove_cancel">Annuler</string>
-    <string name="remove_confirm_title">Retirer le contrôle parental ?</string>
-    <string name="remove_confirm_message">Le filtre de contenu, le blocage des applications et toutes les restrictions seront désactivés. Les applications masquées redeviennent disponibles. Aucune donnée n\'est perdue.\n\nLe relevé de la durée de protection de ce téléphone disparaît avec eux.</string>
-    <string name="remove_confirm_yes">Retirer</string>
-    <string name="remove_done">Contrôle parental retiré.</string>
+    <string name="remove_confirm_title">Désactiver les restrictions drawbridge ?</string>
+    <string name="remove_confirm_message">Le filtre de contenu, le blocage des applications et toutes les restrictions seront désactivés. Les applications masquées redeviennent disponibles. Aucune donnée n\'est perdue.\n\nLe relevé de la durée de protection de ce téléphone disparaît avec eux.\n\nCette action est irréversible depuis le téléphone. Réactiver les restrictions suppose de reconfigurer l\'appareil après une réinitialisation d\'usine.</string>
+    <string name="remove_confirm_yes">Désactiver</string>
+    <string name="remove_done">Restrictions drawbridge désactivées.</string>
     <string name="remove_done_not_owner">Filtre arrêté et réglages effacés.</string>
     <string name="remove_failed">Impossible d\'abandonner la propriété de l\'appareil. Consultez le journal.</string>
 

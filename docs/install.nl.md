@@ -205,9 +205,11 @@ Voor dat tweede commando mag er **geen enkel account** op de telefoon staan.
 
 ## Later verwijderen
 
-Open drawbridge, typ uw sleutel in, en kies daarna **⋮ → Ouderlijk toezicht
-verwijderen**. Het staat in het overloopmenu en niet op het scherm zelf: het
+Open drawbridge, typ uw sleutel in, en kies daarna **⋮ → drawbridge-beperkingen
+uitschakelen**. Het staat in het overloopmenu en niet op het scherm zelf: het
 gebeurt één keer in het leven van een telefoon.
 
 Alle beperkingen vervallen, verborgen apps komen terug, en **er wordt niets
-gewist**. Zie [verwijderen](removal.md) voor de details.
+gewist**. Het is ook **onomkeerbaar**: de beperkingen opnieuw activeren vraagt
+een fabrieksreset en een nieuwe drawbridge-installatie. Zie
+[verwijderen](removal.md) voor de details.

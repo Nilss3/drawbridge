@@ -198,9 +198,10 @@ The phone must have **no accounts on it** for that second command to work.
 
 ## Removing it later
 
-Open drawbridge, type your key, then **⋮ → Remove parental controls**. It lives
-in the overflow menu rather than on the screen: it happens once in the life of a
-phone and does not belong next to the button used every time.
+Open drawbridge, type your key, then **⋮ → Deactivate drawbridge restrictions**.
+It lives in the overflow menu rather than on the screen: it happens once in the
+life of a phone and does not belong next to the button used every time.
 
-Everything is lifted, hidden apps come back, and **nothing is erased**. See
-[removal](removal.md) for the details.
+Everything is lifted, hidden apps come back, and **nothing is erased**. It is
+also **one-way**: switching the restrictions back on means a factory reset and a
+fresh drawbridge install. See [removal](removal.md) for the details.

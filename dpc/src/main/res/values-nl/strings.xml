@@ -4,8 +4,8 @@
     namen van de apps zoals ze in de launcher staan.
 -->
 <resources>
-    <string name="admin_label">drawbridge ouderlijk toezicht</string>
-    <string name="admin_description">Houdt de inhoudsfilter aan en zorgt dat die niet verwijderd kan worden zonder de oudersleutel.</string>
+    <string name="admin_label">drawbridge-beperkingen</string>
+    <string name="admin_description">Houdt de inhoudsfilter aan en zorgt dat die niet verwijderd kan worden zonder de sleutel.</string>
     <string name="permission_read_selection">het gekozen drawbridge-beleid en de opties lezen</string>
 
     <string name="language_heading">Taal</string>
@@ -46,7 +46,7 @@
 
     <string name="action_lock">drawbridge vergrendelen</string>
     <string name="action_refresh">Controleren op beleidsupdates</string>
-    <string name="action_remove">Ouderlijk toezicht verwijderen</string>
+    <string name="action_remove">drawbridge-beperkingen uitschakelen</string>
 
     <string name="policy_refreshed">Beleid bijgewerkt (versie %1$d)</string>
     <string name="policy_refresh_failed">De beleidsserver was niet bereikbaar</string>
@@ -78,14 +78,14 @@
     <string name="lock_since_hint">Klopt dat niet met wat je je herinnert, dan is deze telefoon sindsdien ontgrendeld of teruggezet.</string>
 
     <!-- Verwijderen -->
-    <string name="remove_title">Ouderlijk toezicht verwijderen</string>
-    <string name="remove_explanation">Dit heft elke beperking op en stopt de filter. Er wordt niets gewist en een fabrieksreset is niet nodig.\n\nJe bent al voorbij de vergrendeling, dus er wordt niets meer gevraagd.</string>
-    <string name="remove_action">Verwijderen</string>
+    <string name="remove_title">drawbridge-beperkingen uitschakelen</string>
+    <string name="remove_explanation">Dit heft elke beperking op en stopt de filter. Er wordt niets gewist en er gaan geen gegevens verloren.\n\nDit is een beslissing zonder weg terug. Wil je de beperkingen opnieuw activeren, dan is daarvoor een volledige fabrieksreset met een nieuwe drawbridge-installatie nodig!</string>
+    <string name="remove_action">Uitschakelen</string>
     <string name="remove_cancel">Annuleren</string>
-    <string name="remove_confirm_title">Ouderlijk toezicht verwijderen?</string>
-    <string name="remove_confirm_message">De inhoudsfilter, de app-blokkering en alle beperkingen worden uitgeschakeld. Verborgen apps worden weer beschikbaar. Er gaan geen gegevens verloren.\n\nHet register van hoelang deze telefoon beschermd is, verdwijnt mee.</string>
-    <string name="remove_confirm_yes">Verwijderen</string>
-    <string name="remove_done">Ouderlijk toezicht verwijderd.</string>
+    <string name="remove_confirm_title">drawbridge-beperkingen uitschakelen?</string>
+    <string name="remove_confirm_message">De inhoudsfilter, de app-blokkering en alle beperkingen worden uitgeschakeld. Verborgen apps worden weer beschikbaar. Er gaan geen gegevens verloren.\n\nHet register van hoelang deze telefoon beschermd is, verdwijnt mee.\n\nDit kan niet ongedaan gemaakt worden vanaf de telefoon. De beperkingen weer inschakelen betekent het toestel opnieuw instellen na een fabrieksreset.</string>
+    <string name="remove_confirm_yes">Uitschakelen</string>
+    <string name="remove_done">drawbridge-beperkingen uitgeschakeld.</string>
     <string name="remove_done_not_owner">Filter gestopt en instellingen gewist.</string>
     <string name="remove_failed">Kon het eigenaarschap van het toestel niet vrijgeven. Bekijk het logboek.</string>
 

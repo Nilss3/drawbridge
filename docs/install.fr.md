@@ -214,9 +214,11 @@ compte**.
 
 ## Le supprimer plus tard
 
-Ouvrez drawbridge, saisissez votre clé, puis choisissez **⋮ → Retirer le contrôle
-parental**. C'est dans le menu de débordement plutôt que sur l'écran : cela
-n'arrive qu'une fois dans la vie d'un téléphone.
+Ouvrez drawbridge, saisissez votre clé, puis choisissez **⋮ → Désactiver les
+restrictions drawbridge**. C'est dans le menu de débordement plutôt que sur
+l'écran : cela n'arrive qu'une fois dans la vie d'un téléphone.
 
 Toutes les restrictions sont levées, les applications masquées réapparaissent, et
-**rien n'est effacé**. Voir [suppression](removal.md) pour les détails.
+**rien n'est effacé**. C'est aussi **sans retour** : réactiver les restrictions
+suppose une réinitialisation d'usine et une nouvelle installation de drawbridge.
+Voir [suppression](removal.md) pour les détails.

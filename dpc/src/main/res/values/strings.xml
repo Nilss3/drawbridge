@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name" translatable="false">drawbridge</string>
-    <string name="admin_label">drawbridge parental controls</string>
-    <string name="admin_description">Keeps the content filter switched on and stops it from being removed without the parent key.</string>
+    <string name="admin_label">drawbridge restrictions</string>
+    <string name="admin_description">Keeps the content filter switched on and stops it from being removed without the key.</string>
     <string name="permission_read_selection">read the chosen drawbridge policy and options</string>
 
     <!-- Language, first on the screen: pick it before reading the rest. -->
@@ -53,7 +53,7 @@
 
     <string name="action_lock">Lock drawbridge</string>
     <string name="action_refresh">Check for policy updates</string>
-    <string name="action_remove">Remove parental controls</string>
+    <string name="action_remove">Deactivate drawbridge restrictions</string>
 
     <string name="policy_refreshed">Policy updated (version %1$d)</string>
     <string name="policy_refresh_failed">Could not reach the policy server</string>
@@ -85,14 +85,14 @@
     <string name="lock_since_hint">If that does not match what you remember, this phone has been unlocked or reset since.</string>
 
     <!-- Removal -->
-    <string name="remove_title">Remove parental controls</string>
-    <string name="remove_explanation">This lifts every restriction and stops the filter. Nothing is erased and no factory reset is needed.\n\nYou are already past the lock, so nothing more is asked.</string>
-    <string name="remove_action">Remove</string>
+    <string name="remove_title">Deactivate drawbridge restrictions</string>
+    <string name="remove_explanation">This lifts every restriction and stops the filter. Nothing is erased and no data is lost.\n\nThis is a one-way decision. If you want to reactivate the restrictions, this will require a fresh factory reset with a new drawbridge install!</string>
+    <string name="remove_action">Deactivate</string>
     <string name="remove_cancel">Cancel</string>
-    <string name="remove_confirm_title">Remove parental controls?</string>
-    <string name="remove_confirm_message">The content filter, app blocking and all device restrictions will be switched off. Apps that were hidden become available again. No data is lost.\n\nThe record of how long this phone has been protected is cleared with it.</string>
-    <string name="remove_confirm_yes">Remove</string>
-    <string name="remove_done">Parental controls removed.</string>
+    <string name="remove_confirm_title">Deactivate drawbridge restrictions?</string>
+    <string name="remove_confirm_message">The content filter, app blocking and all device restrictions will be switched off. Apps that were hidden become available again. No data is lost.\n\nThe record of how long this phone has been protected is cleared with it.\n\nThis cannot be undone from the phone. Switching the restrictions back on means setting the device up again from a factory reset.</string>
+    <string name="remove_confirm_yes">Deactivate</string>
+    <string name="remove_done">drawbridge restrictions deactivated.</string>
     <string name="remove_done_not_owner">Filter stopped and settings cleared.</string>
     <string name="remove_failed">Could not release device ownership. Check the log.</string>
 

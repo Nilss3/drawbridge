@@ -6,18 +6,30 @@ other wipes the phone.
 ## The sanctioned way
 
 Open **drawbridge**, type the key you were given when the phone was locked, then
-**⋮ → Remove parental controls**. It is in the overflow menu rather than on the
-screen, because it happens once in the life of a phone.
+**⋮ → Deactivate drawbridge restrictions**. It is in the overflow menu rather
+than on the screen, because it happens once in the life of a phone.
 
 Nothing else is asked for. Getting past the lock screen already answered the only
 question there is, and asking the same thing twice is ceremony rather than
 security.
 
 This lifts every restriction, stops the filter, un-hides any system browser that
-was hidden, and gives up Device Owner. **No wipe, no data loss, no factory
-reset.** Use it when the child grows up and you are keeping the phone, or before
-selling it (followed by a normal factory reset, as you would with any phone you
-are selling — that part has nothing to do with parental controls).
+was hidden, and gives up Device Owner. **No wipe and no data loss.** Use it when
+the child grows up and you are keeping the phone, or before selling it (followed
+by a normal factory reset, as you would with any phone you are selling — that
+part has nothing to do with drawbridge).
+
+### It is one-way
+
+**Deactivating cannot be undone from the phone.** Device Owner can only be
+granted on a device with no accounts configured, so switching the restrictions
+back on means a factory reset and a fresh drawbridge install — the same
+procedure as [provisioning](provisioning.md) a new phone.
+
+The one exception is a device that still has *no* account and still has adb,
+where `dpm set-device-owner` simply works again. That is a bench condition, not
+a deployed one: on a real phone the parent's account is present and
+`DISALLOW_DEBUGGING_FEATURES` removed adb at provisioning time.
 
 Apps that were *uninstalled* do not come back on their own; reinstall them
 normally. Apps that were *hidden* — preinstalled browsers, mostly — reappear
