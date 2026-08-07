@@ -65,6 +65,7 @@ class DeviceOwnerManager(context: Context) {
 
         ProvisioningLog.record(appContext, "applyManagedDevicePolicy applying")
         applyUserRestrictions()
+        applyClockLock()
         enableAlwaysOnVpn(vpnPackage)
         setDefaultBrowser()
     }
@@ -184,18 +185,25 @@ class DeviceOwnerManager(context: Context) {
     }
 
     /**
-     * Pins the clock, so a wall-clock curfew means something.
+     * Pins the clock. Applied on every locked device, curfew or not.
      *
-     * Without this the window is advisory: changing the device clock walks
-     * straight out of it. [UserManager.DISALLOW_CONFIG_DATE_TIME] covers date,
-     * time *and* time zone.
+     * It began as curfew machinery — a wall-clock window is advisory if the
+     * clock can be edited — but a movable clock defeats two other things that
+     * have nothing to do with curfews:
      *
+     *  - **The protected-since date.** Wind the clock back a year, lock, wind it
+     *    forward again, and the phone reports a year of continuous protection it
+     *    never had. That does not merely weaken the tamper check; it makes it
+     *    lie, which is worse than not having one.
+     *  - **Anything else the parent layered on top.** Moving the clock is the
+     *    standard way round screen-time limits in Family Link and similar tools.
+     *    drawbridge cannot enforce those, but it can stop the phone lying to
+     *    them.
+     *
+     * [UserManager.DISALLOW_CONFIG_DATE_TIME] covers date, time *and* time zone.
      * Auto-time is set as well as locked where the API exists (30+), because
      * forbidding edits only freezes whatever the clock already said — a device
      * whose clock was wrong when the restriction landed would stay wrong.
-     *
-     * Applied only when a curfew is configured, so a policy without one leaves
-     * the restriction set exactly as it was.
      */
     fun applyClockLock() {
         if (!isDeviceOwner) return
@@ -375,7 +383,7 @@ class DeviceOwnerManager(context: Context) {
                 RETIRED_RESTRICTIONS +
                 UserManager.DISALLOW_MODIFY_ACCOUNTS +
                 UserManager.DISALLOW_CONFIG_DATE_TIME
-            ).filter { restrictions.getBoolean(it, false) }
+            ).distinct().filter { restrictions.getBoolean(it, false) }
     }
 
     companion object {

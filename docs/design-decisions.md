@@ -68,9 +68,13 @@ The consequences worth knowing:
 Otherwise the curfew is advisory: changing the device clock walks straight out
 of it. `DISALLOW_CONFIG_DATE_TIME` covers date, time and time zone.
 
-It is applied **only when a curfew is configured**, not added to
-`MANAGED_RESTRICTIONS`, so a policy without one leaves the restriction set
-exactly as it was and no existing device changes behaviour.
+It is now applied on **every locked device**, curfew or not. It began here, but
+a movable clock defeats two things that have nothing to do with curfews: it lets
+the protected-since date be forged (wind back a year, lock, wind forward, and the
+phone reports a year of protection it never had), and it is the standard way
+round screen-time limits in Family Link and similar tools a parent may have
+layered on top. drawbridge cannot enforce those, but it can stop the phone lying
+to them. See [the clock is locked on every device](#the-clock-is-locked-on-every-device-not-only-for-curfews).
 
 Locking is not sufficient on its own, because forbidding edits only freezes
 whatever the clock already said — a device whose clock was wrong when the
@@ -855,11 +859,23 @@ Three things decide whether it works, and all three are easy to get wrong:
 The residual risk cannot be designed away: a child starts it, nobody looks at the
 phone for two weeks, and it lifts. The delay length is the only dial.
 
-Deferred rather than rejected because it is a convenience now rather than a
-safety net — it saves the photos, it does not save the phone — and it is a real
-feature (persistence, alarms, notifications, a cancel path, three languages)
-against a release that already carries a provisioning fix and a change to when
-anything is enforced at all.
+**The timer is what buys back `DISALLOW_FACTORY_RESET`.** That restriction was
+removed because losing the key meant a phone reclaimable only by reflashing
+firmware. With a delayed removal in place that stops being true — the escape is
+to ask and wait — so the restriction can come back, and a child loses the
+half-minute Settings reset again.
+
+The two therefore ship **together or not at all**. Reinstating the restriction
+without a working timer reproduces exactly the brick this replaced, and the
+migration in `RETIRED_RESTRICTIONS` would have to be reversed with it.
+
+One property is lost in that trade and should be stated: today's escape works
+even if drawbridge is comprehensively broken, because a factory reset does not
+involve drawbridge at all. A timer-based escape runs *inside* the app. A crash
+loop, a corrupted state file or a bad update would take the escape with it. That
+argues for the timer's state being trivially simple and independently readable —
+and for treating a build that reinstates the restriction as the most
+safety-critical release the project has cut.
 
 ### Why there is no code you can email for
 
@@ -882,6 +898,29 @@ parent from a determined teenager with a convincing story.
 
 That converts a tool into a service, which is the one thing this project set out
 not to be.
+
+## The clock is locked on every device, not only for curfews
+
+`DISALLOW_CONFIG_DATE_TIME`, with `setAutoTimeEnabled` and
+`setAutoTimeZoneEnabled` where the API exists, is part of the standard lockdown
+rather than something a curfew switches on.
+
+It was written for the curfew, where a wall-clock window is advisory if the clock
+can be edited. But the same edit defeats two things that exist without one:
+
+- **The protected-since date.** Wind the clock back a year, lock, wind it
+  forward: the phone now reports a year of continuous protection it never had.
+  A tamper check that can be made to lie is worse than no tamper check, because
+  it is trusted.
+- **Whatever the parent layered on top.** Moving the device clock is the standard
+  way round screen-time limits in Family Link and comparable tools. drawbridge
+  does not implement those and cannot enforce them, but it can stop the phone
+  lying to them.
+
+The cost is that nobody can set the clock by hand on a locked device. Network
+time and network time zone are forced on instead, which is right on a phone that
+is on a network by definition, and travel is handled by the time zone following
+the network rather than the user.
 
 ## The protected-since date is the cheap tamper check
 
