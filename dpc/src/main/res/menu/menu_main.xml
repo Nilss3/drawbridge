@@ -8,6 +8,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:id="@+id/actionDiagnostics"
+        android:title="@string/action_diagnostics"
+        app:showAsAction="never" />
+
+    <item
         android:id="@+id/actionRemove"
         android:title="@string/action_remove"
         app:showAsAction="never" />

@@ -53,6 +53,17 @@
 
     <string name="action_lock">Lock drawbridge</string>
     <string name="action_refresh">Check for policy updates</string>
+    <!--
+         Diagnostics is English only and deliberately not translated: it is read
+         by whoever is debugging a handset and pasted into a bug report, not by
+         a parent. translatable="false" is what keeps lint from demanding nl/fr.
+    -->
+    <string name="action_diagnostics" translatable="false">Diagnostics</string>
+    <string name="diagnostics_title" translatable="false">Diagnostics</string>
+    <string name="diagnostics_explanation" translatable="false">Technical detail about this phone and how drawbridge was set up on it. Useful in a bug report — especially for a device or Android version nobody has tried before.</string>
+    <string name="diagnostics_copy" translatable="false">Copy to clipboard</string>
+    <string name="diagnostics_copied" translatable="false">Copied</string>
+
     <string name="action_remove">Deactivate drawbridge restrictions</string>
 
     <string name="policy_refreshed">Policy updated (version %1$d)</string>

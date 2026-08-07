@@ -69,6 +69,11 @@
             android:exported="false" />
 
         <activity
+            android:name=".ui.DiagnosticsActivity"
+            android:exported="false"
+            android:label="@string/diagnostics_title" />
+
+        <activity
             android:name=".ui.RemoveActivity"
             android:exported="false"
             android:label="@string/remove_title" />

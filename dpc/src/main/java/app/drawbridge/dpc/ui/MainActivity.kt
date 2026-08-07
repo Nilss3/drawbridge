@@ -1,6 +1,7 @@
 package app.drawbridge.dpc.ui
 
 import android.content.Intent
+import android.graphics.Typeface
 import android.os.Bundle
 import android.os.PowerManager
 import android.provider.Settings
@@ -13,6 +14,7 @@ import android.widget.Button
 import android.widget.CompoundButton
 import android.widget.LinearLayout
 import android.widget.RadioButton
+import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -20,9 +22,11 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.net.toUri
 import androidx.lifecycle.lifecycleScope
+import app.drawbridge.dpc.BuildConfig
 import app.drawbridge.dpc.DrawbridgeApplication
 import app.drawbridge.dpc.R
 import app.drawbridge.dpc.admin.DeviceOwnerManager
+import app.drawbridge.dpc.admin.ProvisioningLog
 import app.drawbridge.dpc.apps.AppBlocker
 import app.drawbridge.dpc.policy.SelectionProvider
 import app.drawbridge.dpc.security.ParentKey
@@ -143,13 +147,19 @@ class MainActivity : AppCompatActivity() {
         return true
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean =
-        if (item.itemId == R.id.actionRemove) {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
+        R.id.actionRemove -> {
             startActivity(Intent(this, RemoveActivity::class.java))
             true
-        } else {
-            super.onOptionsItemSelected(item)
         }
+
+        R.id.actionDiagnostics -> {
+            startActivity(Intent(this, DiagnosticsActivity::class.java))
+            true
+        }
+
+        else -> super.onOptionsItemSelected(item)
+    }
 
     // --- Language ------------------------------------------------------------
 
