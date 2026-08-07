@@ -157,6 +157,20 @@ class MainActivity : AppCompatActivity() {
         val labels = Languages.supported.map { getString(it.label) }.toTypedArray()
         field.setSimpleItems(labels)
 
+        // Everything this field shows is derived from Languages.current() a few
+        // lines down, so there is nothing about it worth preserving across a
+        // recreation — and preserving it actively breaks the picker.
+        //
+        // Choosing a language calls AppCompatDelegate.setApplicationLocales,
+        // which recreates the activity. The rebuilt field is bound correctly
+        // below, and then onRestoreInstanceState puts the *previous* text back
+        // through the filtering setText — the one case the comment below warns
+        // about. By then the labels have been re-read in the new language, so
+        // the old text usually matches nothing at all and the dropdown comes up
+        // empty: every language after the first choice is unreachable. Not
+        // saving the state is what keeps the binding below authoritative.
+        field.isSaveEnabled = false
+
         val current = Languages.current()
         val index = Languages.supported.indexOfFirst { it.tag == current }
         // The second argument suppresses filtering; without it, setting the text
