@@ -100,9 +100,21 @@ done
 
 # drawbridge's hero is decoded by the platform rather than embedded in a string,
 # so it can afford to be sharper.
-echo "welcome scene (night)"
+#
+# It comes from a third master, `scene-dusk.webp`, and not from either of the
+# two above. drawbridge's screen shows one picture whatever the theme is — there
+# is no `-night` qualifier and no query to pick with — so the night scene sat
+# dark and heavy on a light-themed screen, which is what most of them are. Dusk
+# is warm enough for a light background and dark enough for a dark one, so one
+# resource covers both and the question stops needing an answer.
+#
+# That master is square, unlike the 3:2 pair, and the hero view is roughly
+# 1.7:1 with `centerCrop`. The crop is deliberate and was checked: it takes the
+# spire tips off the top and the foot of the bench off the bottom, and keeps
+# both towers, the raised bridge, the reader and the monsters.
+echo "welcome scene (dusk)"
 mkdir -p "$repo/dpc/src/main/res/drawable-nodpi"
-magick "$art/scene-night.webp" -resize 1400x \
+magick "$art/scene-dusk.webp" -resize 1400x \
   -strip -quality 88 -define webp:method=6 \
   "$repo/dpc/src/main/res/drawable-nodpi/welcome_scene.webp"
 
