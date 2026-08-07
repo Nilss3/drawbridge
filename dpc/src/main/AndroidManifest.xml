@@ -88,6 +88,42 @@
         </service>
 
         <!--
+            The two activities the platform hands off to during QR / NFC
+            provisioning, required since Android 11. Without them the setup
+            wizard downloads the APK, verifies its signature, shows "this device
+            belongs to your organization" and then dies with "Something went
+            wrong" — the failure that had been misread as Play Protect's DPC
+            allowlist until a Moto G15 got past the download on 2026-08-07.
+
+            `dpm set-device-owner` never launches either one, which is why this
+            was invisible to every emulator run and every adb provisioning.
+
+            Exported with no permission on purpose: both hand back a constant and
+            finish, so there is no privilege for a caller to gain. Requiring
+            BIND_DEVICE_ADMIN here would be guessing about which system component
+            launches them, on the one path that costs a factory reset to retest.
+        -->
+        <activity
+            android:name=".admin.ProvisioningModeActivity"
+            android:exported="true"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar">
+            <intent-filter>
+                <action android:name="android.app.action.GET_PROVISIONING_MODE" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".admin.PolicyComplianceActivity"
+            android:exported="true"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar">
+            <intent-filter>
+                <action android:name="android.app.action.ADMIN_POLICY_COMPLIANCE" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <!--
             The component name here is part of the provisioning command
             (`dpm set-device-owner <pkg>/<this>`) and of the QR payload, so it
             must not be renamed once any device has been provisioned.
