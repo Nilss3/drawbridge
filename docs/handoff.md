@@ -284,10 +284,12 @@ so the night scene it used to carry sat dark and heavy on a light-themed screen,
 which is what most of them are. Dusk is warm enough for a light background and
 dark enough for a dark one. Checked side by side on the emulator in both.
 
-That master is **square**, unlike the 3:2 pair, and the hero view is about 1.7:1
-with `centerCrop`. The crop is accepted rather than accidental: it loses the
-spire tips and the foot of the bench, and keeps both towers, the raised bridge,
-the reader and the monsters.
+That master is **square**, unlike the 3:2 pair, and the hero shows it **whole** —
+`wrap_content` with `adjustViewBounds` and `fitCenter`, rather than a fixed 200dp
+band with `centerCrop`. The picture is composed as one: the reader on his bench
+at the bottom left and the monsters at the bottom right are the point of it, and
+a letterbox crop takes the spire tips off the top and the feet off the bottom. On
+a phone screen the full square costs nothing but a little scrolling.
 
 Nothing reads any of them at build time: `tools/make-artwork.sh` derives all
 three launcher icons, both block-page scenes and drawbridge's hero image from

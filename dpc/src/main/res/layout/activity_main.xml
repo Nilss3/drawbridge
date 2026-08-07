@@ -47,13 +47,23 @@
                 android:inputType="none" />
         </com.google.android.material.textfield.TextInputLayout>
 
+        <!--
+            Shown whole rather than cropped to a band. The master is square and
+            composed as one picture: the reader on his bench at the bottom left
+            and the monsters at the bottom right are the point of it, and a
+            centre crop to a letterbox takes the spire tips off the top and the
+            feet off the bottom. wrap_content with adjustViewBounds lets the
+            height follow the width, which costs nothing but a little scrolling
+            on a phone screen.
+        -->
         <com.google.android.material.imageview.ShapeableImageView
             android:layout_width="match_parent"
-            android:layout_height="200dp"
+            android:layout_height="wrap_content"
             android:layout_marginHorizontal="24dp"
             android:layout_marginBottom="20dp"
+            android:adjustViewBounds="true"
             android:contentDescription="@string/welcome_scene_description"
-            android:scaleType="centerCrop"
+            android:scaleType="fitCenter"
             android:src="@drawable/welcome_scene"
             app:shapeAppearanceOverlay="@style/ShapeAppearance.Drawbridge.Hero" />
 

@@ -108,10 +108,12 @@ done
 # is warm enough for a light background and dark enough for a dark one, so one
 # resource covers both and the question stops needing an answer.
 #
-# That master is square, unlike the 3:2 pair, and the hero view is roughly
-# 1.7:1 with `centerCrop`. The crop is deliberate and was checked: it takes the
-# spire tips off the top and the foot of the bench off the bottom, and keeps
-# both towers, the raised bridge, the reader and the monsters.
+# That master is square, unlike the 3:2 pair, and the hero shows it **whole**:
+# the view is wrap_content with adjustViewBounds and fitCenter, not a fixed band
+# with centerCrop. The picture is composed as one — the reader on his bench at
+# the bottom left and the monsters at the bottom right are the point of it — and
+# a letterbox crop takes the spire tips off the top and the feet off the bottom.
+# On a phone screen the full square costs nothing but a little scrolling.
 echo "welcome scene (dusk)"
 mkdir -p "$repo/dpc/src/main/res/drawable-nodpi"
 magick "$art/scene-dusk.webp" -resize 1400x \
