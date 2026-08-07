@@ -49,14 +49,22 @@ class RemoveActivity : AppCompatActivity() {
     }
 
     private fun performRemoval() {
-        DnsFilterService.requestStop(this)
-
         val wasOwner = deviceOwner.isDeviceOwner
         // Restore hidden system browsers *before* giving up ownership: afterwards
         // there is no privilege left to un-hide them, and the device would be
         // stuck with Chrome permanently invisible.
         AppBlocker(this).unhideAll()
         val released = deviceOwner.releaseDeviceOwnership()
+
+        // Only now, because releaseDeviceOwnership is what drops the always-on
+        // VPN. Stopping the filter while always-on is still set does nothing
+        // lasting: Android restarts the service immediately, by design. Doing it
+        // first — as this did — left the tunnel running, and once ownership is
+        // gone nothing can clear the setting or stop the service through policy
+        // again. Verified on a Moto G15 on 2026-08-07: after a "remove", the
+        // filter was still foreground and still resolving blocked names to
+        // nothing, on a device that no longer had a device owner.
+        DnsFilterService.requestStop(this)
 
         DrawbridgeApplication.policy(this).clear()
         parentKey.clear()
