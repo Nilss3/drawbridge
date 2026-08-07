@@ -367,7 +367,18 @@ class MainActivity : AppCompatActivity() {
      * back later — hence [vpnConsent] finishing the job.
      */
     private fun lockDevice() {
+        // The only place the lockdown is applied unconditionally. Everywhere else
+        // goes through reapplyIfProtected, which does nothing until this has
+        // happened once — locking is what turns enforcement on, not provisioning
+        // and not opening the app.
         deviceOwner.applyManagedDevicePolicy()
+
+        // Moved here from provisioning for the same reason. On a QR-provisioned
+        // phone this is the first moment the parent has asked for any of it, so
+        // it is also the right moment to fetch the current policy and pull the
+        // browsers down.
+        DrawbridgeApplication.startEnforcing(this)
+
         requestBatteryOptimisationExemption()
 
         // Device Owner is consent enough for the VPN. Anything else has to ask.
@@ -514,8 +525,20 @@ class MainActivity : AppCompatActivity() {
         setOnCheckedChangeListener { _, value -> listener(value) }
     }
 
-    private suspend fun sweep(): Int =
-        withContext(Dispatchers.IO) { AppBlocker(this@MainActivity).sweep().size }
+    /**
+     * Removes what the current selection no longer allows — but only once the
+     * phone has been locked.
+     *
+     * Before the first lock the configuration screen is a draft: choosing a
+     * policy or ticking an option records the choice and touches nothing. That
+     * is the same rule [DeviceOwnerManager.reapplyIfProtected] applies, and it
+     * has to hold here too, or a parent comparing two policies before deciding
+     * would have apps uninstalled out from under them by the act of looking.
+     */
+    private suspend fun sweep(): Int {
+        if (parentKey.protectedSince == 0L) return 0
+        return withContext(Dispatchers.IO) { AppBlocker(this@MainActivity).sweep().size }
+    }
 
     private fun applied(name: String, removed: Int): String =
         resources.getQuantityString(R.plurals.change_applied, removed, name, removed)

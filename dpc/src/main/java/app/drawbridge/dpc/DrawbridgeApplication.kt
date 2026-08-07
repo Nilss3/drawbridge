@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.Context
 import app.drawbridge.dpc.admin.DeviceOwnerManager
 import app.drawbridge.dpc.admin.ProvisioningLog
+import app.drawbridge.dpc.security.ParentKey
 import app.drawbridge.dpc.update.UpdateWorker
 import app.drawbridge.policy.PolicyConfig
 import app.drawbridge.policy.PolicyManager
@@ -26,7 +27,7 @@ class DrawbridgeApplication : Application() {
 
         // Restrictions can be dropped by an OS upgrade, so re-assert them on every
         // process start rather than only at provisioning time.
-        DeviceOwnerManager(this).applyManagedDevicePolicy()
+        DeviceOwnerManager(this).reapplyIfProtected()
     }
 
     companion object {
@@ -38,23 +39,34 @@ class DrawbridgeApplication : Application() {
 
         /** Called when the admin receiver is enabled or provisioning finishes. */
         fun onAdminEnabled(context: Context) {
-            DeviceOwnerManager(context).applyManagedDevicePolicy()
+            DeviceOwnerManager(context).reapplyIfProtected()
 
-            // Held back for the same reason the restrictions are: this runs
-            // during QR provisioning, while the setup wizard is still on screen,
-            // and UpdateWorker.runNow starts a ~470 MiB download of both
-            // browsers. Competing with the wizard for the network at the exact
-            // moment it is finishing is not a fight worth picking. Both are
-            // scheduled periodically anyway, and both run again on the next
-            // process start, so waiting costs nothing but time.
-            if (!ProvisioningLog.isSetupComplete(context)) {
-                ProvisioningLog.record(context, "onAdminEnabled DEFERRED refresh+install")
+            // Held back until the phone has actually been locked, for the same
+            // reason the restrictions are. This runs during QR provisioning,
+            // while the setup wizard is still on screen, and UpdateWorker.runNow
+            // starts a ~470 MiB download of both browsers -- competing with the
+            // wizard for the network at the exact moment it is trying to finish.
+            // Nothing here is urgent: both workers are scheduled periodically,
+            // and locking calls startEnforcing directly.
+            if (ParentKey(context).protectedSince == 0L) {
+                ProvisioningLog.record(context, "onAdminEnabled skipped (never locked)")
                 return
             }
+            startEnforcing(context)
+        }
 
-            ProvisioningLog.record(context, "onAdminEnabled refresh+install")
+        /**
+         * Fetches the current policy and installs whatever it requires.
+         *
+         * Called when the parent locks the phone, and from [onAdminEnabled] on a
+         * device that is already protected. Not at provisioning time: on the QR
+         * path that lands inside the setup wizard, and pulling both browsers down
+         * underneath it is what left a Moto G15 unable to finish setup at all.
+         */
+        fun startEnforcing(context: Context) {
+            ProvisioningLog.record(context, "startEnforcing: policy refresh + required apps")
             PolicyWorker.refreshNow(context)
-            // Pulls herald down: by now every other browser is gone, so nothing
+            // Pulls herald down: by then every other browser is gone, so nothing
             // else on the device could fetch it.
             UpdateWorker.runNow(context)
         }

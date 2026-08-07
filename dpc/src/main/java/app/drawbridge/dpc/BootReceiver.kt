@@ -25,7 +25,7 @@ class BootReceiver : BroadcastReceiver() {
         }
 
         Log.i(TAG, "Boot completed; re-applying policy")
-        DeviceOwnerManager(context).applyManagedDevicePolicy()
+        DeviceOwnerManager(context).reapplyIfProtected()
 
         // Returns a consent intent when the app is not Device Owner, which cannot
         // be shown from a receiver; in that case the parent starts it from the

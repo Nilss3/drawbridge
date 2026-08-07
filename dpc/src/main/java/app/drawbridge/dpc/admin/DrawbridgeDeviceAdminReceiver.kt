@@ -33,7 +33,7 @@ class DrawbridgeDeviceAdminReceiver : DeviceAdminReceiver() {
     override fun onProfileProvisioningComplete(context: Context, intent: Intent) {
         Log.i(TAG, "Provisioning complete")
         ProvisioningLog.record(context, "onProfileProvisioningComplete")
-        DeviceOwnerManager(context).applyManagedDevicePolicy()
+        DeviceOwnerManager(context).reapplyIfProtected()
         DrawbridgeApplication.onAdminEnabled(context)
     }
 
@@ -43,7 +43,7 @@ class DrawbridgeDeviceAdminReceiver : DeviceAdminReceiver() {
 
     override fun onTransferOwnershipComplete(context: Context, bundle: PersistableBundle?) {
         Log.i(TAG, "Ownership transfer complete")
-        DeviceOwnerManager(context).applyManagedDevicePolicy()
+        DeviceOwnerManager(context).reapplyIfProtected()
     }
 
     companion object {

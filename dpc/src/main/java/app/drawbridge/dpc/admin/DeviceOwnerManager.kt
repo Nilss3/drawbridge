@@ -9,6 +9,7 @@ import android.os.Build
 import android.os.UserManager
 import android.util.Log
 import app.drawbridge.dpc.BuildConfig
+import app.drawbridge.dpc.security.ParentKey
 
 /**
  * Everything that requires Device Owner privilege.
@@ -66,6 +67,39 @@ class DeviceOwnerManager(context: Context) {
         applyUserRestrictions()
         enableAlwaysOnVpn(vpnPackage)
         setDefaultBrowser()
+    }
+
+    /**
+     * Re-asserts the lockdown, but only on a phone that has already been locked.
+     *
+     * This is what every *automatic* caller wants — process start, boot,
+     * provisioning — as opposed to [applyManagedDevicePolicy], which is the
+     * deliberate act of locking and is called from the button.
+     *
+     * The distinction is the whole rule: **nothing is enforced until the parent
+     * locks the phone.** Deferring only until the setup wizard finished was not
+     * enough, because merely opening drawbridge then applied everything — on a
+     * QR-provisioned Moto G15 on 2026-08-07, launching the app once uninstalled
+     * Facebook, pulled herald down and switched USB debugging off, none of which
+     * anyone had asked for yet.
+     *
+     * What that window is for: adding the parent's Google account, which is what
+     * arms Factory Reset Protection and which the managed setup flow never
+     * prompts for; setting a screen lock, likewise skipped; and adb, for anyone
+     * bringing up an unfamiliar handset. All three are foreclosed the moment the
+     * restrictions land, so they have to happen first.
+     *
+     * [ParentKey.protectedSince] is the right signal rather than `isLocked`,
+     * because it survives unlocking: a parent who unlocks to change a setting has
+     * not withdrawn their protection, and the phone should stay locked down while
+     * they do it. Only removal clears it.
+     */
+    fun reapplyIfProtected(vpnPackage: String = appContext.packageName) {
+        if (ParentKey(appContext).protectedSince == 0L) {
+            ProvisioningLog.record(appContext, "reapply skipped (never locked)")
+            return
+        }
+        applyManagedDevicePolicy(vpnPackage)
     }
 
     /**
