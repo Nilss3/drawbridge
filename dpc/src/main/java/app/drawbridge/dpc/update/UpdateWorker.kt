@@ -12,7 +12,9 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
+import androidx.work.workDataOf
 import app.drawbridge.dpc.DrawbridgeApplication
+import app.drawbridge.dpc.security.ParentKey
 import java.util.concurrent.TimeUnit
 
 /** Applies app updates named by the signed policy document. */
@@ -34,13 +36,35 @@ class UpdateWorker(
 
         // Required apps first: a device missing herald has no browser at all,
         // which matters more than drawbridge being a version behind.
-        val required = installer.installMissingRequiredApps()
+        //
+        // But not before the phone has been locked. Installing what the policy
+        // requires is enforcement, and enforcement waits for the parent to ask —
+        // otherwise a provisioned-but-unlocked phone quietly pulls down ~470 MiB
+        // of browsers on its next daily run, which is exactly the surprise the
+        // rest of the deferral exists to avoid.
+        //
+        // [requested] rather than a plain protectedSince check, because locking
+        // calls runNow *before* it mints the key: the flag is what distinguishes
+        // "the parent just asked for this" from "the daily poll came round", and
+        // avoids a race with an ordering that is correct for other reasons.
+        val requested = inputData.getBoolean(KEY_REQUESTED, false)
+        val protectedPhone = ParentKey(applicationContext).protectedSince > 0L
+
+        val required = if (requested || protectedPhone) {
+            installer.installMissingRequiredApps()
+        } else {
+            Log.i(TAG, "Not installing required apps: phone has never been locked")
+            emptyMap()
+        }
         required.forEach { (packageName, outcome) ->
             if (outcome is AppInstaller.Result.Failed) {
                 Log.e(TAG, "Could not install $packageName: ${outcome.reason}")
             }
         }
 
+        // Deliberately not gated. Keeping *itself* current is not something
+        // drawbridge does to the user, and a fix has to be able to reach an idle
+        // provisioned phone whose parent has not locked it yet.
         val self = installer.checkAndInstallSelf()
         if (self is AppInstaller.Result.Failed) {
             Log.e(TAG, "Self-update failed: ${self.reason}")
@@ -56,12 +80,16 @@ class UpdateWorker(
         private const val WORK_NAME = "drawbridge-self-update"
         private const val IMMEDIATE_WORK_NAME = "drawbridge-install-now"
 
+        /** Marks a run the parent asked for, as opposed to the daily poll. */
+        private const val KEY_REQUESTED = "requested"
+
         /**
-         * Runs the installer now. Called right after provisioning, where the
-         * parent is standing over the device waiting for herald to appear.
+         * Runs the installer now. Called when the parent locks the phone, which
+         * is the moment they are standing over it waiting for herald to appear.
          */
         fun runNow(context: Context) {
             val request = OneTimeWorkRequestBuilder<UpdateWorker>()
+                .setInputData(workDataOf(KEY_REQUESTED to true))
                 .setConstraints(
                     Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build(),
                 )
