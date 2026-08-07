@@ -319,6 +319,24 @@ class DeviceOwnerManager(context: Context) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                 add(UserManager.DISALLOW_USER_SWITCH)
             }
+            // Private DNS is reachable from Settings even with DISALLOW_CONFIG_VPN
+            // set, because Android files it under network rather than VPN
+            // settings. Measured on a Moto G15 (Android 15) on 2026-08-07:
+            // pointing it at a public DoT resolver does *not* leak past the
+            // filter — strict mode cannot complete its handshake through a
+            // tunnel that routes only port 53, so resolution fails closed and
+            // blocked names stay blocked. Opportunistic mode leaves the filter
+            // intact too.
+            //
+            // It is still worth taking away. Failing closed means every name on
+            // the phone stops resolving, so the switch is a one-tap self-inflicted
+            // outage that looks exactly like drawbridge being broken — and the
+            // fail-closed behaviour is a consequence of the tunnel's routing
+            // rather than a guarantee anyone wrote down, so it is not something
+            // to keep depending on.
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                add(UserManager.DISALLOW_CONFIG_PRIVATE_DNS)
+            }
         }
     }
 }
