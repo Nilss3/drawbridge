@@ -738,6 +738,58 @@ appears when drawbridge is *not* device owner. If the parent declines it, the
 phone is deliberately **not** locked — sealing the screen would turn "locked
 means filtered" into a promise they could no longer check.
 
+## Nothing is enforced until the phone is locked
+
+Locking is not only the moment the screen is sealed. It is the moment drawbridge
+starts doing anything at all. Before it, a provisioned phone has no restrictions,
+no filter, no app removal and no browser download — at provisioning, at first
+launch, and on the daily poll alike. `DeviceOwnerManager.reapplyIfProtected` is
+what every automatic caller goes through, and it is a no-op until then; the lock
+button is the only place the lockdown is applied unconditionally.
+
+The rule was learned twice, from opposite directions.
+
+**Enforcing during provisioning breaks provisioning.** Applying the restrictions
+from `onProfileProvisioningComplete` — which fires while the setup wizard is
+still on screen — left a QR-provisioned Moto G15 unable to finish setup at all.
+Device Owner was granted, the policy compiled, and `USER_SETUP_COMPLETE` stayed
+`0`: no notification shade, a Settings that closed itself on launch, and a reboot
+that offered a factory reset because the wizard could not account for what it
+found. The platform hands a DPC an `is_setup_wizard` flag in its provisioning
+handoffs precisely because it expects the DPC to hold back.
+
+**Enforcing at first launch is still too early.** Deferring only until setup
+finished meant opening the app once uninstalled Facebook, pulled down ~470 MiB of
+browsers and switched USB debugging off. The phone was managed before anyone had
+agreed to anything.
+
+What the window is for is concrete. QR provisioning never prompts for a Google
+account or a screen lock, and the account is what arms Factory Reset Protection —
+the backstop that makes a recovery-mode wipe useless to a child. Both must be
+done by hand, and both are impossible once the restrictions land, as is enabling
+USB debugging on an unfamiliar handset.
+
+`ParentKey.protectedSince` is the signal, not `isLocked`. It survives unlocking,
+so a parent who unlocks to change a setting has not withdrawn their protection
+and the phone stays locked down while they do it. Only removal clears it, which
+is right: removal is the off switch.
+
+The same rule governs the configuration screen. Choosing a policy or ticking an
+option records the choice and touches nothing until the phone is locked —
+otherwise a parent comparing two policies before deciding would have apps
+uninstalled out from under them by the act of looking. (The confirmation dialog
+in front of policy selection still describes the old behaviour, and wants
+rewording rather than deleting: it is false before the first lock and true after
+it.)
+
+One wrinkle worth knowing. `lockDevice` triggers the policy fetch and the
+required-app install *before* it mints the key, because everything needing the
+configuration screen has to happen before that screen is sealed. So
+`UpdateWorker` cannot simply read `protectedSince` — it would race the very
+install locking is meant to trigger. The explicit trigger carries a flag saying
+"the parent asked for this"; the timestamp says "this phone is already
+protected"; either is sufficient.
+
 ## The protected-since date is the cheap tamper check
 
 The lock screen says how long this phone has been protected, before it asks for

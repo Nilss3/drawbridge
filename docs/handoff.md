@@ -46,17 +46,61 @@ emulator session and every adb provisioning passed while the one path that
 exercises it had never once worked.
 
 Fixed by [ProvisioningModeActivity](../dpc/src/main/java/app/drawbridge/dpc/admin/ProvisioningModeActivity.kt)
-and [PolicyComplianceActivity](../dpc/src/main/java/app/drawbridge/dpc/admin/PolicyComplianceActivity.kt).
-**Not yet retested** — the QR names `/releases/latest/download/dpc-release.apk`,
-so proving it needs a published build. See [next steps](#reasonable-next-steps).
+and [PolicyComplianceActivity](../dpc/src/main/java/app/drawbridge/dpc/admin/PolicyComplianceActivity.kt)
+— but that alone was not enough, and the second half is below.
+
+### And then it half-provisioned, which was our fault too
+
+With the handoff activities in place the wizard got much further: Device Owner
+granted, policy compiled, home screen reached. And then setup never finished.
+`USER_SETUP_COMPLETE` stayed `0`, which is a state Android treats very
+differently — no notification shade, and a Settings that closes itself the
+instant it opens. Rebooting returned to the same half-provisioned state; only
+after drawbridge gave up Device Owner did the wizard restart and show *"This
+phone may be unsafe"*, offering a factory reset. Continuing setup from there
+resolved its suspicion by tearing Device Owner out and running the normal OEM
+preload flow.
+
+The cause was drawbridge locking the phone down from inside the wizard —
+`onProfileProvisioningComplete` applied every restriction, brought up the
+always-on VPN, and started a ~470 MiB download while the wizard was still on
+screen. See
+[design-decisions](design-decisions.md#nothing-is-enforced-until-the-phone-is-locked).
+
+**QR provisioning now works end to end**, verified on the G15 on 2026-08-07 with
+a release build, and the on-device provisioning record shows the causal chain
+rather than just the outcome:
+
+```
+21:33:49  setup=0  GET_PROVISIONING_MODE received
+21:34:40  setup=0  applyManagedDevicePolicy DEFERRED (setup running)
+21:34:56  setup=0  ADMIN_POLICY_COMPLIANCE -> RESULT_OK
+21:37:37  setup=1  applyManagedDevicePolicy applying
+```
+
+`setup` flips after control is handed back and before anything is applied.
 
 What is now unknown, rather than assumed:
 
-- **Whether the allowlist applies to drawbridge at all.** It did not block this
-  device on this date. That could be the 2026-08-06 appeal landing, or it could
-  be that this Moto's GMS build does not enforce it. One data point.
+- **Whether the allowlist applies to drawbridge at all.** It never blocked this
+  device. That could be the 2026-08-06 appeal landing, or this Moto's GMS build
+  not enforcing it. One handset, one date.
 - The appeal itself remains unanswerable by design: the form states decisions
   are final and no reply is sent.
+
+### QR provisioning yields a cleaner phone than adb does
+
+Not a side note — it is a reason to prefer it. The managed flow *replaces* the
+consumer setup wizard, so the OEM's **downloaded** preloads never arrive. The
+adb-provisioned G15 carried Temu, LinkedIn, Fitbit and several games; the
+QR-provisioned one did not.
+
+Checked rather than eyeballed, because the first version of this claim was wrong:
+none of those packages are in `blocked_packages`, `allowed_packages` is null so
+allowlist mode is off, and none of them are browsers — so no rule in the app
+blocker could have removed them. They were never installed. Preloads baked into
+the **system image** are a different matter and still arrive: Facebook was there,
+and was removed as blocked.
 
 Unchanged: publishing on Play would not help, since the gate is the Android
 Enterprise allowlist rather than Play distribution; and non-GMS devices
@@ -562,23 +606,26 @@ Verified for the browser work:
 
 Not verified, and worth doing:
 
-- **QR provisioning end to end.** Attempted 2026-08-07 and it failed on a
-  missing manifest handler, now fixed but **not retested** — proving it needs a
-  published build, because the QR names `/releases/latest/download/`. This is
-  still the largest untested path, but it is no longer an unknown *cause*.
+- **Everything on `main` since rc2.** Three DPC changes are unverified on
+  hardware: the enforcement gate (nothing applies until the phone is locked), the
+  same gate on the daily `UpdateWorker`, and the uncropped hero. The half that
+  most needs watching is not that provisioning stays clean but that **locking
+  still applies everything afterwards** — deferring is only correct if the work
+  actually happens later.
 - **`AppBlocker.sweep()` driven from the UI.** Applying a policy and turning the
   WhatsApp option **off** both call it, and neither has been watched removing
   anything. The blocker itself is now well proven on hardware; what is untested
-  is these two entry points into it.
-- **Locking on a provisioned device taking the silent VPN path.** Locking works
-  there — that much was watched — but every earlier test ran without Device
-  Owner and so took the consent-prompt path, and it has not been confirmed that
-  the silent one is what actually happens now.
+  is these two entry points into it — and both are now gated on the phone having
+  been locked, which is also untested.
 - **What locking does *after* a removal.** Reported as "locking doesn't work"
   on a device whose Device Owner had been given up. Without ownership it can
   still start the filter through the VPN consent prompt but can apply no
   restrictions, so it half-works — which is worse than failing outright. The
   exact symptom has not been pinned down, and the UI still offers the button.
+- **Declining the battery-optimisation prompt.** The filter survives it — an
+  always-on foreground service — but the daily policy and update poll can be
+  deferred by Doze, so the phone filters against a stale list. Diagnostics now
+  reports `battery exempt`, but nobody has watched a declined phone go stale.
 - **The Dutch and French translations by someone who reads them properly.** They
   are complete and lint-clean, not reviewed.
 - **Reader view over a slow connection.** Everything now waits for a page to
