@@ -5,6 +5,7 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.os.Build
 import android.os.Bundle
+import android.os.PowerManager
 import android.provider.Settings
 import android.view.View
 import android.widget.Button
@@ -78,6 +79,14 @@ class DiagnosticsActivity : AppCompatActivity() {
             appendLine()
             appendLine("device owner:      ${deviceOwner.isDeviceOwner}")
             appendLine("filter running:    ${DnsFilterService.isRunning}")
+            // Denying the battery-optimisation prompt at lock time does not stop
+            // the filter -- that is an always-on foreground VpnService and the
+            // platform restarts it. What it stops is the *polling*: Doze can
+            // defer the daily policy and update workers, on some OEMs for days,
+            // so the phone goes on filtering against a blocklist that is quietly
+            // out of date. Nothing else on the device reports that, which is
+            // exactly why it belongs here.
+            appendLine("battery exempt:    ${isIgnoringBatteryOptimisations()}")
             appendLine("policy version:    ${policy.version}")
             appendLine("blocked packages:  ${policy.blockedPackages.size}")
             appendLine("browsers allowed:  ${policy.browserPackages.joinToString()}")
@@ -94,6 +103,9 @@ class DiagnosticsActivity : AppCompatActivity() {
             appendLine(ProvisioningLog.read(this@DiagnosticsActivity) ?: "  (nothing recorded)")
         }
     }
+
+    private fun isIgnoringBatteryOptimisations(): Boolean =
+        getSystemService(PowerManager::class.java).isIgnoringBatteryOptimizations(packageName)
 
     private fun globalSetting(name: String): String =
         runCatching { Settings.Global.getInt(contentResolver, name).toString() }
