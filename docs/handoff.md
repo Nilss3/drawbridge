@@ -1,4 +1,4 @@
-# Handoff — state as of 2026-08-06
+# Handoff — state as of 2026-08-07
 
 Everything about *how the system works* lives in [README](../README.md),
 [design-decisions](design-decisions.md), [policy](policy.md),
@@ -19,36 +19,48 @@ machine, what was and was not verified, and what to do next.
 | Website | trilingual, generated into `site/`, on Cloudflare Pages |
 | Tests | 372 unit tests across four build variants, lint clean |
 
-### The one thing that could stop everything: the DPC allowlist
+### The QR path was broken by our own manifest, not by the DPC allowlist
 
-**Google Play Protect now blocks custom device policy controllers during
-enrollment**, with *"App blocked to protect your device"*. Only DPCs on the
-[Android Enterprise allowlist](https://support.google.com/work/android/answer/16694822)
-may install during provisioning. This went live during 2025 with no notice and
-community reports of blocked enrollments run through 2026. drawbridge is a
-self-built DPC on nobody's allowlist, and the Nothing A059 and the Moto G15 are
-both GMS-certified, so both are in scope.
+**This section used to say the allowlist was the thing that could stop
+everything. That was wrong**, and it was wrong for as long as QR provisioning
+had never actually been tried on hardware.
 
-This is the QR path specifically. `adb shell dpm set-device-owner` is unaffected
-and is the documented workaround.
+Tried on the Moto G15 on **2026-08-07** (Android 15, API 35). The QR scanned,
+the DPC downloaded, its pinned signing certificate verified, and the wizard
+showed *"this Moto G15 belongs to your organization"* — then died with
+*"Something went wrong"* and demanded a reset. **Play Protect never said a
+word.** "App blocked to protect your device" is what the allowlist looks like,
+and it blocks at *install*; the install succeeded.
 
-**An appeal was filed** on 2026-08-06 via
-`support.google.com/googleplay/android-developer/contact/protectappeals` — that
-form is the only channel, framed as an "appeal" even with nothing yet rejected.
-It wanted the package name, the APK's SHA-256, a public download URL, and a
-VirusTotal report; VirusTotal came back **clean**, with no engine flagging it.
+The real cause was in `dpc/src/main/AndroidManifest.xml`. Since Android 11 a DPC
+that the *platform* provisions — QR, NFC, cloud enrolment — must declare
+activities handling `android.app.action.GET_PROVISIONING_MODE` and
+`android.app.action.ADMIN_POLICY_COMPLIANCE`. drawbridge declared neither, at
+`targetSdk = 36`. The wizard downloads the APK, verifies it, then tries to hand
+off to the DPC to ask which mode to provision — and there was nothing to hand
+off to.
 
-**There will be no reply.** The form states outright that decisions are final
-and no response is sent. The only way to learn the outcome is to retry
-provisioning and see. So: retry every couple of weeks, with the same package and
-signing certificate, and treat a second failure as inconclusive — it could mean
-rejected, still queued, or lost.
+**`dpm set-device-owner` never goes through that handoff.** It grants Device
+Owner directly and asks nothing. That is exactly why 372 unit tests, every
+emulator session and every adb provisioning passed while the one path that
+exercises it had never once worked.
 
-Two things follow. Publishing on Play would **not** help: the gate is the
-Android Enterprise allowlist, not Play distribution. And the durable answer is
-to not need the allowlist at all — `dpm set-device-owner` is AOSP rather than
-GMS, and non-GMS devices (LineageOS, /e/OS, GrapheneOS) have no allowlist to
-enforce.
+Fixed by [ProvisioningModeActivity](../dpc/src/main/java/app/drawbridge/dpc/admin/ProvisioningModeActivity.kt)
+and [PolicyComplianceActivity](../dpc/src/main/java/app/drawbridge/dpc/admin/PolicyComplianceActivity.kt).
+**Not yet retested** — the QR names `/releases/latest/download/dpc-release.apk`,
+so proving it needs a published build. See [next steps](#reasonable-next-steps).
+
+What is now unknown, rather than assumed:
+
+- **Whether the allowlist applies to drawbridge at all.** It did not block this
+  device on this date. That could be the 2026-08-06 appeal landing, or it could
+  be that this Moto's GMS build does not enforce it. One data point.
+- The appeal itself remains unanswerable by design: the form states decisions
+  are final and no reply is sent.
+
+Unchanged: publishing on Play would not help, since the gate is the Android
+Enterprise allowlist rather than Play distribution; and non-GMS devices
+(LineageOS, /e/OS, GrapheneOS) have no allowlist to enforce.
 
 Separately, **Android developer verification does not affect drawbridge**: apps
 installed by a DPC on managed devices are exempt indefinitely, as are ADB
@@ -257,17 +269,25 @@ other without deciding which audience the name is for.
 
 ### There is artwork now, and it is generated
 
-Five painted illustrations live in `art/`: three icons and two scenes, the same
-place by day and by night.
+Six painted illustrations live in `art/`: three icons and three scenes — the same
+place by day, by night and at dusk.
 
-**herald's block page carries both** and lets its own `prefers-color-scheme`
-query choose, so the picture turns with the card under it — verified on device in
-both modes. They are two resources with distinct names rather than one name with
-a `-night` qualifier because both have to be inlined into the same document; a
-qualifier would give the page only one of them.
+**herald's block page carries the day and night pair** and lets its own
+`prefers-color-scheme` query choose, so the picture turns with the card under it
+— verified on device in both modes. They are two resources with distinct names
+rather than one name with a `-night` qualifier because both have to be inlined
+into the same document; a qualifier would give the page only one of them.
 
-**drawbridge takes the night one, always.** Its screen is read once, by a parent,
-deciding something; the time of day is not doing any work there.
+**drawbridge takes the dusk one**, added 2026-08-07. Its screen has no theme
+query and no `-night` qualifier — one picture is shown whatever the theme is —
+so the night scene it used to carry sat dark and heavy on a light-themed screen,
+which is what most of them are. Dusk is warm enough for a light background and
+dark enough for a dark one. Checked side by side on the emulator in both.
+
+That master is **square**, unlike the 3:2 pair, and the hero view is about 1.7:1
+with `centerCrop`. The crop is accepted rather than accidental: it loses the
+spire tips and the foot of the bench, and keeps both towers, the raised bridge,
+the reader and the monsters.
 
 Nothing reads any of them at build time: `tools/make-artwork.sh` derives all
 three launcher icons, both block-page scenes and drawbridge's hero image from
@@ -391,11 +411,86 @@ brew install --cask android-commandlinetools
 
   Both AVDs are `google_apis_playstore` images, so Play Protect is present —
   but see the trap above: that is still not enough to test QR provisioning.
-- **A Moto G15**, ordered 2026-08-06 and not yet arrived. Bought as a
-  disposable provisioning target so no phone anyone depends on gets wiped.
-  This is what the next-steps sequence is written for.
+- **A Moto G15** — arrived and used, 2026-08-07. Android **15, API 35**, arm64,
+  serial `ZY32KV9J24`. Bought as a disposable provisioning target so no phone
+  anyone depends on gets wiped, and it has earned that: it has been provisioned,
+  removed and re-provisioned several times in a session.
+
+  **Device Owner can be re-granted over adb on it**, because it has zero
+  accounts — `dpm set-device-owner` succeeded again straight after a removal.
+  Do not generalise that to a real deployment, where an account exists and
+  `DISALLOW_DEBUGGING_FEATURES` has already taken adb away.
+
+  It drops off USB after a reboot until the screen is unlocked. Set the screen
+  timeout long; `svc power stayon usb` is cleared by every reboot.
 
 ---
+
+### The first managed real device, 2026-08-07
+
+Everything below was watched on the Moto G15 with a debug DPC (so adb survived),
+and none of it had ever been seen on real hardware with a device owner.
+
+- **The app blocker removing things.** YouTube, YouTube Music, Facebook, Opera,
+  Chrome, Firefox, DuckDuckGo and TikTok, each with its reason logged. TikTok is
+  one of the 109 packages added in policy 21, so that set is now confirmed as
+  *actually removing apps* rather than merely holding correct package ids.
+- **The first live policy update on a device** — `Compiled 7 blocklists into
+  1517701 domains`, against the 255 in the bundled copy.
+- **Both browsers auto-installing and surviving.** ~470 MiB fetched, hash-checked
+  and installed by the DPC itself; the `ACTION_PACKAGE_ADDED` evaluation returned
+  `Action.NONE` for both, and a full `sweep()` after a reboot left both alone.
+  This is the loop the old one-browser rule existed to prevent, and it holds.
+- **DNS filtering** — blocked names NXDOMAIN, `www.google.com` rewritten to
+  `forcesafesearch.google.com`, normal names untouched.
+- **Surviving a reboot and an OTA system update**, still managed, still
+  filtering, `mAlwaysOnVpnPackage` intact.
+- **Locking on a provisioned device**, with a working protected-since date, in
+  Dutch.
+- **`UpdateWorker` post-boot**: `SUCCESS`, nothing installed — browsers at 8
+  against a pinned 8, DPC at 9 against a pinned 9. Armed and inert, as designed.
+
+Four bugs came out of it, all fixed and all verified fixed:
+
+| Bug | Cause |
+|---|---|
+| QR provisioning died after "belongs to your organization" | No `GET_PROVISIONING_MODE` handler; see above |
+| Picking a language left only that language in the dropdown | `onRestoreInstanceState` re-applied the field's text through the *filtering* `setText`, narrowing the adapter. Labels are autonyms, so the restored text always matches exactly one entry |
+| Removal left the DNS filter running | `requestStop` was called *before* always-on VPN was dropped, so Android restarted the service; then ownership went and nothing could stop it |
+| Private DNS reachable despite `DISALLOW_CONFIG_VPN` | Android files it under network settings. Now covered by `DISALLOW_CONFIG_PRIVATE_DNS` |
+
+**Private DNS is not a filter bypass**, measured rather than assumed: pointed at
+`dns.google` in strict mode, resolution fails closed — blocked names stay
+blocked and so does everything else, because the handshake cannot complete
+through a tunnel routing only port 53. Opportunistic mode leaves the filter
+intact. It was restricted anyway: failing closed is a one-tap self-inflicted
+outage that looks exactly like drawbridge being broken, and the fail-closed
+behaviour falls out of the tunnel's routing rather than anything anyone
+designed.
+
+### `blocked_packages` and the domain lists have drifted apart
+
+Found by installing things on the G15. Several apps have their **domains blocked
+but their packages missing**, so they install, survive the blocker, and sit
+there broken — which reads as "drawbridge did not block this".
+
+| App | Domain blocked | Package | Listed? |
+|---|---|---|---|
+| LinkedIn | `linkedin.com` | `com.linkedin.android` | no |
+| Instants (Meta) | `instagram.com` | `com.instagram.moonshot` | no |
+| TikTok Lite | `tiktok.com` | `com.tiktok.lite.go` | no |
+
+Those three package ids came off a real device, which is stronger evidence than
+policy 21's Play Store lookups. The fix worth doing is **systematic** — walk
+every domain family in `social.txt`, `games.txt` and `ai-companions.txt` and
+confirm the matching packages are listed — not these three by hand.
+
+Related, and a documentation bug rather than a filtering one: the profile
+description claims *"video platforms … blocked both as apps and as websites"*.
+As packages that is the YouTube family and Twitch, nothing else; as domains it
+adds Kick, Rumble and Bigo, and misses Vimeo, Dailymotion, Bilibili, Odysee and
+BitChute. Netflix and friends are absent deliberately — the same paragraph says
+streaming media stays untouched. Either broaden the lists or narrow the sentence.
 
 ## What was verified, and what was not
 
@@ -465,19 +560,23 @@ Verified for the browser work:
 
 Not verified, and worth doing:
 
-- **The new drawbridge UI on a *provisioned* device.** Everything above was
-  exercised without Device Owner, so locking took the VPN-consent path rather
-  than the silent one, and no policy switch has actually swept apps. In
-  particular: applying a policy and turning the WhatsApp option **off** both run
-  `AppBlocker.sweep()`, and neither has been watched removing anything.
-- **QR provisioning on a real device.** The payload decodes and every URL it
-  references returns 200, but no device has been provisioned by scanning it.
-  This is still the single largest untested path.
-- **Both browsers actually surviving on a *provisioned* device.** The allowed set
-  and `required_apps` agree on paper and in the unit tests, but no device owner
-  has been watched installing herald mono and then *not* removing it. This is the
-  loop the old one-browser rule existed to prevent, so it is the thing to watch
-  first after provisioning.
+- **QR provisioning end to end.** Attempted 2026-08-07 and it failed on a
+  missing manifest handler, now fixed but **not retested** — proving it needs a
+  published build, because the QR names `/releases/latest/download/`. This is
+  still the largest untested path, but it is no longer an unknown *cause*.
+- **`AppBlocker.sweep()` driven from the UI.** Applying a policy and turning the
+  WhatsApp option **off** both call it, and neither has been watched removing
+  anything. The blocker itself is now well proven on hardware; what is untested
+  is these two entry points into it.
+- **Locking on a provisioned device taking the silent VPN path.** Locking works
+  there — that much was watched — but every earlier test ran without Device
+  Owner and so took the consent-prompt path, and it has not been confirmed that
+  the silent one is what actually happens now.
+- **What locking does *after* a removal.** Reported as "locking doesn't work"
+  on a device whose Device Owner had been given up. Without ownership it can
+  still start the filter through the VPN consent prompt but can apply no
+  restrictions, so it half-works — which is worse than failing outright. The
+  exact symptom has not been pinned down, and the UI still offers the button.
 - **The Dutch and French translations by someone who reads them properly.** They
   are complete and lint-clean, not reviewed.
 - **Reader view over a slow connection.** Everything now waits for a page to
@@ -491,17 +590,13 @@ Not verified, and worth doing:
   mono moves GeckoView off its default SurfaceView, which copies a frame more.
   Scrolling a long image-heavy page and playing fullscreen video are the things
   to watch. Nothing an emulator says about this is meaningful.
-- **A live policy update.** No device has yet received a *new* policy version
-  and rebuilt its tunnel in response. Policy 23 is live, so the first
-  provisioned device that polls will exercise it — and it will sweep 157
-  packages rather than 48, so that first sweep is worth watching.
+- **A policy version *changing* under a running device.** The G15 fetched policy
+  23 and built its tunnel from it, which is the first half; what has still never
+  happened is a device sitting on version *n* and being handed *n+1*.
 - **The curfew.** Drafted in policy 22 and never run on a device. Nothing
   reads it and no published policy carries one; wiring it up means calling
   `CurfewController.apply` from `BootReceiver` and after a policy refresh.
   The failure that matters is one that does not lift.
-- **The 109 packages added in policy 21 actually being removed.** They are
-  verified as *correct package ids* against the Play Store, which is a
-  different claim from having watched the app blocker uninstall any of them.
 - **The self-update path.** `app_update` is set as of policy 22, but it pins the
   version already installed (`version_code` 9), so `checkAndInstallSelf` still
   returns `UpToDate` without downloading anything. The path is armed, not
@@ -585,41 +680,66 @@ Each of these looks like a bug and is not, or bites silently:
 - **Cloudflare's Workers flow is not the Pages flow.** Workers demands a
   required "Deploy command" and a committed `wrangler.jsonc`; Pages needs
   neither. If the form asks for a deploy command, you are in the wrong one.
+- **`dpm set-device-owner` proves nothing about QR provisioning.** It grants
+  ownership directly and never launches `GET_PROVISIONING_MODE` or
+  `ADMIN_POLICY_COMPLIANCE`. A DPC can pass every adb and emulator test and
+  still be structurally incapable of being provisioned by a QR code. This cost
+  the entire QR path, silently, for the life of the project so far.
+- **Teardown order is as load-bearing as setup order.** `releaseDeviceOwnership`
+  is what drops the always-on VPN, and while always-on is set Android *restarts*
+  the filter the moment it stops. Stop the service before that and it comes
+  straight back, then ownership goes and nothing can stop it again. The same
+  hazard is why hidden browsers are un-hidden before ownership is released —
+  it was understood for one teardown step and missed for the other.
+- **Restoring view state can overwrite state you just derived.** The language
+  picker binds itself from `Languages.current()` in `onCreate`, and
+  `onRestoreInstanceState` then put the old text back through
+  `AutoCompleteTextView`'s *filtering* `setText`, narrowing the adapter to its
+  matches. Anything whose content is fully derived should carry
+  `isSaveEnabled = false` rather than trust that the restore is harmless.
+- **A restriction can sit in a Settings screen you did not think you owned.**
+  `DISALLOW_CONFIG_VPN` does not cover Private DNS, because Android files that
+  under network settings. Check where a setting actually lives before assuming
+  a related restriction covers it.
+- **A blocked domain is not a blocked app.** `blocked_packages` and the domain
+  lists are curated separately and drift. An app whose domains are blocked but
+  whose package is not still installs, survives the blocker and sits on the
+  phone looking unblocked. See LinkedIn, Instants and TikTok Lite above.
 
 ---
 
 ## Reasonable next steps
 
-1. **Provision the Moto G15** — bought for exactly this, so no device anyone
-   depends on has to be wiped. It is the one major untested path and the whole
-   point of the release. Do it in this order, because one factory reset covers
-   both:
+1. **Cut a release carrying the provisioning fix, and retest the QR.** This is
+   the one that unblocks everything else, and it cannot be shortcut: the QR
+   payload names `/releases/latest/download/dpc-release.apk`, so the fix has to
+   be *published* before it can be proven.
 
-   1. Reset, and **skip every account sign-in** — `dpm set-device-owner`
-      refuses once an account exists.
-   2. Try the QR from the setup wizard (six taps on the welcome screen). Either
-      it works, or you get *"App blocked to protect your device"* — which is
-      the DPC allowlist, and is worth a screenshot for the appeal thread.
-   3. Either way, continue setup without an account, enable USB debugging, and
-      provision over adb. A blocked QR wastes nothing: the reset already put
-      the device in the state adb provisioning needs.
+   The cheap way to prove it first, without a 1.1 GiB upload or a policy
+   change: publish the release-signed DPC as a **pre-release** and generate a
+   test QR pointing at that explicit tag URL. GitHub excludes pre-releases from
+   `/latest`, so every browser URL in `required_apps` keeps resolving and no
+   policy has to move. The QR pins the *certificate*, not the APK, so a test QR
+   against the same keystore is valid. If it provisions, the same bytes become
+   the real release.
 
-   Install both browsers **before** provisioning — `DISALLOW_DEBUGGING_FEATURES`
-   kills adb the moment it applies.
+   Then, for the real one: **it must carry all seven assets.** A release with
+   only the DPC in it makes `/releases/latest/download/herald-*.apk` 404 on
+   every device — the policy-23 failure, self-inflicted. The browsers need no
+   rebuild, only re-upload. Raise the DPC's `version_code`, publish the assets,
+   *then* publish the policy naming the new code and hash. That ordering is
+   also the first genuine test of the self-update path.
 
-   This also exercises everything no device owner has ever seen: both browsers
-   surviving the app blocker, the configuration screen with Device Owner
-   actually granted, the first live policy update, and a 157-package sweep.
-
-   **The emulator cannot substitute for this.** Its system image ships no
-   consumer Setup Wizard, so there is no six-tap QR flow; the trusted-source
+   **The emulator cannot substitute for the QR test.** Its system image ships no
+   consumer Setup Wizard, so there is no six-tap flow; the trusted-source
    provisioning intent needs `DISPATCH_PROVISIONING_MESSAGE`, which adb shell
-   does not hold; and Play images refuse `adb root`, so it cannot be granted.
-   An image you *can* root is one without Play Protect, which is the thing
-   being tested. That is a dead end — do not spend an afternoon on it again.
+   does not hold; and Play images refuse `adb root`. An image you *can* root is
+   one without Play Protect. That is a dead end — do not spend an afternoon on
+   it again.
 
-2. **Retry the QR every couple of weeks** until it works or you give up on it.
-   There is no notification when an allowlist appeal succeeds.
+2. **Reconcile `blocked_packages` against the domain lists** — policy 24. See
+   the drift table above. Systematic pass, not the three known names, and
+   settle the video-platforms sentence in the same edit.
 
 3. **Keep both keys backed up.** They were backed up before v0.1.7 went out; from
    here on every published release depends on that staying true.
