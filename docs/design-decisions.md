@@ -825,6 +825,64 @@ challenge only the parent can answer, and a date that gives them away. That is a
 worse outcome for them than it was, and a far better one for a parent who simply
 lost the key.
 
+## Losing the key: a delay, not a back door
+
+*Considered and deferred. Nothing is implemented.*
+
+The key is shown once and stored only as a hash, so a parent who loses it cannot
+get back into the settings. Since drawbridge stopped preventing factory reset
+(above) that is no longer catastrophic — the phone can always be wiped, from
+Settings or from recovery — but the wipe costs everything else on the device.
+
+The idea worth building is a **delayed self-removal**: from the lock screen, ask
+to remove drawbridge, wait a fixed period, and it deactivates itself with the
+data intact. The delay is the entire security mechanism. A child can start the
+countdown, but not finish it unnoticed, and cancelling needs the key — so a
+parent can abort and a child cannot.
+
+Three things decide whether it works, and all three are easy to get wrong:
+
+- **The countdown has to be impossible to miss** — an ongoing notification and a
+  line on the lock screen. The design assumes a parent notices; if it can run
+  quietly, it is a bypass rather than a safety net.
+- **The clock is the attack.** A child who can move the date forward skips the
+  wait, and `SystemClock.elapsedRealtime` resets at boot so it cannot carry the
+  count alone. The curfew work already has the machinery: `DISALLOW_CONFIG_DATE_TIME`
+  with `setAutoTimeEnabled`, applied for as long as a countdown is running.
+- **Ambiguity has to fail locked.** Clock moved backwards, state unreadable,
+  anything unexpected — the timer does not fire.
+
+The residual risk cannot be designed away: a child starts it, nobody looks at the
+phone for two weeks, and it lifts. The delay length is the only dial.
+
+Deferred rather than rejected because it is a convenience now rather than a
+safety net — it saves the photos, it does not save the phone — and it is a real
+feature (persistence, alarms, notifications, a cancel path, three languages)
+against a release that already carries a provisioning fix and a change to when
+anything is enforced at all.
+
+### Why there is no code you can email for
+
+The recurring alternative is a code the author hands out on request. It is
+rejected, and worth writing down so it stops coming back.
+
+The obvious objection is that drawbridge is open source, so a fixed secret is
+extractable from the APK. That one is actually solvable: a challenge–response
+would do it — the device shows a challenge, the author signs it with a private
+key, the device verifies against a public key in the build — and reading the
+source would not help.
+
+The reason to refuse is different. It would make the author a **permanent
+dependency**. drawbridge's central claim is that it needs no account and no
+backend, and that the only thing to trust is a signed document at a static URL.
+An escape hatch held by one person means every stranded phone depends on that
+person still reading email, still holding a key, and still being around. It also
+means adjudicating who is entitled to unlock a device, with no way to tell a
+parent from a determined teenager with a convincing story.
+
+That converts a tool into a service, which is the one thing this project set out
+not to be.
+
 ## The protected-since date is the cheap tamper check
 
 The lock screen says how long this phone has been protected, before it asks for

@@ -606,6 +606,25 @@ Verified for the browser work:
 
 Not verified, and worth doing:
 
+- **`lockAccounts()` is dead code, and a doc promises otherwise.**
+  `DISALLOW_MODIFY_ACCOUNTS` is never applied: the function exists,
+  `unlockAccounts()` is called during removal, and nothing ever calls
+  `lockAccounts()`. Meanwhile [provisioning.md](provisioning.md) step 3 tells
+  parents that running setup "locks account changes".
+
+  This matters more since `DISALLOW_FACTORY_RESET` was dropped, because FRP is
+  now a load-bearing backstop rather than a second line. The FRP argument is that
+  a child cannot answer the challenge, having never had an account on the
+  device — but if account changes are not locked, they can add their own at any
+  point afterwards and answer it themselves. Wiring `lockAccounts()` into
+  `lockDevice()` is the fix and fits the enforcement rule exactly; it was left
+  alone deliberately so it would not obstruct the FRP and Family Link testing.
+
+- **Whether FRP behaves as assumed at all.** The trusted-versus-untrusted wipe
+  distinction — a Settings reset clears FRP, a recovery reset does not — is taken
+  from documentation, and this session has twice shown that to be a poor
+  substitute for trying it. Everything the removal decision rests on assumes it.
+
 - **Everything on `main` since rc2.** Three DPC changes are unverified on
   hardware: the enforcement gate (nothing applies until the phone is locked), the
   same gate on the daily `UpdateWorker`, and the uncropped hero. The half that
