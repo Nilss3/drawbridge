@@ -53,7 +53,7 @@
 
     <!-- Vergrendelen -->
     <string name="lock_confirm_title">drawbridge vergrendelen?</string>
-    <string name="lock_confirm_message">Dit past het beleid toe, start de inhoudsfilter en verzegelt dit scherm.\n\nJe krijgt een sleutel te zien. Dat is de enige weg terug, hij wordt één keer getoond, en er is geen herstel — niet per e-mail, niet door ons, door niemand.\n\nSchrijf hem op, of beslis bewust van niet.</string>
+    <string name="lock_confirm_message">Dit past het beleid toe, start de inhoudsfilter en verzegelt dit scherm.\n\nAndroid zal vragen of drawbridge op de achtergrond mag blijven draaien. <b>Sta dat toe.</b> Weigeren stopt de filter niet, maar laat de telefoon de dagelijkse controle op beleidsupdates in slaap sussen — waardoor het toestel blijft filteren op een verouderde lijst zonder dat te melden.\n\nJe krijgt een sleutel te zien. Dat is de enige weg terug, hij wordt één keer getoond, en er is geen reset — niet via e-mail, niet door ons, door niemand.\n\nSchrijf hem op, of beslis bewust om dat niet te doen.</string>
     <string name="lock_confirm_yes">Vergrendel en toon de sleutel</string>
     <string name="lock_needs_filter">De inhoudsfilter moet draaien voor de telefoon vergrendeld kan worden.</string>
 

@@ -53,7 +53,7 @@
 
     <!-- Verrouillage -->
     <string name="lock_confirm_title">Verrouiller drawbridge ?</string>
-    <string name="lock_confirm_message">Ceci applique la politique, démarre le filtre de contenu et scelle cet écran.\n\nUne clé va vous être montrée. C\'est le seul retour possible, elle n\'est affichée qu\'une fois, et il n\'existe aucune réinitialisation — ni par e-mail, ni par nous, ni par personne.\n\nNotez-la, ou décidez délibérément de ne pas le faire.</string>
+    <string name="lock_confirm_message">Ceci applique la politique, démarre le filtre de contenu et scelle cet écran.\n\nAndroid demandera si drawbridge peut continuer à fonctionner en arrière-plan. <b>Acceptez.</b> Refuser n\'arrête pas le filtre, mais laisse le téléphone endormir la vérification quotidienne des mises à jour de politique — l\'appareil continuerait alors à filtrer sur une liste périmée sans le signaler.\n\nUne clé vous sera montrée. C\'est le seul moyen de revenir, elle n\'est affichée qu\'une fois, et il n\'y a aucune réinitialisation — ni par e-mail, ni par nous, ni par personne.\n\nNotez-la, ou décidez sciemment de ne pas le faire.</string>
     <string name="lock_confirm_yes">Verrouiller et montrer la clé</string>
     <string name="lock_needs_filter">Le filtre de contenu doit fonctionner avant que le téléphone puisse être verrouillé.</string>
 

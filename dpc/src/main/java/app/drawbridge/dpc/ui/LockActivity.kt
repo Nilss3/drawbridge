@@ -61,6 +61,10 @@ class LockActivity : AppCompatActivity() {
         keyField = findViewById(R.id.keyField)
         challengeError = findViewById(R.id.challengeError)
 
+        findViewById<View>(R.id.diagnosticsButton).setOnClickListener {
+            startActivity(Intent(this, DiagnosticsActivity::class.java))
+        }
+
         // Minted on the way in rather than on the way out, so the screen can
         // never show a key that is not the one now stored, and so backing out of
         // the reveal cannot leave the device unlocked after the parent has been

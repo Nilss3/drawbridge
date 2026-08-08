@@ -71,7 +71,7 @@
 
     <!-- Locking -->
     <string name="lock_confirm_title">Lock drawbridge?</string>
-    <string name="lock_confirm_message">This applies the policy, starts the content filter and seals this screen.\n\nYou will be shown a key. It is the only way back in, it is shown once, and there is no reset — not by email, not by us, not by anyone.\n\nWrite it down, or decide on purpose not to.</string>
+    <string name="lock_confirm_message">This applies the policy, starts the content filter and seals this screen.\n\nAndroid will ask whether drawbridge may keep running in the background. <b>Allow it.</b> Declining does not stop the filter, but it lets the phone put the daily check for policy updates to sleep — so the phone would go on filtering against an out-of-date list without saying so.\n\nYou will be shown a key. It is the only way back in, it is shown once, and there is no reset — not by email, not by us, not by anyone.\n\nWrite it down, or decide on purpose not to.</string>
     <string name="lock_confirm_yes">Lock and show the key</string>
     <string name="lock_needs_filter">The content filter has to be running before the phone can be locked.</string>
 
