@@ -1,4 +1,4 @@
-# Handoff — state as of 2026-08-07
+# Handoff — state as of 2026-08-08
 
 Everything about *how the system works* lives in [README](../README.md),
 [design-decisions](design-decisions.md), [policy](policy.md),
@@ -8,16 +8,33 @@ machine, what was and was not verified, and what to do next.
 
 ---
 
+## drawbridge works end to end
+
+**This is the MVP.** On 2026-08-07 a Moto G15 was taken out of its box, scanned
+with the provisioning QR, and became a filtered, managed phone without a cable
+ever being attached. Everything in the chain has now been watched working on
+real hardware rather than on an emulator: QR provisioning, Device Owner, the
+restriction set, the always-on DNS filter with safe-search rewriting, the app
+blocker removing apps, both browsers installing themselves, the lock cycle, the
+key, removal, and survival across a reboot and an OTA system update.
+
+Nothing below takes that away. Read it as "what to build next", not "what is
+still broken".
+
 ## Where things stand
 
 | | |
 |---|---|
-| Repo | https://github.com/Nilss3/drawbridge — public, `main`, 60 commits |
-| Release | [v0.1.8](https://github.com/Nilss3/drawbridge/releases/tag/v0.1.8), 9 assets, published and not flagged |
-| Live policy | version **23**, live at `dist/policy.signed.json` on `main` |
-| Apps, published | drawbridge, herald and herald mono, all `0.1.8` |
+| Repo | https://github.com/Nilss3/drawbridge — public, `main`, 87 commits |
+| Release | [v0.2.0](https://github.com/Nilss3/drawbridge/releases/tag/v0.2.0), 9 assets, published and latest |
+| Live policy | version **26**, live at `dist/policy.signed.json` on `main` |
+| Apps, published | drawbridge `0.2.0` (versionCode 11); herald and herald mono `0.1.8` |
 | Website | trilingual, generated into `site/`, on Cloudflare Pages |
 | Tests | 372 unit tests across four build variants, lint clean |
+
+The two apps are **no longer in lockstep**, and that is deliberate: herald has
+not changed, and rebuilding it purely to move a version number would alter every
+hash and force a policy re-sign for an identical binary.
 
 ### The QR path was broken by our own manifest, not by the DPC allowlist
 
@@ -109,6 +126,51 @@ Enterprise allowlist rather than Play distribution; and non-GMS devices
 Separately, **Android developer verification does not affect drawbridge**: apps
 installed by a DPC on managed devices are exempt indefinitely, as are ADB
 installs.
+
+### v0.2.0, and policies 24 to 26
+
+**[v0.2.0](https://github.com/Nilss3/drawbridge/releases/tag/v0.2.0)** — drawbridge
+only. herald and herald mono are the v0.1.8 binaries, republished byte for byte
+because `required_apps` pins them by URL under `/releases/latest/download/`: a
+release that omitted them would 404 every browser URL on every device.
+
+`versionCode` is **11**, not 10. The release candidates used 10, and a final
+build sharing a version code with an rc would never reach a device provisioned
+from one, since `app_update` only installs a strictly greater code.
+
+- **24** — `app_update` from version_code 9 to 11 with the published DPC's hash.
+  Signed *after* the assets were up, never before.
+- **25** — the reconciliation: 21 apps whose domains were blocked while their
+  packages were missing, so they installed and sat there broken. 157 → 178.
+- **26** — Patreon allowed again, package and domain together. It is a payment
+  page, not a feed, and grouping it with OnlyFans was a category error.
+
+**Three release candidates are published and flagged**, rc1 and rc2 with warning
+banners: both carry `DISALLOW_FACTORY_RESET` and must not be used to provision.
+
+### The factory-reset restriction was removed, and why that matters
+
+`DISALLOW_FACTORY_RESET` does far more than its documentation says. It does not
+merely hide the entry in Settings — **it strips "Wipe data/factory reset" out of
+the hardware recovery menu too**, measured on the G15, with the entries
+reappearing the instant drawbridge gives up Device Owner. A parent who lost the
+key had a phone reclaimable only by reflashing firmware from a PC.
+
+It is retired and actively cleared, so a device provisioned by rc1 or rc2 sheds
+it on the next apply. See
+[design-decisions](design-decisions.md#drawbridge-does-not-prevent-a-factory-reset).
+
+Two things replaced it, and both are weaker than the restriction was:
+
+- **Factory Reset Protection**, which depends on the parent's Google account
+  being the only one on the device — and `lockAccounts()` is dead code, so
+  nothing stops a child adding their own. See the unverified list.
+- **The protected-since date**, which is why the clock is now locked on every
+  device: winding it back a year, locking, and winding it forward forges a year
+  of protection that never happened.
+
+Putting the restriction back is on the roadmap, but **only behind a working
+delayed self-removal** — the two ship together or not at all.
 
 ### There is a website now, and it is generated
 
@@ -459,8 +521,13 @@ brew install --cask android-commandlinetools
   but see the trap above: that is still not enough to test QR provisioning.
 - **A Moto G15** — arrived and used, 2026-08-07. Android **15, API 35**, arm64,
   serial `ZY32KV9J24`. Bought as a disposable provisioning target so no phone
-  anyone depends on gets wiped, and it has earned that: it has been provisioned,
-  removed and re-provisioned several times in a session.
+  anyone depends on gets wiped, and it has earned that: provisioned, removed and
+  re-provisioned perhaps a dozen times across one session, by QR and by adb.
+
+  **It is the reference device.** Every claim in this file about real hardware
+  came from it. It is currently QR-provisioned from rc3 and should self-update to
+  v0.2.0 (versionCode 11) on its next `UpdateWorker` run — which will be the
+  first time `checkAndInstallSelf` has ever had a newer version to fetch.
 
   **Device Owner can be re-granted over adb on it**, because it has zero
   accounts — `dpm set-device-owner` succeeded again straight after a removal.
@@ -739,6 +806,14 @@ Each of these looks like a bug and is not, or bites silently:
 - **Upstream blocklist URLs rot silently.** See policy 23. `sign` now checks
   them, but the deeper lesson is that a valid signature says nothing about
   whether the internet still agrees with the document.
+- **A pushed list is not a served list for several minutes.**
+  `raw.githubusercontent.com` caches, so after committing a policy and its
+  pinned list together there is a window — measured at roughly three to five
+  minutes on 2026-08-08 — where the new policy is served alongside the *old*
+  list. A device polling inside it fails the checksum and drops that whole
+  category until its next poll. Committing them together is necessary and not
+  sufficient; verify the served file hashes to the pin before assuming a policy
+  is live.
 - **`site/` is generated.** Hand-edited HTML disappears at the next
   `build-site.py` run, with no error. It has happened once already.
 - **The Play-image emulator cannot test QR provisioning.** No consumer Setup
@@ -778,93 +853,104 @@ Each of these looks like a bug and is not, or bites silently:
 
 ## Reasonable next steps
 
-1. **Cut a release carrying the provisioning fix, and retest the QR.** This is
-   the one that unblocks everything else, and it cannot be shortcut: the QR
-   payload names `/releases/latest/download/dpc-release.apk`, so the fix has to
-   be *published* before it can be proven.
+The MVP is done and shipped. What follows is a feature roadmap, in the order the
+owner set on 2026-08-08, not a defect list.
 
-   The cheap way to prove it first, without a 1.1 GiB upload or a policy
-   change: publish the release-signed DPC as a **pre-release** and generate a
-   test QR pointing at that explicit tag URL. GitHub excludes pre-releases from
-   `/latest`, so every browser URL in `required_apps` keeps resolving and no
-   policy has to move. The QR pins the *certificate*, not the APK, so a test QR
-   against the same keystore is valid. If it provisions, the same bytes become
-   the real release.
+### 1. herald must force safe search everywhere, or refuse the engine
 
-   Then, for the real one: **it must carry all seven assets.** A release with
-   only the DPC in it makes `/releases/latest/download/herald-*.apk` 404 on
-   every device — the policy-23 failure, self-inflicted. The browsers need no
-   rebuild, only re-upload. Raise the DPC's `version_code`, publish the assets,
-   *then* publish the policy naming the new code and hash. That ordering is
-   also the first genuine test of the self-update path.
+The policy already rewrites Google, Bing and YouTube at the DNS layer, and that
+covers the engines it names and nothing else. A search engine drawbridge has
+never heard of resolves normally and returns whatever it likes. herald is the
+only browser on the device, so it is the right place to close this: force safe
+search on every engine it offers, and for any engine where that cannot be forced,
+do not offer it at all. Note that DNS rewriting cannot do this alone — the engine
+list lives in the browser.
 
-   **The emulator cannot substitute for the QR test.** Its system image ships no
-   consumer Setup Wizard, so there is no six-tap flow; the trusted-source
-   provisioning intent needs `DISPATCH_PROVISIONING_MESSAGE`, which adb shell
-   does not hold; and Play images refuse `adb root`. An image you *can* root is
-   one without Play Protect. That is a dead end — do not spend an afternoon on
-   it again.
+### 2. A setting for video streaming, with or without YouTube
 
-2. **Reconcile `blocked_packages` against the domain lists** — policy 24. See
-   the drift table above. Systematic pass, not the three known names, and
-   settle the video-platforms sentence in the same edit.
+Two separate questions a parent will ask differently: "may this phone stream
+video at all", and "may it use YouTube". The policy already models options
+(`whatsapp` is one), so the mechanism exists; what is needed is the option
+definition, the wording in three languages, and the sweep behaviour when it is
+turned off. Note that YouTube is currently blocked outright in `social.txt`, and
+that the safe-search rewrite only takes effect if it stops being blocked — the
+comment at the top of that list explains the interaction.
 
-3. **Keep both keys backed up.** They were backed up before v0.1.7 went out; from
-   here on every published release depends on that staying true.
-4. **Use herald mono properly and decide whether it is right.** Specifically
-   whether the TextureView backend costs frame rate, whether 2.5 s is the right
-   pause, and whether reader-view-by-default is too eager on news sites. If
-   scrolling drags, the documented fallback is a CSS `filter: grayscale(1)`,
-   which costs `position: fixed` breakage instead.
-5. Then, in rough order of value:
-   - **Drop unused ABIs.** `armeabi-v7a` and `x86_64` have never been downloaded
-     by anything, and now cost double what they did. Dropping both would take a
-     release from ~1.1 GiB to ~450 MiB. `x86_64` was kept deliberately for
-     Chromebooks; `armeabi-v7a` is 32-bit ARM and `minSdk` is 28, so it is
-     almost certainly dead weight. Removing an ABI means removing its
-     `required_apps` entry at the same time.
-   - **Decide whether the APK download path deserves an allowlist entry.**
-     `required_apps` points at `github.com`, which redirects to a
-     `*.githubusercontent.com` asset host that has not been pinned down; a
-     blocked redirect target would stop auto-install silently.
-   - **Build the WebADB installer.** The `/install/` page has a visibly
-     disabled "Install over USB" button waiting for it. A static page using
-     [ya-webadb](https://github.com/yume-chan/ya-webadb) can push the DPC APK
-     and run `dpm set-device-owner` over WebUSB from Chrome or Edge, with no
-     local software. **This is the hedge against the DPC allowlist**: nothing
-     in that flow asks Play Services for permission, so a rejected appeal
-     stops being a release blocker.
+### 3. Install F-Droid by default
 
-     The Windows driver problem that looked like a blocker **is not one**:
-     Josh Gao added Microsoft OS Descriptors to the adb gadget in Android 10
-     (API 29) with a CTS test, so every certified device since advertises
-     `WINUSB` and Windows binds `winusb.sys` automatically. No Google USB
-     driver, no Zadig. Zadig only matters pre-Android-10, or where an OEM
-     driver already claimed the interface.
+It is useful, it is how a managed phone gets software that is not on Play, and
+it is already unblocked. Adding it to `required_apps` means hosting or pinning
+its APK the same way herald is — by URL and SHA-256 — and deciding whether it is
+required (reinstalled if removed) or merely allowed.
 
-     Real constraints: Chromium and an HTTPS origin; no local `adb` server
-     running (it claims the device exclusively); the device must have no
-     account yet; and it is one-shot, since `DISALLOW_DEBUGGING_FEATURES`
-     kills adb the moment provisioning applies.
-   - **Localise herald.** drawbridge is now English, Dutch and French; the
-     browser is still English-only, with ~45 strings. Note that drawbridge
-     cannot set it — the picker is a *per-app* locale and no API lets one app
-     set another's, so herald needs a picker of its own in its settings.
-   - **Exercise the self-update path.** `app_update` is set as of policy 22, but
-     pins the running version, so nothing has ever downloaded through it. The
-     next release is the test: publish the APK, *then* the policy naming its
-     version code and hash.
-   - **Finish the curfew.** The model, window arithmetic and Device Owner calls
-     are drafted and tested; nothing calls them. What is left is the UI, and
-     three wiring points: `CurfewController.apply` from `BootReceiver` and after
-     a policy refresh, and a `<receiver>` entry for `CurfewReceiver`. See
-     [policy.md](policy.md#curfew-an-evening-with-no-internet) and
-     [design-decisions](design-decisions.md#the-curfew-is-that-same-lockdown-used-on-purpose).
-     **Nothing has ever been on a device**, and the one thing worth watching for
-     first is a curfew that will not lift — a failure to *leave* lockdown is a
-     phone with no internet and no way to fix it from the phone.
+### 4. A setting for browsers: none, or herald only
 
----
+Today the policy names `allowed_browser_packages` and the blocker removes
+everything else. "No browser at all" is a stricter position some parents will
+want, and it interacts with `required_apps`: a browser in `required_apps` and
+absent from the allowed list is installed and removed on a loop, which is the
+trap the two-list rule exists to prevent. Whatever ships must keep those two in
+agreement.
+
+### 5. The curfew, with a floor of half an hour of internet a day
+
+Drafted and never run on a device: the schema, the window arithmetic and the
+Device Owner calls exist and are tested, nothing reads them, and no published
+policy carries one. See
+[policy](policy.md#curfew-an-evening-with-no-internet) and
+[design-decisions](design-decisions.md#the-curfew-is-that-same-lockdown-used-on-purpose).
+
+The new requirement is a **guaranteed daily window of at least thirty minutes**,
+so a phone can always fetch its policy and its updates. That is not a nicety: a
+curfew long enough to cover the whole day would otherwise be able to stop
+drawbridge ever hearing about a policy that lifts it.
+
+The failure that matters is a curfew that does not lift. Wire `CurfewController.apply`
+into `BootReceiver` and the policy refresh, add the `<receiver>` entry for
+`CurfewReceiver`, and treat "cannot leave lockdown" as the case to design
+against — a phone with no internet and no way to fix it from the phone.
+
+The clock lock this needs is already in place and applies to every locked
+device, curfew or not.
+
+### 6. A dev branch
+
+Everything so far has gone straight to `main`, which is also what Cloudflare
+deploys and what every device fetches its policy from. That was tolerable while
+the only device was on the desk. It stops being tolerable now that a real phone
+is provisioned: a policy pushed to `main` is live within minutes, and
+`dist/policy.signed.json` has no staging path at all.
+
+Worth deciding at the same time: whether the *policy* gets a channel of its own,
+since a branch protects the code but the live document is a URL on `main`.
+
+### 7. Lock factory reset — last, and only with the timer
+
+`DISALLOW_FACTORY_RESET` goes back **only** once the delayed self-removal works,
+and deliberately after everything above. While features are being built, a
+mistake that bricks a handset costs a device; with a factory reset available it
+costs ten minutes. See
+[design-decisions](design-decisions.md#losing-the-key-a-delay-not-a-back-door).
+
+Remember that reinstating it means reversing the `RETIRED_RESTRICTIONS`
+migration too, and that today's escape works even when drawbridge is completely
+broken while a timer-based one does not.
+
+### Standing items, unchanged
+
+- **Retry the QR every couple of weeks** if the allowlist question ever matters
+  again. It has never blocked this project, on one handset, on one date.
+- **Keep both keys backed up.** Every published release now depends on it.
+- **Drop unused ABIs.** `armeabi-v7a` and `x86_64` have never been downloaded by
+  anything and cost ~650 MiB of every release. Removing an ABI means removing
+  its `required_apps` entry in the same policy.
+- **Build the WebADB installer.** The `/install/` page still has a disabled
+  "Install over USB" button. Less urgent now that QR provisioning works, and
+  still the only path that needs no cable and no allowlist.
+- **Localise herald.** drawbridge speaks three languages; the browser is
+  English-only, ~45 strings. drawbridge cannot set it — a per-app locale cannot
+  be set by another app — so herald needs its own picker.
+
 
 ## Working notes for whoever picks this up
 
