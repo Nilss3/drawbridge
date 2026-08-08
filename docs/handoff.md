@@ -856,7 +856,50 @@ Each of these looks like a bug and is not, or bites silently:
 The MVP is done and shipped. What follows is a feature roadmap, in the order the
 owner set on 2026-08-08, not a defect list.
 
-### 1. herald must force safe search everywhere, or refuse the engine
+### 1. Put a Google account on the phone and find out whether FRP works
+
+**Before anything else, and before any further feature work.** Everything the
+factory-reset decision rests on is currently taken from Google's documentation
+rather than from a device, and today produced two separate cases where that was
+not good enough.
+
+The G15 has never had a Google account on it — every provisioning run skipped
+sign-in on purpose — so Factory Reset Protection has never been armed, never
+triggered, and never observed. Yet FRP is now the whole backstop: `DISALLOW_FACTORY_RESET`
+was removed so that a lost key cannot cost a handset, which means a child who
+knows the screen lock *can* wipe the phone. What is supposed to make that
+worthless to them is FRP demanding an account only the parent has.
+
+The test, on a phone whose account password only the owner knows:
+
+1. Add the account, lock drawbridge.
+2. **Wipe from recovery.** Does setup then demand that account? *Expected: yes —
+   an untrusted wipe leaves FRP armed.*
+3. Re-provision, then **reset from Settings**. Does it demand it? *Expected: no —
+   a trusted wipe clears FRP.*
+
+Step 3 is the uncomfortable one. If a Settings reset clears FRP, a child who
+knows the screen lock has a one-minute route to a clean phone and the only thing
+left is the protected-since date telling the parent afterwards. That would be
+worth knowing before deciding anything else, and might well argue for bringing
+step 8 forward once the timer exists.
+
+**Fix `lockAccounts()` at the same time.** `DISALLOW_MODIFY_ACCOUNTS` is never
+applied — the function exists, `unlockAccounts()` runs during removal, nothing
+calls `lockAccounts()` — so even with FRP armed a child can add their own
+account afterwards and answer the challenge themselves. [provisioning](provisioning.md)
+tells parents that setup "locks account changes", which is currently false.
+Wiring it into `lockDevice()` fits the enforcement rule exactly: the parent adds
+their account in the window before locking, and locking closes it. It was left
+alone deliberately so it would not obstruct this very test — do the test first,
+then wire it.
+
+Also worth checking while an account is on the device: whether a **supervised
+Family Link account** satisfies FRP the same way an ordinary one does, and what
+Family Link does on a device that already has an owner. Neither is known, and
+"can I use this alongside Family Link" is a question every parent will ask.
+
+### 2. herald must force safe search everywhere, or refuse the engine
 
 The policy already rewrites Google, Bing and YouTube at the DNS layer, and that
 covers the engines it names and nothing else. A search engine drawbridge has
@@ -866,7 +909,7 @@ search on every engine it offers, and for any engine where that cannot be forced
 do not offer it at all. Note that DNS rewriting cannot do this alone — the engine
 list lives in the browser.
 
-### 2. A setting for video streaming, with or without YouTube
+### 3. A setting for video streaming, with or without YouTube
 
 Two separate questions a parent will ask differently: "may this phone stream
 video at all", and "may it use YouTube". The policy already models options
@@ -876,14 +919,14 @@ turned off. Note that YouTube is currently blocked outright in `social.txt`, and
 that the safe-search rewrite only takes effect if it stops being blocked — the
 comment at the top of that list explains the interaction.
 
-### 3. Install F-Droid by default
+### 4. Install F-Droid by default
 
 It is useful, it is how a managed phone gets software that is not on Play, and
 it is already unblocked. Adding it to `required_apps` means hosting or pinning
 its APK the same way herald is — by URL and SHA-256 — and deciding whether it is
 required (reinstalled if removed) or merely allowed.
 
-### 4. A setting for browsers: none, or herald only
+### 5. A setting for browsers: none, or herald only
 
 Today the policy names `allowed_browser_packages` and the blocker removes
 everything else. "No browser at all" is a stricter position some parents will
@@ -892,7 +935,7 @@ absent from the allowed list is installed and removed on a loop, which is the
 trap the two-list rule exists to prevent. Whatever ships must keep those two in
 agreement.
 
-### 5. The curfew, with a floor of half an hour of internet a day
+### 6. The curfew, with a floor of half an hour of internet a day
 
 Drafted and never run on a device: the schema, the window arithmetic and the
 Device Owner calls exist and are tested, nothing reads them, and no published
@@ -913,7 +956,7 @@ against — a phone with no internet and no way to fix it from the phone.
 The clock lock this needs is already in place and applies to every locked
 device, curfew or not.
 
-### 6. A dev branch
+### 7. A dev branch
 
 Everything so far has gone straight to `main`, which is also what Cloudflare
 deploys and what every device fetches its policy from. That was tolerable while
@@ -924,10 +967,12 @@ is provisioned: a policy pushed to `main` is live within minutes, and
 Worth deciding at the same time: whether the *policy* gets a channel of its own,
 since a branch protects the code but the live document is a URL on `main`.
 
-### 7. Lock factory reset — last, and only with the timer
+### 8. Lock factory reset — last, and only with the timer
 
 `DISALLOW_FACTORY_RESET` goes back **only** once the delayed self-removal works,
-and deliberately after everything above. While features are being built, a
+and deliberately after everything above — unless step 1 shows that FRP does not
+hold, in which case this moves up, because the backstop it was removed in favour
+of would not exist. While features are being built, a
 mistake that bricks a handset costs a device; with a factory reset available it
 costs ten minutes. See
 [design-decisions](design-decisions.md#losing-the-key-a-delay-not-a-back-door).
