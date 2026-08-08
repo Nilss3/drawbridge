@@ -1,6 +1,6 @@
 # Blocked apps
 
-All 157 apps blocked by policy 21. Source of truth is `blocked_packages` in
+All 178 apps blocked as of policy 25. Source of truth is `blocked_packages` in
 `dist/policy.json`; package ids and reasoning are in [blocklist-notes](blocklist-notes.md).
 
 ## Messaging
@@ -38,6 +38,48 @@ All 157 apps blocked by policy 21. Source of truth is `blocked_packages` in
 - WeChat
 - LINE
 - VK
+
+## Added in policy 25 — apps whose sites were already blocked
+
+These are the reconciliation: every one had its domains on `social.txt` or
+`ai-companions.txt` while its package was missing, so the app installed, survived
+the blocker, and sat there broken. Found by installing LinkedIn, Instants and
+TikTok Lite on a Moto G15 and watching nothing happen, then walking the rest of
+the lists the same way. Every id was checked against the Belgian Play storefront
+before being added.
+
+- LinkedIn — `com.linkedin.android`
+- Instants (Meta) — `com.instagram.moonshot`
+- TikTok Lite — `com.tiktok.lite.go`
+- Imgur — `com.imgur.mobile`
+- 9GAG — `com.ninegag.android.app`
+- iFunny — `mobi.ifunny`
+- Kick — `com.kick.streaming`
+- Rumble — `com.rumble.battles`
+- Bigo Live — `sg.bigo.live`
+- Patreon — `com.patreon.android`
+- Weibo — `com.sina.weibo`
+- Telegram X — `org.thunderdog.challegram`
+- Bluesky — `xyz.blueskyweb.app`
+- Mastodon — `org.joinmastodon.android`
+- Truth Social — `com.truthsocial.android.app`
+- Gettr — `com.gettr.gettr`
+- Parler — `com.parler.parler`
+- Tinder — `com.tinder`
+- Bumble — `com.bumble.app`
+- Grindr — `com.grindrapp.android`
+- Joyland — `com.joyland.ai`
+
+**Three domains still have no package.** Minds, Yubo and Monkey are blocked as
+sites only: no id for them could be confirmed on Play, and an unverified package
+id is inert while looking like protection — the `anima.ai` lesson. Better an
+honest gap than a line that does nothing.
+
+**The reverse direction is not done.** Packages blocked whose *domains* are not
+would leave the web version reachable in herald. Establishing that needs a
+hand-built app-to-domain mapping; matching on name tokens produces almost
+entirely false positives (`com.tencent.mm` is WeChat, `com.ninegag.android.app`
+is 9gag.com).
 
 ## AI companions and character chatbots
 
