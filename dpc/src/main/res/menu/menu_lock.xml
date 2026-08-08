@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    The locked screen gets Diagnostics and nothing else.
+
+    Removal is deliberately absent: it lives behind the key, on the screen this
+    one guards. Diagnostics is not, because a locked phone is the normal state
+    and a screen for troubleshooting one is useless if it needs the key first.
+-->
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/actionDiagnostics"
+        android:title="@string/action_diagnostics"
+        app:showAsAction="never" />
+</menu>

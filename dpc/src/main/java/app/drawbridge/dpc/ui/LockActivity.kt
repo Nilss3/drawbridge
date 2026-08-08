@@ -4,6 +4,8 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.text.format.DateUtils
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.widget.Button
 import android.widget.CheckBox
@@ -61,9 +63,6 @@ class LockActivity : AppCompatActivity() {
         keyField = findViewById(R.id.keyField)
         challengeError = findViewById(R.id.challengeError)
 
-        findViewById<View>(R.id.diagnosticsButton).setOnClickListener {
-            startActivity(Intent(this, DiagnosticsActivity::class.java))
-        }
 
         // Minted on the way in rather than on the way out, so the screen can
         // never show a key that is not the one now stored, and so backing out of
@@ -192,6 +191,23 @@ class LockActivity : AppCompatActivity() {
         )
         finish()
     }
+
+    /**
+     * Diagnostics only. Removal is not offered here — it lives behind the key,
+     * on the screen this one guards.
+     */
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.menu_lock, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean =
+        if (item.itemId == R.id.actionDiagnostics) {
+            startActivity(Intent(this, DiagnosticsActivity::class.java))
+            true
+        } else {
+            super.onOptionsItemSelected(item)
+        }
 
     companion object {
         private const val EXTRA_MINT = "mint_key"

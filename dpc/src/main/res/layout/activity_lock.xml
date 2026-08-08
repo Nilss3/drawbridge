@@ -164,19 +164,6 @@
                 android:layout_marginTop="24dp"
                 android:text="@string/lock_challenge_action" />
 
-            <!--
-                Reachable without the key on purpose. A locked phone is the
-                normal state, so putting diagnostics behind the key would hide
-                it from every situation it exists for — and it reveals nothing
-                worth protecting: device and policy facts, no key and no hash.
-            -->
-            <Button
-                android:id="@+id/diagnosticsButton"
-                style="?attr/materialButtonOutlinedStyle"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:text="@string/action_diagnostics" />
         </LinearLayout>
     </LinearLayout>
 </ScrollView>
