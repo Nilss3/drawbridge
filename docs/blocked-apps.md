@@ -1,6 +1,6 @@
 # Blocked apps
 
-All 178 apps blocked as of policy 25. Source of truth is `blocked_packages` in
+All 177 apps blocked as of policy 26. Source of truth is `blocked_packages` in
 `dist/policy.json`; package ids and reasoning are in [blocklist-notes](blocklist-notes.md).
 
 ## Messaging
@@ -57,7 +57,6 @@ before being added.
 - Kick — `com.kick.streaming`
 - Rumble — `com.rumble.battles`
 - Bigo Live — `sg.bigo.live`
-- Patreon — `com.patreon.android`
 - Weibo — `com.sina.weibo`
 - Telegram X — `org.thunderdog.challegram`
 - Bluesky — `xyz.blueskyweb.app`
@@ -69,6 +68,11 @@ before being added.
 - Bumble — `com.bumble.app`
 - Grindr — `com.grindrapp.android`
 - Joyland — `com.joyland.ai`
+
+**Patreon is deliberately not blocked**, as app or as site. It was added in
+policy 25 for consistency with its domain and removed again in 26: it is how a
+great many podcasts, artists and writers are funded, and it is not a feed
+anybody scrolls. Its neighbours on that list — OnlyFans and Fansly — stay.
 
 **Three domains still have no package.** Minds, Yubo and Monkey are blocked as
 sites only: no id for them could be confirmed on Play, and an unverified package

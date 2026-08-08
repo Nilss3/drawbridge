@@ -1,5 +1,5 @@
 {
-  "version": 25,
+  "version": 26,
   "issued_at": "2026-08-06T00:00:00Z",
   "comment": "Policy 23. Repoints the two HaGeZi blocklists, which had been returning 404 on every device: the upstream repo dropped its domains/ directory in favour of wildcard/, so domains/pro.txt and domains/doh.txt no longer exist. The replacements are the -onlydomains variants, which are plain domain-per-line and so still match format 'domains'; wildcard/pro.txt itself now carries '*.' prefixes and would not parse. Nothing else changed. Devices degraded quietly rather than failing -- PolicyStore logs the download error and falls back to a stale cache or drops the list -- so a freshly provisioned device had no ads/tracker/malware list and no encrypted-DNS bypass list, while Mullvad's 'all' upstream continued to cover ads, trackers and malware at the resolver.",
   "dns": {
@@ -43,7 +43,7 @@
       "url": "https://raw.githubusercontent.com/Nilss3/drawbridge/main/dist/lists/social.txt",
       "format": "domains",
       "category": "social",
-      "sha256": "f3f2a0de988b5490280acf08dad9b6d22ca16c7220fb35ff658a2bbe3944bfa6"
+      "sha256": "7c1a7f1a8c0ddaa1a31f2afdad09960422ecdb7627f02e560effeec302a47975"
     },
     {
       "id": "ai-companions",
@@ -90,7 +90,6 @@
     "com.kick.streaming",
     "com.rumble.battles",
     "sg.bigo.live",
-    "com.patreon.android",
     "com.sina.weibo",
     "org.thunderdog.challegram",
     "xyz.blueskyweb.app",
