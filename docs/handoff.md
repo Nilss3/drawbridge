@@ -185,14 +185,16 @@ Same installer, same moment, two payloads, one verdict each. What that settles:
   permission"* — the canned description of a permission the APK no longer asks
   for. Whatever Play Protect classifies on, it is not that line.
 
-One detail recorded because it cost nothing and might save someone an afternoon:
-the notification names the app **`app.drawbridge.dpc.DrawbridgeApplication`** —
-the package plus the `<application android:name>` class, which is what a label
-lookup falls back to when it cannot resolve an app label. So Play Protect does
-appear to be parsing the staged APK rather than replaying a cached notification,
-while still classifying it on something other than what it just read.
+**The name in the notification is noise, not signal.** Round one's notification
+called the app `app.drawbridge.dpc.DrawbridgeApplication` — the package plus the
+`<application android:name>` class, which is what a label lookup falls back to
+when it cannot resolve a label — and that briefly looked like evidence about what
+Play Protect was reading. It is not: 2026-08-08 said "drawbridge", round one said
+the class name, round two said "drawbridge" again, for three payloads that differ
+only in ways that have nothing to do with labels. The rendering is simply
+inconsistent between attempts. Do not build an argument on it.
 
-#### Round two: 0.2.2, built and staged, not yet published
+#### Round two: 0.2.2, published, and blocked as well
 
 Two changes, chosen so they are exercised at **different moments** and therefore
 do not confound each other:
@@ -211,12 +213,36 @@ do not confound each other:
   `setPackageSource(PACKAGE_SOURCE_STORE)` is also available and is deliberately
   not used: it asserts a provenance the install does not have.
 
-If round two also fails, what is left is **everything drawbridge has and herald
-does not** that cannot be given up — `QUERY_ALL_PACKAGES`, because noticing
-packages nobody declared is the app blocker's whole job; the
-`DeviceAdminReceiver` and its metadata; the custom signature permission — and at
-that point the different-package-name experiment below is the only thing worth
-doing before conceding the manifest is not the lever.
+**The manifest half of round two failed too.** versionCode 13 was refused on the
+same terms. So three payloads have now been offered to the same installer — one
+declaring `REQUEST_INSTALL_PACKAGES`, one without it, one declaring nothing
+install-related whatsoever — and all three were blocked, while herald installs
+from that same installer without comment.
+
+**Treat the manifest as ruled out.** Both permissions stay gone because they were
+verified to do nothing, not because removing them helped. What is left that
+drawbridge has and herald does not cannot be given up: `QUERY_ALL_PACKAGES`,
+because noticing packages nobody declared is the app blocker's whole job; the
+`DeviceAdminReceiver` and its metadata; the custom signature permission. Editing
+the manifest further is not a plan.
+
+Two things remain untried, and then the manifest question is exhausted:
+
+1. **The session change, which has still never been tested.**
+   `INSTALL_REASON_POLICY` ships in 0.2.2, and 0.2.2 is not installed anywhere —
+   the session is described by whatever does the installing, and that is still
+   versionCode 11. Testing it means switching Play Protect off once to land
+   0.2.2 by hand, switching it back on, then publishing a 0.2.3 that differs
+   only in version code. That is the last cheap idea.
+2. **The different-package-name experiment**, described below, which is the one
+   that says whether any of this is winnable at all.
+
+Worth researching alongside both: whether a Device Owner has any *supported* way
+to exempt its own installs from the package verifier — `setGlobalSetting` and
+`setSecureSetting` take only a short allowlist of keys, and whether anything
+relevant is still on it needs checking rather than assuming. Note this would be
+a real trade-off rather than a free win: it weakens verification device-wide on a
+phone belonging to a child.
 
 **The experiment that would settle it** is installing a drawbridge-shaped APK
 under a *different package name* through `required_apps`. If that sails through,
