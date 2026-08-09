@@ -525,9 +525,30 @@ brew install --cask android-commandlinetools
   re-provisioned perhaps a dozen times across one session, by QR and by adb.
 
   **It is the reference device.** Every claim in this file about real hardware
-  came from it. It is currently QR-provisioned from rc3 and should self-update to
-  v0.2.0 (versionCode 11) on its next `UpdateWorker` run — which will be the
-  first time `checkAndInstallSelf` has ever had a newer version to fetch.
+  came from it.
+
+  **There is a test running on it right now.** It is QR-provisioned from rc3
+  (drawbridge versionCode 10, policy 23, locked) and was deliberately left alone
+  on 2026-08-08 to see whether it updates itself unaided. Two things are due:
+  policy 23 → 26 via `PolicyWorker`, and drawbridge 10 → 11 via `UpdateWorker`
+  and `checkAndInstallSelf`. Both periodic jobs run **daily**; the policy needs
+  only a connection, the app update needs an **unmetered** one and a battery
+  that is not low.
+
+  **How to tell it worked without unlocking:** v0.2.0 puts an overflow menu on
+  the lock screen and rc3 has none, so the menu appearing *is* the result. From
+  there, Diagnostics reports the version and the policy.
+
+  This is the first time `checkAndInstallSelf` has ever had a newer version to
+  fetch — armed since policy 22, it has only ever returned `UpToDate`. If it has
+  not happened after a couple of days on Wi-Fi, something is wrong and the
+  battery-optimisation state is the first thing to check.
+
+  **Rebooting forces both**, and is a reasonable mechanism rather than a
+  workaround: `DnsFilterService` calls `PolicyWorker.refreshNow` and
+  `UpdateWorker.runNow` when it starts, and those use `CONNECTED` rather than
+  `UNMETERED`, so they run on mobile data too. Do not reboot it while the
+  unaided test is the thing being observed.
 
   **Device Owner can be re-granted over adb on it**, because it has zero
   accounts — `dpm set-device-owner` succeeded again straight after a removal.
@@ -992,6 +1013,11 @@ broken while a timer-based one does not.
 - **Build the WebADB installer.** The `/install/` page still has a disabled
   "Install over USB" button. Less urgent now that QR provisioning works, and
   still the only path that needs no cable and no allowlist.
+- **Nothing in the UI forces an app update.** "Check for policy updates" calls
+  `policy.refresh()` and nothing else, so a parent who knows a newer drawbridge
+  exists has no button for it — the only routes are waiting a day or rebooting,
+  and nobody would guess the second. Folding `UpdateWorker.runNow` into that
+  button, and renaming it, would close it.
 - **Localise herald.** drawbridge speaks three languages; the browser is
   English-only, ~45 strings. drawbridge cannot set it — a per-app locale cannot
   be set by another app — so herald needs its own picker.
