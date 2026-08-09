@@ -26,9 +26,9 @@ still broken".
 | | |
 |---|---|
 | Repo | https://github.com/Nilss3/drawbridge — public, `main`, 96 commits |
-| Release | [v0.2.0](https://github.com/Nilss3/drawbridge/releases/tag/v0.2.0), 9 assets, **latest**; v0.2.1, v0.2.2 and v0.2.3 are one-asset **pre-releases** on purpose |
-| Live policy | version **29**, live at `dist/policy.signed.json` on `main` |
-| Apps, published | drawbridge `0.2.3` (versionCode 14), **which no deployed phone can install unaided** — see below; herald and herald mono `0.1.8` |
+| Release | [v0.2.0](https://github.com/Nilss3/drawbridge/releases/tag/v0.2.0), 9 assets, **latest**; v0.2.1 to v0.2.4 are one-asset **pre-releases** on purpose |
+| Live policy | version **30**, live at `dist/policy.signed.json` on `main` |
+| Apps, published | drawbridge `0.2.4` (versionCode 15), **which no deployed phone can install unaided** — see below; the G15 runs 0.2.3, installed with Play Protect switched off; herald and herald mono `0.1.8` |
 | Website | trilingual, generated into `site/`, on Cloudflare Pages |
 | Tests | 372 unit tests across four build variants, lint clean |
 
@@ -226,38 +226,77 @@ because noticing packages nobody declared is the app blocker's whole job; the
 `DeviceAdminReceiver` and its metadata; the custom signature permission. Editing
 the manifest further is not a plan.
 
-Two things remain untried, and then the manifest question is exhausted:
+#### Round three: the install session, and the end of what we control
 
-1. **The session change, which has still never been tested.**
-   `INSTALL_REASON_POLICY` ships in 0.2.2, and 0.2.2 is not installed anywhere —
-   the session is described by whatever does the installing, and that is still
-   versionCode 11. Testing it means switching Play Protect off once to land
-   0.2.2 by hand, switching it back on, then publishing a 0.2.3 that differs
-   only in version code. That is the last cheap idea.
-2. **The different-package-name experiment**, described below, which is the one
-   that says whether any of this is winnable at all.
+`INSTALL_REASON_POLICY` had never actually run. A `PackageInstaller` session is
+described by whatever does the installing, so the release that introduces a
+session parameter can only ever be installed by a build that lacks it — and the
+G15 sat on versionCode 11 through rounds one and two. Landing 0.2.3 by hand,
+with Play Protect switched off, made the phone's installer a build that marks
+its sessions; 0.2.4 was then published differing in **nothing but the version
+number**, so the session was the only variable.
 
-Worth researching alongside both: whether a Device Owner has any *supported* way
+**Blocked, same message.** Four rounds:
+
+| Payload | What was different | Result |
+|---|---|---|
+| 11 | `REQUEST_INSTALL_PACKAGES` + `REQUEST_DELETE_PACKAGES` | blocked |
+| 12 | no `REQUEST_INSTALL_PACKAGES` | blocked |
+| 13 | no install-related permissions at all | blocked |
+| 15 | installed by a build marking `INSTALL_REASON_POLICY` | blocked |
+| herald 8 | — | installs, from the same installer, in the same run |
+
+**Everything inside the APK that we control has now been tried.** The manifest
+over three rounds and the session parameters over one. Do not spend another
+round on either; the next person's instinct will be to try one more permission
+combination, and that instinct has been wrong four times.
+
+`INSTALL_REASON_POLICY` stays in the code. It is true, it costs nothing, and
+"it did not help" is not a reason to describe a session dishonestly.
+
+#### What is actually left
+
+**The package-name probe, which is the only experiment that maps onto a fix.**
+Build the DPC with a different `applicationId` and change nothing else — same
+release key, same code, same manifest — publish it as an extra asset, and add it
+to `required_apps` so the device installs it on the next reboot.
+
+- **It installs** → the verdict is bound to `app.drawbridge.dpc` as an identity,
+  not to anything the APK does. That is the good outcome, because it has fixes:
+  an appeal, and in the worst case a package rename for phones provisioned in
+  future. (A rename cannot rescue an already-provisioned device: Device Owner is
+  tied to the package.)
+- **It is blocked** → the objection is to the APK's content or its signer, and
+  since the manifest is exhausted, that means the code or the certificate.
+
+Keep it to one variable: **same signing key**. If the probe is blocked, the
+signer becomes the next variable to move, and that is also exactly what
+developer verification would change — which is why the two questions are worth
+keeping apart rather than testing at once.
+
+Cleanup is built in: the policy after the test drops the probe from
+`required_apps` and puts its package in `blocked_packages`, so the app blocker
+uninstalls it.
+
+Worth researching alongside it: whether a Device Owner has any *supported* way
 to exempt its own installs from the package verifier — `setGlobalSetting` and
 `setSecureSetting` take only a short allowlist of keys, and whether anything
-relevant is still on it needs checking rather than assuming. Note this would be
-a real trade-off rather than a free win: it weakens verification device-wide on a
+relevant is still on it needs checking rather than assuming. This would be a
+real trade-off rather than a free win: it weakens verification device-wide on a
 phone belonging to a child.
 
-**The experiment that would settle it** is installing a drawbridge-shaped APK
-under a *different package name* through `required_apps`. If that sails through,
-the verdict is bound to `app.drawbridge.dpc` itself, no manifest change will
-ever move it, and the remaining levers are an appeal and developer verification
-rather than more builds. It is not first only because it puts a junk package
-into the live policy.
+And after that the levers are outside the APK entirely: an appeal specific to
+install-blocking, separate from the 2026-08-06 enrolment one, and **developer
+verification**, which stops being a September deadline and becomes the plan.
 
 Note this is unfolding **while the 2026-08-06 allowlist appeal is still live**.
 Whether Play Protect's treatment of drawbridge is settled is unknown, so a
 result today may not hold in a fortnight — in either direction.
 
-**Every release is currently unable to reach a deployed phone.** 0.2.1 is
-published and the one real device cannot install it. Weigh every change
-accordingly, and do not ship anything that assumes this is solved.
+**No release can reach a deployed phone unaided.** 0.2.1 through 0.2.4 are
+published and the one real device installed 0.2.3 only because Play Protect was
+switched off by hand. Weigh every change accordingly, and do not ship anything
+that assumes this is solved.
 
 ### 0.2.3: the reveal screen locked phones by accident, and a back door now exists
 
@@ -800,10 +839,13 @@ brew install --cask android-commandlinetools
   **It is the reference device.** Every claim in this file about real hardware
   came from it.
 
-  **Its current state, 2026-08-09**: drawbridge `0.2.0` versionCode **11**,
-  policy **27**, locked, with a Google account and Play Protect **on**. It is
-  the rig the Play Protect problem is being tested on, and it stays on 11 and on
-  Play Protect until that resolves.
+  **Its current state, 2026-08-10**: drawbridge `0.2.3` versionCode **14**,
+  policy **30**, with a Google account and Play Protect **on**. It is the rig the
+  Play Protect problem is being tested on. It reached 0.2.3 only because Play
+  Protect was switched off by hand; every later version has been refused.
+
+  It carries an emergency unlock key, so a lock with a lost key is recoverable
+  on this device for as long as that build is installed.
 
   It cannot take a sideload — `DISALLOW_DEBUGGING_FEATURES` is applied and
   unlocking does not lift it — so the only way to change what is installed on it
