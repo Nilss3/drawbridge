@@ -37,6 +37,9 @@ class PolicyWorker(
     companion object {
         private const val TAG = "PolicyWorker"
 
+        /** Three hours; see UpdateWorker.POLL_HOURS for why, and why it is cheap. */
+        private const val POLL_HOURS = 3L
+
         private const val PERIODIC_WORK_NAME = "drawbridge-policy-poll"
         private const val ONE_SHOT_WORK_NAME = "drawbridge-policy-poll-now"
 
@@ -53,7 +56,7 @@ class PolicyWorker(
                 .setRequiredNetworkType(NetworkType.CONNECTED)
                 .build()
 
-            val request = PeriodicWorkRequestBuilder<PolicyWorker>(1, TimeUnit.DAYS)
+            val request = PeriodicWorkRequestBuilder<PolicyWorker>(POLL_HOURS, TimeUnit.HOURS)
                 .setConstraints(constraints)
                 .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, 30, TimeUnit.MINUTES)
                 .build()
@@ -61,7 +64,11 @@ class PolicyWorker(
             withWorkManager(context) {
                 enqueueUniquePeriodicWork(
                     PERIODIC_WORK_NAME,
-                    ExistingPeriodicWorkPolicy.KEEP,
+                    // UPDATE, not KEEP. KEEP leaves an already-scheduled job
+                    // exactly as it is, so changing the interval here would apply
+                    // to new installs only and never to a device already running
+                    // -- which is every device the change is meant for.
+                    ExistingPeriodicWorkPolicy.UPDATE,
                     request,
                 )
             }

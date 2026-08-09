@@ -1,6 +1,8 @@
 package app.drawbridge.dpc.update
 
 import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.util.Log
 import androidx.work.BackoffPolicy
 import androidx.work.Constraints
@@ -50,11 +52,26 @@ class UpdateWorker(
         val requested = inputData.getBoolean(KEY_REQUESTED, false)
         val protectedPhone = ParentKey(applicationContext).protectedSince > 0L
 
-        val required = if (requested || protectedPhone) {
-            installer.installMissingRequiredApps()
-        } else {
-            Log.i(TAG, "Not installing required apps: phone has never been locked")
-            emptyMap()
+        // The browsers are ~235 MiB each, so they wait for an unmetered network
+        // -- but drawbridge's own update, a few lines down, does not. That split
+        // is the point: the periodic job now runs on any connection so a phone
+        // that never sees Wi-Fi still gets fixes, while nothing large is pulled
+        // over a metered link that somebody pays for by the megabyte.
+        //
+        // An explicitly requested run ignores this. Locking is the parent
+        // standing over the device waiting for herald to appear, and a phone with
+        // no browser at all is worse than a download they chose to start.
+        val unmetered = isUnmetered()
+        val required = when {
+            !requested && !protectedPhone -> {
+                Log.i(TAG, "Not installing required apps: phone has never been locked")
+                emptyMap()
+            }
+            !requested && !unmetered -> {
+                Log.i(TAG, "Not installing required apps: network is metered")
+                emptyMap()
+            }
+            else -> installer.installMissingRequiredApps()
         }
         required.forEach { (packageName, outcome) ->
             if (outcome is AppInstaller.Result.Failed) {
@@ -75,6 +92,13 @@ class UpdateWorker(
         return if (failed) Result.retry() else Result.success()
     }
 
+    private fun isUnmetered(): Boolean {
+        val cm = applicationContext.getSystemService(ConnectivityManager::class.java)
+            ?: return false
+        val caps = cm.getNetworkCapabilities(cm.activeNetwork) ?: return false
+        return caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_NOT_METERED)
+    }
+
     companion object {
         private const val TAG = "UpdateWorker"
         private const val WORK_NAME = "drawbridge-self-update"
@@ -82,6 +106,19 @@ class UpdateWorker(
 
         /** Marks a run the parent asked for, as opposed to the daily poll. */
         private const val KEY_REQUESTED = "requested"
+
+        /**
+         * Three hours, not a day.
+         *
+         * A day made the system untestable: a fix pushed in the morning could
+         * not be confirmed on a device until the next day, and on 2026-08-08 a
+         * phone sat for over 24 hours without picking up either a new policy or
+         * a new build. It also costs almost nothing -- the pinned lists only
+         * download when their hash changes, and the unpinned ones have their own
+         * 24-hour age gate in PolicyStore, so a poll is one ~19 KB signed
+         * document.
+         */
+        private const val POLL_HOURS = 3L
 
         /**
          * Runs the installer now. Called when the parent locks the phone, which
@@ -109,19 +146,25 @@ class UpdateWorker(
         }
 
         fun schedule(context: Context) {
-            val request = PeriodicWorkRequestBuilder<UpdateWorker>(1, TimeUnit.DAYS)
+            // Only a connection, not an unmetered one. drawbridge's own update is
+            // ~3 MB and has to be able to reach a phone that is rarely or never
+            // on Wi-Fi -- a child's phone, or anyone living deliberately without
+            // one -- and a curfew takes the device off the network for hours at a
+            // time besides. The expensive half is gated separately in doWork.
+            //
+            // requiresBatteryNotLow is gone for the same reason: it is one more
+            // condition that can silently hold back a 3 MB download indefinitely.
+            val request = PeriodicWorkRequestBuilder<UpdateWorker>(POLL_HOURS, TimeUnit.HOURS)
                 .setConstraints(
-                    Constraints.Builder()
-                        .setRequiredNetworkType(NetworkType.UNMETERED)
-                        .setRequiresBatteryNotLow(true)
-                        .build(),
+                    Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build(),
                 )
                 .build()
 
             try {
                 WorkManager.getInstance(context).enqueueUniquePeriodicWork(
                     WORK_NAME,
-                    ExistingPeriodicWorkPolicy.KEEP,
+                    // UPDATE, not KEEP -- see PolicyWorker for why.
+                    ExistingPeriodicWorkPolicy.UPDATE,
                     request,
                 )
             } catch (e: IllegalStateException) {
