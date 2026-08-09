@@ -700,6 +700,16 @@ Not verified, and worth doing:
   `lockAccounts()`. Meanwhile [provisioning.md](provisioning.md) step 3 tells
   parents that running setup "locks account changes".
 
+  **Confirmed on hardware, 2026-08-08**: a Google account was added to the G15
+  while drawbridge was locked, on a device that had none before. Nothing
+  objected. This is no longer inferred from reading the code.
+
+  Note the consequence for the fix: wiring `lockAccounts()` into `lockDevice()`
+  makes the documented order — account first, then lock — *mandatory* rather
+  than advisory. A parent who locks first and then needs their account on the
+  phone has to unlock to add it, which mints a new key and invalidates the one
+  they wrote down. Probably acceptable, but decide it rather than discover it.
+
   This matters more since `DISALLOW_FACTORY_RESET` was dropped, because FRP is
   now a load-bearing backstop rather than a second line. The FRP argument is that
   a child cannot answer the challenge, having never had an account on the
