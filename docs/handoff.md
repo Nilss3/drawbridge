@@ -175,9 +175,43 @@ Unchanged: publishing on Play would not help, since the gate is the Android
 Enterprise allowlist rather than Play distribution; and non-GMS devices
 (LineageOS, /e/OS, GrapheneOS) have no allowlist to enforce.
 
-Separately, **Android developer verification does not affect drawbridge**: apps
-installed by a DPC on managed devices are exempt indefinitely, as are ADB
-installs.
+### Developer verification, September 2026 — and why the old note is now suspect
+
+This file used to say flatly that **Android developer verification does not
+affect drawbridge**, because apps installed by a DPC on managed devices are
+exempt indefinitely, as are ADB installs. That is still what the documentation
+says. It should now be treated as unverified rather than settled.
+
+Google is reported to be tightening this from **September 2026** — next month at
+the time of writing — potentially requiring every installed app, sideloaded ones
+included, to come from a verified developer.
+
+The reason for downgrading the claim is not new information about verification.
+It is that this session produced three cases where a documentation-derived
+belief about Google's behaviour was wrong:
+
+- `DISALLOW_FACTORY_RESET` "only hides the option inside Settings" — it also
+  strips the entry from the hardware recovery menu.
+- The DPC allowlist was "the one thing that could stop everything" — it never
+  blocked anything; our own manifest did.
+- And Play Protect blocked a **DPC installing an app on a managed device**,
+  which is exactly the category supposed to be exempt from that kind of
+  interference.
+
+Different mechanism each time, same shape: a carve-out was assumed and the
+carve-out did not hold. A fourth instance would be no surprise.
+
+**If the exemption does not hold, the consequence is total** — not slower
+updates but no installs at all, herald included, on every certified device.
+
+**The mitigation is probably compatible with the project.** Developer
+verification concerns the *developer's* identity, not the user's. drawbridge's
+constraint is that the phone needs no account and no backend; who signed the APK
+is not part of that. So unlike publishing on Play — which would not help anyway,
+since the gates here are Play Protect and the Enterprise allowlist rather than
+distribution — registering as a verified developer is a dependency this project
+could take without contradicting itself. Worth finding out what it costs before
+September rather than after.
 
 ### v0.2.0, and policies 24 to 26
 
@@ -960,11 +994,24 @@ reasoning after `PackageInstaller.uninstall` was verified to work without it.
 a Device Owner committing its own `PackageInstaller` session never enters. Ask
 the same question of `REQUEST_DELETE_PACKAGES`.
 
+**Herald is not at risk from Play Protect, only from the fix.** herald was
+uninstalled by hand on 2026-08-08 and drawbridge reinstalled it silently with
+Play Protect *active* — its APK asks for nothing unusual, so nothing objects.
+The only question is whether removing the permission breaks drawbridge's ability
+to install anything at all. Establish that before shipping it, and the downside
+is zero: if herald stops installing, put the line back.
+
 The test needs a device with a Google account and Play Protect **on**:
 
 1. Build a DPC without the permission; confirm as Device Owner that it can still
    install herald and uninstall a blocked app.
 2. Publish it, and see whether it can install *itself* over the top.
+
+The G15 cannot take a sideload any more — `DISALLOW_DEBUGGING_FEATURES` is
+applied and unlocking does not lift it — so the rig is a fresh provision with a
+**debug** DPC, which retains adb, plus a Google account and Play Protect on.
+Note that a debug build is signed with a different key and may carry a different
+reputation, so a clean result there is suggestive rather than conclusive.
 
 If it works, the fix is a deleted line. If Play Protect still refuses, the
 heuristic is about reputation rather than the manifest, and the remaining
