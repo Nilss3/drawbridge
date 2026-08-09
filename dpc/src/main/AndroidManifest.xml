@@ -30,9 +30,24 @@
         declared: it is signature|privileged, so a sideloaded app can never be
         granted it, and PackageInstaller.uninstall works without it for a Device
         Owner (verified on device).
+
+        android.permission.REQUEST_INSTALL_PACKAGES is *not* declared either, and
+        that one was removed rather than never added. It governs the user-facing
+        unknown-sources flow, which a Device Owner committing its own
+        PackageInstaller session never enters — so it bought nothing, while Play
+        Protect reads it on an app with no Play reputation and refuses to let
+        that app be installed at all ("this app can install potentially harmful
+        apps without your permission"). Declaring it is what stopped drawbridge
+        updating itself on a phone with a Google account.
+
+        Verified on the provisioned emulator, 2026-08-09: with the line gone, the
+        Device Owner still installed herald 6 → 8 in place and herald mono from
+        absent, both silently, both through PackageInstaller.
+
+        REQUEST_DELETE_PACKAGES below is very likely unnecessary for the same
+        reason. It is kept for now so the Play Protect result has one variable.
     -->
     <uses-permission android:name="android.permission.REQUEST_DELETE_PACKAGES" />
-    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
 
     <!--
         A <queries> declaration cannot express what this needs: the whole point
