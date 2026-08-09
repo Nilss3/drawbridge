@@ -20,11 +20,16 @@ import app.drawbridge.dpc.security.ParentKey
 /**
  * The lock, in its two moments.
  *
- * **Reveal** happens once, when the parent locks the device: the key is minted
- * here and shown here, and this is the only time it exists in a form anyone can
- * read. Leaving without keeping it is allowed — it is a legitimate way to make
- * the configuration permanent on purpose — but it is not allowed to happen by
- * accident, which is what the checkbox and the second dialog are for.
+ * **Reveal** happens once, when the parent locks the device: the key is
+ * generated here and shown here, and this is the only time it exists in a form
+ * anyone can read. Deciding to keep no copy of it is allowed — it is a
+ * legitimate way to make the configuration permanent on purpose — but it is not
+ * allowed to happen by accident, which is what the checkbox and the second
+ * dialog are for.
+ *
+ * Nothing is stored until one of those two says so. The device is sealed by
+ * [sealWithKey] and by nothing else, so a reveal that is walked away from leaves
+ * the phone as it was.
  *
  * **Challenge** is every time after that: the key, typed back, opens the
  * configuration screen. There is no attempt limit. A six-digit PIN needed one; a
@@ -64,12 +69,14 @@ class LockActivity : AppCompatActivity() {
         challengeError = findViewById(R.id.challengeError)
 
 
-        // Minted on the way in rather than on the way out, so the screen can
-        // never show a key that is not the one now stored, and so backing out of
-        // the reveal cannot leave the device unlocked after the parent has been
-        // told it is locked.
+        // Generated here, stored nowhere yet. This used to call parentKey.lock(),
+        // which sealed the device the instant this screen appeared — so pressing
+        // home before writing the key down left a phone locked with a key that
+        // had existed only on screen, recoverable only by factory reset.
+        // Committing is now the last step rather than the first; see
+        // [ParentKey.commit].
         revealedKey = savedInstanceState?.getString(STATE_KEY)
-            ?: if (intent.getBooleanExtra(EXTRA_MINT, false)) parentKey.lock() else null
+            ?: if (intent.getBooleanExtra(EXTRA_MINT, false)) ParentKey.generateKey() else null
 
         val revealing = revealedKey != null
         revealStep.visibility = if (revealing) View.VISIBLE else View.GONE
@@ -92,7 +99,7 @@ class LockActivity : AppCompatActivity() {
         val done = findViewById<Button>(R.id.revealDoneButton)
         done.isEnabled = confirmed.isChecked
         confirmed.setOnCheckedChangeListener { _, checked -> done.isEnabled = checked }
-        done.setOnClickListener { finish() }
+        done.setOnClickListener { sealWithKey() }
 
         findViewById<Button>(R.id.shareKeyButton).setOnClickListener { shareKey() }
         findViewById<Button>(R.id.unlockButton).setOnClickListener { attemptUnlock() }
@@ -168,11 +175,32 @@ class LockActivity : AppCompatActivity() {
         startActivity(Intent.createChooser(intent, getString(R.string.lock_reveal_share)))
     }
 
+    /**
+     * The only two ways the device actually gets sealed: *Done* with the
+     * checkbox ticked, and the deliberate "close without the key" dialog.
+     *
+     * Everything else — home, recents, the process being killed — leaves the
+     * phone unsealed, and the key that was on screen is simply forgotten. That
+     * is the whole point of the change: locking is something the parent does,
+     * not something that happens to them while they are looking for a pen.
+     *
+     * The restrictions and the filter are already on by this point, applied by
+     * [MainActivity.lockDevice] before this screen opened, and they stay on. An
+     * abandoned reveal therefore leaves a filtered phone whose settings are
+     * still reachable — recoverable, and the parent can lock again for a new
+     * key. Unwinding enforcement here would be the worse trade: it would mean a
+     * phone that briefly un-filters itself because somebody took a call.
+     */
+    private fun sealWithKey() {
+        revealedKey?.let { parentKey.commit(it) }
+        finish()
+    }
+
     private fun confirmLeavingWithoutKey() {
         AlertDialog.Builder(this)
             .setTitle(R.string.lock_reveal_discard_title)
             .setMessage(R.string.lock_reveal_discard_message)
-            .setPositiveButton(R.string.lock_reveal_discard_yes) { _, _ -> finish() }
+            .setPositiveButton(R.string.lock_reveal_discard_yes) { _, _ -> sealWithKey() }
             .setNegativeButton(android.R.string.cancel, null)
             .show()
     }

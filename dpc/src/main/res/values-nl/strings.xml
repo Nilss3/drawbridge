@@ -59,6 +59,8 @@
 
     <string name="lock_reveal_title">Schrijf dit nu op</string>
     <string name="lock_reveal_explanation">Deze sleutel ontgrendelt deze instellingen. Hij wordt nergens bewaard waar je hem nog kunt lezen, en bij elke vergrendeling wordt een nieuwe gemaakt — dus deze, op papier, is alles wat er is.\n\nAls je liever niet meer van gedacht kunt veranderen, is dat een echte keuze. Sluit dit zonder de sleutel te bewaren en deze instellingen kunnen nooit meer gewijzigd worden — al kan de telefoon nog altijd teruggezet worden naar fabrieksinstellingen, wat drawbridge en al de rest erop wist.</string>
+    <string name="lock_key_glyphs">Een sleutel bevat nooit de letters O, I of L. Een rond teken is een nul. Schrijf je er een dubbelzinnig op, dan werkt O, I of l intypen alsnog.</string>
+    <string name="lock_reveal_not_sealed_yet">Deze instellingen worden pas verzegeld als je op Klaar tikt. Verlaat je dit scherm eerder, dan wordt de sleutel vergeten en is er niets vergrendeld — de telefoon blijft filteren, en je kunt opnieuw vergrendelen voor een nieuwe sleutel.</string>
     <string name="lock_reveal_confirm">Ik heb deze sleutel opgeschreven of afgedrukt</string>
     <string name="lock_reveal_share">Sleutel afdrukken of bewaren</string>
     <string name="lock_reveal_subject">drawbridge-sleutel</string>

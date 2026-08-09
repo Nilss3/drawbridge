@@ -26,9 +26,9 @@ still broken".
 | | |
 |---|---|
 | Repo | https://github.com/Nilss3/drawbridge — public, `main`, 96 commits |
-| Release | [v0.2.0](https://github.com/Nilss3/drawbridge/releases/tag/v0.2.0), 9 assets, **latest**; [v0.2.1](https://github.com/Nilss3/drawbridge/releases/tag/v0.2.1) is a one-asset **pre-release** on purpose |
-| Live policy | version **27**, live at `dist/policy.signed.json` on `main` |
-| Apps, published | drawbridge `0.2.1` (versionCode 12), **which no deployed phone can install** — see below; herald and herald mono `0.1.8` |
+| Release | [v0.2.0](https://github.com/Nilss3/drawbridge/releases/tag/v0.2.0), 9 assets, **latest**; v0.2.1, v0.2.2 and v0.2.3 are one-asset **pre-releases** on purpose |
+| Live policy | version **29**, live at `dist/policy.signed.json` on `main` |
+| Apps, published | drawbridge `0.2.3` (versionCode 14), **which no deployed phone can install unaided** — see below; herald and herald mono `0.1.8` |
 | Website | trilingual, generated into `site/`, on Cloudflare Pages |
 | Tests | 372 unit tests across four build variants, lint clean |
 
@@ -258,6 +258,70 @@ result today may not hold in a fortnight — in either direction.
 **Every release is currently unable to reach a deployed phone.** 0.2.1 is
 published and the one real device cannot install it. Weigh every change
 accordingly, and do not ship anything that assumes this is solved.
+
+### 0.2.3: the reveal screen locked phones by accident, and a back door now exists
+
+Three fixes, all found by using the phone rather than by reading the code, and
+one of them is a deliberate compromise that must not survive development.
+
+**The lock screen sealed the device before anyone had the key.** Reported from
+the G15 on 2026-08-09: the parent reached the reveal, pressed home by accident
+before writing the key down, and reopening drawbridge landed on the challenge —
+a phone locked with a key that had existed only on a screen nobody had read. The
+only way back was a factory reset.
+
+The cause was deliberate and is worth understanding before touching it again.
+`LockActivity` minted the key *on the way in*, and the comment explaining why was
+sound: it meant the screen could never display a key different from the stored
+one, and that backing out could not leave a device unlocked after the parent had
+been told it was locked. Both true. The unconsidered case was the parent leaving
+by any route that is not a button — home, recents, a phone call, the process
+being killed.
+
+Now the key is generated in memory and **committed only by an explicit act**:
+`ParentKey.commit` is called from *Done* with the checkbox ticked, or from the
+"close without keeping the key" dialog, and from nowhere else. Anything else
+forgets the key and leaves the phone unsealed. The identity between what was
+shown and what is stored is kept by passing the same string rather than by
+writing it early.
+
+Note what deliberately does **not** unwind: the restrictions and the filter are
+applied by `MainActivity.lockDevice` before this screen opens, and they stay on
+through an abandoned reveal. That leaves a filtered phone whose settings are
+still reachable, which is recoverable — the alternative would be a phone that
+un-filters itself because somebody took a call.
+
+**A handwritten key could not be typed back.** The alphabet is Crockford base32
+and has no O, I or L, precisely so a key cannot be misread — but `normalise` then
+*dropped* any character outside the alphabet, so a reader who wrote a 0 and typed
+an O got a key one character short and a flat "that is not the key". The decoder
+now folds Crockford's aliases: O reads as 0, I and L read as 1. U stays dropped,
+having no digit to be confused with. Both screens now say so on screen as well.
+
+**And there is now a second unlock key, which is a back door.** Requested for
+development on 2026-08-09, after the lock bug above stranded the reference
+device. It is real and it is dangerous, so:
+
+- It exists only when `emergencyKey` is set in the untracked
+  `keystore.properties`, or `DRAWBRIDGE_EMERGENCY_KEY` in the environment. A
+  build without it has no second key at all — the check compiles down to a
+  comparison against an empty constant.
+- **The APK carries only the SHA-256**, so taking the build apart does not yield
+  the key. It is a full twenty-character key with the same hundred bits as any
+  other, so the hash is not guessable either.
+- **Diagnostics reports `emergency key: true`** when a build has one. A back door
+  that a build will not admit to is worse than one it announces.
+- It opens *any* device running such a build, including one locked long before
+  by a different key — verified on the provisioned emulator, which was sealed by
+  an older build and opened with it.
+
+What that costs: it is the same key on every device, it never rotates, and it
+survives every lock. **Do not ship a build carrying one to anybody else, and take
+it out before the first real deployment.** The sanctioned answer to a lost key is
+the delayed self-removal on the roadmap, not this. The key itself lives in
+`keystore.properties` on the build machine, which is git-ignored and **not backed
+up** — the same risk as the two signing keys, and it belongs in the same offline
+copy.
 
 ### QR provisioning yields a cleaner phone than adb does
 
@@ -670,6 +734,7 @@ up**. This is the single largest risk in the project.
 
 | What | Where | Consequence of losing it |
 |---|---|---|
+| Emergency unlock key | `emergencyKey` in `keystore.properties` | Development only. Losing it costs nothing a factory reset cannot fix; **leaking it unlocks every device running a build that carries it**. Remove before real deployment. |
 | Release signing keystore | `keys/drawbridge-release.jks`, password in `keystore.properties` | Every provisioned device is stranded on its installed version forever. Android refuses updates signed with a different key. |
 | Policy signing key | `keys/drawbridge-2026-07.pem` | No device can ever be given a new policy again without reinstalling both apps. |
 

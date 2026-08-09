@@ -1,3 +1,4 @@
+import java.security.MessageDigest
 import java.util.Properties
 
 plugins {
@@ -31,6 +32,42 @@ val keystoreProperties = Properties().apply {
 fun signingValue(propertyKey: String, environmentKey: String): String? =
     keystoreProperties.getProperty(propertyKey) ?: System.getenv(environmentKey)
 
+/**
+ * Optional development back door: a second key that unlocks any device running
+ * this build. Set `emergencyKey` in `keystore.properties`, or
+ * `DRAWBRIDGE_EMERGENCY_KEY` in the environment; leave it out and the build has
+ * no second key at all.
+ *
+ * Only the SHA-256 goes into the APK, so the build cannot be taken apart to
+ * recover the key — but it is the same key on every device it is installed on
+ * and it never rotates, so this must not be in a build anybody else receives.
+ * See ParentKey.matchesEmergencyKey.
+ *
+ * The key is normalised here exactly as ParentKey normalises typed input:
+ * uppercase, Crockford aliases folded, anything else dropped. The build fails
+ * rather than compiling in a hash of something mistyped.
+ */
+val emergencyKeyHash: String = run {
+    val raw = keystoreProperties.getProperty("emergencyKey")
+        ?: System.getenv("DRAWBRIDGE_EMERGENCY_KEY")
+        ?: return@run ""
+
+    val alphabet = "0123456789ABCDEFGHJKMNPQRSTVWXYZ"
+    val normalised = raw.uppercase()
+        .map { if (it == 'O') '0' else if (it == 'I' || it == 'L') '1' else it }
+        .filter { it in alphabet }
+        .joinToString("")
+
+    require(normalised.length == 20) {
+        "emergencyKey must be 20 Crockford base32 characters; got ${normalised.length} after " +
+            "normalising. Generate one the way the app does rather than inventing it by hand."
+    }
+
+    MessageDigest.getInstance("SHA-256")
+        .digest(normalised.toByteArray())
+        .joinToString("") { byte -> "%02x".format(byte) }
+}
+
 android {
     namespace = "app.drawbridge.dpc"
     compileSdk = 36
@@ -39,8 +76,8 @@ android {
         applicationId = "app.drawbridge.dpc"
         minSdk = 28
         targetSdk = 36
-        versionCode = 13
-        versionName = "0.2.2"
+        versionCode = 14
+        versionName = "0.2.3"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -48,6 +85,10 @@ android {
         // document can override it per-device; this is the value used before the
         // first policy has been applied.
         buildConfigField("String", "ALLOWED_BROWSER_PACKAGE", "\"app.drawbridge.herald\"")
+
+        // Empty in any build that does not configure one, which compiles the
+        // second-key check down to a constant-false.
+        buildConfigField("String", "EMERGENCY_KEY_SHA256", "\"$emergencyKeyHash\"")
     }
 
     signingConfigs {

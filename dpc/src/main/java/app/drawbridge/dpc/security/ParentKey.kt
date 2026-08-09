@@ -2,6 +2,7 @@ package app.drawbridge.dpc.security
 
 import android.content.Context
 import android.content.SharedPreferences
+import app.drawbridge.dpc.BuildConfig
 import java.security.MessageDigest
 import java.security.SecureRandom
 import javax.crypto.SecretKeyFactory
@@ -63,13 +64,24 @@ class ParentKey(context: Context) {
         get() = prefs.getLong(KEY_LOCKED_SINCE, 0)
 
     /**
-     * Locks the device and returns the key that opens it, once.
+     * Seals the device with a key that has already been shown to the parent.
      *
-     * The caller must show this to the parent before returning: it is not
-     * recoverable from anywhere afterwards.
+     * Deliberately separate from minting it. The key used to be generated and
+     * stored in the same breath, on the way *into* the reveal screen, so that the
+     * screen could never show a key different from the stored one — and the cost
+     * of that was a phone which locked itself the moment the screen appeared.
+     * Pressing home before writing the key down left a sealed device whose key
+     * had existed only on a screen nobody had read, and there is no way back from
+     * that short of a factory reset. Observed on the reference device on
+     * 2026-08-09.
+     *
+     * So nothing is written until the parent says they have the key. The key is
+     * generated in memory, shown, and only committed here — which means an
+     * abandoned reveal leaves the phone exactly as it was, and the identity
+     * between what was shown and what is stored is kept by passing the same
+     * string rather than by writing it early.
      */
-    fun lock(): String {
-        val key = generateKey()
+    fun commit(key: String) {
         val salt = ByteArray(SALT_BYTES).also { SecureRandom().nextBytes(it) }
         val now = System.currentTimeMillis()
 
@@ -84,8 +96,6 @@ class ParentKey(context: Context) {
                 if (!prefs.contains(KEY_PROTECTED_SINCE)) putLong(KEY_PROTECTED_SINCE, now)
             }
             .apply()
-
-        return key
     }
 
     /**
@@ -108,9 +118,49 @@ class ParentKey(context: Context) {
     }
 
     private fun matches(candidate: String): Boolean {
+        val normalised = candidate.normalise()
+        if (matchesEmergencyKey(normalised)) return true
+
         val storedHash = prefs.getString(KEY_HASH, null)?.fromHex() ?: return false
         val salt = prefs.getString(KEY_SALT, null)?.fromHex() ?: return false
-        return MessageDigest.isEqual(derive(candidate.normalise(), salt), storedHash)
+        return MessageDigest.isEqual(derive(normalised, salt), storedHash)
+    }
+
+    /**
+     * A second key that opens any device this build is installed on.
+     *
+     * **This is a back door, and it is here on purpose while the project is
+     * still being built on real hardware.** A phone that locks with a key nobody
+     * wrote down is otherwise only recoverable by a factory reset, which on the
+     * reference device costs a re-provision and every test result on it.
+     *
+     * What limits the damage:
+     *
+     *  - The APK carries only the hash, so pulling the build apart does not
+     *    yield the key. It is generated with [generateKey], so it has the same
+     *    hundred bits as any other.
+     *  - It exists only when `emergencyKey` is set in the untracked
+     *    `keystore.properties` (or `DRAWBRIDGE_EMERGENCY_KEY`). A build without
+     *    it compiles the check away to a constant-empty string, so a clean build
+     *    has no second key at all.
+     *  - Diagnostics says so on screen when a build has one, because a back door
+     *    nobody can see is worse than one everybody can.
+     *
+     * What does not limit the damage: it is the same key on every device, it
+     * never rotates, and it survives every lock. **Ship no build with it to
+     * anyone else, and remove it before the first real deployment.** The
+     * sanctioned answer to a lost key is the delayed self-removal on the
+     * roadmap, not this.
+     *
+     * SHA-256 rather than PBKDF2 because this input is high-entropy by
+     * construction — the same reasoning the comment on [derive] already makes —
+     * and because the hash has to be computable from the build script.
+     */
+    private fun matchesEmergencyKey(normalised: String): Boolean {
+        val expected = BuildConfig.EMERGENCY_KEY_SHA256.fromHex()
+        if (expected == null || expected.isEmpty()) return false
+        val offered = MessageDigest.getInstance("SHA-256").digest(normalised.toByteArray())
+        return MessageDigest.isEqual(offered, expected)
     }
 
     /**
@@ -150,8 +200,33 @@ class ParentKey(context: Context) {
             return String(raw).chunked(GROUP).joinToString("-")
         }
 
-        /** Case- and separator-insensitive, because this gets typed off paper. */
-        private fun String.normalise(): String = uppercase().filter { it in ALPHABET }
+        /**
+         * Case- and separator-insensitive, because this gets typed off paper —
+         * and forgiving about the characters the alphabet leaves out, which is
+         * the point of choosing Crockford's in the first place.
+         *
+         * The alphabet has no O, I or L, so a key never contains one. What it
+         * does contain is 0 and 1, and a parent reading their own handwriting
+         * cannot tell those from O and l. Filtering unknown characters out — the
+         * old behaviour — turned that into a key one character short, rejected
+         * with "that is not the key" and no clue why. Reported from the phone on
+         * 2026-08-09 after exactly that.
+         *
+         * Crockford specifies the mapping, so this is the decoder being correct
+         * rather than a lenience of our own: O reads as 0, I and L read as 1. U
+         * has no digit to be confused with — it is excluded so that no key can
+         * spell anything unfortunate — so it stays dropped.
+         */
+        private fun String.normalise(): String = uppercase()
+            .map {
+                when (it) {
+                    'O' -> '0'
+                    'I', 'L' -> '1'
+                    else -> it
+                }
+            }
+            .filter { it in ALPHABET }
+            .joinToString("")
 
         private fun ByteArray.toHex(): String = joinToString("") { "%02x".format(it) }
 

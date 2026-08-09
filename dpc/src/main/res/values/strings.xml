@@ -77,6 +77,8 @@
 
     <string name="lock_reveal_title">Write this down now</string>
     <string name="lock_reveal_explanation">This key unlocks these settings. It is not stored anywhere you can read it again, and a new one is made every time you lock — so this one, on paper, is all there is.\n\nIf you would rather not be able to change your mind, that is a real choice. Close this without keeping the key and these settings can never be changed again — though the phone can still be factory reset, which removes drawbridge and everything else on it.</string>
+    <string name="lock_key_glyphs">A key never contains the letters O, I or L. A round character is a zero. If you write one down ambiguously, typing O, I or l back still works.</string>
+    <string name="lock_reveal_not_sealed_yet">These settings are not sealed until you tap Done. If you leave this screen before then, the key is forgotten and nothing is locked — the phone keeps filtering, and you can lock it again for a new key.</string>
     <string name="lock_reveal_confirm">I have written down or printed this key</string>
     <string name="lock_reveal_share">Print or save the key</string>
     <string name="lock_reveal_subject">drawbridge key</string>

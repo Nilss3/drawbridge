@@ -1,7 +1,7 @@
 {
-  "version": 28,
-  "issued_at": "2026-08-09T20:00:00Z",
-  "comment": "Policy 28. Points app_update at drawbridge 0.2.2 (version_code 13), the second round of the Play Protect investigation. Round one removed REQUEST_INSTALL_PACKAGES and changed nothing: the G15 took policy 27, refused versionCode 12, and in the same run installed herald without complaint -- same installer, same moment, two payloads, so the objection is to the drawbridge payload rather than to the installer or to that permission. Round two removes REQUEST_DELETE_PACKAGES, the last install-adjacent permission drawbridge declared and herald does not, verified unnecessary on the provisioned emulator where the app blocker still uninstalled a disallowed browser without it; and it sets INSTALL_REASON_POLICY on the install session. Those two do not confound each other because they are tested at different moments: the manifest change is tested by versionCode 11 installing this build, the session change only by this build installing the next one. Published as a pre-release for the same reason as v0.2.1, with the url pinned to the tag so that v0.2.0 stays 'latest' and every required_apps URL keeps resolving. required_apps itself is untouched, so no device re-fetches a browser.",
+  "version": 29,
+  "issued_at": "2026-08-09T23:00:00Z",
+  "comment": "Policy 29. Points app_update at drawbridge 0.2.3 (version_code 14), which is a bug-fix release rather than another Play Protect experiment -- the app is unchanged in what it declares and how it installs, so 0.2.3 reaching a phone or not is still the same test as 0.2.2. Three fixes, all found by using the phone. The reveal screen no longer seals the device when it opens: the key is generated in memory and only committed when the parent ticks the box and taps Done, because pressing home before writing it down left a phone locked with a key nobody had read. Typed keys now follow Crockford's aliases, so a handwritten O reads as 0 and I or L as 1 instead of being dropped and failing. And builds configured with an emergencyKey carry a second unlock key, for development only -- see docs/handoff.md, and do not ship such a build to anyone else. Published as a pre-release with the url pinned to the tag, as v0.2.1 and v0.2.2 were; required_apps untouched.",
   "dns": {
     "upstreams": [
       "94.140.14.15",
@@ -329,9 +329,9 @@
   },
   "app_update": {
     "package_name": "app.drawbridge.dpc",
-    "version_code": 13,
-    "url": "https://github.com/Nilss3/drawbridge/releases/download/v0.2.2/dpc-release.apk",
-    "sha256": "3ba2c23c7677a48121943cab23a519352c9cef14154b0a76ab41cbfbd5d33c2b"
+    "version_code": 14,
+    "url": "https://github.com/Nilss3/drawbridge/releases/download/v0.2.3/dpc-release.apk",
+    "sha256": "d436cd80877fe5d9844062baa2a7b8cdea14a3ce42e714f0cdf20f823c775489"
   },
   "required_apps": [
     {

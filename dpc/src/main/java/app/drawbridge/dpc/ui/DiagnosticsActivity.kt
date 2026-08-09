@@ -64,6 +64,9 @@ class DiagnosticsActivity : AppCompatActivity() {
             appendLine()
             appendLine("drawbridge ${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})")
             appendLine("adb retained:      ${BuildConfig.RETAIN_ADB_ACCESS}")
+            // Reported because a build with a second unlock key must not be able
+            // to pass for one without. Says only that one exists.
+            appendLine("emergency key:     ${BuildConfig.EMERGENCY_KEY_SHA256.isNotEmpty()}")
             appendLine()
             appendLine("device:            ${Build.MANUFACTURER} ${Build.MODEL} (${Build.DEVICE})")
             appendLine("android:           ${Build.VERSION.RELEASE} / API ${Build.VERSION.SDK_INT}")
