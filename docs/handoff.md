@@ -293,26 +293,48 @@ have reordered. The project's own habit — verify on hardware rather than trust
 the documentation — was right about `DISALLOW_FACTORY_RESET` and the DPC
 allowlist and quietly became a reason not to read the documentation at all.
 
-#### What is actually left
+#### What was actually left, and what the probes settled
 
-**Two probes, published in policy 31 and awaiting a reboot of the G15.** Both are
-the drawbridge APK with the same signing key and the same code, delivered through
-`required_apps`:
+#### The probes ran on 2026-08-10, and the answer is the package name
 
-| Label | Package | Difference | Prediction if the allowlist is the mechanism |
+Both probes were the drawbridge APK with the same signing key, the same code and
+the same manifest, delivered through `required_apps`. On one reboot, with Play
+Protect on:
+
+| Label | Package | Difference | Result |
 |---|---|---|---|
-| probe A dpc | `app.drawbridge.probe` | drawbridge exactly, renamed | blocked |
-| probe B plain | `app.drawbridge.probeb` | same, `DeviceAdminReceiver` removed | installs |
+| — | `app.drawbridge.dpc` | the real thing | **blocked** |
+| probe A dpc | `app.drawbridge.probe` | renamed, still a DPC | **installed** |
+| probe B plain | `app.drawbridge.probeb` | renamed, `DeviceAdminReceiver` removed | **installed** |
 
-- **A blocked, B installed** → being a DPC is the trigger, and no build this
-  project can produce will pass. The appeal is then the entire path.
-- **Both installed** → the verdict was attached to `app.drawbridge.dpc` as an
-  identity. An appeal or a package rename moves it — though a rename cannot
-  rescue an already-provisioned device, since Device Owner is tied to the
-  package.
-- **Both blocked** → the certificate or the code. The signer is then the next
-  variable, which is also what developer verification changes, so the two are
-  worth keeping apart rather than moving at once.
+One reboot, three payloads, one variable between the first two. What that rules
+out:
+
+- **Not the code**, and **not the certificate** — probe A is byte-for-byte the
+  same build under a different name, signed with the same release key.
+- **Not being a DPC.** Probe A is a full device policy controller and installed
+  anyway. So the approved-DPC allowlist is *not* what is blocking ordinary
+  installs — consistent with Google's own wording, which scopes it to
+  provisioning, and with the fact that this device provisioned fine before it had
+  an account.
+- **Not the manifest**, which four earlier rounds had already established.
+
+**What is left is the package name.** `app.drawbridge.dpc` carries a verdict that
+the identical APK under another name does not.
+
+**The one reading this does not exclude**, and it matters enormously: the probes
+are *new packages Google has never seen*. drawbridge has been scanned since
+2026-08-08. So "the name is poisoned, permanently" and "an unknown package is
+allowed until the backend catches up with it" both fit today's data. The
+difference decides whether renaming is a fix or a few days' grace.
+
+**The test that separates them is cheap and needs only time.** Leave both probes
+installed, wait a week, publish a probe A with a higher version code, and see
+whether it still installs. Still installing → the verdict is bound to the name
+and a rename is a real fix. Newly blocked → content-based scanning caught up, a
+rename only resets a clock, and nothing we ship will ever hold.
+
+Until that is known, treat the rename as *unproven*, not as the plan.
 
 **Building a probe cost two confounds that the emulator caught and the G15 could
 not have.** Both would have failed the install *before* Play Protect was
@@ -330,9 +352,36 @@ label is a placeholder too, because two apps called "drawbridge" produce a
 notification that cannot be attributed, and an app wearing another's name is its
 own PHA signal. **Always install a probe on the emulator first.**
 
-Cleanup is built in: the policy after the test drops both from `required_apps`
-and puts both packages in `blocked_packages`, so the app blocker removes whatever
-landed.
+**Cleanup is deliberately deferred.** The policy after the test was meant to drop
+both from `required_apps` and put both packages in `blocked_packages` so the app
+blocker removes them. That still happens — but not until the week-long re-test
+above is done, because the probes sitting on the device are the experiment. They
+are inert while they sit there: neither is Device Owner, so `reapplyIfProtected`
+does nothing, `installMissingRequiredApps` is gated on a `protectedSince` they do
+not have, and `checkAndInstallSelf` returns `UpToDate` because `app_update` names
+a package that is not theirs. They poll the policy every three hours and
+otherwise cost two launcher icons.
+
+#### So what now
+
+In rough order of value:
+
+1. **Appeal the verdict on `app.drawbridge.dpc`.** This is a *different* appeal
+   from the 2026-08-06 DPC-allowlist one — that governs provisioning, and
+   provisioning is not what is broken. The relevant route is the Play Protect
+   warning appeal for an app flagged as harmful:
+   https://developers.google.com/android/play-protect/warning-dev-guidance
+   Nothing else restores the update channel for the one phone that exists, since
+   a rename cannot move an already-provisioned device: Device Owner is bound to
+   the package name.
+2. **Run the week-later re-test** before believing in a rename.
+3. **Only then decide about renaming**, which buys new devices a working update
+   channel at the cost of a new QR, a new provisioning payload, and orphaning
+   every device provisioned as `app.drawbridge.dpc`. Today that is one Moto G15.
+
+Worth noticing for its own sake: the earlier conclusion that Play Protect
+objected to *drawbridge the app* was wrong in a way four experiments could not
+show, because every one of them changed the app and none changed its name.
 
 Worth researching alongside it: whether a Device Owner has any *supported* way
 to exempt its own installs from the package verifier — `setGlobalSetting` and
