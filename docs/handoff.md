@@ -27,7 +27,7 @@ still broken".
 |---|---|
 | Repo | https://github.com/Nilss3/drawbridge — public, `main`, 96 commits |
 | Release | [v0.2.0](https://github.com/Nilss3/drawbridge/releases/tag/v0.2.0), 9 assets, **latest**; v0.2.1 to v0.2.4 are one-asset **pre-releases** on purpose |
-| Live policy | version **30**, live at `dist/policy.signed.json` on `main` |
+| Live policy | version **31**, live at `dist/policy.signed.json` on `main` |
 | Apps, published | drawbridge `0.2.4` (versionCode 15), **which no deployed phone can install unaided** — see below; the G15 runs 0.2.3, installed with Play Protect switched off; herald and herald mono `0.1.8` |
 | Website | trilingual, generated into `site/`, on Cloudflare Pages |
 | Tests | 372 unit tests across four build variants, lint clean |
@@ -254,29 +254,85 @@ combination, and that instinct has been wrong four times.
 `INSTALL_REASON_POLICY` stays in the code. It is true, it costs nothing, and
 "it did not help" is not a reason to describe a session dishonestly.
 
+#### What the documentation says, which nobody had read until 2026-08-10
+
+Four rounds of experiment were run before anyone looked this up. It should have
+been first.
+
+**Google enforces an allowlist of approved Android Enterprise device policy
+controllers, and Play Protect flags unapproved ones as "Harmful app blocked"** —
+the exact wording seen on the G15. The trigger is reported as the app *being a
+DPC*, not as any permission it declares. Google's own help page puts it as: only
+DPCs verified and approved by Android Enterprise may install apps during
+enterprise enrolment.
+
+That fits every observation at once. herald installs because it is not a DPC.
+drawbridge is refused whatever its manifest says. The message never changed
+across four rounds because it was never about the thing being changed.
+
+It does **not** reverse the earlier finding that the allowlist did not break QR
+provisioning on 2026-08-07 — that phone had no Google account, so Play Protect
+was not active. Both are true, and the difference between them is the account.
+
+**There is no supported way to switch verification off.** The Android Enterprise
+security guidance only shows an admin how to *strengthen* it —
+`ENSURE_VERIFY_APPS`, `DISALLOW_INSTALL_UNKNOWN_SOURCES`, and a managed
+configuration on `com.android.vending` — and `setGlobalSetting` is largely
+deprecated with no key that helps. That avenue is closed rather than untried.
+
+- https://support.google.com/work/android/answer/16694822 — the allowlist
+- https://developer.android.com/work/dpc/security — verification, enforce-only
+- https://bayton.org/android/android-enterprise-faq/play-protect-blocked-my-dpc-why/
+  — the same wording, and appeal advice: align with the unwanted-software
+  guidance *before* appealing, being transparent about function and justifying
+  sensitive permissions. Review times of days to weeks, no published SLA.
+
+**The lesson worth keeping** is not about Play Protect. Four rounds of build,
+publish, sign, reboot were spent on hypotheses that ten minutes of reading would
+have reordered. The project's own habit — verify on hardware rather than trust
+the documentation — was right about `DISALLOW_FACTORY_RESET` and the DPC
+allowlist and quietly became a reason not to read the documentation at all.
+
 #### What is actually left
 
-**The package-name probe, which is the only experiment that maps onto a fix.**
-Build the DPC with a different `applicationId` and change nothing else — same
-release key, same code, same manifest — publish it as an extra asset, and add it
-to `required_apps` so the device installs it on the next reboot.
+**Two probes, published in policy 31 and awaiting a reboot of the G15.** Both are
+the drawbridge APK with the same signing key and the same code, delivered through
+`required_apps`:
 
-- **It installs** → the verdict is bound to `app.drawbridge.dpc` as an identity,
-  not to anything the APK does. That is the good outcome, because it has fixes:
-  an appeal, and in the worst case a package rename for phones provisioned in
-  future. (A rename cannot rescue an already-provisioned device: Device Owner is
-  tied to the package.)
-- **It is blocked** → the objection is to the APK's content or its signer, and
-  since the manifest is exhausted, that means the code or the certificate.
+| Label | Package | Difference | Prediction if the allowlist is the mechanism |
+|---|---|---|---|
+| probe A dpc | `app.drawbridge.probe` | drawbridge exactly, renamed | blocked |
+| probe B plain | `app.drawbridge.probeb` | same, `DeviceAdminReceiver` removed | installs |
 
-Keep it to one variable: **same signing key**. If the probe is blocked, the
-signer becomes the next variable to move, and that is also exactly what
-developer verification would change — which is why the two questions are worth
-keeping apart rather than testing at once.
+- **A blocked, B installed** → being a DPC is the trigger, and no build this
+  project can produce will pass. The appeal is then the entire path.
+- **Both installed** → the verdict was attached to `app.drawbridge.dpc` as an
+  identity. An appeal or a package rename moves it — though a rename cannot
+  rescue an already-provisioned device, since Device Owner is tied to the
+  package.
+- **Both blocked** → the certificate or the code. The signer is then the next
+  variable, which is also what developer verification changes, so the two are
+  worth keeping apart rather than moving at once.
 
-Cleanup is built in: the policy after the test drops the probe from
-`required_apps` and puts its package in `blocked_packages`, so the app blocker
-uninstalls it.
+**Building a probe cost two confounds that the emulator caught and the G15 could
+not have.** Both would have failed the install *before* Play Protect was
+consulted, and with no adb on the phone they would have read as blocks:
+
+- `INSTALL_FAILED_DUPLICATE_PERMISSION` — two packages cannot declare
+  `app.drawbridge.permission.READ_SELECTION`, even sharing a signing key; the
+  installed owner wins.
+- `INSTALL_FAILED_CONFLICTING_PROVIDER` — a `ContentProvider` authority is unique
+  device-wide, and both used `app.drawbridge.dpc.selection`.
+
+Both are now manifest placeholders in `dpc/build.gradle.kts`, defaulting to the
+current literals so the shipped build is unchanged — verified with `aapt2`. The
+label is a placeholder too, because two apps called "drawbridge" produce a
+notification that cannot be attributed, and an app wearing another's name is its
+own PHA signal. **Always install a probe on the emulator first.**
+
+Cleanup is built in: the policy after the test drops both from `required_apps`
+and puts both packages in `blocked_packages`, so the app blocker removes whatever
+landed.
 
 Worth researching alongside it: whether a Device Owner has any *supported* way
 to exempt its own installs from the package verifier — `setGlobalSetting` and

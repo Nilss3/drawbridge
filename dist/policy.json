@@ -1,7 +1,7 @@
 {
-  "version": 30,
-  "issued_at": "2026-08-10T00:00:00Z",
-  "comment": "Policy 30. Points app_update at drawbridge 0.2.4 (version_code 15), which is 0.2.3 with nothing changed but the version number. That is the experiment: 0.2.3 was installed by hand, with Play Protect switched off, so for the first time the phone's installer is a build that marks its PackageInstaller session INSTALL_REASON_POLICY -- a session parameter is set by whatever does the installing, so it could never be tested by the release that introduced it. Rounds one and two ruled the payload's manifest out: versionCode 11 with REQUEST_INSTALL_PACKAGES, 12 without it and 13 declaring nothing install-related at all were all refused, while herald installed from the same installer in the same run. If 15 goes through where 13 did not, the difference is the session rather than the APK. If it does not, the next and last cheap experiment is a drawbridge-shaped APK under a different package name, which says whether any of this is winnable by changing what we ship. Play Protect must be back ON before this is tested or the result means nothing. Pre-release, url pinned to the tag, required_apps untouched, as with 0.2.1 through 0.2.3.",
+  "version": 31,
+  "issued_at": "2026-08-10T01:00:00Z",
+  "comment": "Policy 31. Adds two probes to required_apps and leaves app_update where policy 30 left it, at drawbridge 0.2.4. This is the experiment that decides whether the Play Protect problem is winnable by changing what we ship. Four rounds ruled out the payload's manifest and the install session, while herald installed from the same installer in the same run, so the objection is to drawbridge itself. Google's own documentation says Play Protect enforces an allowlist of approved Android Enterprise device policy controllers and flags unapproved ones as 'Harmful app blocked', which is the wording seen on the device. Probe A is the drawbridge APK under a different package name, still a DPC. Probe B is the same again with the DeviceAdminReceiver removed, so it is not a DPC at all. Same signing key, same code, same everything else. A blocked and B installed means the trigger is being a DPC, and no build we can produce will pass. Both installed means the verdict was attached to app.drawbridge.dpc as an identity. Both blocked means it is the certificate or the code. The next policy drops them from required_apps and puts both packages in blocked_packages, so the app blocker removes whatever landed.",
   "dns": {
     "upstreams": [
       "94.140.14.15",
@@ -375,6 +375,18 @@
       "url": "https://github.com/Nilss3/drawbridge/releases/latest/download/herald-mono-x86_64-release.apk",
       "sha256": "317f6eb02ce188911327941dfcd1ffb79eb9686f077418bbf65afef98c09a2c8",
       "abi": "x86_64"
+    },
+    {
+      "package_name": "app.drawbridge.probe",
+      "version_code": 15,
+      "url": "https://github.com/Nilss3/drawbridge/releases/download/v0.2.4/probe-release.apk",
+      "sha256": "13a3a7eaa902171ad0f014fc4240e7f52e5fa5945caebb7844faa92cabba0369"
+    },
+    {
+      "package_name": "app.drawbridge.probeb",
+      "version_code": 15,
+      "url": "https://github.com/Nilss3/drawbridge/releases/download/v0.2.4/probeb-release.apk",
+      "sha256": "4bcff1f22eaea76cedf76f197057436138d2e66d095a6c01e90ef9f3f1df6ba3"
     }
   ],
   "allowed_browser_packages": [

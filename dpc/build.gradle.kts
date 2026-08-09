@@ -73,8 +73,63 @@ android {
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "app.drawbridge.dpc"
+        /**
+         * Overridable only so the Play Protect investigation can build a probe:
+         * the same APK, same signing key, same everything, under a different
+         * package name. Four rounds of manifest and session changes were all
+         * refused while herald installed from the same installer, so the open
+         * question is whether the verdict is attached to what drawbridge *is*
+         * rather than to anything it declares. See docs/handoff.md.
+         *
+         *     ./gradlew :dpc:assembleRelease -PdpcApplicationId=app.drawbridge.probe
+         *
+         * **That build overwrites `dpc/build/outputs/apk/release/dpc-release.apk`
+         * with the probe.** Copy it out under its own name and do not run
+         * `tools/stage-release.sh` until the real DPC has been rebuilt, or the
+         * probe will be staged as the release.
+         *
+         * A product flavour would have been the tidier Gradle answer and is
+         * deliberately not used: it renames every APK output, which is exactly
+         * what `stage-release.sh` exists to keep stable.
+         */
+        applicationId = providers.gradleProperty("dpcApplicationId")
+            .getOrElse("app.drawbridge.dpc")
         minSdk = 28
+
+        /**
+         * herald asks for this permission by its literal name, so the real build
+         * must keep it exactly as it is — this is a placeholder only so that a
+         * probe under a different package name does not collide with the
+         * installed drawbridge. Two packages cannot declare the same permission
+         * unless they share a signing certificate, and even sharing one, the
+         * *installed* owner wins: a probe redeclaring it fails with
+         * INSTALL_FAILED_DUPLICATE_PERMISSION before Play Protect is ever asked.
+         *
+         * Which on a phone with no adb would have been indistinguishable from
+         * being blocked. Caught on the emulator on 2026-08-10, before publishing.
+         */
+        manifestPlaceholders["readSelectionPermission"] =
+            providers.gradleProperty("dpcApplicationId")
+                .map { "$it.permission.READ_SELECTION" }
+                .getOrElse("app.drawbridge.permission.READ_SELECTION")
+
+        // Defaults to the resource reference, so the real build is unchanged and
+        // stays translated. A probe takes a literal instead: without it the
+        // phone shows two apps called "drawbridge" and a Play Protect
+        // notification that cannot be attributed to either — and a second app
+        // wearing the first one's name and icon is its own PHA signal, which is
+        // the last thing an experiment about PHA signals needs.
+        manifestPlaceholders["appLabel"] =
+            providers.gradleProperty("dpcAppLabel").getOrElse("@string/app_name")
+
+        // Same story, one collision later: a ContentProvider authority is
+        // globally unique on a device, so a probe reusing drawbridge's fails
+        // with INSTALL_FAILED_CONFLICTING_PROVIDER. herald looks this authority
+        // up by its literal name, so the default must not move.
+        manifestPlaceholders["selectionAuthority"] =
+            providers.gradleProperty("dpcApplicationId")
+                .map { "$it.selection" }
+                .getOrElse("app.drawbridge.dpc.selection")
         targetSdk = 36
         versionCode = 15
         versionName = "0.2.4"
