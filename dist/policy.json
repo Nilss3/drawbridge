@@ -1,7 +1,7 @@
 {
-  "version": 29,
-  "issued_at": "2026-08-09T23:00:00Z",
-  "comment": "Policy 29. Points app_update at drawbridge 0.2.3 (version_code 14), which is a bug-fix release rather than another Play Protect experiment -- the app is unchanged in what it declares and how it installs, so 0.2.3 reaching a phone or not is still the same test as 0.2.2. Three fixes, all found by using the phone. The reveal screen no longer seals the device when it opens: the key is generated in memory and only committed when the parent ticks the box and taps Done, because pressing home before writing it down left a phone locked with a key nobody had read. Typed keys now follow Crockford's aliases, so a handwritten O reads as 0 and I or L as 1 instead of being dropped and failing. And builds configured with an emergencyKey carry a second unlock key, for development only -- see docs/handoff.md, and do not ship such a build to anyone else. Published as a pre-release with the url pinned to the tag, as v0.2.1 and v0.2.2 were; required_apps untouched.",
+  "version": 30,
+  "issued_at": "2026-08-10T00:00:00Z",
+  "comment": "Policy 30. Points app_update at drawbridge 0.2.4 (version_code 15), which is 0.2.3 with nothing changed but the version number. That is the experiment: 0.2.3 was installed by hand, with Play Protect switched off, so for the first time the phone's installer is a build that marks its PackageInstaller session INSTALL_REASON_POLICY -- a session parameter is set by whatever does the installing, so it could never be tested by the release that introduced it. Rounds one and two ruled the payload's manifest out: versionCode 11 with REQUEST_INSTALL_PACKAGES, 12 without it and 13 declaring nothing install-related at all were all refused, while herald installed from the same installer in the same run. If 15 goes through where 13 did not, the difference is the session rather than the APK. If it does not, the next and last cheap experiment is a drawbridge-shaped APK under a different package name, which says whether any of this is winnable by changing what we ship. Play Protect must be back ON before this is tested or the result means nothing. Pre-release, url pinned to the tag, required_apps untouched, as with 0.2.1 through 0.2.3.",
   "dns": {
     "upstreams": [
       "94.140.14.15",
@@ -329,9 +329,9 @@
   },
   "app_update": {
     "package_name": "app.drawbridge.dpc",
-    "version_code": 14,
-    "url": "https://github.com/Nilss3/drawbridge/releases/download/v0.2.3/dpc-release.apk",
-    "sha256": "d436cd80877fe5d9844062baa2a7b8cdea14a3ce42e714f0cdf20f823c775489"
+    "version_code": 15,
+    "url": "https://github.com/Nilss3/drawbridge/releases/download/v0.2.4/dpc-release.apk",
+    "sha256": "cdcfe5fc1d6531cf04edf8b4505b93261852098d42dee14f40db9c7b66dc8dea"
   },
   "required_apps": [
     {
