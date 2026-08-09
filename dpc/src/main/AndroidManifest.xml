@@ -44,10 +44,18 @@
         Device Owner still installed herald 6 → 8 in place and herald mono from
         absent, both silently, both through PackageInstaller.
 
-        REQUEST_DELETE_PACKAGES below is very likely unnecessary for the same
-        reason. It is kept for now so the Play Protect result has one variable.
+        android.permission.REQUEST_DELETE_PACKAGES is gone for the same reasons,
+        and was removed a release later so that each Play Protect test round
+        moved one variable. It governs the user-facing uninstall dialog, which a
+        Device Owner's silent PackageInstaller.uninstall never shows. Verified on
+        the provisioned emulator, 2026-08-09: with the line gone, the app blocker
+        still uninstalled a disallowed browser.
+
+        What is left after both removals is a manifest that asks for nothing
+        install-related at all — which did *not* satisfy Play Protect. See
+        docs/handoff.md; the reason to keep them out is that they were never
+        doing anything, not that removing them fixed the update channel.
     -->
-    <uses-permission android:name="android.permission.REQUEST_DELETE_PACKAGES" />
 
     <!--
         A <queries> declaration cannot express what this needs: the whole point

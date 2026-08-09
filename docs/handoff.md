@@ -192,22 +192,31 @@ lookup falls back to when it cannot resolve an app label. So Play Protect does
 appear to be parsing the staged APK rather than replaying a cached notification,
 while still classifying it on something other than what it just read.
 
-What is left, cheapest first:
+#### Round two: 0.2.2, built and staged, not yet published
 
-- **`REQUEST_DELETE_PACKAGES`** — the last install-adjacent permission
-  drawbridge declares and herald does not, and very likely unnecessary for the
-  same reason its `DELETE_PACKAGES` sibling is. Untested either way.
-- **The install session itself.** `SessionParams.setInstallReason(INSTALL_REASON_POLICY)`
-  is public API and true by construction for a Device Owner applying its own
-  policy; drawbridge sets no install reason today. **It can only be tested by an
-  already-installed build**, so it is exercised one release later than the one
-  that adds it — plan the two changes accordingly.
+Two changes, chosen so they are exercised at **different moments** and therefore
+do not confound each other:
+
+- **`REQUEST_DELETE_PACKAGES` is gone**, the last install-adjacent permission
+  drawbridge declared and herald does not. Verified unnecessary on the
+  provisioned emulator first, to the same standard as the other one: with
+  neither permission declared, the app blocker still uninstalled a disallowed
+  browser. drawbridge's manifest now asks for nothing install-related at all.
+  **Tested by versionCode 11 installing this build.**
+- **`SessionParams.setInstallReason(INSTALL_REASON_POLICY)`** on the install
+  session. Public API, one line, and true by construction for a Device Owner
+  applying the policy it was provisioned with. **It can only be tested by an
+  already-installed build** — the session is described by whatever is doing the
+  installing — so it is exercised one release later, by 0.2.2 installing 0.2.3.
   `setPackageSource(PACKAGE_SOURCE_STORE)` is also available and is deliberately
   not used: it asserts a provenance the install does not have.
-- **Everything else drawbridge has and herald does not** — `QUERY_ALL_PACKAGES`,
-  which cannot be dropped because noticing packages nobody declared is the app
-  blocker's whole job; the `DeviceAdminReceiver` and its metadata; the custom
-  signature permission.
+
+If round two also fails, what is left is **everything drawbridge has and herald
+does not** that cannot be given up — `QUERY_ALL_PACKAGES`, because noticing
+packages nobody declared is the app blocker's whole job; the
+`DeviceAdminReceiver` and its metadata; the custom signature permission — and at
+that point the different-package-name experiment below is the only thing worth
+doing before conceding the manifest is not the lever.
 
 **The experiment that would settle it** is installing a drawbridge-shaped APK
 under a *different package name* through `required_apps`. If that sails through,
@@ -1001,6 +1010,13 @@ Each of these looks like a bug and is not, or bites silently:
 - **The phone sleeps mid-test**, which produces entirely black screenshots that
   look like a rendering bug. `adb shell svc power stayon usb` while testing, and
   set it back to `false` afterwards.
+- **Lint will demand `REQUEST_DELETE_PACKAGES` back, and it is wrong.**
+  `MissingPermission` fires on `PackageInstaller.uninstall` in `AppBlocker`,
+  because the platform annotation does not model the Device Owner waiver — the
+  same blind spot that would have kept `DELETE_PACKAGES` in the manifest. It is
+  suppressed there with the evidence attached. Adding the permission back to
+  silence a lint error would undo a deliberate change and reopen the Play
+  Protect question; the emulator check is what settles it, not the annotation.
 - **A wrong package id is inert; a wrong *domain* is not.** `anima.ai` sat on
   `ai-companions.txt` from the beginning: it is a venture studio, so it blocked
   an unrelated business for months while never blocking the Anima app, which is

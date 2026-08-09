@@ -1,5 +1,6 @@
 package app.drawbridge.dpc.apps
 
+import android.annotation.SuppressLint
 import android.app.admin.DevicePolicyManager
 import android.content.Context
 import android.content.Intent
@@ -108,6 +109,20 @@ class AppBlocker(context: Context) {
         }
     }
 
+    /**
+     * Lint insists on DELETE_PACKAGES or REQUEST_DELETE_PACKAGES here, and both
+     * are deliberately absent from the manifest — the first is
+     * signature|privileged and can never be granted to a sideloaded app, and the
+     * second only governs the confirmation dialog a Device Owner never sees.
+     * The platform annotation does not model the Device Owner waiver.
+     *
+     * Verified on the provisioned emulator, 2026-08-09: with neither permission
+     * declared, this call uninstalled a disallowed browser. Do not "fix" the
+     * warning by adding the permission back — declaring install-adjacent
+     * permissions is what started the Play Protect problem in the first place.
+     * See docs/handoff.md.
+     */
+    @SuppressLint("MissingPermission")
     private fun uninstall(packageName: String): Action = try {
         packageManager.packageInstaller.uninstall(
             packageName,

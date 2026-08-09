@@ -2,6 +2,7 @@ package app.drawbridge.dpc.update
 
 import android.content.Context
 import android.content.pm.PackageInstaller
+import android.content.pm.PackageManager
 import android.os.Build
 import android.util.Log
 import app.drawbridge.dpc.DrawbridgeApplication
@@ -100,7 +101,17 @@ class AppInstaller(context: Context) {
             val installer = appContext.packageManager.packageInstaller
             val params = PackageInstaller.SessionParams(
                 PackageInstaller.SessionParams.MODE_FULL_INSTALL,
-            ).apply { setAppPackageName(update.packageName) }
+            ).apply {
+                setAppPackageName(update.packageName)
+
+                // Says what this session actually is: a Device Owner applying
+                // the policy it was provisioned with, not a user sideloading
+                // something. Untested as a cure for Play Protect refusing
+                // drawbridge's own updates, and it can only ever be tested by an
+                // already-installed build — the session is described by whatever
+                // is doing the installing. True regardless of whether it helps.
+                setInstallReason(PackageManager.INSTALL_REASON_POLICY)
+            }
 
             val sessionId = installer.createSession(params)
             installer.openSession(sessionId).use { session ->
