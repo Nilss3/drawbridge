@@ -105,6 +105,58 @@ What is now unknown, rather than assumed:
 - The appeal itself remains unanswerable by design: the form states decisions
   are final and no reply is sent.
 
+### Play Protect blocks drawbridge from updating itself
+
+**Found 2026-08-08, and it is the most serious open problem.** A phone can be
+provisioned, filtered and locked, and then never receive a fix to drawbridge
+again — silently, months later, on somebody else's device.
+
+What was observed, in order:
+
+1. A Google account was added to the G15 (it had never had one).
+2. Opening drawbridge triggered `UpdateWorker.runNow`, which downloaded v0.2.0
+   and tried to install it.
+3. Play Protect showed **"Harmful app blocked: drawbridge — this app can install
+   potentially harmful apps without your permission"**, with a single *Got it*.
+4. The policy updated normally, 23 → 26. drawbridge stayed on versionCode 10.
+5. **Play Protect was switched off in the Play Store; drawbridge immediately
+   updated itself to versionCode 11.** Switching it back on left the installed
+   copy alone — a later scan reported no harmful apps.
+6. herald was uninstalled by hand and **reinstalled itself with Play Protect
+   active**, without complaint.
+
+That is a controlled result rather than an impression: one variable, off and on,
+with the outcome changing both times.
+
+**The mechanism is the payload's permissions, not the installer's identity.**
+The same app installs both, and only one is blocked. The notification's wording
+is the standard user-facing description of `REQUEST_INSTALL_PACKAGES`, which
+drawbridge declares and herald does not — herald asks for nothing beyond
+INTERNET, network state, foreground service, notifications and wake lock. Play
+Protect scans the incoming APK, sees an app requesting install privileges with
+no Play reputation behind it, and refuses.
+
+**Why it appeared only now:** Play Protect needs a Google account to be fully
+active, and the device had none until 2026-08-08. Every earlier silent install
+succeeded because nothing was watching. This means the account that
+[provisioning](provisioning.md) requires — because FRP is the backstop for
+having removed `DISALLOW_FACTORY_RESET` — is the same account that breaks the
+update channel. Those two requirements currently point in opposite directions.
+
+**The most promising fix is to stop declaring the permission.** The manifest
+already reasons this way once: `DELETE_PACKAGES` is deliberately absent because
+"what makes those silent is Device Owner status, not a permission", and
+`PackageInstaller.uninstall` was verified to work without it. If the same holds
+for `REQUEST_INSTALL_PACKAGES` — plausible, since that permission governs the
+*user-facing* unknown-sources flow rather than a Device Owner's silent
+`PackageInstaller` session — then drawbridge is carrying a permission it does
+not need, whose only observable effect is to make Play Protect refuse its own
+updates. `REQUEST_DELETE_PACKAGES` deserves the same question.
+
+Note this is unfolding **while the 2026-08-06 allowlist appeal is still live**,
+two days old at the time of writing. Whether Play Protect's treatment of
+drawbridge is settled is unknown, so a result today may not hold in a fortnight.
+
 ### QR provisioning yields a cleaner phone than adb does
 
 Not a side note — it is a reason to prefer it. The managed flow *replaces* the
@@ -527,9 +579,12 @@ brew install --cask android-commandlinetools
   **It is the reference device.** Every claim in this file about real hardware
   came from it.
 
-  **There is a test running on it right now.** It is QR-provisioned from rc3
-  (drawbridge versionCode 10, policy 23, locked) and was deliberately left alone
-  on 2026-08-08 to see whether it updates itself unaided. Two things are due:
+  **That test has now resolved, and the answer was Play Protect.** The phone was
+  left alone for over 24 hours and picked up policy 26 but not the new build;
+  switching Play Protect off let the update through immediately. It is now on
+  drawbridge `0.2.0` versionCode **11**, policy **26**, locked, with a Google
+  account and Play Protect back on. The original wording is kept below because
+  the schedules it describes are still what a fresh device does. Two things are due:
   policy 23 → 26 via `PolicyWorker`, and drawbridge 10 → 11 via `UpdateWorker`
   and `checkAndInstallSelf`. Both periodic jobs run **daily**; the policy needs
   only a connection, the app update needs an **unmetered** one and a battery
@@ -887,12 +942,49 @@ Each of these looks like a bug and is not, or bites silently:
 The MVP is done and shipped. What follows is a feature roadmap, in the order the
 owner set on 2026-08-08, not a defect list.
 
-### 1. Put a Google account on the phone and find out whether FRP works
+### 1. Get drawbridge able to update itself again
 
-**Before anything else, and before any further feature work.** Everything the
-factory-reset decision rests on is currently taken from Google's documentation
-rather than from a device, and today produced two separate cases where that was
-not good enough.
+**Above the FRP test, because without an update channel nothing else can be
+delivered.** A phone that cannot receive a fix is a phone where every bug found
+from here on is permanent. It also shares a root cause with step 2: adding the
+Google account is what activated Play Protect in the first place.
+
+The finding and the evidence are above. The first thing to try, because it is
+cheap and the codebase already argues for it:
+
+**Drop `REQUEST_INSTALL_PACKAGES` and see whether anything breaks.** The
+manifest already states that silent installs come from Device Owner status
+rather than a permission, and `DELETE_PACKAGES` was left out on exactly that
+reasoning after `PackageInstaller.uninstall` was verified to work without it.
+`REQUEST_INSTALL_PACKAGES` governs the *user-facing* unknown-sources flow, which
+a Device Owner committing its own `PackageInstaller` session never enters. Ask
+the same question of `REQUEST_DELETE_PACKAGES`.
+
+The test needs a device with a Google account and Play Protect **on**:
+
+1. Build a DPC without the permission; confirm as Device Owner that it can still
+   install herald and uninstall a blocked app.
+2. Publish it, and see whether it can install *itself* over the top.
+
+If it works, the fix is a deleted line. If Play Protect still refuses, the
+heuristic is about reputation rather than the manifest, and the remaining
+avenues are worse: an appeal specific to install-blocking (separate from the
+2026-08-06 enrolment one), or accepting that updates need Play Protect switched
+off by hand — which is not something to ask of a parent, and not something a
+locked device should permit anyway.
+
+**Do not ship a build that assumes this is solved.** Until it is, treat every
+release as unable to reach a deployed phone, and weigh changes accordingly.
+
+### 2. Put a Google account on the phone and find out whether FRP works
+
+**Before any feature work, and second only to the update channel above.**
+Everything the factory-reset decision rests on is currently taken from Google's
+documentation rather than from a device, and today produced two separate cases
+where that was not good enough.
+
+The account is already on the G15 as of 2026-08-08 — which is what activated
+Play Protect and produced step 1.
 
 The G15 has never had a Google account on it — every provisioning run skipped
 sign-in on purpose — so Factory Reset Protection has never been armed, never
@@ -930,7 +1022,7 @@ Family Link account** satisfies FRP the same way an ordinary one does, and what
 Family Link does on a device that already has an owner. Neither is known, and
 "can I use this alongside Family Link" is a question every parent will ask.
 
-### 2. herald must force safe search everywhere, or refuse the engine
+### 3. herald must force safe search everywhere, or refuse the engine
 
 The policy already rewrites Google, Bing and YouTube at the DNS layer, and that
 covers the engines it names and nothing else. A search engine drawbridge has
@@ -940,7 +1032,7 @@ search on every engine it offers, and for any engine where that cannot be forced
 do not offer it at all. Note that DNS rewriting cannot do this alone — the engine
 list lives in the browser.
 
-### 3. A setting for video streaming, with or without YouTube
+### 4. A setting for video streaming, with or without YouTube
 
 Two separate questions a parent will ask differently: "may this phone stream
 video at all", and "may it use YouTube". The policy already models options
@@ -950,14 +1042,14 @@ turned off. Note that YouTube is currently blocked outright in `social.txt`, and
 that the safe-search rewrite only takes effect if it stops being blocked — the
 comment at the top of that list explains the interaction.
 
-### 4. Install F-Droid by default
+### 5. Install F-Droid by default
 
 It is useful, it is how a managed phone gets software that is not on Play, and
 it is already unblocked. Adding it to `required_apps` means hosting or pinning
 its APK the same way herald is — by URL and SHA-256 — and deciding whether it is
 required (reinstalled if removed) or merely allowed.
 
-### 5. A setting for browsers: none, or herald only
+### 6. A setting for browsers: none, or herald only
 
 Today the policy names `allowed_browser_packages` and the blocker removes
 everything else. "No browser at all" is a stricter position some parents will
@@ -966,7 +1058,7 @@ absent from the allowed list is installed and removed on a loop, which is the
 trap the two-list rule exists to prevent. Whatever ships must keep those two in
 agreement.
 
-### 6. The curfew, with a floor of half an hour of internet a day
+### 7. The curfew, with a floor of half an hour of internet a day
 
 Drafted and never run on a device: the schema, the window arithmetic and the
 Device Owner calls exist and are tested, nothing reads them, and no published
@@ -987,7 +1079,7 @@ against — a phone with no internet and no way to fix it from the phone.
 The clock lock this needs is already in place and applies to every locked
 device, curfew or not.
 
-### 7. A dev branch
+### 8. A dev branch
 
 Everything so far has gone straight to `main`, which is also what Cloudflare
 deploys and what every device fetches its policy from. That was tolerable while
@@ -998,10 +1090,10 @@ is provisioned: a policy pushed to `main` is live within minutes, and
 Worth deciding at the same time: whether the *policy* gets a channel of its own,
 since a branch protects the code but the live document is a URL on `main`.
 
-### 8. Lock factory reset — last, and only with the timer
+### 9. Lock factory reset — last, and only with the timer
 
 `DISALLOW_FACTORY_RESET` goes back **only** once the delayed self-removal works,
-and deliberately after everything above — unless step 1 shows that FRP does not
+and deliberately after everything above — unless step 2 shows that FRP does not
 hold, in which case this moves up, because the backstop it was removed in favour
 of would not exist. While features are being built, a
 mistake that bricks a handset costs a device; with a factory reset available it
