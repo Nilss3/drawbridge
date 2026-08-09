@@ -1,4 +1,4 @@
-# Handoff — state as of 2026-08-08
+# Handoff — state as of 2026-08-09
 
 Everything about *how the system works* lives in [README](../README.md),
 [design-decisions](design-decisions.md), [policy](policy.md),
@@ -25,10 +25,10 @@ still broken".
 
 | | |
 |---|---|
-| Repo | https://github.com/Nilss3/drawbridge — public, `main`, 87 commits |
-| Release | [v0.2.0](https://github.com/Nilss3/drawbridge/releases/tag/v0.2.0), 9 assets, published and latest |
-| Live policy | version **26**, live at `dist/policy.signed.json` on `main` |
-| Apps, published | drawbridge `0.2.0` (versionCode 11); herald and herald mono `0.1.8` |
+| Repo | https://github.com/Nilss3/drawbridge — public, `main`, 96 commits |
+| Release | [v0.2.0](https://github.com/Nilss3/drawbridge/releases/tag/v0.2.0), 9 assets, **latest**; [v0.2.1](https://github.com/Nilss3/drawbridge/releases/tag/v0.2.1) is a one-asset **pre-release** on purpose |
+| Live policy | version **27**, live at `dist/policy.signed.json` on `main` |
+| Apps, published | drawbridge `0.2.1` (versionCode 12), **which no deployed phone can install** — see below; herald and herald mono `0.1.8` |
 | Website | trilingual, generated into `site/`, on Cloudflare Pages |
 | Tests | 372 unit tests across four build variants, lint clean |
 
@@ -105,11 +105,19 @@ What is now unknown, rather than assumed:
 - The appeal itself remains unanswerable by design: the form states decisions
   are final and no reply is sent.
 
-### Play Protect blocks drawbridge from updating itself
+### Play Protect blocks drawbridge from updating itself — and the permission was not why
 
-**Found 2026-08-08, and it is the most serious open problem.** A phone can be
-provisioned, filtered and locked, and then never receive a fix to drawbridge
-again — silently, months later, on somebody else's device.
+**Found 2026-08-08, tested on 2026-08-09, still open, still the most serious
+problem in the project.** A phone can be provisioned, filtered and locked, and
+then never receive a fix to drawbridge again — silently, months later, on
+somebody else's device.
+
+Read this section as two halves. The first is what was seen on 2026-08-08 and
+the explanation it produced. **That explanation was wrong**, and the second half
+is the experiment that showed it, which also narrowed the problem considerably.
+Nothing here is fixed yet.
+
+#### What was seen on 2026-08-08
 
 What was observed, in order:
 
@@ -128,14 +136,6 @@ What was observed, in order:
 That is a controlled result rather than an impression: one variable, off and on,
 with the outcome changing both times.
 
-**The mechanism is the payload's permissions, not the installer's identity.**
-The same app installs both, and only one is blocked. The notification's wording
-is the standard user-facing description of `REQUEST_INSTALL_PACKAGES`, which
-drawbridge declares and herald does not — herald asks for nothing beyond
-INTERNET, network state, foreground service, notifications and wake lock. Play
-Protect scans the incoming APK, sees an app requesting install privileges with
-no Play reputation behind it, and refuses.
-
 **Why it appeared only now:** Play Protect needs a Google account to be fully
 active, and the device had none until 2026-08-08. Every earlier silent install
 succeeded because nothing was watching. This means the account that
@@ -143,19 +143,86 @@ succeeded because nothing was watching. This means the account that
 having removed `DISALLOW_FACTORY_RESET` — is the same account that breaks the
 update channel. Those two requirements currently point in opposite directions.
 
-**The most promising fix is to stop declaring the permission.** The manifest
-already reasons this way once: `DELETE_PACKAGES` is deliberately absent because
-"what makes those silent is Device Owner status, not a permission", and
-`PackageInstaller.uninstall` was verified to work without it. If the same holds
-for `REQUEST_INSTALL_PACKAGES` — plausible, since that permission governs the
-*user-facing* unknown-sources flow rather than a Device Owner's silent
-`PackageInstaller` session — then drawbridge is carrying a permission it does
-not need, whose only observable effect is to make Play Protect refuse its own
-updates. `REQUEST_DELETE_PACKAGES` deserves the same question.
+The explanation this produced was that the mechanism is **the payload's
+permissions**: the notification's wording is the standard user-facing
+description of `REQUEST_INSTALL_PACKAGES`, which drawbridge declared and herald
+does not. So drop the permission and the problem goes away.
 
-Note this is unfolding **while the 2026-08-06 allowlist appeal is still live**,
-two days old at the time of writing. Whether Play Protect's treatment of
-drawbridge is settled is unknown, so a result today may not hold in a fortnight.
+#### 2026-08-09: it is the payload, but it is not that permission
+
+Two things were established, in this order, because the cost of being wrong
+about the first was a build that could install nothing at all.
+
+**A Device Owner does not need `REQUEST_INSTALL_PACKAGES`.** Verified on the
+provisioned emulator rather than inferred: with the line deleted from the
+manifest, the DPC still installed herald 6 → 8 in place and herald mono from
+absent, both silently, both through `PackageInstaller`. The permission governs
+the user-facing unknown-sources flow, which a Device Owner committing its own
+session never enters — the same reasoning that already keeps `DELETE_PACKAGES`
+out of the manifest. **This half held.** The permission is gone for good; it
+bought nothing.
+
+**And removing it unblocked nothing.** drawbridge 0.2.1 (versionCode 12) was
+published with the permission absent, policy 27 pointed `app_update` at it, and
+the G15 was rebooted. The phone took policy 27 and stayed on 0.2.0. Play Protect
+fired again.
+
+Then the control that makes this a result rather than an anecdote. herald was
+uninstalled by hand and drawbridge locked, so the DPC attempted **both installs
+in the same run, with Play Protect on**:
+
+- **herald installed.** Silently, no complaint.
+- **drawbridge was blocked**, with the same notification as the day before.
+
+Same installer, same moment, two payloads, one verdict each. What that settles:
+
+- **It is not the installer's identity or reputation.** The same v11 DPC
+  installed herald successfully seconds either side of being refused.
+- **It is not `REQUEST_INSTALL_PACKAGES`.** The refused payload does not declare
+  it.
+- **The notification's wording is not read off the incoming manifest.** It still
+  says *"This app can install potentially harmful apps without your
+  permission"* — the canned description of a permission the APK no longer asks
+  for. Whatever Play Protect classifies on, it is not that line.
+
+One detail recorded because it cost nothing and might save someone an afternoon:
+the notification names the app **`app.drawbridge.dpc.DrawbridgeApplication`** —
+the package plus the `<application android:name>` class, which is what a label
+lookup falls back to when it cannot resolve an app label. So Play Protect does
+appear to be parsing the staged APK rather than replaying a cached notification,
+while still classifying it on something other than what it just read.
+
+What is left, cheapest first:
+
+- **`REQUEST_DELETE_PACKAGES`** — the last install-adjacent permission
+  drawbridge declares and herald does not, and very likely unnecessary for the
+  same reason its `DELETE_PACKAGES` sibling is. Untested either way.
+- **The install session itself.** `SessionParams.setInstallReason(INSTALL_REASON_POLICY)`
+  is public API and true by construction for a Device Owner applying its own
+  policy; drawbridge sets no install reason today. **It can only be tested by an
+  already-installed build**, so it is exercised one release later than the one
+  that adds it — plan the two changes accordingly.
+  `setPackageSource(PACKAGE_SOURCE_STORE)` is also available and is deliberately
+  not used: it asserts a provenance the install does not have.
+- **Everything else drawbridge has and herald does not** — `QUERY_ALL_PACKAGES`,
+  which cannot be dropped because noticing packages nobody declared is the app
+  blocker's whole job; the `DeviceAdminReceiver` and its metadata; the custom
+  signature permission.
+
+**The experiment that would settle it** is installing a drawbridge-shaped APK
+under a *different package name* through `required_apps`. If that sails through,
+the verdict is bound to `app.drawbridge.dpc` itself, no manifest change will
+ever move it, and the remaining levers are an appeal and developer verification
+rather than more builds. It is not first only because it puts a junk package
+into the live policy.
+
+Note this is unfolding **while the 2026-08-06 allowlist appeal is still live**.
+Whether Play Protect's treatment of drawbridge is settled is unknown, so a
+result today may not hold in a fortnight — in either direction.
+
+**Every release is currently unable to reach a deployed phone.** 0.2.1 is
+published and the one real device cannot install it. Weigh every change
+accordingly, and do not ship anything that assumes this is solved.
 
 ### QR provisioning yields a cleaner phone than adb does
 
@@ -230,6 +297,26 @@ from one, since `app_update` only installs a strictly greater code.
   packages were missing, so they installed and sat there broken. 157 → 178.
 - **26** — Patreon allowed again, package and domain together. It is a payment
   page, not a feed, and grouping it with OnlyFans was a category error.
+- **27** — `app_update` to versionCode 12, for the Play Protect test below.
+
+**[v0.2.1](https://github.com/Nilss3/drawbridge/releases/tag/v0.2.1) is a
+deliberate pre-release**, and the shape is worth reusing. It carries the DPC and
+nothing else, so it costs a 3 MB upload instead of the 1.1 GiB a full release
+costs — and policy 27 pins `app_update` at the **versioned** URL rather than
+`/releases/latest/download/`, so v0.2.0 stays `latest` and all six
+`required_apps` URLs and the QR keep resolving. That is the whole trick for any
+drawbridge-only test build.
+
+**Do not simply un-flag it to promote it.** v0.2.1 has no herald assets, so the
+moment it became `latest` every `required_apps` URL would 404 on every device.
+Promoting means uploading herald's six APKs into it first, or cutting the next
+version the normal way.
+
+One consequence to remember: while v0.2.0 is `latest`, **the QR still seeds
+versionCode 11**. Harmless — a fresh phone has no Google account during
+provisioning, so Play Protect is not yet active — but it does mean a newly
+provisioned device lands on the old build and then has to survive the same
+update channel as everything else.
 
 **Three release candidates are published and flagged**, rc1 and rc2 with warning
 banners: both carry `DISALLOW_FACTORY_RESET` and must not be used to provision.
@@ -613,31 +700,27 @@ brew install --cask android-commandlinetools
   **It is the reference device.** Every claim in this file about real hardware
   came from it.
 
-  **That test has now resolved, and the answer was Play Protect.** The phone was
-  left alone for over 24 hours and picked up policy 26 but not the new build;
-  switching Play Protect off let the update through immediately. It is now on
-  drawbridge `0.2.0` versionCode **11**, policy **26**, locked, with a Google
-  account and Play Protect back on. The original wording is kept below because
-  the schedules it describes are still what a fresh device does. Two things are due:
-  policy 23 → 26 via `PolicyWorker`, and drawbridge 10 → 11 via `UpdateWorker`
-  and `checkAndInstallSelf`. Both periodic jobs run **daily**; the policy needs
-  only a connection, the app update needs an **unmetered** one and a battery
-  that is not low.
+  **Its current state, 2026-08-09**: drawbridge `0.2.0` versionCode **11**,
+  policy **27**, locked, with a Google account and Play Protect **on**. It is
+  the rig the Play Protect problem is being tested on, and it stays on 11 and on
+  Play Protect until that resolves.
 
-  **How to tell it worked without unlocking:** v0.2.0 puts an overflow menu on
-  the lock screen and rc3 has none, so the menu appearing *is* the result. From
-  there, Diagnostics reports the version and the policy.
+  It cannot take a sideload — `DISALLOW_DEBUGGING_FEATURES` is applied and
+  unlocking does not lift it — so the only way to change what is installed on it
+  is through the update channel, or by switching Play Protect off by hand.
 
-  This is the first time `checkAndInstallSelf` has ever had a newer version to
-  fetch — armed since policy 22, it has only ever returned `UpToDate`. If it has
-  not happened after a couple of days on Wi-Fi, something is wrong and the
-  battery-optimisation state is the first thing to check.
+  **How to tell what it is running without unlocking:** the lock screen's
+  overflow menu → Diagnostics reports the version and the policy. (The menu
+  itself was the marker for v0.2.0 against rc3, which has none.)
 
-  **Rebooting forces both**, and is a reasonable mechanism rather than a
+  **Rebooting forces both workers**, and is a reasonable mechanism rather than a
   workaround: `DnsFilterService` calls `PolicyWorker.refreshNow` and
   `UpdateWorker.runNow` when it starts, and those use `CONNECTED` rather than
-  `UNMETERED`, so they run on mobile data too. Do not reboot it while the
-  unaided test is the thing being observed.
+  `UNMETERED`, so they run on mobile data too. That is how each Play Protect
+  test round is triggered. Do not reboot it while an *unaided* poll is the thing
+  being observed — the periodic jobs are every three hours as of the build after
+  v0.2.0, but versionCode 11 still has the old daily schedule with its unmetered
+  and battery-not-low constraints, which is why the reboot matters here.
 
   **Device Owner can be re-granted over adb on it**, because it has zero
   accounts — `dpm set-device-owner` succeeded again straight after a removal.
@@ -845,19 +928,21 @@ Not verified, and worth doing:
   mono moves GeckoView off its default SurfaceView, which copies a frame more.
   Scrolling a long image-heavy page and playing fullscreen video are the things
   to watch. Nothing an emulator says about this is meaningful.
-- **A policy version *changing* under a running device.** The G15 fetched policy
-  23 and built its tunnel from it, which is the first half; what has still never
-  happened is a device sitting on version *n* and being handed *n+1*.
+- ~~**A policy version *changing* under a running device.**~~ **Done.** The G15
+  went 23 → 26 unaided and 26 → 27 across a reboot on 2026-08-09, taking the new
+  document each time while the old one was in force. This one can come off the
+  list.
 - **The curfew.** Drafted in policy 22 and never run on a device. Nothing
   reads it and no published policy carries one; wiring it up means calling
   `CurfewController.apply` from `BootReceiver` and after a policy refresh.
   The failure that matters is one that does not lift.
-- **The self-update path.** `app_update` is set as of policy 22, but it pins the
-  version already installed (`version_code` 9), so `checkAndInstallSelf` still
-  returns `UpToDate` without downloading anything. The path is armed, not
-  exercised. The first release that raises the version code is what will test
-  it, and that is also the first chance to get the publish order wrong — see
-  [policy.md](policy.md#drawbridge-updates-itself-the-way-it-updates-herald).
+- **The self-update path**, which is now half-answered and worse than untested.
+  `checkAndInstallSelf` has been exercised twice on the G15 with a genuinely
+  newer version to fetch — policy 24 naming versionCode 11, then policy 27
+  naming 12. Both times it found the update, downloaded it and committed the
+  session; both times **Play Protect refused the install**. So the code path
+  works and the channel does not. Nothing about drawbridge's own logic is known
+  to be wrong here. See the Play Protect section.
 - **uBlock Origin on a managed device.** Its filter-list hosts were checked
   against the live blocklists and none are blocked, and policy 12 allowlisted
   them so an upstream list cannot start blocking them later — but no managed
@@ -983,45 +1068,39 @@ delivered.** A phone that cannot receive a fix is a phone where every bug found
 from here on is permanent. It also shares a root cause with step 2: adding the
 Google account is what activated Play Protect in the first place.
 
-The finding and the evidence are above. The first thing to try, because it is
-cheap and the codebase already argues for it:
+The finding, the evidence and what has already been ruled out are above. Two
+rounds are done: `REQUEST_INSTALL_PACKAGES` is gone and did not help, and the
+same-run herald control proved the problem is the drawbridge payload rather than
+the installer.
 
-**Drop `REQUEST_INSTALL_PACKAGES` and see whether anything breaks.** The
-manifest already states that silent installs come from Device Owner status
-rather than a permission, and `DELETE_PACKAGES` was left out on exactly that
-reasoning after `PackageInstaller.uninstall` was verified to work without it.
-`REQUEST_INSTALL_PACKAGES` governs the *user-facing* unknown-sources flow, which
-a Device Owner committing its own `PackageInstaller` session never enters. Ask
-the same question of `REQUEST_DELETE_PACKAGES`.
+**The rig is cheap now, so use it.** A round is: bump the version code, build,
+publish a DPC-only pre-release, sign a policy pointing `app_update` at the
+versioned URL, push, reboot the G15, read Diagnostics from the lock screen's
+overflow menu. Roughly twenty minutes and a 3 MB upload, and the phone stays on
+versionCode 11 as the constant.
 
-**Herald is not at risk from Play Protect, only from the fix.** herald was
-uninstalled by hand on 2026-08-08 and drawbridge reinstalled it silently with
-Play Protect *active* — its APK asks for nothing unusual, so nothing objects.
-The only question is whether removing the permission breaks drawbridge's ability
-to install anything at all. Establish that before shipping it, and the downside
-is zero: if herald stops installing, put the line back.
+Next, in order:
 
-The test needs a device with a Google account and Play Protect **on**:
+1. **Drop `REQUEST_DELETE_PACKAGES`**, having first confirmed on the provisioned
+   emulator that the app blocker still uninstalls without it — the same check
+   that cleared `REQUEST_INSTALL_PACKAGES`. Single variable.
+2. **Set `setInstallReason(INSTALL_REASON_POLICY)` on the install session.** It
+   costs one line and is true by construction. Remember it takes effect only
+   from the *installed* build forward, so it is tested one release after the one
+   that adds it — which means it can ride along with step 1 without confounding
+   it, since the two are exercised at different moments.
+3. **The different-package-name experiment**, which is the one that actually
+   settles whether any of this is winnable by editing a manifest.
 
-1. Build a DPC without the permission; confirm as Device Owner that it can still
-   install herald and uninstall a blocked app.
-2. Publish it, and see whether it can install *itself* over the top.
+If none of it moves, the honest conclusion is that the verdict is attached to
+drawbridge rather than to anything drawbridge does, and the remaining avenues
+are an appeal specific to install-blocking (separate from the 2026-08-06
+enrolment one) and **developer verification** — which stops being a September
+deadline and becomes the actual fix. What is not an answer: asking a parent to
+switch Play Protect off, which a locked device should not permit anyway.
 
-The G15 cannot take a sideload any more — `DISALLOW_DEBUGGING_FEATURES` is
-applied and unlocking does not lift it — so the rig is a fresh provision with a
-**debug** DPC, which retains adb, plus a Google account and Play Protect on.
-Note that a debug build is signed with a different key and may carry a different
-reputation, so a clean result there is suggestive rather than conclusive.
-
-If it works, the fix is a deleted line. If Play Protect still refuses, the
-heuristic is about reputation rather than the manifest, and the remaining
-avenues are worse: an appeal specific to install-blocking (separate from the
-2026-08-06 enrolment one), or accepting that updates need Play Protect switched
-off by hand — which is not something to ask of a parent, and not something a
-locked device should permit anyway.
-
-**Do not ship a build that assumes this is solved.** Until it is, treat every
-release as unable to reach a deployed phone, and weigh changes accordingly.
+**Do not ship a build that assumes this is solved.** Treat every release as
+unable to reach a deployed phone, and weigh changes accordingly.
 
 ### 2. Put a Google account on the phone and find out whether FRP works
 
