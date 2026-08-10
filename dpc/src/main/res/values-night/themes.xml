@@ -3,5 +3,40 @@
     <style name="Theme.Drawbridge" parent="Theme.Material3.DayNight">
         <item name="android:windowLightStatusBar">false</item>
         <item name="android:windowLightNavigationBar" tools:targetApi="o_mr1">false</item>
+
+        <!-- The site's dark scheme, role for role with the light one. -->
+        <item name="colorPrimary">@color/green_wood_night</item>
+        <item name="colorOnPrimary">@color/green_on_primary_night</item>
+        <item name="colorPrimaryContainer">@color/green_container_night</item>
+        <item name="colorOnPrimaryContainer">@color/green_slate_dark_night</item>
+
+        <item name="colorSecondary">@color/green_slate_night</item>
+        <item name="colorOnSecondary">@color/green_on_primary_night</item>
+        <item name="colorSecondaryContainer">@color/green_container_night</item>
+        <item name="colorOnSecondaryContainer">@color/green_slate_dark_night</item>
+
+        <item name="colorTertiary">@color/green_olive_night</item>
+        <item name="colorOnTertiary">@color/green_on_primary_night</item>
+
+        <item name="android:colorBackground">@color/green_cream_night</item>
+        <item name="colorOnBackground">@color/green_ink_night</item>
+        <item name="colorSurface">@color/green_paper_night</item>
+        <item name="colorOnSurface">@color/green_ink_night</item>
+        <item name="colorSurfaceVariant">@color/green_line_night</item>
+        <item name="colorOnSurfaceVariant">@color/green_ink_soft_night</item>
+
+        <item name="colorSurfaceContainerLowest">@color/green_surface_lowest_night</item>
+        <item name="colorSurfaceContainerLow">@color/green_surface_low_night</item>
+        <item name="colorSurfaceContainer">@color/green_surface_night</item>
+        <item name="colorSurfaceContainerHigh">@color/green_surface_high_night</item>
+        <item name="colorSurfaceContainerHighest">@color/green_surface_highest_night</item>
+        <item name="colorSurfaceDim">@color/green_surface_dim_night</item>
+        <item name="colorSurfaceBright">@color/green_surface_bright_night</item>
+
+        <item name="colorOutline">@color/green_ink_soft_night</item>
+        <item name="colorOutlineVariant">@color/green_line_night</item>
+
+        <item name="colorError">@color/green_rust_night</item>
+        <item name="colorOnError">@color/green_on_primary_night</item>
     </style>
 </resources>

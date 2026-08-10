@@ -8,6 +8,49 @@
     <style name="Theme.Drawbridge" parent="Theme.Material3.DayNight">
         <item name="android:windowLightStatusBar">true</item>
         <item name="android:windowLightNavigationBar" tools:targetApi="o_mr1">true</item>
+
+        <!--
+            The website's green, as colour roles. Baseline Material 3 is purple,
+            and until 2026-08-10 that is what this app was: the framework's
+            default rather than anyone's decision. See colors.xml.
+
+            Dynamic colour is deliberately not switched on. On a phone whose
+            wallpaper the child chose, Material You would tint the one screen
+            that is supposed to look like it belongs to the parent.
+        -->
+        <item name="colorPrimary">@color/green_wood</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorPrimaryContainer">@color/green_container</item>
+        <item name="colorOnPrimaryContainer">@color/green_slate_dark</item>
+
+        <item name="colorSecondary">@color/green_slate</item>
+        <item name="colorOnSecondary">@color/white</item>
+        <item name="colorSecondaryContainer">@color/green_container</item>
+        <item name="colorOnSecondaryContainer">@color/green_slate_dark</item>
+
+        <item name="colorTertiary">@color/green_olive</item>
+        <item name="colorOnTertiary">@color/white</item>
+
+        <item name="android:colorBackground">@color/green_cream</item>
+        <item name="colorOnBackground">@color/green_ink</item>
+        <item name="colorSurface">@color/green_paper</item>
+        <item name="colorOnSurface">@color/green_ink</item>
+        <item name="colorSurfaceVariant">@color/green_line</item>
+        <item name="colorOnSurfaceVariant">@color/green_ink_soft</item>
+
+        <item name="colorSurfaceContainerLowest">@color/green_surface_lowest</item>
+        <item name="colorSurfaceContainerLow">@color/green_surface_low</item>
+        <item name="colorSurfaceContainer">@color/green_surface</item>
+        <item name="colorSurfaceContainerHigh">@color/green_surface_high</item>
+        <item name="colorSurfaceContainerHighest">@color/green_surface_highest</item>
+        <item name="colorSurfaceDim">@color/green_surface_dim</item>
+        <item name="colorSurfaceBright">@color/green_surface_bright</item>
+
+        <item name="colorOutline">@color/green_ink_soft</item>
+        <item name="colorOutlineVariant">@color/green_line</item>
+
+        <item name="colorError">@color/green_rust</item>
+        <item name="colorOnError">@color/white</item>
     </style>
 
     <!-- The configuration screen is one long column of sections, and this is what

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    The website's palette, as Material 3 colour roles.
+
+    drawbridge ran on baseline Material 3 until 2026-08-10, which is to say
+    purple: the framework default nobody had chosen. The site has had a green
+    scheme from the beginning and the artwork is painted around it, so the app
+    looked like a different product to anyone who arrived from the website.
+
+    The names on the left are the site's own variables in
+    `site/assets/css/style.css` — kept as comments rather than renamed, because
+    that file is the source these were copied from and the two want to move
+    together. `site/` is generated; edit `tools/build-site.py` if the palette
+    changes there.
+
+    Contrast was checked rather than eyeballed for the pairs that carry text:
+    wood on white is 5.0:1, and the dark scheme's near-black on pale green is far
+    higher. The containers are derived rather than copied — the site has no
+    equivalent role — and are deliberately low-saturation so a card does not
+    compete with the illustration above it.
+-->
+<resources>
+
+    <!-- Light -->
+    <color name="green_wood">#4c7a4f</color>          <!-- site: wood, the primary action -->
+    <color name="green_wood_dark">#3a5f3d</color>     <!-- site: wood-dark -->
+    <color name="green_slate">#4a6b4d</color>         <!-- site: slate, accents -->
+    <color name="green_slate_dark">#2f4a33</color>    <!-- site: slate-dark -->
+    <color name="green_olive">#6d8a4a</color>         <!-- site: olive -->
+    <color name="green_cream">#eef3e6</color>         <!-- site: cream, background -->
+    <color name="green_paper">#f7faf2</color>         <!-- site: paper, surfaces -->
+    <color name="green_ink">#1f2a20</color>           <!-- site: ink -->
+    <color name="green_ink_soft">#556354</color>      <!-- site: ink-soft -->
+    <color name="green_line">#d5e2c9</color>          <!-- site: line, borders -->
+    <color name="green_rust">#a2544a</color>          <!-- site: rust, warnings -->
+    <color name="green_container">#dbe8d3</color>     <!-- derived: filled chips, cards -->
+
+    <!--
+        Material 3 draws the app bar, menus and dialogs from the surface
+        container roles, which are separate from colorSurface and stay baseline
+        purple if only colorSurface is set. That is what left a lavender bar over
+        a green screen. A five-step ramp from white down into the cream.
+    -->
+    <color name="green_surface_lowest">#ffffff</color>
+    <color name="green_surface_low">#f7faf2</color>
+    <color name="green_surface">#eef3e6</color>
+    <color name="green_surface_high">#e7eede</color>
+    <color name="green_surface_highest">#dfe8d6</color>
+    <color name="green_surface_dim">#dbe4d2</color>
+    <color name="green_surface_bright">#f7faf2</color>
+
+    <!-- Dark -->
+    <color name="green_wood_night">#8fc192</color>
+    <color name="green_wood_dark_night">#a9d5ab</color>
+    <color name="green_slate_night">#9dbb9f</color>
+    <color name="green_slate_dark_night">#c6dcc5</color>
+    <color name="green_olive_night">#a2b87a</color>
+    <color name="green_cream_night">#161b16</color>
+    <color name="green_paper_night">#1c221c</color>
+    <color name="green_ink_night">#e4ecdf</color>
+    <color name="green_ink_soft_night">#a7b3a2</color>
+    <color name="green_line_night">#2e372e</color>
+    <color name="green_rust_night">#d98a7c</color>
+    <color name="green_container_night">#2f4a33</color>
+
+    <color name="green_surface_lowest_night">#101410</color>
+    <color name="green_surface_low_night">#161b16</color>
+    <color name="green_surface_night">#1c221c</color>
+    <color name="green_surface_high_night">#232a23</color>
+    <color name="green_surface_highest_night">#2a322a</color>
+    <color name="green_surface_dim_night">#101410</color>
+    <color name="green_surface_bright_night">#333b33</color>
+
+    <!-- The site's dark primary button uses a near-black label rather than white. -->
+    <color name="green_on_primary_night">#201914</color>
+    <color name="white">#ffffff</color>
+</resources>
