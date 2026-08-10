@@ -3,6 +3,7 @@ package app.drawbridge.herald.filter
 import android.content.Context
 import app.drawbridge.herald.HeraldPolicy
 import app.drawbridge.herald.browser.LoadPauseIntegration
+import app.drawbridge.herald.search.SafeSearch
 import mozilla.components.browser.errorpages.ErrorPages
 import mozilla.components.browser.errorpages.ErrorType
 import mozilla.components.concept.engine.EngineSession
@@ -39,7 +40,16 @@ class HeraldRequestInterceptor(private val context: Context) : RequestIntercepto
             return null
         }
 
-        if (!policy.isUrlBlocked(uri)) return null
+        if (!policy.isUrlBlocked(uri)) {
+            // Not blocked, but it may still be a search that has lost its safe
+            // parameter — typed by hand, edited, or restored from a session
+            // saved before this existed. Top-level loads only: a subframe is not
+            // somebody searching, and redirecting one would replace a frame's
+            // content with a page nobody asked for.
+            if (isSubframeRequest) return null
+            return SafeSearch.enforced(uri)
+                ?.let { RequestInterceptor.InterceptionResponse.Url(it) }
+        }
 
         // A blocked iframe must not take the page with it. Android Components
         // loads InterceptionResponse.Content into the *session*, not the frame

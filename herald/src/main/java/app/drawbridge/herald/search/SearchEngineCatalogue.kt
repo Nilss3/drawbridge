@@ -18,27 +18,59 @@ import mozilla.components.browser.state.state.searchEngines
  * That split is deliberate — an in-app "add a search engine" button would be a
  * way to reach an unfiltered one, for the same reason there is no `about:config`.
  *
- * **This list is a filtering decision, not a preference.** Safe search is forced
- * at the DNS layer by rewriting the engine's hostname, and only Google, Bing and
- * DuckDuckGo publish a hostname to rewrite to (see `DnsFilter`). Every other
- * engine here serves image results from its own CDN, which no domain blocklist
- * covers. Yandex and Baidu are left out entirely rather than offered.
+ * **This list is a filtering decision, not a preference.** An engine is offered
+ * only if its safe search can actually be forced, because herald is the only
+ * browser on the phone and an engine that cannot be forced is a hole straight
+ * through everything else the policy does.
+ *
+ * Three ways that holds, in descending order of strength:
+ *
+ *  - **Google, Bing and DuckDuckGo** publish a safe hostname, and drawbridge
+ *    rewrites DNS to it (see `DnsFilter`). Nothing typed in the browser can undo
+ *    that. [SafeSearch] adds their parameters as well, for the standalone herald
+ *    that has no filter behind it.
+ *  - **Ecosia** honours `safesearch=2`, which [SafeSearch] puts back on every
+ *    load rather than only on searches started from the search bar.
+ *  - **Kagi** filters explicit results when logged out and offers no setting to
+ *    stop it; changing that needs a paid account to sign into.
+ *
+ * **Three engines were removed on 2026-08-10 rather than shipped unforced.**
+ * Brave Search can only be forced with a `safesearch` cookie — the vendor's own
+ * answer for filters rewrites the Cookie header behind TLS interception, which
+ * this project will not do. Startpage searches by POST deliberately, so there is
+ * no parameter to set. Qwant documents one that reference implementations record
+ * as not actually heeded. Yandex and Baidu were never offered.
+ *
+ * Removing an engine here is not enough on its own: the policy's
+ * `browser.search_engines` names what a device may show, and a name it still
+ * carries that this catalogue no longer knows how to add simply goes missing
+ * rather than appearing unforced. Both lists were changed together.
  */
 object SearchEngineCatalogue {
 
     /**
      * Engines herald can add itself, for the ones Mozilla's catalogue either does
-     * not ship (Brave, Startpage, Kagi) or only shows in some locales (Ecosia,
-     * Qwant). Bundled engines are preferred when the locale already has them.
+     * not ship (Kagi) or only shows in some locales (Ecosia). Bundled engines are
+     * preferred when the locale already has them.
+     *
+     * The safe-search parameters are here as well as in [SafeSearch]. They are
+     * not redundant: this is what the *first* request carries, and [SafeSearch]
+     * is what puts them back when someone removes them.
      */
     private val ADDABLE = listOf(
-        Addable("herald-ddg", "DuckDuckGo", "https://duckduckgo.com/?q={searchTerms}"),
-        Addable("herald-google", "Google", "https://www.google.com/search?q={searchTerms}"),
-        Addable("herald-bing", "Bing", "https://www.bing.com/search?q={searchTerms}"),
-        Addable("herald-brave", "Brave Search", "https://search.brave.com/search?q={searchTerms}"),
-        Addable("herald-qwant", "Qwant", "https://www.qwant.com/?q={searchTerms}"),
-        Addable("herald-ecosia", "Ecosia", "https://www.ecosia.org/search?q={searchTerms}"),
-        Addable("herald-startpage", "Startpage", "https://www.startpage.com/sp/search?query={searchTerms}"),
+        Addable("herald-ddg", "DuckDuckGo", "https://duckduckgo.com/?q={searchTerms}&kp=1"),
+        Addable(
+            "herald-google",
+            "Google",
+            "https://www.google.com/search?q={searchTerms}&safe=active",
+        ),
+        Addable("herald-bing", "Bing", "https://www.bing.com/search?q={searchTerms}&adlt=strict"),
+        Addable(
+            "herald-ecosia",
+            "Ecosia",
+            "https://www.ecosia.org/search?q={searchTerms}&safesearch=2",
+        ),
+        // Nothing to add: logged out, Kagi filters and offers no way not to.
         Addable("herald-kagi", "Kagi", "https://kagi.com/search?q={searchTerms}"),
     )
 
