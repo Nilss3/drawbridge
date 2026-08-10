@@ -361,6 +361,71 @@ and it would make the appeal harder to win.
 this is the cheapest moment a rename will ever cost. That is an argument about
 timing, not about whether it is the right call.
 
+#### What the research came back with, 2026-08-10
+
+Most of it was our own evidence handed back. Four things were not.
+
+**There are two separate Google mechanisms here, and they show different text.**
+The Android Enterprise *approved-DPC allowlist* blocks an unapproved DPC at
+enrolment with *"This app can request access to sensitive data. This can increase
+the risk of identity theft or financial fraud."* What this device shows is *"this
+app can install potentially harmful apps without your permission"* — a different
+classification entirely, the general PHA/sideload one. **So the block on
+`app.drawbridge.dpc` is not the DPC allowlist**, and the appeal filed on
+2026-08-06 was aimed at the wrong gate. The right one is the Play Protect appeal
+form, below.
+
+**A second auto-block rule exists and does not apply to us.** Play Protect
+auto-blocks sideloaded apps declaring `RECEIVE_SMS`, `READ_SMS`,
+`NOTIFICATION_LISTENER` or `ACCESSIBILITY`, and extends that block during
+enterprise enrolment. Checked against the published APK on 2026-08-10:
+drawbridge declares none of the four. Ruled out.
+
+**The appeal is a worse instrument than it looked.** The form
+(<https://support.google.com/googleplay/android-developer/contact/protectappeals>)
+wants developer name, package name, the APK's SHA-256 and a justification, and
+states that decisions are final and **no response is returned**. One Android
+Enterprise community thread reports a custom DPC still blocked after four appeals
+across two months. Treat it as a lottery ticket with no receipt, not as a plan.
+
+**And the direction of travel is against custom DPCs entirely.** The allowlist
+was introduced during 2025 as the gate on them; the legacy Play EMM API closed to
+new integrations on 30 September 2025, leaving the Android Management API as the
+only open path; and the advice given in Google's own support forum to a developer
+in this exact position was not "appeal" but "distribute through Managed Google
+Play instead". That route means an AMAPI deployment with a Google-hosted
+enterprise binding — which is the opposite of this project's no-account,
+no-backend constraint, and would not deliver the DPC at enrolment anyway.
+
+So the honest framing is not "a false positive awaiting correction". It is a
+category being closed, on certified devices, with an allowlist as the mechanism.
+The fork that actually matters:
+
+- **Get on the approved-DPC allowlist** as a legitimate custom DPC, which is a
+  submission-and-review process with no published timescale; or
+- **accept that certified Android is closing this path** and decide what
+  drawbridge is on devices where it is not enforced. Non-GMS builds
+  (LineageOS, /e/OS, GrapheneOS) have no allowlist and no Play Protect at all.
+
+A rename remains available and unresolved: it works today, it is a one-way door,
+and nobody can say whether the new name holds.
+
+#### The one test that cannot be run
+
+The research proposed capturing `logcat`/`bugreport` across a live QR
+provisioning failure, filtered for `Finsky`, `ManagedProvisioning` and
+`SetupWizard`, to prove whether the provisioning failure is the same Play Protect
+refusal or an unrelated ManagedProvisioning fault. It is the only open question
+left, and **it cannot be done on this hardware**: when provisioning fails the
+device does not fall back into setup, it **factory resets itself**, taking the
+log buffer with it. There is no window in which to enable USB debugging and pull
+anything.
+
+That is also why the original 2026-08-07 failure took so long to diagnose, and
+why the inference has to stand on its own: the wizard must install
+`app.drawbridge.dpc`, that package will not install on this device by any route
+tested, so provisioning cannot succeed. Strong, and still an inference.
+
 #### What was actually left, and what the probes settled
 
 #### The probes ran on 2026-08-10, and the answer is the package name
@@ -1483,6 +1548,12 @@ Each of these looks like a bug and is not, or bites silently:
   suppressed there with the evidence attached. Adding the permission back to
   silence a lint error would undo a deliberate change and reopen the Play
   Protect question; the emulator check is what settles it, not the annotation.
+- **A failed QR provisioning factory-resets the phone.** It does not drop back
+  into the setup wizard, so there is no chance to enable USB debugging and read
+  the logs afterwards — the buffer goes with the wipe. Any diagnosis of a
+  provisioning failure has to be built from what is on screen plus what can be
+  tested separately over adb on a device that has finished setup. This is the
+  main reason the 2026-08-07 failure took a day to find.
 - **adb installs are *not* exempt from Play Protect, and the emulator lies about
   it.** The exemption people remember is from the unknown-sources consent prompt,
   not from the verifier: `adb install` is verified by default, which is why the
@@ -1738,8 +1809,12 @@ broken while a timer-based one does not.
 
 ### Standing items, unchanged
 
-- **Retry the QR every couple of weeks** if the allowlist question ever matters
-  again. It has never blocked this project, on one handset, on one date.
+- **The QR is blocked, and it is not the allowlist.** The old note here said to
+  retry every couple of weeks because the allowlist "has never blocked this
+  project". That is out of date twice over: provisioning is now blocked, and the
+  mechanism is the Play Protect PHA classification on the package name rather
+  than the DPC allowlist — the two show different warning text. See the Play
+  Protect section.
 - **Keep both keys backed up.** Every published release now depends on it.
 - **Drop unused ABIs.** `armeabi-v7a` and `x86_64` have never been downloaded by
   anything and cost ~650 MiB of every release. Removing an ABI means removing
