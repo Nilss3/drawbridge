@@ -285,7 +285,8 @@ class DeviceOwnerManager(context: Context) {
     }
 
     /**
-     * Applies the restriction set.
+     * Applies the restriction set, and clears whatever the current state leaves
+     * out.
      *
      * Three of these are easy to leave out and each one on its own defeats the
      * whole filter:
@@ -294,12 +295,23 @@ class DeviceOwnerManager(context: Context) {
      *  - [UserManager.DISALLOW_ADD_USER] and friends: always-on VPN is per-user,
      *    so a guest profile would get unfiltered network with no restrictions.
      *  - [UserManager.DISALLOW_DEBUGGING_FEATURES]: ADB can clear device owner.
+     *
+     * The clearing half is what lets a restriction come back *off*. Only
+     * USB debugging currently does — see [restrictionsFor] — but the shape is
+     * general on purpose: a restriction that can be dropped from the applied set
+     * and never removed from the device is the bug [clearRetiredRestrictions]
+     * exists to fix, and there is no reason to have two mechanisms for it.
      */
     fun applyUserRestrictions() {
         if (!isDeviceOwner) return
-        restrictionsToApply().forEach { restriction ->
+        val wanted = restrictionsToApply()
+        wanted.forEach { restriction ->
             runCatching { dpm.addUserRestriction(admin, restriction) }
                 .onFailure { Log.e(TAG, "Could not set restriction $restriction", it) }
+        }
+        (MANAGED_RESTRICTIONS - wanted.toSet()).forEach { restriction ->
+            runCatching { dpm.clearUserRestriction(admin, restriction) }
+                .onFailure { Log.e(TAG, "Could not clear restriction $restriction", it) }
         }
         clearRetiredRestrictions()
     }
@@ -321,13 +333,15 @@ class DeviceOwnerManager(context: Context) {
         }
     }
 
-    private fun restrictionsToApply(): List<String> =
+    private fun restrictionsToApply(): List<String> {
+        val locked = ParentKey(appContext).isLocked
         if (BuildConfig.RETAIN_ADB_ACCESS) {
             Log.w(TAG, "Debug build: leaving USB debugging enabled so adb keeps working")
-            MANAGED_RESTRICTIONS - UserManager.DISALLOW_DEBUGGING_FEATURES
-        } else {
-            MANAGED_RESTRICTIONS
+        } else if (!locked) {
+            Log.i(TAG, "Unlocked: leaving USB debugging available to the parent")
         }
+        return restrictionsFor(isLocked = locked, retainAdbAccess = BuildConfig.RETAIN_ADB_ACCESS)
+    }
 
     fun clearUserRestrictions() {
         if (!isDeviceOwner) return
@@ -450,6 +464,43 @@ class DeviceOwnerManager(context: Context) {
 
     companion object {
         private const val TAG = "DeviceOwnerManager"
+
+        /**
+         * The restriction set for a given state, and the only place the
+         * USB-debugging rule lives.
+         *
+         * **USB debugging follows the lock, not the protection.** Every other
+         * restriction here is keyed on [ParentKey.protectedSince] through
+         * [reapplyIfProtected], which survives unlocking on purpose: a parent
+         * changing a setting has not withdrawn their protection, and the phone
+         * should stay filtered while they do it. This one is deliberately
+         * different, and the reason is that it is the project's only working
+         * delivery channel.
+         *
+         * Play Protect refuses to install `app.drawbridge.dpc`, so a phone
+         * cannot update drawbridge by itself and cannot be provisioned by QR.
+         * What does work is a cable — see `tools/provision-adb.sh`. Applying
+         * this restriction for the life of the device means the cable is
+         * available exactly once, before the first lock, and a phone in the
+         * field can then never be fixed at all.
+         *
+         * Gating it on the *lock* costs nothing that was not already given away.
+         * An unlocked drawbridge is a drawbridge whose configuration screen is
+         * open, and that screen offers complete removal in its overflow menu —
+         * so somebody holding the key can already undo everything, with or
+         * without adb. The restriction only ever protected against someone who
+         * does *not* have the key, and that person cannot unlock the phone to
+         * begin with.
+         *
+         * Note this does not switch USB debugging *on*. It stops the platform
+         * refusing it; the developer options toggle is still a deliberate act.
+         */
+        fun restrictionsFor(isLocked: Boolean, retainAdbAccess: Boolean): List<String> =
+            if (retainAdbAccess || !isLocked) {
+                MANAGED_RESTRICTIONS - UserManager.DISALLOW_DEBUGGING_FEATURES
+            } else {
+                MANAGED_RESTRICTIONS
+            }
 
         /**
          * DISALLOW_MODIFY_ACCOUNTS is deliberately not here — it is applied

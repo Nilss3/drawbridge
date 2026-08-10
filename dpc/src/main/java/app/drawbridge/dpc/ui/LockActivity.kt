@@ -233,7 +233,14 @@ class LockActivity : AppCompatActivity() {
         // applies the rest of the policy well before the parent has decided to
         // keep the key, so this is the only place that can say the phone is
         // locked and be right.
-        DeviceOwnerManager(this).updateLockScreenInfo()
+        val deviceOwner = DeviceOwnerManager(this)
+        deviceOwner.updateLockScreenInfo()
+        // And the same ordering is why USB debugging is taken away here rather
+        // than in lockDevice(). It is the one restriction keyed on the lock
+        // itself, so applying it any earlier would take the cable away from a
+        // parent who has not yet decided to keep the key — and an abandoned
+        // reveal is supposed to leave a phone that can still be worked on.
+        deviceOwner.applyUserRestrictions()
         finish()
     }
 
@@ -257,7 +264,12 @@ class LockActivity : AppCompatActivity() {
 
         // The phone is still guarded — unlocking removes the key, not the
         // restrictions or the filter — so the line stays and only the date goes.
-        DeviceOwnerManager(this).updateLockScreenInfo()
+        val deviceOwner = DeviceOwnerManager(this)
+        deviceOwner.updateLockScreenInfo()
+        // One restriction does come off: USB debugging, which follows the lock
+        // rather than the protection so that a parent holding the key can put a
+        // fix on the phone over a cable. See DeviceOwnerManager.restrictionsFor.
+        deviceOwner.applyUserRestrictions()
 
         startActivity(
             Intent(this, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP),

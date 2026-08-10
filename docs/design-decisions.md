@@ -1014,12 +1014,50 @@ drawbridge's app blocker seconds after the device was provisioned, because a
 browser whose package name is not the allowed one is exactly what that code
 exists to remove.
 
-## Debug builds skip `DISALLOW_DEBUGGING_FEATURES`
+## USB debugging follows the lock, not the protection
+
+Every other restriction is keyed on `ParentKey.protectedSince`, which survives
+unlocking on purpose: a parent changing a setting has not withdrawn their
+protection, and the phone should stay filtered while they do it.
+`DISALLOW_DEBUGGING_FEATURES` is deliberately the exception. It goes on when the
+key is committed and comes off when the key is used, and
+`DeviceOwnerManager.restrictionsFor` is the only place that rule lives.
+
+**The reason is that a cable is the only delivery channel this project has.**
+Play Protect refuses to install `app.drawbridge.dpc`, so drawbridge cannot update
+itself and cannot be provisioned by QR; what works is `tools/provision-adb.sh`.
+Applying this restriction for the life of the device would mean the cable is
+available exactly once, before the first lock — and a phone in the field could
+then never be fixed at all. Every bug found after deployment would be permanent.
+
+**It costs nothing that was not already given away.** An unlocked drawbridge is a
+drawbridge whose configuration screen is open, and that screen offers complete
+removal in its overflow menu. Somebody holding the key can already undo
+everything, with or without adb. The restriction only ever protected against
+somebody who does *not* have the key, and that person cannot unlock the phone in
+the first place.
+
+Two things it does not do. It does not switch USB debugging *on* — it stops the
+platform refusing it, and the developer-options toggle is still a deliberate act.
+And it does not weaken the locked state at all: a locked phone has no adb, which
+is the whole point.
+
+The ordering matters and is easy to get backwards. `MainActivity.lockDevice`
+applies the policy *before* the parent has decided to keep the key, so this one
+restriction is applied later, from `LockActivity.sealWithKey`, after
+`ParentKey.commit`. An abandoned reveal — the parent presses home before writing
+the key down — therefore leaves a phone that can still be worked on, which is the
+same reasoning that keeps the device unsealed in that case.
+
+`applyUserRestrictions` clears whatever the current state leaves out, rather than
+only adding. Without that half the restriction could go on and never come off.
+
+### Debug builds skip it entirely
 
 Applying it switches off USB debugging immediately, dropping the adb connection
 and leaving no way to reinstall or inspect the app. Every other restriction still
-applies in debug builds, and release builds always enforce it —
-`BuildConfig.RETAIN_ADB_ACCESS`.
+applies in debug builds — `BuildConfig.RETAIN_ADB_ACCESS`. A release build
+enforces it whenever the phone is locked.
 
 ## herald has no search-suggestion dropdown
 
