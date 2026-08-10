@@ -277,7 +277,25 @@ export class Adb {
             );
         }
 
-        await device.claimInterface(match.iface.interfaceNumber);
+        // Only one program at a time can hold the phone's debug interface, and
+        // on any machine with Android tooling that program is usually adb. The
+        // raw DOMException here says "Unable to claim interface", which is true
+        // and tells nobody what to do — and `adb kill-server` on its own often
+        // does not fix it, because a running emulator re-registers with the
+        // server and respawns it within seconds.
+        try {
+            await device.claimInterface(match.iface.interfaceNumber);
+        } catch (cause) {
+            throw new AdbError(
+                "Something else on this computer is already using the phone's debug " +
+                    "connection — almost always adb.\n\n" +
+                    "Close any running emulator first, then run: adb kill-server\n\n" +
+                    "An emulator left running will restart the adb server by itself, so " +
+                    "killing the server without closing the emulator does not help. " +
+                    "Unplug and replug the phone, then try again.",
+                { cause },
+            );
+        }
         let inEndpoint = null;
         let outEndpoint = null;
         for (const ep of match.alt.endpoints) {

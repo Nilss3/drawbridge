@@ -193,7 +193,12 @@ async function run() {
     try {
         setStep(1, "active");
         log("Asking for the phone…");
-        adb = await Adb.requestDevice();
+        try {
+            adb = await Adb.requestDevice();
+        } catch (error) {
+            if (error instanceof AdbError) setStep(1, "error");
+            throw error;
+        }
         const key = await loadOrCreateKey(window.localStorage);
         await adb.authenticate(key, () =>
             log("Accept the “Allow USB debugging” prompt on the phone.", "prompt"),
