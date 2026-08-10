@@ -65,9 +65,8 @@ zet die aan.
 Verbind de telefoon met de USB-kabel. Aanvaard de melding *USB-foutopsporing
 toestaan* die op de telefoon verschijnt.
 
-**Het eenvoudigst is de installerpagina op de website**, die dit alles vanuit
-Chrome of Edge doet zonder iets op te zetten:
-<https://drawbridge.pages.dev/nl/install/usb/>.
+**Het eenvoudigst is de installerpagina op de website**, op `/nl/install/usb/`,
+die dit alles vanuit Chrome of Edge doet zonder iets op te zetten.
 
 Wilt u liever een terminal, voer dan vanuit een kopie van deze repository uit:
 
