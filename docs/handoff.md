@@ -26,9 +26,9 @@ still broken".
 | | |
 |---|---|
 | Repo | https://github.com/Nilss3/drawbridge — public, `main`, 96 commits |
-| Release | [v0.2.0](https://github.com/Nilss3/drawbridge/releases/tag/v0.2.0), 9 assets, **latest**; v0.2.1 to v0.2.4 are one-asset **pre-releases** on purpose |
-| Live policy | version **31**, live at `dist/policy.signed.json` on `main` |
-| Apps, published | drawbridge `0.2.4` (versionCode 15), **which no deployed phone can install unaided** — see below; the G15 runs 0.2.3, installed with Play Protect switched off; herald and herald mono `0.1.8` |
+| Release | [v0.2.5](https://github.com/Nilss3/drawbridge/releases/tag/v0.2.5), 9 assets, **latest**; v0.2.1 to v0.2.4 are one-asset **pre-releases** on purpose |
+| Live policy | version **33**, live at `dist/policy.signed.json` on `main` |
+| Apps, published | drawbridge `0.2.5` (versionCode 16) and herald + herald mono `0.1.9`. **drawbridge cannot be installed on a certified device at all** — see the Play Protect section |
 | Website | trilingual, generated into `site/`, on Cloudflare Pages |
 | Tests | 372 unit tests across four build variants, lint clean |
 
@@ -136,12 +136,13 @@ What was observed, in order:
 That is a controlled result rather than an impression: one variable, off and on,
 with the outcome changing both times.
 
-**Why it appeared only now:** Play Protect needs a Google account to be fully
-active, and the device had none until 2026-08-08. Every earlier silent install
-succeeded because nothing was watching. This means the account that
-[provisioning](provisioning.md) requires — because FRP is the backstop for
-having removed `DISALLOW_FACTORY_RESET` — is the same account that breaks the
-update channel. Those two requirements currently point in opposite directions.
+**Why it appeared only then, as understood at the time:** Play Protect was
+believed to need a Google account to be active, and the device had none until
+2026-08-08. **That belief is wrong** — see the 2026-08-10 entry below, where Play
+Protect refused an install on a phone with zero accounts. The timing was a
+coincidence, or the verdict was formed around then for other reasons. The
+account is not the trigger, and nothing about the FRP argument depends on it
+either way.
 
 The explanation this produced was that the mechanism is **the payload's
 permissions**: the notification's wording is the standard user-facing
@@ -292,6 +293,73 @@ publish, sign, reboot were spent on hypotheses that ten minutes of reading would
 have reordered. The project's own habit — verify on hardware rather than trust
 the documentation — was right about `DISALLOW_FACTORY_RESET` and the DPC
 allowlist and quietly became a reason not to read the documentation at all.
+
+#### 2026-08-10, and this is the answer: the package name is refused
+
+**QR provisioning stopped working entirely, and the cause turned out to be the
+same one.** After the FRP test wiped the G15, provisioning it again failed: QR
+scanned, APK downloaded, *"this device belongs to your organization"*, then
+**"Something went wrong"** — the 2026-08-07 symptom, with no Play Protect message
+on screen.
+
+It is not a regression. **v0.2.0 — the byte-identical build that provisioned this
+same phone on 2026-08-07 — now fails in exactly the same way.** The handoff
+activities are present in the published APK (`aapt2 dump xmltree`), and the only
+manifest differences from v0.2.0 are two removed `uses-permission` lines and one
+non-exported activity.
+
+**The controlled test.** On the freshly reset G15 — **zero Google accounts**, no
+device owner, no device admins, `provisioningState: 0` — over adb, minutes apart:
+
+| Installed | Result |
+|---|---|
+| `app.drawbridge.dpc` 0.2.5 | `INSTALL_FAILED_VERIFICATION_FAILURE`, Play Protect dialog |
+| `app.drawbridge.probe` — same code, same key, different `applicationId` | **installs silently** |
+
+`logcat` names the refuser:
+`com.android.vending/…finsky.protectdialogs.activity.PlayProtectDialogsActivity`.
+The probe also **provisions by QR** where `app.drawbridge.dpc` cannot.
+
+**So Play Protect refuses this package by name, at install, device-wide, with no
+account signed in.** Provisioning fails downstream of that — the wizard cannot
+install the DPC, so the handoff never happens and the wizard reports a generic
+error. Two symptoms, one cause.
+
+Everything else is excluded by that one table: not the code, not the signing key
+(the probe shares it), not the device (the probe works on it), not leftover DPC
+state (wiped, and the package is not even installed), not the account (there is
+none), and not being a DPC (the probe is one).
+
+**The consequence is the worst state this project has been in.** The name is not
+degraded, it is unusable: `app.drawbridge.dpc` cannot be installed on a certified
+Android device, so it cannot be updated *and cannot be provisioned*. The QR path
+— the entire reason provisioning needs no cable — is closed for that package.
+
+#### What to do about it
+
+**Appeal, and note the route exists for apps that are not on Play.** Google's
+developer guidance for Play Protect warnings carries a dedicated form, separate
+from the Play Store removal appeal:
+<https://support.google.com/googleplay/android-developer/contact/protectappeals>.
+Their wording is that classifications are corrected "in appropriate
+circumstances, including if an error was made". This is the only route that
+reclaims the name.
+
+**A rename works today and is a one-way door.** The probe proves a different
+`applicationId` installs and provisions. Renaming is also mechanically cheap now:
+`dpcApplicationId` is already a Gradle property, the custom permission and the
+provider authority are already manifest placeholders, and keeping their literal
+defaults means **herald needs no rebuild** and `required_apps` needs no re-pin.
+Against it: Device Owner binds permanently to the package name, so every future
+device is committed; and the probe name is *hours* old to Google, so "clean" and
+"not yet scanned" are indistinguishable. A rename might buy years or days, and
+nothing here tells you which. Do not make renaming a habit — repeatedly changing
+identity to escape a classification is itself the pattern these systems look for,
+and it would make the appeal harder to win.
+
+**There are no deployed devices.** The G15 is wiped and there is no user base, so
+this is the cheapest moment a rename will ever cost. That is an argument about
+timing, not about whether it is the right call.
 
 #### What was actually left, and what the probes settled
 
@@ -528,7 +596,8 @@ This matters out of proportion to how it was found. Five rounds of build,
 publish, sign, push, reboot were spent asking questions that a local rig can
 answer in a minute, on the assumption — written into this file — that Play
 Protect needs a Google account and the emulator therefore could not show it. The
-emulator has no account.
+emulator has no account. **Confirmed on hardware on 2026-08-10**: the G15 refused
+an install with no account signed in at all. Play Protect does not need one.
 
 **One confound, and it is worth ten minutes to remove:** the payload was a
 release-signed APK replacing a debug-signed install, so a signature-related
@@ -1107,17 +1176,13 @@ brew install --cask android-commandlinetools
   **It is the reference device.** Every claim in this file about real hardware
   came from it.
 
-  **Its current state, 2026-08-10**: drawbridge `0.2.3` versionCode **14**,
-  policy **30**, with a Google account and Play Protect **on**. It is the rig the
-  Play Protect problem is being tested on. It reached 0.2.3 only because Play
-  Protect was switched off by hand; every later version has been refused.
+  **Its current state, 2026-08-10, end of day**: **wiped and unmanaged.** No
+  device owner, no device admins, no Google account, USB debugging on, adb
+  authorised. `app.drawbridge.dpc` will not install on it; the probe package
+  will. It is the only hardware this project has.
 
-  It carries an emergency unlock key, so a lock with a lost key is recoverable
-  on this device for as long as that build is installed.
-
-  It cannot take a sideload — `DISALLOW_DEBUGGING_FEATURES` is applied and
-  unlocking does not lift it — so the only way to change what is installed on it
-  is through the update channel, or by switching Play Protect off by hand.
+  `DISALLOW_DEBUGGING_FEATURES` takes adb away the moment a release build is
+  locked, so install everything before locking.
 
   **How to tell what it is running without unlocking:** the lock screen's
   overflow menu → Diagnostics reports the version and the policy. (The menu
@@ -1418,6 +1483,12 @@ Each of these looks like a bug and is not, or bites silently:
   suppressed there with the evidence attached. Adding the permission back to
   silence a lint error would undo a deliberate change and reopen the Play
   Protect question; the emulator check is what settles it, not the annotation.
+- **`tools/qrpayload.py` hardcodes the admin component.** `ADMIN_COMPONENT` at
+  the top of the file is a literal `app.drawbridge.dpc/...`, so a payload
+  generated for any other package silently names a component that does not exist
+  and provisioning fails for a reason that has nothing to do with what is being
+  tested. Caught on 2026-08-10 while generating the probe QR, before it cost a
+  factory reset. Read the package from the APK if that tool is touched again.
 - **A wrong package id is inert; a wrong *domain* is not.** `anima.ai` sat on
   `ai-companions.txt` from the beginning: it is a venture studio, so it blocked
   an unrelated business for months while never blocking the Anima app, which is
