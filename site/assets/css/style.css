@@ -301,3 +301,56 @@ td:first-child, th:first-child { white-space: nowrap; }
 .toc { columns: 2; column-gap: 2rem; margin: 1rem 0 2rem; }
 @media (max-width: 780px) { .toc { columns: 1; } }
 .toc a { display: block; padding: 0.15rem 0; font-size: 0.95rem; text-decoration: none; }
+
+/* --- the USB installer ---------------------------------------------------
+   The only page on this site that runs JavaScript. These rules cover the
+   progress list and the log it writes; everything else on the page reuses the
+   callouts, steps and buttons above. */
+
+.installer-status { font-weight: 600; margin: 0.4rem 0 0; min-height: 1.4em; }
+.installer-status--ok { color: var(--wood); }
+.installer-status--error { color: var(--rust); }
+
+.installer-steps { list-style: none; padding: 0; margin: 1.2rem 0; }
+.installer-steps li {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.45rem 0;
+  color: var(--ink-soft);
+}
+/* The dot is the whole status indicator: empty until a step starts, filled
+   while it runs, solid when it is done, rust if it failed. */
+.step-dot {
+  flex: 0 0 auto;
+  width: 0.85rem;
+  height: 0.85rem;
+  border-radius: 50%;
+  border: 2px solid var(--line);
+  background: transparent;
+}
+.installer-steps li[data-state="active"] { color: var(--ink); font-weight: 600; }
+.installer-steps li[data-state="active"] .step-dot { border-color: var(--wood); background: var(--paper); }
+.installer-steps li[data-state="done"] { color: var(--ink); }
+.installer-steps li[data-state="done"] .step-dot { border-color: var(--wood); background: var(--wood); }
+.installer-steps li[data-state="error"] { color: var(--rust); font-weight: 600; }
+.installer-steps li[data-state="error"] .step-dot { border-color: var(--rust); background: var(--rust); }
+
+.installer-log {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 0.9rem 1.1rem;
+  margin: 1.2rem 0;
+  max-height: 20rem;
+  overflow-y: auto;
+  overflow-x: auto;
+  font-size: 0.85rem;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.log-line { color: var(--ink-soft); }
+.log-line--ok { color: var(--ink); }
+.log-line--error { color: var(--rust); font-weight: 600; }
+.log-line--prompt { color: var(--ink); font-weight: 600; }

@@ -5,7 +5,7 @@
 <meta charset="utf-8" />
 <title>Installeren — drawbridge</title>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<meta name="description" content="Hoe je drawbridge installeert: scan de QR-code, of gebruik de USB-methode als de QR-code niet werkt op je toestel." />
+<meta name="description" content="Hoe je drawbridge installeert: via USB op een telefoon met Google Play, of met de QR-code op een toestel zonder Google-diensten." />
 <link rel="icon" href="/assets/img/icon.webp" />
 <link rel="stylesheet" href="/assets/css/style.css" />
 </head>
@@ -33,19 +33,43 @@
   <section class="section">
     <div class="wrap">
       <h1>Drawbridge installeren</h1>
-      <p class="lede">Twee mogelijke paden, afhankelijk van of de installatiewizard van je toestel een QR-scanner aanbiedt.</p>
+      <p class="lede">Installeer via USB vanaf een computer. Geen factory reset, en er wordt niets op de telefoon gewist.</p>
 
       <div class="callout callout--alpha">
         <strong>Dit zit nog volop in vroege alfatesting!!</strong>
-        <p style="margin: 0.5rem 0 0;">Het uitrollen is nog niet bevestigd op een echte telefoon. Ga ervan uit dat het kan mislukken, en gebruik geen toestel waar je van afhangt.</p>
+        <p style="margin: 0.5rem 0 0;">Installeren via USB is bevestigd op een echte telefoon. De QR-code niet. Gebruik geen toestel waar je van afhangt.</p>
       </div>
 
-      <h2>De standaardmanier: QR-code</h2>
+      <div class="callout callout--alpha">
+        <strong>Bij het vergrendelen verwijdert drawbridge de apps die het blokkeert.</strong>
+        <p style="margin: 0.5rem 0 0;">Op een telefoon die al in gebruik is, verdwijnen die apps zodra je vergrendelt, en een instelling achteraf weer aanzetten brengt ze niet terug. Verder wordt er niets gewist — je foto's, berichten en andere apps blijven staan.</p>
+      </div>
+
+      <h2>Installeren via USB</h2>
+      <p>Voor gewone Android-telefoons met Google én voor deGooglede open-source Android-toestellen: installeer via USB met de stappen hieronder.</p>
       <ol class="steps">
-<li><span class="num">1</span><div><strong>Begin met een vers toestel, of doe een factory reset.</strong> Maak eerst een back-up van je data, want een reset wist alles.</div></li>
-<li><span class="num">2</span><div>Tik op het welkomstscherm <strong>6 keer</strong> op dezelfde plek om een verborgen QR-scanner tevoorschijn te halen.</div></li>
-<li><span class="num">3</span><div>Scan de drawbridge-QR-code.</div></li>
-<li><span class="num">4</span><div>Wacht tot de installatie is afgerond — het toestel downloadt, verifieert en installeert alles zelf.</div></li>
+<li><span class="num">1</span><div><strong>Verwijder elk account van de telefoon</strong> — Instellingen → Wachtwoorden, toegangssleutels en accounts. Android geeft dit niveau van controle enkel weg aan een toestel waar geen account op staat. In stap 4 meld je je weer aan.</div></li>
+<li><span class="num">2</span><div>Activeer Ontwikkelaarsopties (tik meerdere keren op het buildnummer in Instellingen → Over de telefoon) en schakel <strong>USB-debugging</strong> in.</div></li>
+<li><span class="num">3</span><div>Verbind de telefoon met een computer via een USB-kabel, en voer de installer uit.</div></li>
+<li><span class="num">4</span><div>Meld je weer aan met <strong>je eigen</strong> Google-account — nooit dat van het kind.</div></li>
+</ol>
+
+      <div class="callout callout--coming-soon">
+        <strong>Installeren vanuit uw browser</strong>
+        <p style="margin: 0.6rem 0 0;">Installeer drawbridge rechtstreeks vanaf deze site via USB, zonder software op te zetten. Vereist Chrome of Edge.</p>
+        <div class="btn-row" style="margin-bottom:0;">
+          <a class="btn btn--primary" href="/nl/install/usb/">Installeren via USB</a>
+        </div>
+      </div>
+
+      <p class="footnote">Ondertussen is het één commando vanuit een kopie van de repository — <code>tools/provision-adb.sh</code> — dat beide apps installeert en drawbridge de eigenaar van de telefoon maakt. De uitleg staat in <a href="https://github.com/Nilss3/drawbridge/blob/main/docs/provisioning.md">provisioning.md</a>.</p>
+
+      <h2>Installeren met een QR-code</h2>
+      <p>Enkel voor deGooglede open-source Android-toestellen, en enkel na een factory reset of vers uit de doos.</p>
+      <ol class="steps">
+<li><span class="num">1</span><div>Tik op het welkomstscherm <strong>6 keer</strong> op dezelfde plek om een verborgen QR-scanner tevoorschijn te halen.</div></li>
+<li><span class="num">2</span><div>Scan de drawbridge-QR-code.</div></li>
+<li><span class="num">3</span><div>Wacht tot de installatie is afgerond — het toestel downloadt, verifieert en installeert alles zelf.</div></li>
 </ol>
 
       <figure class="qr-figure">
@@ -53,30 +77,13 @@
         <figcaption>Scan deze code tijdens de installatie.</figcaption>
       </figure>
 
-      <h2>Als de QR-code niet werkt</h2>
-      <p>Sommige toestellen hebben een installatiewizard zonder de zes-tik-gebaar, of slaan de QR-scanner helemaal over. Er is een alternatieve weg naar binnen, via USB, die altijd werkt.</p>
-      <ol class="steps">
-<li><span class="num">1</span><div>Doorloop de installatie, maar <strong>meld je nog niet aan met een account</strong> — sla die stap over. Dit is belangrijk: de installer heeft een toestel nodig waarop nog geen account is ingesteld.</div></li>
-<li><span class="num">2</span><div>Activeer Ontwikkelaarsopties (tik meerdere keren op het buildnummer in Instellingen → Over de telefoon) en schakel <strong>USB-debugging</strong> in.</div></li>
-<li><span class="num">3</span><div>Verbind je toestel met een computer via een USB-kabel, en gebruik de installer hieronder.</div></li>
-<li><span class="num">4</span><div>Wacht tot de installatie is afgerond.</div></li>
-</ol>
-
-      <div class="callout callout--coming-soon">
-        <strong>Browsergebaseerde installer — binnenkort beschikbaar</strong>
-        <p style="margin: 0.6rem 0 0;">Hier komt een pagina waarmee je drawbridge rechtstreeks vanuit een Chromium-browser (Chrome, Edge) via USB kan installeren — geen aparte software nodig. Deze is nog niet klaar.</p>
-        <div class="btn-row" style="margin-bottom:0;">
-          <span class="btn btn--disabled">Installeren via USB — binnenkort</span>
-        </div>
-      </div>
-
-      <p class="footnote">Ondertussen kunnen technisch onderlegde gebruikers drawbridge dezelfde toegang geven via Android's eigen <code>adb</code>-ontwikkelaarstool vanaf een computer, op een toestel waarop nog geen account is aangemeld.</p>
-
       <h2>Na de installatie</h2>
-      <ol class="steps" start="5">
-<li><span class="num">5</span><div>Open de drawbridge-app en activeer ze.</div></li>
-<li><span class="num">6</span><div>Schrijf de eenmalig getoonde deactivatiecode op — of niet, als je wil dat de bescherming voorgoed aanblijft.</div></li>
+      <ol class="steps">
+<li><span class="num">1</span><div>Open de drawbridge-app en activeer ze.</div></li>
+<li><span class="num">2</span><div>Schrijf de eenmalig getoonde deactivatiecode op — of niet, als je wil dat de bescherming voorgoed aanblijft.</div></li>
 </ol>
+
+      <p class="footnote">Bij het activeren wordt USB-debugging uitgeschakeld. Ontgrendel je drawbridge met je code, dan komt ze terug — zo zet je later een nieuwere versie via dezelfde kabel op de telefoon.</p>
 
       <p>Lees de <a href="/nl/faq/">Q&amp;A</a> voor wat er geblokkeerd wordt en waarom, of bekijk het <a href="/nl/why-blocked/">volledige, onderbouwde overzicht</a>.</p>
     </div>

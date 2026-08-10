@@ -58,6 +58,7 @@ def render_page(
     description: str,
     body: str,
     lang_switch_targets: dict[str, str] | None = None,
+    scripts: str = "",
 ) -> str:
     """path is the page's own path relative to its language root, e.g. '', 'faq/', 'install/'.
 
@@ -130,7 +131,7 @@ def render_page(
     <span><a href="https://github.com/Nilss3/drawbridge">{FOOTER_SOURCE[lang]}</a></span>
   </div>
 </footer>
-</body>
+{scripts}</body>
 </html>
 """
 
@@ -160,7 +161,7 @@ HOME = {
         cta_primary="Get started",
         cta_secondary="See what's blocked, and why",
         how_h2="How it works",
-        how_p1='You\'ll need to start from a fresh device or a factory reset. During the usual set-up, you need to scan a QR code or use a button on this website. This will embed drawbridge on your device. Once installed, just start it. You\'ll get a random code to deactivate drawbridge. Alternatively, "forget" the code and have your protection indefinitely.',
+        how_p1='You connect the phone to a computer once, over USB, and run the installer — no factory reset, and nothing on the phone is erased. This will embed drawbridge on your device. Once installed, just start it. Locking it does uninstall the apps it blocks, so expect those to go. You\'ll get a random code to deactivate drawbridge. Alternatively, "forget" the code and have your protection indefinitely.',
         how_p2="Drawbridge relies on a web filter, a block list, and a custom browser. You don't need an account, and no data leaves your device. As opposed to parental controls or app blockers, there is little to no configuration, it already has everything there to protect you. There is also no workaround.",
         how_art_alt="A phone with a raised drawbridge across its screen: a calm green landscape inside, dark creatures shut out behind it.",
         how_cta_faq="Read the Q&amp;A",
@@ -203,7 +204,7 @@ HOME = {
         cta_primary="Aan de slag",
         cta_secondary="Bekijk wat geblokkeerd wordt, en waarom",
         how_h2="Hoe het werkt",
-        how_p1='Je hebt een vers toestel nodig, of een factory reset. Tijdens de gewone installatie scan je een QR-code, of gebruik je een knop op deze website. Dat installeert drawbridge op je toestel. Eenmaal geïnstalleerd, start je het gewoon op. Je krijgt een willekeurige code om drawbridge te deactiveren. Je kan die code ook bewust "vergeten", zodat je bescherming voor onbepaalde tijd actief blijft.',
+        how_p1='Je verbindt de telefoon één keer met een computer via USB en voert de installer uit — geen factory reset, en er wordt niets op de telefoon gewist. Dat installeert drawbridge op je toestel. Eenmaal geïnstalleerd, start je het gewoon op. Bij het vergrendelen verdwijnen wel de apps die drawbridge blokkeert. Je krijgt een willekeurige code om drawbridge te deactiveren. Je kan die code ook bewust "vergeten", zodat je bescherming voor onbepaalde tijd actief blijft.',
         how_p2="Drawbridge steunt op een webfilter, een blocklist, en een eigen browser. Je hebt geen account nodig, en er wordt nooit data van je toestel verzonden. In tegenstelling tot parental controls of app blockers is er nauwelijks tot geen configuratie nodig — alles staat er al klaar om je te beschermen. Er is ook geen workaround.",
         how_art_alt="Een telefoon met een opgehaalde brug over het scherm: een rustig groen landschap binnenin, duistere wezens buitengesloten.",
         how_cta_faq="Lees de Q&amp;A",
@@ -246,7 +247,7 @@ HOME = {
         cta_primary="Commencer",
         cta_secondary="Voir ce qui est bloqué, et pourquoi",
         how_h2="Comment ça marche",
-        how_p1="Il vous faut un appareil neuf, ou une réinitialisation aux paramètres d'usine. Lors de la configuration habituelle, vous scannez un QR code, ou utilisez un bouton sur ce site. Cela installe drawbridge sur votre appareil. Une fois installé, il suffit de le démarrer. Vous recevrez un code aléatoire pour désactiver drawbridge. Vous pouvez aussi « oublier » ce code volontairement, pour que la protection reste active indéfiniment.",
+        how_p1="Vous reliez le téléphone à un ordinateur une seule fois, par USB, et vous lancez l'installeur — aucune réinitialisation, et rien n'est effacé sur le téléphone. Cela installe drawbridge sur votre appareil. Une fois installé, il suffit de le démarrer. Le verrouillage désinstalle en revanche les applications qu'il bloque. Vous recevrez un code aléatoire pour désactiver drawbridge. Vous pouvez aussi « oublier » ce code volontairement, pour que la protection reste active indéfiniment.",
         how_p2="Drawbridge s'appuie sur un filtre web, une liste de blocage, et un navigateur dédié. Aucun compte n'est nécessaire, et aucune donnée ne quitte votre appareil. Contrairement aux contrôles parentaux ou aux bloqueurs d'applications, il n'y a que peu, voire aucune configuration à faire — tout est déjà en place pour vous protéger. Il n'existe pas non plus de moyen de contournement.",
         how_art_alt="Un téléphone dont le pont-levis est relevé sur l'écran : un paysage vert et calme à l'intérieur, des créatures sombres tenues à l'écart.",
         how_cta_faq="Lire la Q&amp;A",
@@ -401,107 +402,116 @@ def render_home(lang: str) -> str:
 INSTALL = {
     "en": dict(
         title="Install — drawbridge",
-        description="How to install drawbridge: scan the QR code, or use the USB fallback if the QR code doesn't work on your device.",
+        description="How to install drawbridge: over USB on a phone with Google Play, or with the QR code on a phone without Google services.",
         h1="Installing drawbridge",
-        lede="One of two paths, depending on whether your device's setup wizard offers a QR scanner.",
+        lede="Install over USB from a computer. No factory reset, and nothing on the phone is erased.",
         alpha_warning="This is still in early alpha testing!!",
-        alpha_detail="Provisioning has not yet been confirmed working on a real phone. Expect it to fail, and do not use a device you depend on.",
-        qr_h2="The standard way: QR code",
+        alpha_detail="Installing over USB has been confirmed on a real phone. The QR code has not. Don't use a device you depend on.",
+        caveat_title="Locking drawbridge uninstalls the apps it blocks.",
+        caveat_text="On a phone that is already in use, those apps are removed the moment you lock it, and switching a setting back on afterwards does not bring them back. Nothing else is erased — your photos, messages and other apps stay where they are.",
+        usb_h2="Install over USB",
+        usb_qualifier="For Google (regular) Android phones and also deGoogled open-source Android devices: install over USB using the flow below.",
+        usb_steps=[
+            "<strong>Remove every account from the phone</strong> — Settings → Passwords, passkeys &amp; accounts. Android only hands over this level of control to a phone with no account on it. You sign back in at step 4.",
+            "Enable Developer Options (tap the build number in Settings → About phone several times) and turn on <strong>USB debugging</strong>.",
+            "Connect the phone to a computer with a USB cable, and run the installer.",
+            "Sign back in with <strong>your own</strong> Google account — never the child's.",
+        ],
+        coming_title="Install from your browser",
+        coming_text="Install drawbridge straight from this site over USB, with no software to set up. Needs Chrome or Edge.",
+        coming_btn="Install over USB",
+        meanwhile='In the meantime it is one command from a copy of the repository — <code>tools/provision-adb.sh</code> — which installs both apps and makes drawbridge the owner of the phone. It is documented in <a href="https://github.com/Nilss3/drawbridge/blob/main/docs/provisioning.md">provisioning.md</a>.',
+        qr_h2="Install with a QR code",
+        qr_qualifier="For deGoogled open-source Android devices only, and only after a factory reset or fresh out of the box.",
         qr_caption="Scan this code during set-up.",
         qr_alt="The drawbridge provisioning QR code.",
         qr_steps=[
-            "<strong>Start from a fresh device, or do a factory reset.</strong> Back up your data first, since a reset wipes it.",
             "On the welcome screen, tap the same spot <strong>6 times</strong> to reveal a hidden QR scanner.",
             "Scan the drawbridge QR code.",
             "Wait for setup to finish — the device downloads, verifies and installs everything on its own.",
         ],
-        fallback_h2="If the QR code doesn't work",
-        fallback_intro="Some devices ship a setup wizard without the six-tap gesture, or skip the QR scanner entirely. There is a second way in, over USB, that works regardless.",
-        fallback_steps=[
-            "Continue through setup, but <strong>don't sign in to any account</strong> — skip that step. This matters: the installer needs a device with no account yet configured.",
-            "Enable Developer Options (tap the build number in Settings → About phone several times) and turn on <strong>USB debugging</strong>.",
-            "Connect your device to a computer with a USB cable, and use the installer below.",
-            "Wait for setup to finish.",
-        ],
-        coming_title="Browser-based installer — coming soon",
-        coming_text="A page here will let you install drawbridge straight from a Chromium-based browser (Chrome, Edge) over USB — no separate software to install. It isn't ready yet.",
-        coming_btn="Install over USB — coming soon",
-        meanwhile="In the meantime, technically comfortable users can grant drawbridge the same access using Android's own <code>adb</code> developer tool from a computer, on a device with no account signed in yet.",
         after_h2="After setup",
         after_steps=[
             "Open the drawbridge app and activate it.",
             "Write down the deactivation code shown once — or don't, if you want the protection to stay on for good.",
         ],
+        after_note="Activating switches USB debugging off. Unlocking drawbridge with your code turns it back on, which is how you would put a later version on the phone over the same cable.",
         see_more='Read the <a href="{faq}">Q&amp;A</a> for what\'s blocked and why, or see the <a href="{why}">full sourced breakdown</a>.',
     ),
     "nl": dict(
         title="Installeren — drawbridge",
-        description="Hoe je drawbridge installeert: scan de QR-code, of gebruik de USB-methode als de QR-code niet werkt op je toestel.",
+        description="Hoe je drawbridge installeert: via USB op een telefoon met Google Play, of met de QR-code op een toestel zonder Google-diensten.",
         h1="Drawbridge installeren",
-        lede="Twee mogelijke paden, afhankelijk van of de installatiewizard van je toestel een QR-scanner aanbiedt.",
+        lede="Installeer via USB vanaf een computer. Geen factory reset, en er wordt niets op de telefoon gewist.",
         alpha_warning="Dit zit nog volop in vroege alfatesting!!",
-        alpha_detail="Het uitrollen is nog niet bevestigd op een echte telefoon. Ga ervan uit dat het kan mislukken, en gebruik geen toestel waar je van afhangt.",
-        qr_h2="De standaardmanier: QR-code",
+        alpha_detail="Installeren via USB is bevestigd op een echte telefoon. De QR-code niet. Gebruik geen toestel waar je van afhangt.",
+        caveat_title="Bij het vergrendelen verwijdert drawbridge de apps die het blokkeert.",
+        caveat_text="Op een telefoon die al in gebruik is, verdwijnen die apps zodra je vergrendelt, en een instelling achteraf weer aanzetten brengt ze niet terug. Verder wordt er niets gewist — je foto's, berichten en andere apps blijven staan.",
+        usb_h2="Installeren via USB",
+        usb_qualifier="Voor gewone Android-telefoons met Google én voor deGooglede open-source Android-toestellen: installeer via USB met de stappen hieronder.",
+        usb_steps=[
+            "<strong>Verwijder elk account van de telefoon</strong> — Instellingen → Wachtwoorden, toegangssleutels en accounts. Android geeft dit niveau van controle enkel weg aan een toestel waar geen account op staat. In stap 4 meld je je weer aan.",
+            "Activeer Ontwikkelaarsopties (tik meerdere keren op het buildnummer in Instellingen → Over de telefoon) en schakel <strong>USB-debugging</strong> in.",
+            "Verbind de telefoon met een computer via een USB-kabel, en voer de installer uit.",
+            "Meld je weer aan met <strong>je eigen</strong> Google-account — nooit dat van het kind.",
+        ],
+        coming_title="Installeren vanuit uw browser",
+        coming_text="Installeer drawbridge rechtstreeks vanaf deze site via USB, zonder software op te zetten. Vereist Chrome of Edge.",
+        coming_btn="Installeren via USB",
+        meanwhile='Ondertussen is het één commando vanuit een kopie van de repository — <code>tools/provision-adb.sh</code> — dat beide apps installeert en drawbridge de eigenaar van de telefoon maakt. De uitleg staat in <a href="https://github.com/Nilss3/drawbridge/blob/main/docs/provisioning.md">provisioning.md</a>.',
+        qr_h2="Installeren met een QR-code",
+        qr_qualifier="Enkel voor deGooglede open-source Android-toestellen, en enkel na een factory reset of vers uit de doos.",
         qr_caption="Scan deze code tijdens de installatie.",
         qr_alt="De drawbridge-QR-code voor installatie.",
         qr_steps=[
-            "<strong>Begin met een vers toestel, of doe een factory reset.</strong> Maak eerst een back-up van je data, want een reset wist alles.",
             "Tik op het welkomstscherm <strong>6 keer</strong> op dezelfde plek om een verborgen QR-scanner tevoorschijn te halen.",
             "Scan de drawbridge-QR-code.",
             "Wacht tot de installatie is afgerond — het toestel downloadt, verifieert en installeert alles zelf.",
         ],
-        fallback_h2="Als de QR-code niet werkt",
-        fallback_intro="Sommige toestellen hebben een installatiewizard zonder de zes-tik-gebaar, of slaan de QR-scanner helemaal over. Er is een alternatieve weg naar binnen, via USB, die altijd werkt.",
-        fallback_steps=[
-            "Doorloop de installatie, maar <strong>meld je nog niet aan met een account</strong> — sla die stap over. Dit is belangrijk: de installer heeft een toestel nodig waarop nog geen account is ingesteld.",
-            "Activeer Ontwikkelaarsopties (tik meerdere keren op het buildnummer in Instellingen → Over de telefoon) en schakel <strong>USB-debugging</strong> in.",
-            "Verbind je toestel met een computer via een USB-kabel, en gebruik de installer hieronder.",
-            "Wacht tot de installatie is afgerond.",
-        ],
-        coming_title="Browsergebaseerde installer — binnenkort beschikbaar",
-        coming_text="Hier komt een pagina waarmee je drawbridge rechtstreeks vanuit een Chromium-browser (Chrome, Edge) via USB kan installeren — geen aparte software nodig. Deze is nog niet klaar.",
-        coming_btn="Installeren via USB — binnenkort",
-        meanwhile="Ondertussen kunnen technisch onderlegde gebruikers drawbridge dezelfde toegang geven via Android's eigen <code>adb</code>-ontwikkelaarstool vanaf een computer, op een toestel waarop nog geen account is aangemeld.",
         after_h2="Na de installatie",
         after_steps=[
             "Open de drawbridge-app en activeer ze.",
             "Schrijf de eenmalig getoonde deactivatiecode op — of niet, als je wil dat de bescherming voorgoed aanblijft.",
         ],
+        after_note="Bij het activeren wordt USB-debugging uitgeschakeld. Ontgrendel je drawbridge met je code, dan komt ze terug — zo zet je later een nieuwere versie via dezelfde kabel op de telefoon.",
         see_more='Lees de <a href="{faq}">Q&amp;A</a> voor wat er geblokkeerd wordt en waarom, of bekijk het <a href="{why}">volledige, onderbouwde overzicht</a>.',
     ),
     "fr": dict(
         title="Installation — drawbridge",
-        description="Comment installer drawbridge : scannez le QR code, ou utilisez la méthode USB si le QR code ne fonctionne pas sur votre appareil.",
+        description="Comment installer drawbridge : par USB sur un téléphone doté de Google Play, ou avec le QR code sur un appareil sans services Google.",
         h1="Installer drawbridge",
-        lede="Deux méthodes possibles, selon que l'assistant de configuration de votre appareil propose ou non un lecteur de QR code.",
+        lede="Installez par USB depuis un ordinateur. Aucune réinitialisation, et rien n'est effacé sur le téléphone.",
         alpha_warning="Ceci est encore en phase de test alpha !!",
-        alpha_detail="Le déploiement n'a pas encore été confirmé sur un vrai téléphone. Attendez-vous à ce que cela échoue, et n'utilisez pas un appareil dont vous dépendez.",
-        qr_h2="La méthode standard : QR code",
+        alpha_detail="L'installation par USB a été confirmée sur un vrai téléphone. Le QR code, non. N'utilisez pas un appareil dont vous dépendez.",
+        caveat_title="Le verrouillage de drawbridge désinstalle les applications qu'il bloque.",
+        caveat_text="Sur un téléphone déjà utilisé, ces applications disparaissent dès que vous verrouillez, et réactiver un réglage ensuite ne les rétablit pas. Rien d'autre n'est effacé : vos photos, vos messages et vos autres applications restent en place.",
+        usb_h2="Installer par USB",
+        usb_qualifier="Pour les téléphones Android ordinaires avec Google comme pour les appareils Android open source dégooglisés : installez par USB en suivant les étapes ci-dessous.",
+        usb_steps=[
+            "<strong>Retirez tous les comptes du téléphone</strong> — Paramètres → Mots de passe, clés d'accès et comptes. Android n'accorde ce niveau de contrôle qu'à un téléphone ne portant aucun compte. Vous vous reconnecterez à l'étape 4.",
+            "Activez les options pour développeurs (tapez plusieurs fois sur le numéro de build dans Paramètres → À propos du téléphone) et activez le <strong>débogage USB</strong>.",
+            "Connectez le téléphone à un ordinateur avec un câble USB, et lancez l'installeur.",
+            "Reconnectez-vous avec <strong>votre propre</strong> compte Google — jamais celui de l'enfant.",
+        ],
+        coming_title="Installer depuis votre navigateur",
+        coming_text="Installez drawbridge directement depuis ce site par USB, sans logiciel à mettre en place. Nécessite Chrome ou Edge.",
+        coming_btn="Installer par USB",
+        meanwhile='En attendant, il s\'agit d\'une seule commande depuis une copie du dépôt — <code>tools/provision-adb.sh</code> — qui installe les deux applications et fait de drawbridge le propriétaire du téléphone. Tout est expliqué dans <a href="https://github.com/Nilss3/drawbridge/blob/main/docs/provisioning.md">provisioning.md</a>.',
+        qr_h2="Installer avec un QR code",
+        qr_qualifier="Uniquement pour les appareils Android open source dégooglisés, et uniquement après une réinitialisation d'usine ou à la sortie de la boîte.",
         qr_caption="Scannez ce code pendant la configuration.",
         qr_alt="Le QR code d'installation de drawbridge.",
         qr_steps=[
-            "<strong>Partez d'un appareil neuf, ou faites une réinitialisation aux paramètres d'usine.</strong> Sauvegardez d'abord vos données, car une réinitialisation efface tout.",
             "Sur l'écran d'accueil, tapez <strong>6 fois</strong> au même endroit pour révéler un lecteur de QR code caché.",
             "Scannez le QR code de drawbridge.",
             "Attendez la fin de l'installation — l'appareil télécharge, vérifie et installe tout automatiquement.",
         ],
-        fallback_h2="Si le QR code ne fonctionne pas",
-        fallback_intro="Certains appareils ont un assistant de configuration sans le geste des 6 tapotements, ou ignorent complètement le lecteur de QR code. Il existe une seconde voie, par USB, qui fonctionne dans tous les cas.",
-        fallback_steps=[
-            "Poursuivez la configuration, mais <strong>ne vous connectez à aucun compte</strong> — passez cette étape. C'est important : l'installeur a besoin d'un appareil sans compte configuré.",
-            "Activez les options pour développeurs (tapez plusieurs fois sur le numéro de build dans Paramètres → À propos du téléphone) et activez le <strong>débogage USB</strong>.",
-            "Connectez votre appareil à un ordinateur avec un câble USB, et utilisez l'installeur ci-dessous.",
-            "Attendez la fin de l'installation.",
-        ],
-        coming_title="Installeur dans le navigateur — bientôt disponible",
-        coming_text="Une page ici vous permettra d'installer drawbridge directement depuis un navigateur basé sur Chromium (Chrome, Edge) par USB — sans logiciel séparé à installer. Ce n'est pas encore prêt.",
-        coming_btn="Installer via USB — bientôt disponible",
-        meanwhile="En attendant, les utilisateurs à l'aise avec la technique peuvent accorder à drawbridge le même accès grâce à l'outil de développement <code>adb</code> d'Android, depuis un ordinateur, sur un appareil sans compte encore connecté.",
         after_h2="Après l'installation",
         after_steps=[
             "Ouvrez l'application drawbridge et activez-la.",
             "Notez le code de désactivation affiché une seule fois — ou pas, si vous voulez que la protection reste active pour de bon.",
         ],
+        after_note="L'activation désactive le débogage USB. Il revient dès que vous déverrouillez drawbridge avec votre code : c'est ainsi que vous installerez plus tard une version plus récente par le même câble.",
         see_more='Consultez la <a href="{faq}">Q&amp;A</a> pour savoir ce qui est bloqué et pourquoi, ou voir le <a href="{why}">détail complet sourcé</a>.',
     ),
 }
@@ -524,7 +534,27 @@ def render_install(lang: str) -> str:
         <p style="margin: 0.5rem 0 0;">{c['alpha_detail']}</p>
       </div>
 
+      <div class="callout callout--alpha">
+        <strong>{c['caveat_title']}</strong>
+        <p style="margin: 0.5rem 0 0;">{c['caveat_text']}</p>
+      </div>
+
+      <h2>{c['usb_h2']}</h2>
+      <p>{c['usb_qualifier']}</p>
+      {steps_html(c['usb_steps'])}
+
+      <div class="callout callout--coming-soon">
+        <strong>{c['coming_title']}</strong>
+        <p style="margin: 0.6rem 0 0;">{c['coming_text']}</p>
+        <div class="btn-row" style="margin-bottom:0;">
+          <a class="btn btn--primary" href="{prefix}/install/usb/">{c['coming_btn']}</a>
+        </div>
+      </div>
+
+      <p class="footnote">{c['meanwhile']}</p>
+
       <h2>{c['qr_h2']}</h2>
+      <p>{c['qr_qualifier']}</p>
       {steps_html(c['qr_steps'])}
 
       <figure class="qr-figure">
@@ -532,28 +562,215 @@ def render_install(lang: str) -> str:
         <figcaption>{c['qr_caption']}</figcaption>
       </figure>
 
-      <h2>{c['fallback_h2']}</h2>
-      <p>{c['fallback_intro']}</p>
-      {steps_html(c['fallback_steps'])}
-
-      <div class="callout callout--coming-soon">
-        <strong>{c['coming_title']}</strong>
-        <p style="margin: 0.6rem 0 0;">{c['coming_text']}</p>
-        <div class="btn-row" style="margin-bottom:0;">
-          <span class="btn btn--disabled">{c['coming_btn']}</span>
-        </div>
-      </div>
-
-      <p class="footnote">{c['meanwhile']}</p>
-
       <h2>{c['after_h2']}</h2>
-      {steps_html(c['after_steps'], start=5)}
+      {steps_html(c['after_steps'])}
+
+      <p class="footnote">{c['after_note']}</p>
 
       <p>{c['see_more'].format(faq=faq_href, why=why_href)}</p>
     </div>
   </section>
 """
     return render_page(lang=lang, path="install/", title=c["title"], description=c["description"], body=body)
+
+
+# ---------------------------------------------------------------------------
+# The browser installer. One page, and the only page on this site that runs
+# JavaScript — WebUSB cannot be done without it. Everything it loads is
+# same-origin, including the APK, so the "nothing leaves the device" posture
+# holds even here.
+# ---------------------------------------------------------------------------
+
+USB_INSTALLER = {
+    "en": dict(
+        title="Install over USB — drawbridge",
+        description="Install drawbridge on an Android phone straight from this page, over USB. No factory reset.",
+        h1="Install over USB",
+        lede="This page installs drawbridge onto a phone plugged into this computer. Nothing is uploaded anywhere — the app is served from this site and goes straight down the cable.",
+        browser_note="Needs Chrome, Edge or another Chromium browser. Firefox and Safari have no WebUSB.",
+        unsupported="This browser cannot talk to USB devices. Open this page in Chrome or Edge, or use <code>tools/provision-adb.sh</code> from a terminal instead.",
+        prep_h2="On the phone, first",
+        prep_steps=[
+            "<strong>Remove every account</strong> — Settings → Passwords, passkeys &amp; accounts. You sign back in at the end. Nothing else is erased.",
+            "Enable Developer Options: Settings → About phone, tap <strong>Build number</strong> seven times.",
+            "Settings → System → Developer options → turn on <strong>USB debugging</strong>.",
+            "Plug the phone into this computer.",
+        ],
+        conflict_title="Close any adb running on this computer.",
+        conflict_text="Only one program can hold the phone's debug connection. If you have Android tools installed, run <code>adb kill-server</code> first, or this page will not see the device.",
+        start_h2="Then, here",
+        start_button="Choose phone and install",
+        steps_h3="Progress",
+        step_labels=[
+            "Connect to the phone",
+            "Check the phone is ready",
+            "Download and verify drawbridge",
+            "Install it",
+            "Make drawbridge the owner",
+        ],
+        caveat_title="Locking drawbridge uninstalls the apps it blocks.",
+        caveat_text="That happens later, on the phone, when you press Lock — not here. On a phone already in use those apps go and do not come back.",
+        done_h2="Now finish on the phone",
+        done_steps=[
+            "Sign back in with <strong>your own</strong> Google account — never the child's.",
+            "Set a screen lock.",
+            "Open <strong>drawbridge</strong>, choose the language, read the policy, set the options.",
+            "Tap <strong>Lock drawbridge</strong> and write the key down before leaving that screen.",
+        ],
+        done_note="Locking switches USB debugging off. It comes back when you unlock drawbridge with your key, which is how you would install a later version over the same cable.",
+        source_note='This page runs <a href="https://github.com/Nilss3/drawbridge/tree/main/site-src/installer">a small ADB client</a> in your browser. It pauses Android\'s check on cable installs for the length of the copy, then puts it back exactly as it found it — on success, on failure, and if you unplug the phone.',
+    ),
+    "nl": dict(
+        title="Installeren via USB — drawbridge",
+        description="Installeer drawbridge rechtstreeks vanaf deze pagina op een Android-telefoon, via USB. Geen factory reset.",
+        h1="Installeren via USB",
+        lede="Deze pagina installeert drawbridge op een telefoon die aan deze computer hangt. Er wordt niets geüpload — de app komt van deze site en gaat rechtstreeks door de kabel.",
+        browser_note="Vereist Chrome, Edge of een andere Chromium-browser. Firefox en Safari hebben geen WebUSB.",
+        unsupported="Deze browser kan niet met USB-toestellen praten. Open deze pagina in Chrome of Edge, of gebruik <code>tools/provision-adb.sh</code> vanuit een terminal.",
+        prep_h2="Eerst op de telefoon",
+        prep_steps=[
+            "<strong>Verwijder elk account</strong> — Instellingen → Wachtwoorden, toegangssleutels en accounts. Op het einde meldt u zich weer aan. Verder wordt er niets gewist.",
+            "Zet Ontwikkelaarsopties aan: Instellingen → Over de telefoon, tik zeven keer op <strong>Buildnummer</strong>.",
+            "Instellingen → Systeem → Ontwikkelaarsopties → zet <strong>USB-foutopsporing</strong> aan.",
+            "Sluit de telefoon aan op deze computer.",
+        ],
+        conflict_title="Sluit elke adb die op deze computer draait.",
+        conflict_text="Maar één programma tegelijk kan de debugverbinding van de telefoon vasthouden. Hebt u Android-tools geïnstalleerd, voer dan eerst <code>adb kill-server</code> uit, anders ziet deze pagina het toestel niet.",
+        start_h2="Daarna hier",
+        start_button="Telefoon kiezen en installeren",
+        steps_h3="Voortgang",
+        step_labels=[
+            "Verbinden met de telefoon",
+            "Nakijken of de telefoon klaar is",
+            "drawbridge downloaden en controleren",
+            "Installeren",
+            "drawbridge eigenaar maken",
+        ],
+        caveat_title="Bij het vergrendelen verwijdert drawbridge de apps die het blokkeert.",
+        caveat_text="Dat gebeurt later, op de telefoon, wanneer u op Vergrendelen drukt — niet hier. Op een telefoon die al in gebruik is verdwijnen die apps en komen ze niet terug.",
+        done_h2="Nu afwerken op de telefoon",
+        done_steps=[
+            "Meld u weer aan met <strong>uw eigen</strong> Google-account — nooit dat van het kind.",
+            "Stel een schermvergrendeling in.",
+            "Open <strong>drawbridge</strong>, kies de taal, lees het beleid, zet de opties.",
+            "Tik op <strong>drawbridge vergrendelen</strong> en schrijf de sleutel op vóór u dat scherm verlaat.",
+        ],
+        done_note="Bij het vergrendelen gaat USB-foutopsporing uit. Ze komt terug zodra u drawbridge met uw sleutel ontgrendelt — zo installeert u later een nieuwere versie via dezelfde kabel.",
+        source_note='Deze pagina draait <a href="https://github.com/Nilss3/drawbridge/tree/main/site-src/installer">een kleine ADB-client</a> in uw browser. Ze zet de controle van Android op kabelinstallaties even uit, alleen zolang het kopiëren duurt, en zet ze daarna precies terug zoals ze was — bij succes, bij mislukking, en als u de telefoon loskoppelt.',
+    ),
+    "fr": dict(
+        title="Installer par USB — drawbridge",
+        description="Installez drawbridge sur un téléphone Android directement depuis cette page, par USB. Aucune réinitialisation.",
+        h1="Installer par USB",
+        lede="Cette page installe drawbridge sur un téléphone relié à cet ordinateur. Rien n'est téléversé où que ce soit : l'application vient de ce site et passe directement par le câble.",
+        browser_note="Nécessite Chrome, Edge ou un autre navigateur Chromium. Firefox et Safari n'ont pas WebUSB.",
+        unsupported="Ce navigateur ne peut pas communiquer avec les appareils USB. Ouvrez cette page dans Chrome ou Edge, ou utilisez <code>tools/provision-adb.sh</code> depuis un terminal.",
+        prep_h2="D'abord, sur le téléphone",
+        prep_steps=[
+            "<strong>Retirez tous les comptes</strong> — Paramètres → Mots de passe, clés d'accès et comptes. Vous vous reconnecterez à la fin. Rien d'autre n'est effacé.",
+            "Activez les options pour développeurs : Paramètres → À propos du téléphone, touchez sept fois <strong>Numéro de build</strong>.",
+            "Paramètres → Système → Options pour développeurs → activez le <strong>débogage USB</strong>.",
+            "Branchez le téléphone à cet ordinateur.",
+        ],
+        conflict_title="Fermez tout adb en cours sur cet ordinateur.",
+        conflict_text="Un seul programme à la fois peut détenir la connexion de débogage du téléphone. Si vous avez les outils Android installés, lancez d'abord <code>adb kill-server</code>, sinon cette page ne verra pas l'appareil.",
+        start_h2="Ensuite, ici",
+        start_button="Choisir le téléphone et installer",
+        steps_h3="Progression",
+        step_labels=[
+            "Se connecter au téléphone",
+            "Vérifier que le téléphone est prêt",
+            "Télécharger et vérifier drawbridge",
+            "L'installer",
+            "Faire de drawbridge le propriétaire",
+        ],
+        caveat_title="Le verrouillage de drawbridge désinstalle les applications qu'il bloque.",
+        caveat_text="Cela se produit plus tard, sur le téléphone, quand vous appuyez sur Verrouiller — pas ici. Sur un téléphone déjà utilisé, ces applications disparaissent et ne reviennent pas.",
+        done_h2="Terminez maintenant sur le téléphone",
+        done_steps=[
+            "Reconnectez-vous avec <strong>votre propre</strong> compte Google — jamais celui de l'enfant.",
+            "Définissez un verrouillage d'écran.",
+            "Ouvrez <strong>drawbridge</strong>, choisissez la langue, lisez la politique, réglez les options.",
+            "Appuyez sur <strong>Verrouiller drawbridge</strong> et notez la clé avant de quitter cet écran.",
+        ],
+        done_note="Le verrouillage désactive le débogage USB. Il revient dès que vous déverrouillez drawbridge avec votre clé : c'est ainsi que vous installerez plus tard une version plus récente par le même câble.",
+        source_note='Cette page exécute <a href="https://github.com/Nilss3/drawbridge/tree/main/site-src/installer">un petit client ADB</a> dans votre navigateur. Elle suspend le contrôle d\'Android sur les installations par câble, le temps de la copie seulement, puis le rétablit exactement tel qu\'il était — en cas de succès, d\'échec, et si vous débranchez le téléphone.',
+    ),
+}
+
+
+def render_usb_installer(lang: str, apk: dict) -> str:
+    c = USB_INSTALLER[lang]
+    prefix = lang_prefix(lang)
+
+    step_items = "\n".join(
+        f'        <li id="step-{i + 1}" data-state=""><span class="step-dot"></span>{label}</li>'
+        for i, label in enumerate(c["step_labels"])
+    )
+
+    body = f"""
+  <section class="section">
+    <div class="wrap">
+      <h1>{c['h1']}</h1>
+      <p class="lede">{c['lede']}</p>
+      <p class="footnote">{c['browser_note']}</p>
+
+      <div class="callout" id="installer-unsupported" hidden>
+        <p style="margin:0;">{c['unsupported']}</p>
+      </div>
+
+      <h2>{c['prep_h2']}</h2>
+      {steps_html(c['prep_steps'])}
+
+      <div class="callout">
+        <strong>{c['conflict_title']}</strong>
+        <p style="margin: 0.5rem 0 0;">{c['conflict_text']}</p>
+      </div>
+
+      <h2>{c['start_h2']}</h2>
+      <div class="btn-row">
+        <button class="btn btn--primary" id="installer-start" type="button">{c['start_button']}</button>
+      </div>
+      <p class="installer-status" id="installer-status"></p>
+
+      <ol class="installer-steps">
+{step_items}
+      </ol>
+
+      <pre class="installer-log" id="installer-log" hidden></pre>
+
+      <div id="installer-done" hidden>
+        <div class="callout callout--alpha">
+          <strong>{c['caveat_title']}</strong>
+          <p style="margin: 0.5rem 0 0;">{c['caveat_text']}</p>
+        </div>
+        <h2>{c['done_h2']}</h2>
+        {steps_html(c['done_steps'])}
+        <p class="footnote">{c['done_note']}</p>
+      </div>
+
+      <p class="footnote">{c['source_note']}</p>
+    </div>
+  </section>
+"""
+
+    scripts = f"""<script type="module">
+import {{ init }} from "/assets/js/installer.js";
+init({{
+  apkUrl: "/assets/{apk['name']}",
+  apkSha256: "{apk['sha256']}",
+  apkName: "{apk['name']}",
+}});
+</script>
+"""
+    return render_page(
+        lang=lang,
+        path="install/usb/",
+        title=c["title"],
+        description=c["description"],
+        body=body,
+        scripts=scripts,
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -862,6 +1079,57 @@ def write(path: pathlib.Path, content: str) -> None:
     path.write_text(content, encoding="utf-8")
 
 
+def stage_installer_assets() -> dict:
+    """Copies the DPC and the installer's JS into site/assets/, and pins the APK.
+
+    Two things force the APK to be served from this site rather than linked from
+    the GitHub release. GitHub's release downloads carry no
+    `Access-Control-Allow-Origin` header, so a browser fetch from the site is
+    blocked outright — measured 2026-08-10, through the redirect to
+    release-assets.githubusercontent.com. And a page that reached out to a third
+    party to fetch what it is about to install would give up the property the
+    rest of this site is built on.
+
+    The hash is checked against `app_update` in the signed policy rather than
+    merely recomputed, because those two are the same claim made in two places:
+    the policy tells provisioned devices which build is current, and this page
+    hands that same build to a phone that has none yet. A build where they
+    disagree is a build where one of them is lying, so it fails here.
+    """
+    import base64
+    import hashlib
+    import json
+
+    apk_src = REPO_ROOT / "dist" / "release" / "dpc-release.apk"
+    if not apk_src.exists():
+        raise SystemExit(
+            f"Missing {apk_src.relative_to(REPO_ROOT)} — run tools/stage-release.sh first.\n"
+            "The USB installer page serves this file, so the site cannot be built without it."
+        )
+
+    digest = hashlib.sha256(apk_src.read_bytes()).hexdigest()
+
+    policy_path = REPO_ROOT / "dist" / "policy.signed.json"
+    payload = json.loads(base64.b64decode(json.loads(policy_path.read_text())["payload"]))
+    pinned = (payload.get("app_update") or {}).get("sha256")
+    if pinned and pinned != digest:
+        raise SystemExit(
+            "dist/release/dpc-release.apk does not match the app_update pin in the signed policy.\n"
+            f"  policy pins: {pinned}\n"
+            f"  staged APK:  {digest}\n"
+            "The installer page would hand phones a build the policy does not know about.\n"
+            "Stage the published APK, or re-sign the policy against this one."
+        )
+
+    assets = SITE_OUT / "assets"
+    (assets / "js").mkdir(parents=True, exist_ok=True)
+    shutil.copy2(apk_src, assets / "dpc-release.apk")
+    for name in ("adb.js", "installer.js"):
+        shutil.copy2(SITE_SRC / "installer" / name, assets / "js" / name)
+
+    return {"name": "dpc-release.apk", "sha256": digest, "size": apk_src.stat().st_size}
+
+
 def build_all() -> None:
     if SITE_OUT.exists():
         for item in SITE_OUT.iterdir():
@@ -878,10 +1146,13 @@ def build_all() -> None:
     why_fragment = convert_blocklist.build_fragment()
     write(SITE_OUT / "why-blocked" / "index.html", render_why_blocked(why_fragment))
 
+    apk = stage_installer_assets()
+
     for lang in LANGUAGES:
         base = SITE_OUT if lang == "en" else SITE_OUT / lang
         write(base / "index.html", render_home(lang))
         write(base / "install" / "index.html", render_install(lang))
+        write(base / "install" / "usb" / "index.html", render_usb_installer(lang, apk))
         write(base / "faq" / "index.html", render_faq(lang))
         if lang in WHY_SUMMARY:
             write(base / "why-blocked" / "index.html", render_why_summary(lang))
