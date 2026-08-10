@@ -134,10 +134,6 @@ class DeviceOwnerManager(context: Context) {
      * so it does not follow a later language change on its own. Every caller that
      * can change the language or the lock state calls this again.
      */
-    /** Read back from the platform rather than from what we last wrote. */
-    fun lockScreenInfo(): String? =
-        if (!isDeviceOwner) null else dpm.deviceOwnerLockScreenInfo?.toString()
-
     fun updateLockScreenInfo() {
         if (!isDeviceOwner) return
 
@@ -159,6 +155,10 @@ class DeviceOwnerManager(context: Context) {
         runCatching { dpm.setDeviceOwnerLockScreenInfo(admin, info) }
             .onFailure { Log.e(TAG, "Could not set the lock screen message", it) }
     }
+
+    /** Read back from the platform rather than from what we last wrote. */
+    fun lockScreenInfo(): String? =
+        if (!isDeviceOwner) null else dpm.deviceOwnerLockScreenInfo?.toString()
 
     /**
      * Pins the filter as the device's always-on VPN.
