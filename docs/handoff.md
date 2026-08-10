@@ -1110,12 +1110,27 @@ the browser even though the transport cannot:
   stream returned `Success`. That matters because it is a *different code path*
   from `adb install`, and the whole page depends on the lever reaching it.
 
-**What remains unexercised is the transport.** The embedded browser has no
-WebUSB chooser, so `requestDevice` cannot be reached there and no USB traffic has
-ever been exchanged: CNXN, the AUTH handshake, and the stream layer
-(OPEN/OKAY/WRTE/CLSE) have never run against a device. Treat the first run on a
-real phone as the actual test, and expect any failure to be there rather than in
-the parts above.
+**The transport works, first run, from the deployed site — 2026-08-10.** Chrome
+against a real phone: device selection, `claimInterface`, the CNXN handshake,
+**AUTH**, a `shell:` stream, command execution and output parsing all succeeded,
+and preflight then stopped the run because it found a Google account on the
+phone. That last part is the guard doing its job rather than a failure.
+
+The half worth calling out is AUTH. The phone accepted a key it had never seen,
+which means the `RSAPublicKey` blob is right on hardware and not merely
+byte-identical to what adb wrote locally — the two could have agreed and both
+been unusable.
+
+**Still unexercised over WebUSB:** `exec:cmd package install -S` and
+`dpm set-device-owner`. Both are verified over ordinary adb (see above), so what
+is untested is those services *through this transport*, not the services
+themselves. A full run needs a phone with no accounts and no device owner.
+
+**One trap, hit immediately, and it will hit everyone.** WebUSB fails with
+`Unable to claim interface` while adb holds the phone — and `adb kill-server`
+alone does **not** fix it, because a running emulator re-registers with the
+server and respawns it within seconds. Close the emulators first. The installer
+now says so instead of surfacing the raw DOMException.
 
 ### There is a website now, and it is generated
 
