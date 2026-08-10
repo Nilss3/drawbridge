@@ -81,6 +81,10 @@ class DiagnosticsActivity : AppCompatActivity() {
             appendLine("device_provisioned:  ${globalSetting("device_provisioned")}")
             appendLine()
             appendLine("device owner:      ${deviceOwner.isDeviceOwner}")
+            // What the keyguard tells whoever picks the phone up. Reported
+            // because it is the one thing standing in for factory reset
+            // protection, and "it should be there" is not the same as seeing it.
+            appendLine("lock screen says:  ${deviceOwner.lockScreenInfo() ?: "(nothing set)"}")
             appendLine("filter running:    ${DnsFilterService.isRunning}")
             // Denying the battery-optimisation prompt at lock time does not stop
             // the filter -- that is an always-on foreground VpnService and the

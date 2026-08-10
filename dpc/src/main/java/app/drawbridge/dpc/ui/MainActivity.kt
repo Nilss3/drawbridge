@@ -188,7 +188,13 @@ class MainActivity : AppCompatActivity() {
 
         field.setOnItemClickListener { _, _, position, _ ->
             val tag = Languages.supported[position].tag
-            if (tag != Languages.current()) Languages.select(tag)
+            if (tag != Languages.current()) {
+                Languages.select(tag)
+                // The keyguard message is a string the system stores, not a
+                // resource it re-resolves, so it would otherwise stay in
+                // whichever language it was written in — including its date.
+                deviceOwner.updateLockScreenInfo()
+            }
         }
     }
 

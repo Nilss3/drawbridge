@@ -64,6 +64,8 @@
     <string name="update_result_blocked">De telefoon heeft de update geweigerd, en zo ziet het eruit als Play Protect hem blokkeert. Pauzeer Play Protect en probeer opnieuw.</string>
     <string name="update_result_failed">De update is niet geïnstalleerd: %1$s</string>
     <string name="update_turn_back_on">Zet Play Protect daarna weer aan. Het is het enige op deze telefoon dat op echt schadelijke apps let, en het zit de rest van drawbridge niet in de weg.</string>
+    <string name="lock_screen_info">Drawbridge bewaakt dit toestel en zijn eigenaar</string>
+    <string name="lock_screen_info_locked">Drawbridge bewaakt dit toestel en zijn eigenaar - Vergrendeld sinds %1$s</string>
     <string name="lock_key_glyphs">Een sleutel bevat nooit de letters O, I of L. Een rond teken is een nul. Schrijf je er een dubbelzinnig op, dan werkt O, I of l intypen alsnog.</string>
     <string name="lock_reveal_not_sealed_yet">Deze instellingen worden pas verzegeld als je op Klaar tikt. Verlaat je dit scherm eerder, dan wordt de sleutel vergeten en is er niets vergrendeld — de telefoon blijft filteren, en je kunt opnieuw vergrendelen voor een nieuwe sleutel.</string>
     <string name="lock_reveal_confirm">Ik heb deze sleutel opgeschreven of afgedrukt</string>

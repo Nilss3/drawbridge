@@ -64,6 +64,8 @@
     <string name="update_result_blocked">Le téléphone a refusé la mise à jour, ce qui correspond à un blocage par Play Protect. Suspendez Play Protect et réessayez.</string>
     <string name="update_result_failed">La mise à jour n\'a pas été installée : %1$s</string>
     <string name="update_turn_back_on">Réactivez Play Protect ensuite. C\'est la seule chose sur ce téléphone qui surveille les applications réellement nuisibles, et elle ne gêne rien d\'autre dans drawbridge.</string>
+    <string name="lock_screen_info">Drawbridge veille sur cet appareil et sur son propriétaire</string>
+    <string name="lock_screen_info_locked">Drawbridge veille sur cet appareil et sur son propriétaire - Verrouillé depuis %1$s</string>
     <string name="lock_key_glyphs">Une clé ne contient jamais les lettres O, I ni L. Un caractère rond est un zéro. Si votre écriture est ambiguë, taper O, I ou l fonctionne quand même.</string>
     <string name="lock_reveal_not_sealed_yet">Ces réglages ne sont scellés qu\'au moment où vous touchez Terminé. Si vous quittez cet écran avant, la clé est oubliée et rien n\'est verrouillé — le téléphone continue de filtrer, et vous pouvez verrouiller à nouveau pour obtenir une nouvelle clé.</string>
     <string name="lock_reveal_confirm">J\'ai noté ou imprimé cette clé</string>

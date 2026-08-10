@@ -18,6 +18,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import app.drawbridge.dpc.DrawbridgeApplication
 import app.drawbridge.dpc.R
+import app.drawbridge.dpc.admin.DeviceOwnerManager
 import app.drawbridge.dpc.security.ParentKey
 import app.drawbridge.dpc.update.AppInstaller
 import app.drawbridge.policy.PolicyManager
@@ -227,6 +228,12 @@ class LockActivity : AppCompatActivity() {
      */
     private fun sealWithKey() {
         revealedKey?.let { parentKey.commit(it) }
+        // After the commit, not before: the keyguard line carries the lock date,
+        // and until this moment there was no lock and no date. lockDevice()
+        // applies the rest of the policy well before the parent has decided to
+        // keep the key, so this is the only place that can say the phone is
+        // locked and be right.
+        DeviceOwnerManager(this).updateLockScreenInfo()
         finish()
     }
 
@@ -247,6 +254,10 @@ class LockActivity : AppCompatActivity() {
             challengeError.setText(R.string.lock_challenge_incorrect)
             return
         }
+
+        // The phone is still guarded — unlocking removes the key, not the
+        // restrictions or the filter — so the line stays and only the date goes.
+        DeviceOwnerManager(this).updateLockScreenInfo()
 
         startActivity(
             Intent(this, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP),

@@ -82,6 +82,8 @@
     <string name="update_result_blocked">The phone refused the update, which is what Play Protect blocking it looks like. Pause Play Protect and try again.</string>
     <string name="update_result_failed">The update did not install: %1$s</string>
     <string name="update_turn_back_on">Turn Play Protect back on afterwards. It is the only thing on this phone watching for genuinely harmful apps, and it does not interfere with anything else drawbridge does.</string>
+    <string name="lock_screen_info">Drawbridge is guarding this device and its owner</string>
+    <string name="lock_screen_info_locked">Drawbridge is guarding this device and its owner - Locked since %1$s</string>
     <string name="lock_key_glyphs">A key never contains the letters O, I or L. A round character is a zero. If you write one down ambiguously, typing O, I or l back still works.</string>
     <string name="lock_reveal_not_sealed_yet">These settings are not sealed until you tap Done. If you leave this screen before then, the key is forgotten and nothing is locked — the phone keeps filtering, and you can lock it again for a new key.</string>
     <string name="lock_reveal_confirm">I have written down or printed this key</string>

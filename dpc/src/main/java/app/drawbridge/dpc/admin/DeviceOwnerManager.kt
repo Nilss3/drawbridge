@@ -7,8 +7,10 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.Build
 import android.os.UserManager
+import android.text.format.DateUtils
 import android.util.Log
 import app.drawbridge.dpc.BuildConfig
+import app.drawbridge.dpc.R
 import app.drawbridge.dpc.security.ParentKey
 
 /**
@@ -68,6 +70,7 @@ class DeviceOwnerManager(context: Context) {
         applyClockLock()
         enableAlwaysOnVpn(vpnPackage)
         setDefaultBrowser()
+        updateLockScreenInfo()
     }
 
     /**
@@ -101,6 +104,60 @@ class DeviceOwnerManager(context: Context) {
             return
         }
         applyManagedDevicePolicy(vpnPackage)
+    }
+
+    /**
+     * What the phone says about itself on the keyguard, to whoever picks it up.
+     *
+     * Android shows a managed device's own disclosure here, and left to itself it
+     * says the phone belongs to an organization — which is wrong on a child's
+     * handset in a way that matters: a repair shop, a school or the child reads
+     * corporate IT rather than a parent's decision.
+     *
+     * It also does the only job left standing after Factory Reset Protection
+     * turned out not to be armed. A reset cannot currently be prevented, so what
+     * remains is noticing one: a phone that has been wiped stops saying this, and
+     * a date the parent recognises is a far better thing to miss than a generic
+     * notice nobody read in the first place. See docs/handoff.md.
+     *
+     * Three states, and the distinction between the last two is the point:
+     *
+     *  - **Never locked** — nothing is enforced yet, so nothing is claimed. The
+     *    message is cleared and Android's default comes back. drawbridge does not
+     *    say it is guarding a phone it has not started guarding.
+     *  - **Locked** — the full line, with the date.
+     *  - **Unlocked after having been locked** — still guarding, and truthfully
+     *    so: unlocking removes the key, not the restrictions or the filter. The
+     *    date comes off because it is the *lock* that is no longer in force.
+     *
+     * The text is a stored string rather than a resource the system re-resolves,
+     * so it does not follow a later language change on its own. Every caller that
+     * can change the language or the lock state calls this again.
+     */
+    /** Read back from the platform rather than from what we last wrote. */
+    fun lockScreenInfo(): String? =
+        if (!isDeviceOwner) null else dpm.deviceOwnerLockScreenInfo?.toString()
+
+    fun updateLockScreenInfo() {
+        if (!isDeviceOwner) return
+
+        val key = ParentKey(appContext)
+        val info = when {
+            key.protectedSince == 0L -> null
+            key.isLocked && key.lockedSince > 0 -> appContext.getString(
+                R.string.lock_screen_info_locked,
+                DateUtils.formatDateTime(
+                    appContext,
+                    key.lockedSince,
+                    DateUtils.FORMAT_SHOW_DATE or DateUtils.FORMAT_SHOW_YEAR or
+                        DateUtils.FORMAT_SHOW_TIME,
+                ),
+            )
+            else -> appContext.getString(R.string.lock_screen_info)
+        }
+
+        runCatching { dpm.setDeviceOwnerLockScreenInfo(admin, info) }
+            .onFailure { Log.e(TAG, "Could not set the lock screen message", it) }
     }
 
     /**
@@ -364,6 +421,11 @@ class DeviceOwnerManager(context: Context) {
             unlockAccounts()
             clearUserRestrictions()
             clearClockLock()
+            // Before ownership goes, like everything else here: this is a Device
+            // Owner call, and a phone handed back still claiming to be guarded
+            // would be the same class of lie the message exists to prevent.
+            runCatching { dpm.setDeviceOwnerLockScreenInfo(admin, null) }
+                .onFailure { Log.e(TAG, "Could not clear the lock screen message", it) }
             @Suppress("DEPRECATION")
             dpm.clearDeviceOwnerApp(appContext.packageName)
             true

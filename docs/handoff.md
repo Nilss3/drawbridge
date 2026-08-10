@@ -686,14 +686,46 @@ minutes.
 child who knows the screen lock can wipe the phone and end up with a clean one.
 That is a known, accepted gap with a date on it, not an oversight.
 
-What stands in for prevention meanwhile is **detection**: a managed device tells
-anyone who picks it up that it is managed, so a phone that has been wiped stops
-saying so and the parent notices. Note that drawbridge does not currently choose
-those words — `setDeviceOwnerLockScreenInfo`, `setOrganizationName`,
-`setShortSupportMessage` and `setLongSupportMessage` are all unused, so the phone
-shows Android's generic work-device disclosure. Making it specific would turn a
-notice nobody reads into a tamper indicator with a date on it, and would stop a
-child's phone claiming to be a work device.
+What stands in for prevention meanwhile is **detection**, and as of 0.2.5
+drawbridge writes that message itself. Left alone, Android's keyguard says *"This
+device belongs to your organization"* — verified on the emulator, and wrong on a
+child's handset in a way that matters: a repair shop, a school or the child reads
+corporate IT rather than a parent's decision.
+
+`DeviceOwnerManager.updateLockScreenInfo` now sets it through
+`setDeviceOwnerLockScreenInfo`, in three states:
+
+| State | Keyguard |
+|---|---|
+| Never locked | nothing set; Android's default returns |
+| Locked | "Drawbridge is guarding this device and its owner - Locked since ‹date›" |
+| Unlocked, but locked before | the same without the date |
+
+The middle state is the tamper indicator: a wiped phone stops naming a date the
+parent recognises, which is a better thing to miss than a generic notice nobody
+read. The third exists because unlocking removes the key and **not** the
+restrictions or the filter — the phone really is still guarded, so it still says
+so, and only the claim about the lock comes off.
+
+Verified on the emulator on 2026-08-10: the string appears on the keyguard and
+*replaces* the organization disclosure rather than sitting beside it. Two things
+that cost time and are worth knowing:
+
+- **It is not in `dumpsys device_policy`, nor in `settings get secure
+  device_owner_info`** — both come back empty on API 36. Read it back through
+  `getDeviceOwnerLockScreenInfo`, which Diagnostics now prints as
+  `lock screen says:`.
+- **The bouncer is not the lock screen.** The PIN-entry screen still shows the
+  organization disclosure; ours is on the keyguard proper. Do not conclude from a
+  screenshot of the bouncer that it failed.
+
+Still unverified on real hardware — keyguard rendering is OEM territory, and the
+G15 was wiped before this existed. Check it on the re-provision. And note it only
+works as a check if the parent knows what the phone is supposed to say, which
+belongs in [provisioning](provisioning.md) rather than only in the code.
+
+`setOrganizationName`, `setShortSupportMessage` and `setLongSupportMessage`
+remain unused and are the obvious next places to say something true.
 
 ### The factory-reset restriction was removed, and why that matters
 
