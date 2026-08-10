@@ -30,6 +30,14 @@ this is a "serve this folder" connection, not a build pipeline.
 Cloudflare assigns a `*.pages.dev` subdomain immediately; a real domain can be
 attached later from the same project settings once one exists.
 
+**The site is at <https://drawbridge-project.pages.dev>.** Written down here
+because it is not derivable from anything in this repository and it had already
+been guessed wrong once, with the wrong host reaching three published install
+guides. `drawbridge.pages.dev` and `drawbridge-site.pages.dev` are *other
+people's projects*; the first is a single-page app whose catch-all returns 200
+for any path, so probing a URL for a 200 does not tell you it is ours. Check the
+`<title>`.
+
 ## Local preview
 
 ```bash

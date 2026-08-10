@@ -63,8 +63,9 @@ Then **Settings → System → Developer options → USB debugging**, and switch
 Connect the phone with the USB cable. Accept the *Allow USB debugging* prompt
 that appears on the phone.
 
-**The easiest way is the installer page on the website**, at `/install/usb/`,
-which does all of this from Chrome or Edge with nothing to set up.
+**The easiest way is the installer page on the website**, which does all of this
+from Chrome or Edge with nothing to set up:
+<https://drawbridge-project.pages.dev/install/usb/>.
 
 If you would rather use a terminal, from a copy of this repository:
 

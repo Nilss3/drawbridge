@@ -67,8 +67,9 @@ activez-le.
 Reliez le téléphone avec le câble USB. Acceptez l'invite *Autoriser le débogage
 USB* qui s'affiche sur le téléphone.
 
-**Le plus simple est la page d'installation du site**, à `/fr/install/usb/`, qui
-fait tout cela depuis Chrome ou Edge sans rien à mettre en place.
+**Le plus simple est la page d'installation du site**, qui fait tout cela depuis
+Chrome ou Edge sans rien à mettre en place :
+<https://drawbridge-project.pages.dev/fr/install/usb/>.
 
 Si vous préférez un terminal, depuis une copie de ce dépôt :
 
