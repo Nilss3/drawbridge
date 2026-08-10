@@ -1008,21 +1008,26 @@ that cost time and are worth knowing:
   organization disclosure; ours is on the keyguard proper. Do not conclude from a
   screenshot of the bouncer that it failed.
 
-**Checked on the G15 on 2026-08-10 and the text was not there.** Open, and not
-yet diagnosed.
+**Verified on the G15 on 2026-08-10, and it works — but it does not stand out.**
 
-Before treating it as a bug, rule out the expected case: the message is set by
-`updateLockScreenInfo`, which deliberately writes **nothing** in the
-never-locked state, and the phone was provisioned but had not been locked. A
-blank keyguard is the designed behaviour there. So the test only means something
-after a lock, and it has to be repeated then.
+It was first reported missing on a phone that had been provisioned and not yet
+locked, which is the designed behaviour rather than a fault:
+`updateLockScreenInfo` deliberately writes **nothing** in the never-locked state.
+After locking, the line appears.
 
-If it is still blank after locking, the things to check in order are
-`getDeviceOwnerLockScreenInfo` through Diagnostics — the value does *not* appear
-in `dumpsys device_policy` or `settings get secure device_owner_info`, both of
-which come back empty on API 36 — then whether Motorola's keyguard renders the
-owner string at all, and then whether the bouncer is being mistaken for the
-keyguard, which cost time once already. And note it only
+**What the emulator got wrong is the prominence.** On the emulator the string
+*replaced* the organization disclosure and was the only such line. On the Moto
+G15 it is, in the owner's words, "one of the many things it says" — the keyguard
+already carries several strings and drawbridge's is merely one more. That is OEM
+territory, and it weakens the tamper check this line exists for: a parent who has
+to pick their date out of a crowded keyguard is less likely to notice the day it
+stops being there. Worth knowing before leaning on it, and worth re-checking on
+any new handset rather than assuming the emulator's rendering.
+
+If it is ever blank after a lock, read it back through Diagnostics'
+`lock screen says:` — the value does *not* appear in `dumpsys device_policy` or
+`settings get secure device_owner_info`, both of which come back empty on API 36 —
+and remember the bouncer is not the keyguard, which cost time once already. And note it only
 works as a check if the parent knows what the phone is supposed to say, which
 belongs in [provisioning](provisioning.md) rather than only in the code.
 
@@ -1121,10 +1126,20 @@ which means the `RSAPublicKey` blob is right on hardware and not merely
 byte-identical to what adb wrote locally — the two could have agreed and both
 been unusable.
 
-**Still unexercised over WebUSB:** `exec:cmd package install -S` and
-`dpm set-device-owner`. Both are verified over ordinary adb (see above), so what
-is untested is those services *through this transport*, not the services
-themselves. A full run needs a phone with no accounts and no device owner.
+**And then the whole path ran, on 2026-08-10.** The G15 was factory reset with
+sign-in skipped, and provisioned from the deployed site end to end: drawbridge
+installed over WebUSB, Device Owner granted, and after the parent pressed *Lock*
+the app blocker removed Facebook and the rest, developer options closed, and the
+keyguard carried drawbridge's line.
+
+So every layer is now exercised on hardware — transport, `exec:cmd package
+install -S`, `dpm set-device-owner` — and a phone can be provisioned from a
+website with no software installed on the computer and no factory-reset
+requirement beyond whatever the owner wants.
+
+Worth keeping in view: **this is one run, on one handset, by the person who wrote
+it.** Nothing here has been through an unfamiliar phone, an unfamiliar OEM's USB
+stack, or somebody who does not already know what the page is supposed to do.
 
 **One trap, hit immediately, and it will hit everyone.** WebUSB fails with
 `Unable to claim interface` while adb holds the phone — and `adb kill-server`
@@ -2052,10 +2067,36 @@ their account in the window before locking, and locking closes it. It was left
 alone deliberately so it would not obstruct this very test — do the test first,
 then wire it.
 
-Also worth checking while an account is on the device: whether a **supervised
-Family Link account** satisfies FRP the same way an ordinary one does, and what
-Family Link does on a device that already has an owner. Neither is known, and
-"can I use this alongside Family Link" is a question every parent will ask.
+### 2a. Decide whether "never the child's account" is still advice worth giving
+
+**Raised by the owner on 2026-08-10, and it deserves a straight answer rather
+than inertia.** Every install guide and both website pages say to sign in with
+the parent's account and never the child's. That instruction was built on FRP,
+and FRP turned out not to be armed — so the stated reason is void.
+
+What is left of the argument is weak and, worse, partly points the other way:
+
+- **Play Store access is symmetrical.** Whichever account is signed in, whoever
+  holds the phone can install from Play. The child's account does not open a
+  door the parent's account keeps shut.
+- **The parent's account on a child's phone is its own exposure.** It syncs the
+  parent's mail, photos, drive and contacts onto a handset the child carries, and
+  puts the parent's saved payment method behind a Play Store the child can reach.
+  Nothing in the docs has ever mentioned this, and it is a larger risk than the
+  one the advice was written to prevent.
+
+**What is genuinely unknown, and is the reason not to just delete the line:**
+what a *supervised* Family Link account does on a device that already has a
+Device Owner. Family Link may refuse to manage a fully managed device, may try to
+install its own admin and conflict, or may work and quietly fight drawbridge over
+the same settings. "Can I use this alongside Family Link" is a question every
+parent will ask, and nobody has run it.
+
+So: **test first, then edit the wording** — the outcome could turn the advice
+into something better justified than it ever was, or delete it outright.
+
+Note `DISALLOW_MODIFY_ACCOUNTS` is still never applied, so accounts can be added
+to a locked phone without unlocking it. That is the state the test runs in.
 
 ### 3. herald must force safe search everywhere, or refuse the engine
 
