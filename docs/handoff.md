@@ -667,25 +667,33 @@ Two related traps, both from the same reading:
 - **EFRP has to be configured before the wipe.** It cannot be applied to a phone
   that has already been reset, and it cannot rescue this one.
 
-**What this changes.** [Next steps](#reasonable-next-steps) said restoring
-`DISALLOW_FACTORY_RESET` waits behind the delayed self-removal *"unless step 2
-shows that FRP does not hold, in which case this moves up"*. Step 2 has now shown
-exactly that. There are two independent fixes and they are not alternatives:
+**What this changes, and what the owner decided on 2026-08-10.**
 
-1. **Arm EFRP** by calling `setFactoryResetProtectionPolicy` with the parent's
-   Google account, guarded for API 30+ against a `minSdk` of 28. This is the
-   backstop the design already assumed it had. It needs the parent's account
-   *identifier* on the device — check what form the list wants before building a
-   UI for it — and it is worth confirming on hardware rather than from
-   documentation, which is the mistake that produced this entry.
-2. **Reconsider `DISALLOW_FACTORY_RESET`**, whose removal was justified almost
-   entirely by FRP covering the gap. It still strips the recovery-menu entry, and
-   it still means a lost key strands a handset — but the emergency key now exists
-   for development, and the trade is different when the alternative is no
-   protection at all.
+**EFRP will not be armed.** `setFactoryResetProtectionPolicy` is the documented
+fix and it is deliberately not being used: it would put a Google account
+identifier at the centre of the recovery story, and the project's constraint is a
+phone that needs no account and no backend. Do not "fix" this by adding it
+without asking.
 
-Do not treat either as done until a wipe has been attempted and refused on a
-real device.
+**`DISALLOW_FACTORY_RESET` goes back instead — but later**, once the rest of the
+system is dependable, exactly as [next steps](#reasonable-next-steps) item 9
+describes. Its removal was justified almost entirely by FRP covering the gap, and
+that justification is gone; what has not changed is that reinstating it while
+things are still breaking means a mistake costs a handset rather than ten
+minutes.
+
+**So until then, a factory reset is the escape hatch, and it is unprotected.** A
+child who knows the screen lock can wipe the phone and end up with a clean one.
+That is a known, accepted gap with a date on it, not an oversight.
+
+What stands in for prevention meanwhile is **detection**: a managed device tells
+anyone who picks it up that it is managed, so a phone that has been wiped stops
+saying so and the parent notices. Note that drawbridge does not currently choose
+those words — `setDeviceOwnerLockScreenInfo`, `setOrganizationName`,
+`setShortSupportMessage` and `setLongSupportMessage` are all unused, so the phone
+shows Android's generic work-device disclosure. Making it specific would turn a
+notice nobody reads into a tamper indicator with a date on it, and would stop a
+child's phone claiming to be a work device.
 
 ### The factory-reset restriction was removed, and why that matters
 
