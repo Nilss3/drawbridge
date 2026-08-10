@@ -403,6 +403,55 @@ published and the one real device installed 0.2.3 only because Play Protect was
 switched off by hand. Weigh every change accordingly, and do not ship anything
 that assumes this is solved.
 
+### 0.2.5: drawbridge stops updating itself, and says why
+
+**The update channel is now manual, by decision rather than by defeat.** Five
+rounds established that Play Protect refuses drawbridge's own install and that
+nothing in the APK changes it; the sixth option — renaming the package — was
+rejected on the grounds that a new name would simply acquire the same verdict,
+and that most of what a deployed phone needs is policy rather than code. Policy
+updates are untouched and still arrive by themselves every three hours.
+
+So `UpdateWorker` no longer installs drawbridge. It still installs **herald**,
+which was never refused, because a phone with no browser is a different order of
+problem. What replaced the self-install:
+
+- `AppInstaller.availableSelfUpdate()` — a pure query against the signed policy,
+  no side effects, used by both screens to decide whether to say anything.
+- `AppInstaller.installSelfUpdate()` — the same install as before, started by a
+  person.
+- **[UpdateActivity](../dpc/src/main/java/app/drawbridge/dpc/ui/UpdateActivity.kt)**,
+  which explains the one thing the parent has to do first: pause Play Protect.
+  The wording is deliberately not defensive — drawbridge really can install apps,
+  that really is what Play Protect exists to be wary of, and on most phones its
+  suspicion would be right. It tells them to switch it back on afterwards.
+- **`InstallOutcome`**, because `PackageInstaller` answers through a broadcast
+  that arrives after the caller is gone. Without somewhere to put that answer the
+  screen could only ever say "started", and a refusal and a success look
+  identical from there. One slot, overwritten, read by the screen.
+
+**The update is reachable from the lock screen**, which is the part worth not
+undoing. A locked phone is the normal state, and unlocking to reach a
+configuration screen discards the parent's key and mints a new one to write
+down — a credential rotation as the price of a maintenance task is a good way to
+guarantee the maintenance never happens. Nothing is given away: the APK is named
+by the signed policy and pinned by checksum.
+
+### The configuration screen lost its status block, and the lock screen gained a menu
+
+- **"Device status" is gone** — ownership, filter state, policy version, the live
+  restriction list. All of it is in Diagnostics, which is where someone
+  troubleshooting looks, and none of it was something a parent acts on. Eleven
+  string resources went with it, in three languages.
+- **The protected-since date went with it too**, for a better reason than tidying:
+  it is a fact about the *lock*, so it belongs on the screen that lock produces,
+  which is where it already was.
+- **"Check for policy updates" moved into the overflow** on the configuration
+  screen, and — the part that matters — **was added to the lock screen's
+  overflow**. That is the screen a managed phone spends its life on, so it is the
+  only one most parents will ever see; leaving the manual check behind the key
+  would mean the person most likely to need it has to spend their key to press it.
+
 ### 0.2.3: the reveal screen locked phones by accident, and a back door now exists
 
 Three fixes, all found by using the phone rather than by reading the code, and
@@ -466,6 +515,34 @@ the delayed self-removal on the roadmap, not this. The key itself lives in
 `keystore.properties` on the build machine, which is git-ignored and **not backed
 up** — the same risk as the two signing keys, and it belongs in the same offline
 copy.
+
+### The emulator reproduces the Play Protect block, which nobody had noticed
+
+**Found by accident on 2026-08-10**, while testing the new update screen. The
+provisioned emulator refused drawbridge's own update with the *identical* dialog
+the G15 shows — "Google Play Protect / Harmful app blocked / drawbridge / This
+app can install potentially harmful apps without your permission / Got it" — and
+`INSTALL_FAILED_VERIFICATION_FAILURE`, status 3.
+
+This matters out of proportion to how it was found. Five rounds of build,
+publish, sign, push, reboot were spent asking questions that a local rig can
+answer in a minute, on the assumption — written into this file — that Play
+Protect needs a Google account and the emulator therefore could not show it. The
+emulator has no account.
+
+**One confound, and it is worth ten minutes to remove:** the payload was a
+release-signed APK replacing a debug-signed install, so a signature-related
+refusal cannot be excluded from this single observation. Against that: the error
+is a *verification* failure rather than a signature mismatch, and the dialog is
+Play Protect's, quoting a permission drawbridge no longer declares — exactly as
+on the phone.
+
+**Do this before any further Play Protect work:** build two debug-signed DPCs a
+version apart, serve the newer one to the emulator, and see whether the block
+still happens. If it does, every remaining question — whether the verdict
+follows the package name, whether an unknown package is merely unscanned,
+whether a re-test a week later behaves differently — becomes a local experiment
+instead of a release cycle.
 
 ### QR provisioning yields a cleaner phone than adb does
 
@@ -563,6 +640,52 @@ update channel as everything else.
 
 **Three release candidates are published and flagged**, rc1 and rc2 with warning
 banners: both carry `DISALLOW_FACTORY_RESET` and must not be used to provision.
+
+### FRP does not protect this phone, and never did
+
+**Tested on 2026-08-10. The G15 was factory reset and setup never asked for the
+Google account.** So the reasoning that removed `DISALLOW_FACTORY_RESET` — that
+a child who knows the screen lock can wipe the phone, but Factory Reset
+Protection makes the result worthless to them — rests on a backstop that was not
+there.
+
+**It is not a fault in the handset, and it is not the trusted-versus-untrusted
+wipe distinction this file assumed.** On a *fully managed* device FRP is simply
+not on by default, and a reset from Settings does not trigger it whatever
+accounts are present. Google provides the switch instead:
+`DevicePolicyManager.setFactoryResetProtectionPolicy()`, API 30, which names the
+Google accounts allowed to reactivate a wiped device — **enterprise** FRP, EFRP.
+`grep FactoryResetProtection dpc/src` returns nothing. drawbridge has never
+called it, so this device had no factory reset protection of any kind.
+
+Two related traps, both from the same reading:
+
+- **OEM unlocking in Developer Options disables FRP** on Android 14 and below.
+  From Android 15 that stops being true for managed devices, where EFRP is
+  enforced regardless — but the G15 is Android 15 and had no EFRP configured, so
+  it made no difference here.
+- **EFRP has to be configured before the wipe.** It cannot be applied to a phone
+  that has already been reset, and it cannot rescue this one.
+
+**What this changes.** [Next steps](#reasonable-next-steps) said restoring
+`DISALLOW_FACTORY_RESET` waits behind the delayed self-removal *"unless step 2
+shows that FRP does not hold, in which case this moves up"*. Step 2 has now shown
+exactly that. There are two independent fixes and they are not alternatives:
+
+1. **Arm EFRP** by calling `setFactoryResetProtectionPolicy` with the parent's
+   Google account, guarded for API 30+ against a `minSdk` of 28. This is the
+   backstop the design already assumed it had. It needs the parent's account
+   *identifier* on the device — check what form the list wants before building a
+   UI for it — and it is worth confirming on hardware rather than from
+   documentation, which is the mistake that produced this entry.
+2. **Reconsider `DISALLOW_FACTORY_RESET`**, whose removal was justified almost
+   entirely by FRP covering the gap. It still strips the recovery-menu entry, and
+   it still means a lost key strands a handset — but the emergency key now exists
+   for development, and the trade is different when the alternative is no
+   protection at all.
+
+Do not treat either as done until a wipe has been attempted and refused on a
+real device.
 
 ### The factory-reset restriction was removed, and why that matters
 
@@ -1137,10 +1260,10 @@ Not verified, and worth doing:
   `lockDevice()` is the fix and fits the enforcement rule exactly; it was left
   alone deliberately so it would not obstruct the FRP and Family Link testing.
 
-- **Whether FRP behaves as assumed at all.** The trusted-versus-untrusted wipe
-  distinction — a Settings reset clears FRP, a recovery reset does not — is taken
-  from documentation, and this session has twice shown that to be a poor
-  substitute for trying it. Everything the removal decision rests on assumes it.
+- ~~**Whether FRP behaves as assumed at all.**~~ **Tested on 2026-08-10, and it
+  does not.** See the section below: the phone was factory reset and never asked
+  for the Google account. The backstop that `DISALLOW_FACTORY_RESET` was removed
+  in favour of does not exist and never did.
 
 - **Everything on `main` since rc2.** Three DPC changes are unverified on
   hardware: the enforcement gate (nothing applies until the phone is locked), the
@@ -1495,11 +1618,6 @@ broken while a timer-based one does not.
 - **Build the WebADB installer.** The `/install/` page still has a disabled
   "Install over USB" button. Less urgent now that QR provisioning works, and
   still the only path that needs no cable and no allowlist.
-- **Nothing in the UI forces an app update.** "Check for policy updates" calls
-  `policy.refresh()` and nothing else, so a parent who knows a newer drawbridge
-  exists has no button for it — the only routes are waiting a day or rebooting,
-  and nobody would guess the second. Folding `UpdateWorker.runNow` into that
-  button, and renaming it, would close it.
 - **Localise herald.** drawbridge speaks three languages; the browser is
   English-only, ~45 strings. drawbridge cannot set it — a per-app locale cannot
   be set by another app — so herald needs its own picker.

@@ -32,17 +32,6 @@
     <string name="option_disable_confirm_message">Les applications que cette option autorisait sont retirées immédiatement. La réactiver plus tard ne les réinstalle pas.</string>
     <string name="option_disable_confirm_yes">Désactiver</string>
 
-    <string name="status_heading">État de l\'appareil</string>
-    <string name="status_device_owner_yes">Géré : drawbridge est propriétaire de l\'appareil</string>
-    <string name="status_device_owner_no">Non géré — les restrictions ne peuvent pas être appliquées. Provisionnez d\'abord avec adb ou un code QR.</string>
-    <string name="status_filter_running">Filtre de contenu : actif</string>
-    <string name="status_filter_stopped">Filtre de contenu : arrêté</string>
-    <string name="status_policy">Politique version %1$d, mise à jour %2$s. Vérifiée automatiquement une fois par jour.</string>
-    <string name="status_policy_never">jamais</string>
-    <string name="status_restrictions_none">Aucune restriction appliquée</string>
-    <string name="status_restrictions_heading">Restrictions actives</string>
-    <string name="status_protected_since">Protège ce téléphone depuis le %1$s</string>
-    <string name="status_protected_never">Ce téléphone n\'est pas encore protégé. Le verrouiller lance le compteur.</string>
 
     <string name="action_lock">Verrouiller drawbridge</string>
     <string name="action_refresh">Rechercher des mises à jour de politique</string>
@@ -59,6 +48,22 @@
 
     <string name="lock_reveal_title">Notez ceci maintenant</string>
     <string name="lock_reveal_explanation">Cette clé déverrouille ces réglages. Elle n\'est stockée nulle part où vous pourriez la relire, et une nouvelle est créée à chaque verrouillage — donc celle-ci, sur papier, est tout ce qui existe.\n\nSi vous préférez ne pas pouvoir changer d\'avis, c\'est un choix légitime. Fermez sans garder la clé et ces réglages ne pourront plus jamais être modifiés — le téléphone peut toutefois toujours être réinitialisé, ce qui supprime drawbridge et tout le reste.</string>
+    <string name="update_title">Mettre drawbridge à jour</string>
+    <string name="update_notice">Une version plus récente de drawbridge est disponible.</string>
+    <string name="update_action">Mettre à jour</string>
+    <string name="update_available_detail">Ce téléphone exécute %1$s (build %2$d). Le build %3$d est disponible.</string>
+    <string name="update_none">Ce téléphone exécute %1$s, la version la plus récente que la politique désigne.</string>
+    <string name="update_why_blocked">Play Protect va bloquer cette mise à jour, et ce n\'est la faute ni de l\'un ni de l\'autre. drawbridge a le droit d\'installer des applications sur ce téléphone — c\'est ainsi que herald est arrivé, et que les applications bloquées sont supprimées. Une application capable d\'en installer d\'autres est exactement ce dont Play Protect doit se méfier, car sur la plupart des téléphones personne n\'a choisi de lui donner ce pouvoir. Sur celui-ci, si : vous, lors de la configuration.\n\nPlay Protect ne peut pas distinguer ces deux situations, il arrête donc la mise à jour. Le suspendre une minute suffit.</string>
+    <string name="update_steps_heading">Ce qu\'il faut faire</string>
+    <string name="update_steps">1. Ouvrez Play Protect et désactivez l\'analyse.\n2. Revenez ici et touchez Installer la mise à jour.\n3. Réactivez Play Protect.</string>
+    <string name="update_open_play_protect">Ouvrir Play Protect</string>
+    <string name="update_install">Installer la mise à jour</string>
+    <string name="update_no_play_protect">Play Protect n\'a pas pu être ouvert d\'ici. Il se trouve dans le Play Store, sous votre photo de profil.</string>
+    <string name="update_result_started">Téléchargement et installation en cours. Cet écran l\'indiquera une fois terminé.</string>
+    <string name="update_result_installed">Le build %1$d est installé.</string>
+    <string name="update_result_blocked">Le téléphone a refusé la mise à jour, ce qui correspond à un blocage par Play Protect. Suspendez Play Protect et réessayez.</string>
+    <string name="update_result_failed">La mise à jour n\'a pas été installée : %1$s</string>
+    <string name="update_turn_back_on">Réactivez Play Protect ensuite. C\'est la seule chose sur ce téléphone qui surveille les applications réellement nuisibles, et elle ne gêne rien d\'autre dans drawbridge.</string>
     <string name="lock_key_glyphs">Une clé ne contient jamais les lettres O, I ni L. Un caractère rond est un zéro. Si votre écriture est ambiguë, taper O, I ou l fonctionne quand même.</string>
     <string name="lock_reveal_not_sealed_yet">Ces réglages ne sont scellés qu\'au moment où vous touchez Terminé. Si vous quittez cet écran avant, la clé est oubliée et rien n\'est verrouillé — le téléphone continue de filtrer, et vous pouvez verrouiller à nouveau pour obtenir une nouvelle clé.</string>
     <string name="lock_reveal_confirm">J\'ai noté ou imprimé cette clé</string>

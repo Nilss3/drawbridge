@@ -32,17 +32,6 @@
     <string name="option_disable_confirm_message">Apps die deze optie toeliet worden meteen verwijderd. Later weer aanzetten installeert ze niet opnieuw.</string>
     <string name="option_disable_confirm_yes">Uitzetten</string>
 
-    <string name="status_heading">Toestand van het toestel</string>
-    <string name="status_device_owner_yes">Beheerd: drawbridge is de eigenaar van het toestel</string>
-    <string name="status_device_owner_no">Niet beheerd — beperkingen kunnen niet afgedwongen worden. Richt eerst in met adb of een QR-code.</string>
-    <string name="status_filter_running">Inhoudsfilter: actief</string>
-    <string name="status_filter_stopped">Inhoudsfilter: gestopt</string>
-    <string name="status_policy">Beleidsversie %1$d, laatst bijgewerkt %2$s. Wordt eenmaal per dag automatisch nagekeken.</string>
-    <string name="status_policy_never">nooit</string>
-    <string name="status_restrictions_none">Geen beperkingen toegepast</string>
-    <string name="status_restrictions_heading">Actieve beperkingen</string>
-    <string name="status_protected_since">Beschermt deze telefoon sinds %1$s</string>
-    <string name="status_protected_never">Deze telefoon is nog niet beschermd. Vergrendelen zet de klok in gang.</string>
 
     <string name="action_lock">drawbridge vergrendelen</string>
     <string name="action_refresh">Controleren op beleidsupdates</string>
@@ -59,6 +48,22 @@
 
     <string name="lock_reveal_title">Schrijf dit nu op</string>
     <string name="lock_reveal_explanation">Deze sleutel ontgrendelt deze instellingen. Hij wordt nergens bewaard waar je hem nog kunt lezen, en bij elke vergrendeling wordt een nieuwe gemaakt — dus deze, op papier, is alles wat er is.\n\nAls je liever niet meer van gedacht kunt veranderen, is dat een echte keuze. Sluit dit zonder de sleutel te bewaren en deze instellingen kunnen nooit meer gewijzigd worden — al kan de telefoon nog altijd teruggezet worden naar fabrieksinstellingen, wat drawbridge en al de rest erop wist.</string>
+    <string name="update_title">drawbridge bijwerken</string>
+    <string name="update_notice">Er is een nieuwere versie van drawbridge beschikbaar.</string>
+    <string name="update_action">Bijwerken</string>
+    <string name="update_available_detail">Deze telefoon draait %1$s (build %2$d). Build %3$d is beschikbaar.</string>
+    <string name="update_none">Deze telefoon draait %1$s, de nieuwste versie die het beleid noemt.</string>
+    <string name="update_why_blocked">Play Protect blokkeert deze update, en dat is geen fout van een van beide. drawbridge mag apps installeren op deze telefoon — zo is herald hier gekomen, en zo worden geblokkeerde apps verwijderd. Een app die andere apps kan installeren is precies waar Play Protect wantrouwig over hoort te zijn, want op de meeste telefoons heeft niemand een app die macht gegeven. Op deze wel: jij, bij het instellen.\n\nPlay Protect kan die twee situaties niet uit elkaar houden en stopt de update dus. Hem een minuut pauzeren is genoeg.</string>
+    <string name="update_steps_heading">Wat je moet doen</string>
+    <string name="update_steps">1. Open Play Protect en zet het scannen uit.\n2. Kom hier terug en tik op De update installeren.\n3. Zet Play Protect weer aan.</string>
+    <string name="update_open_play_protect">Play Protect openen</string>
+    <string name="update_install">De update installeren</string>
+    <string name="update_no_play_protect">Play Protect kon hier niet geopend worden. Je vindt het in de Play Store, onder je profielfoto.</string>
+    <string name="update_result_started">Bezig met downloaden en installeren. Dit scherm zegt het wanneer het klaar is.</string>
+    <string name="update_result_installed">Build %1$d is geïnstalleerd.</string>
+    <string name="update_result_blocked">De telefoon heeft de update geweigerd, en zo ziet het eruit als Play Protect hem blokkeert. Pauzeer Play Protect en probeer opnieuw.</string>
+    <string name="update_result_failed">De update is niet geïnstalleerd: %1$s</string>
+    <string name="update_turn_back_on">Zet Play Protect daarna weer aan. Het is het enige op deze telefoon dat op echt schadelijke apps let, en het zit de rest van drawbridge niet in de weg.</string>
     <string name="lock_key_glyphs">Een sleutel bevat nooit de letters O, I of L. Een rond teken is een nul. Schrijf je er een dubbelzinnig op, dan werkt O, I of l intypen alsnog.</string>
     <string name="lock_reveal_not_sealed_yet">Deze instellingen worden pas verzegeld als je op Klaar tikt. Verlaat je dit scherm eerder, dan wordt de sleutel vergeten en is er niets vergrendeld — de telefoon blijft filteren, en je kunt opnieuw vergrendelen voor een nieuwe sleutel.</string>
     <string name="lock_reveal_confirm">Ik heb deze sleutel opgeschreven of afgedrukt</string>

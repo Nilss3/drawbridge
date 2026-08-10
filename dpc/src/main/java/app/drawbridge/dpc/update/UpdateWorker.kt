@@ -79,16 +79,24 @@ class UpdateWorker(
             }
         }
 
-        // Deliberately not gated. Keeping *itself* current is not something
-        // drawbridge does to the user, and a fix has to be able to reach an idle
-        // provisioned phone whose parent has not locked it yet.
-        val self = installer.checkAndInstallSelf()
-        if (self is AppInstaller.Result.Failed) {
-            Log.e(TAG, "Self-update failed: ${self.reason}")
+        // drawbridge does *not* install its own update here any more, and that is
+        // a concession rather than a design. Play Protect refuses it on any
+        // phone with a Google account -- five rounds of experiment moved the
+        // manifest, the permissions, the install session and finally the package
+        // name, and only the rename got through, which is not a fix. Retrying
+        // silently every three hours only fails silently every three hours.
+        //
+        // herald above is untouched: its installs are not refused, and a phone
+        // with no browser is a different order of problem.
+        installer.availableSelfUpdate()?.let { update ->
+            Log.i(
+                TAG,
+                "drawbridge ${update.versionCode} is available; " +
+                    "waiting for the parent to start it from the app",
+            )
         }
 
-        val failed = required.values.any { it is AppInstaller.Result.Failed } ||
-            self is AppInstaller.Result.Failed
+        val failed = required.values.any { it is AppInstaller.Result.Failed }
         return if (failed) Result.retry() else Result.success()
     }
 

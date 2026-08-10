@@ -39,17 +39,6 @@
     <string name="option_disable_confirm_message">Apps this option allowed are removed straight away. Switching it back on later does not reinstall them.</string>
     <string name="option_disable_confirm_yes">Turn off</string>
 
-    <string name="status_heading">Device status</string>
-    <string name="status_device_owner_yes">Managed: drawbridge is the device owner</string>
-    <string name="status_device_owner_no">Not managed — restrictions cannot be enforced. Provision with adb or a QR code first.</string>
-    <string name="status_filter_running">Content filter: running</string>
-    <string name="status_filter_stopped">Content filter: stopped</string>
-    <string name="status_policy">Policy version %1$d, last updated %2$s. Checked automatically once a day.</string>
-    <string name="status_policy_never">never</string>
-    <string name="status_restrictions_none">No restrictions applied</string>
-    <string name="status_restrictions_heading">Active restrictions</string>
-    <string name="status_protected_since">Protecting this phone since %1$s</string>
-    <string name="status_protected_never">This phone is not protected yet. Locking it starts the clock.</string>
 
     <string name="action_lock">Lock drawbridge</string>
     <string name="action_refresh">Check for policy updates</string>
@@ -77,6 +66,22 @@
 
     <string name="lock_reveal_title">Write this down now</string>
     <string name="lock_reveal_explanation">This key unlocks these settings. It is not stored anywhere you can read it again, and a new one is made every time you lock — so this one, on paper, is all there is.\n\nIf you would rather not be able to change your mind, that is a real choice. Close this without keeping the key and these settings can never be changed again — though the phone can still be factory reset, which removes drawbridge and everything else on it.</string>
+    <string name="update_title">Update drawbridge</string>
+    <string name="update_notice">A newer version of drawbridge is available.</string>
+    <string name="update_action">Update</string>
+    <string name="update_available_detail">This phone runs %1$s (build %2$d). Build %3$d is available.</string>
+    <string name="update_none">This phone runs %1$s, which is the newest version the policy names.</string>
+    <string name="update_why_blocked">Play Protect will block this update, and that is not a fault in either of them. drawbridge is allowed to install apps on this phone — it is how herald got here, and how blocked apps are removed. An app that can install other apps is exactly what Play Protect is built to be wary of, because on most phones nobody chose to give an app that power. On this one you did, when you set it up.\n\nPlay Protect cannot tell those two situations apart, so it stops the update. Pausing it for a minute is enough.</string>
+    <string name="update_steps_heading">What to do</string>
+    <string name="update_steps">1. Open Play Protect and turn off scanning.\n2. Come back here and tap Install the update.\n3. Turn Play Protect back on.</string>
+    <string name="update_open_play_protect">Open Play Protect</string>
+    <string name="update_install">Install the update</string>
+    <string name="update_no_play_protect">Play Protect could not be opened from here. It is in the Play Store, under your profile picture.</string>
+    <string name="update_result_started">Downloading and installing. This screen will say when it is done.</string>
+    <string name="update_result_installed">Build %1$d is installed.</string>
+    <string name="update_result_blocked">The phone refused the update, which is what Play Protect blocking it looks like. Pause Play Protect and try again.</string>
+    <string name="update_result_failed">The update did not install: %1$s</string>
+    <string name="update_turn_back_on">Turn Play Protect back on afterwards. It is the only thing on this phone watching for genuinely harmful apps, and it does not interfere with anything else drawbridge does.</string>
     <string name="lock_key_glyphs">A key never contains the letters O, I or L. A round character is a zero. If you write one down ambiguously, typing O, I or l back still works.</string>
     <string name="lock_reveal_not_sealed_yet">These settings are not sealed until you tap Done. If you leave this screen before then, the key is forgotten and nothing is locked — the phone keeps filtering, and you can lock it again for a new key.</string>
     <string name="lock_reveal_confirm">I have written down or printed this key</string>

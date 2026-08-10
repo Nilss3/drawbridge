@@ -130,59 +130,28 @@
             android:text="@string/options_footnote"
             android:textAppearance="?attr/textAppearanceBodySmall" />
 
-        <TextView
-            style="@style/TextAppearance.Drawbridge.SectionHeading"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/status_heading" />
-
         <LinearLayout
+            android:id="@+id/updateNotice"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="28dp"
             android:orientation="vertical"
-            android:paddingHorizontal="24dp">
+            android:paddingHorizontal="24dp"
+            android:visibility="gone">
 
             <TextView
-                android:id="@+id/protectedSinceStatus"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingBottom="8dp"
+                android:text="@string/update_notice"
                 android:textAppearance="?attr/textAppearanceBodyLarge" />
 
-            <TextView
-                android:id="@+id/ownershipStatus"
+            <Button
+                android:id="@+id/updateButton"
+                style="?attr/materialButtonOutlinedStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingBottom="4dp"
-                android:textAppearance="?attr/textAppearanceBodyMedium" />
-
-            <TextView
-                android:id="@+id/filterStatus"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingBottom="4dp"
-                android:textAppearance="?attr/textAppearanceBodyMedium" />
-
-            <TextView
-                android:id="@+id/policyStatus"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingBottom="12dp"
-                android:textAppearance="?attr/textAppearanceBodyMedium" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingBottom="4dp"
-                android:text="@string/status_restrictions_heading"
-                android:textAppearance="?attr/textAppearanceTitleSmall" />
-
-            <TextView
-                android:id="@+id/restrictionsStatus"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textAppearance="?attr/textAppearanceBodyMedium" />
+                android:text="@string/update_action" />
         </LinearLayout>
 
         <LinearLayout
@@ -196,13 +165,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/action_lock" />
-
-            <Button
-                android:id="@+id/refreshButton"
-                style="?attr/materialButtonOutlinedStyle"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/action_refresh" />
         </LinearLayout>
     </LinearLayout>
 </ScrollView>

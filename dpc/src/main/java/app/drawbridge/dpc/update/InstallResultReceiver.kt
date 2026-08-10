@@ -13,8 +13,19 @@ class InstallResultReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         val packageName = intent.getStringExtra(EXTRA_PACKAGE) ?: "(unknown)"
         val version = intent.getIntExtra(EXTRA_VERSION_CODE, -1)
+        val status = intent.getIntExtra(PackageInstaller.EXTRA_STATUS, -1)
 
-        when (val status = intent.getIntExtra(PackageInstaller.EXTRA_STATUS, -1)) {
+        // Written down before it is logged, because this is the only place the
+        // answer exists and the screen that asked the question is usually gone
+        // by now. See InstallOutcome.
+        InstallOutcome(context).record(
+            packageName = packageName,
+            versionCode = version,
+            status = status,
+            message = intent.getStringExtra(PackageInstaller.EXTRA_STATUS_MESSAGE),
+        )
+
+        when (status) {
             PackageInstaller.STATUS_SUCCESS ->
                 Log.i(TAG, "Installed $packageName version $version")
 

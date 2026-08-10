@@ -102,6 +102,17 @@
             android:label="@string/remove_title" />
 
         <!--
+            Reachable from the lock screen as well as the configuration screen,
+            which is deliberate: a locked phone is the normal state, and making
+            the parent unlock to update would cost them their key. See
+            UpdateActivity.
+        -->
+        <activity
+            android:name=".ui.UpdateActivity"
+            android:exported="false"
+            android:label="@string/update_title" />
+
+        <!--
             Below API 33 AppCompat stores the per-app locale itself, but only if
             this metadata says so. Without it the language picker works until the
             process dies and then silently forgets.

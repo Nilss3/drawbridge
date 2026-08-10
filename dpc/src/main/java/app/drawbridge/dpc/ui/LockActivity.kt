@@ -11,11 +11,17 @@ import android.widget.Button
 import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
+import app.drawbridge.dpc.DrawbridgeApplication
 import app.drawbridge.dpc.R
 import app.drawbridge.dpc.security.ParentKey
+import app.drawbridge.dpc.update.AppInstaller
+import app.drawbridge.policy.PolicyManager
+import kotlinx.coroutines.launch
 
 /**
  * The lock, in its two moments.
@@ -82,7 +88,10 @@ class LockActivity : AppCompatActivity() {
         revealStep.visibility = if (revealing) View.VISIBLE else View.GONE
         challengeStep.visibility = if (revealing) View.GONE else View.VISIBLE
         keyView.text = revealedKey.orEmpty()
-        if (!revealing) showLockHistory()
+        if (!revealing) {
+            showLockHistory()
+            showUpdateNotice()
+        }
 
         if (revealing) {
             // Keeps the key out of screenshots and out of the recents thumbnail,
@@ -121,6 +130,31 @@ class LockActivity : AppCompatActivity() {
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putString(STATE_KEY, revealedKey)
+    }
+
+    /**
+     * Offers the update from behind the lock, which is the whole point of having
+     * it here.
+     *
+     * drawbridge can no longer install its own updates — Play Protect refuses
+     * them, see [UpdateActivity] — so someone has to press a button. That
+     * someone is a parent holding a phone that is, in the normal case, locked.
+     * If the only route were the configuration screen they would have to unlock
+     * first, which discards their key and mints a new one to write down: a
+     * credential rotation as the price of a maintenance task, which is a good
+     * way to make sure the maintenance never happens.
+     *
+     * Nothing is given away by offering it here. The APK is named by the signed
+     * policy and pinned by checksum, so the button installs the build the parent
+     * already consented to or nothing at all.
+     */
+    private fun showUpdateNotice() {
+        val notice = findViewById<View>(R.id.updateNotice)
+        notice.visibility =
+            if (AppInstaller(this).availableSelfUpdate() != null) View.VISIBLE else View.GONE
+        findViewById<Button>(R.id.updateButton).setOnClickListener {
+            startActivity(Intent(this, UpdateActivity::class.java))
+        }
     }
 
     /**
@@ -229,13 +263,41 @@ class LockActivity : AppCompatActivity() {
         return true
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean =
-        if (item.itemId == R.id.actionDiagnostics) {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
+        R.id.actionDiagnostics -> {
             startActivity(Intent(this, DiagnosticsActivity::class.java))
             true
-        } else {
-            super.onOptionsItemSelected(item)
         }
+
+        R.id.actionRefresh -> {
+            refreshPolicy()
+            true
+        }
+
+        else -> super.onOptionsItemSelected(item)
+    }
+
+    /**
+     * The manual policy check, from the screen the phone actually sits on.
+     *
+     * Deliberately not behind the key. A policy refresh cannot change what the
+     * policy says — the document is signed, and this only fetches whatever is
+     * already published — so the worst a child can do with it is give the phone
+     * the newest rules slightly sooner.
+     */
+    private fun refreshPolicy() {
+        lifecycleScope.launch {
+            val policy = DrawbridgeApplication.policy(this@LockActivity)
+            val message = when (val outcome = policy.refresh()) {
+                is PolicyManager.RefreshOutcome.Success ->
+                    getString(R.string.policy_refreshed, outcome.version)
+                is PolicyManager.RefreshOutcome.Failure ->
+                    getString(R.string.policy_refresh_failed)
+            }
+            Toast.makeText(this@LockActivity, message, Toast.LENGTH_LONG).show()
+            showUpdateNotice()
+        }
+    }
 
     companion object {
         private const val EXTRA_MINT = "mint_key"

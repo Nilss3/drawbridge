@@ -5,7 +5,6 @@ import android.graphics.Typeface
 import android.os.Bundle
 import android.os.PowerManager
 import android.provider.Settings
-import android.text.format.DateUtils
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
@@ -30,6 +29,7 @@ import app.drawbridge.dpc.admin.ProvisioningLog
 import app.drawbridge.dpc.apps.AppBlocker
 import app.drawbridge.dpc.policy.SelectionProvider
 import app.drawbridge.dpc.security.ParentKey
+import app.drawbridge.dpc.update.AppInstaller
 import app.drawbridge.dpc.vpn.DnsFilterService
 import app.drawbridge.policy.PolicyManager
 import app.drawbridge.policy.model.PolicyOption
@@ -63,11 +63,7 @@ class MainActivity : AppCompatActivity() {
     private val parentKey by lazy { ParentKey(this) }
     private val policy by lazy { DrawbridgeApplication.policy(this) }
 
-    private lateinit var protectedSinceStatus: TextView
-    private lateinit var ownershipStatus: TextView
-    private lateinit var filterStatus: TextView
-    private lateinit var policyStatus: TextView
-    private lateinit var restrictionsStatus: TextView
+    private lateinit var updateNotice: View
     private lateinit var policyContainer: LinearLayout
     private lateinit var optionContainer: LinearLayout
     private lateinit var optionsExplanation: TextView
@@ -107,11 +103,7 @@ class MainActivity : AppCompatActivity() {
 
         findViewById<View>(R.id.root).applyScreenInsets()
 
-        protectedSinceStatus = findViewById(R.id.protectedSinceStatus)
-        ownershipStatus = findViewById(R.id.ownershipStatus)
-        filterStatus = findViewById(R.id.filterStatus)
-        policyStatus = findViewById(R.id.policyStatus)
-        restrictionsStatus = findViewById(R.id.restrictionsStatus)
+        updateNotice = findViewById(R.id.updateNotice)
         policyContainer = findViewById(R.id.policyContainer)
         optionContainer = findViewById(R.id.optionContainer)
         optionsExplanation = findViewById(R.id.optionsExplanation)
@@ -120,7 +112,9 @@ class MainActivity : AppCompatActivity() {
         bindLanguages(findViewById(R.id.languageField))
 
         findViewById<Button>(R.id.lockButton).setOnClickListener { confirmLock() }
-        findViewById<Button>(R.id.refreshButton).setOnClickListener { refreshPolicy() }
+        findViewById<Button>(R.id.updateButton).setOnClickListener {
+            startActivity(Intent(this, UpdateActivity::class.java))
+        }
     }
 
     override fun onResume() {
@@ -148,6 +142,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
+        R.id.actionRefresh -> {
+            refreshPolicy()
+            true
+        }
+
         R.id.actionRemove -> {
             startActivity(Intent(this, RemoveActivity::class.java))
             true
@@ -195,33 +194,17 @@ class MainActivity : AppCompatActivity() {
 
     // --- Rendering -----------------------------------------------------------
 
+    /**
+     * The device status this screen used to carry — ownership, the filter, the
+     * policy version, the live restriction list — is gone. All of it is in
+     * Diagnostics, which is where someone troubleshooting looks, and none of it
+     * is something a parent configuring the phone acts on. The protected-since
+     * date went with it for a better reason: it is a fact about the *lock*, so
+     * it belongs on the lock screen, which is where it already was.
+     */
     private fun render() {
-        protectedSinceStatus.text = parentKey.protectedSince.let { since ->
-            if (since > 0) {
-                getString(R.string.status_protected_since, formatMoment(since))
-            } else {
-                getString(R.string.status_protected_never)
-            }
-        }
-
-        ownershipStatus.text = if (deviceOwner.isDeviceOwner) {
-            getString(R.string.status_device_owner_yes)
-        } else {
-            getString(R.string.status_device_owner_no)
-        }
-
-        filterStatus.text = if (DnsFilterService.isRunning) {
-            getString(R.string.status_filter_running)
-        } else {
-            getString(R.string.status_filter_stopped)
-        }
-
-        val restrictions = deviceOwner.activeRestrictions()
-        restrictionsStatus.text = if (restrictions.isEmpty()) {
-            getString(R.string.status_restrictions_none)
-        } else {
-            restrictions.joinToString("\n") { "• ${it.removePrefix("no_")}" }
-        }
+        updateNotice.visibility =
+            if (AppInstaller(this).availableSelfUpdate() != null) View.VISIBLE else View.GONE
 
         lifecycleScope.launch {
             // The policy is loaded from disk asynchronously, so anything read
@@ -230,29 +213,20 @@ class MainActivity : AppCompatActivity() {
             // document that had two.
             withContext(Dispatchers.IO) { policy.ensureLoaded() }
 
-            val state = withContext(Dispatchers.IO) { policy.state() }
-            val lastCheck = if (state.lastSuccessMillis > 0) {
-                DateUtils.getRelativeTimeSpanString(state.lastSuccessMillis)
-            } else {
-                getString(R.string.status_policy_never)
-            }
-            policyStatus.text = getString(
-                R.string.status_policy,
-                policy.policy.value.version,
-                lastCheck,
-            )
+            // Re-checked once the policy is really loaded: an update named by a
+            // document still being read off disk would otherwise be missed on
+            // the first render after a cold start.
+            updateNotice.visibility =
+                if (AppInstaller(this@MainActivity).availableSelfUpdate() != null) {
+                    View.VISIBLE
+                } else {
+                    View.GONE
+                }
 
             renderPolicies()
             renderOptions()
         }
     }
-
-    /** Date and time, in whatever form the chosen language writes them. */
-    private fun formatMoment(millis: Long): String = DateUtils.formatDateTime(
-        this,
-        millis,
-        DateUtils.FORMAT_SHOW_DATE or DateUtils.FORMAT_SHOW_YEAR or DateUtils.FORMAT_SHOW_TIME,
-    )
 
     /**
      * Both selections are read off disk, so they are fetched on an IO thread

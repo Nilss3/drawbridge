@@ -3,9 +3,19 @@
     Removal is the only way off a managed device short of wiping it, so it has to
     be reachable — but it happens once in the life of a phone, and it does not
     belong beside the button that gets pressed every time. Overflow only.
+
+    "Check for policy updates" is here rather than on the screen for a milder
+    version of the same reason: the policy arrives by itself every three hours,
+    so the button is for the impatient and for testing, not for the ordinary
+    case. It is in the lock screen's menu too, where it matters more.
 -->
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/actionRefresh"
+        android:title="@string/action_refresh"
+        app:showAsAction="never" />
 
     <item
         android:id="@+id/actionDiagnostics"

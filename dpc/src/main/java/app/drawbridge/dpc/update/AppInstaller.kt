@@ -36,16 +36,36 @@ class AppInstaller(context: Context) {
         data class Failed(val reason: String) : Result
     }
 
-    /** Installs drawbridge's own update, if the policy names a newer one. */
-    suspend fun checkAndInstallSelf(): Result = withContext(Dispatchers.IO) {
-        val update = DrawbridgeApplication.policy(appContext).policy.value.appUpdate
-            ?: return@withContext Result.UpToDate
+    /**
+     * The update the signed policy names for drawbridge itself, or null when
+     * there is nothing newer than what is running.
+     *
+     * A pure query: it reads the policy and installs nothing. drawbridge used to
+     * install its own updates from the periodic worker, silently, which is the
+     * right design everywhere except where it turned out to be running — Play
+     * Protect refuses that install on any phone with a Google account, and five
+     * rounds of experiment established that nothing in the APK moves it. A
+     * silent retry every three hours just fails every three hours.
+     *
+     * So updating is something the parent starts, and this is what tells the
+     * screens there is something to start. See [installSelfUpdate] and
+     * docs/handoff.md.
+     */
+    fun availableSelfUpdate(): AppUpdate? {
+        val update = DrawbridgeApplication.policy(appContext).policy.value.appUpdate ?: return null
+        if (update.packageName != appContext.packageName) return null
+        if (update.versionCode <= versionCodeOf(appContext.packageName)) return null
+        return update
+    }
 
-        if (update.packageName != appContext.packageName) return@withContext Result.UpToDate
-        if (update.versionCode <= versionCodeOf(appContext.packageName)) {
-            return@withContext Result.UpToDate
-        }
-
+    /**
+     * Installs what [availableSelfUpdate] found, on the parent's say-so.
+     *
+     * Expected to fail while Play Protect is on, and the screen that calls this
+     * says so before the parent presses anything.
+     */
+    suspend fun installSelfUpdate(): Result = withContext(Dispatchers.IO) {
+        val update = availableSelfUpdate() ?: return@withContext Result.UpToDate
         Log.i(TAG, "Updating drawbridge to version ${update.versionCode}")
         install(update)
     }

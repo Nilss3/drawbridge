@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-    The locked screen gets Diagnostics and nothing else.
+    The locked screen gets Diagnostics and the policy check.
+
+    "Check for policy updates" matters more here than on the configuration
+    screen, and that is not a matter of taste: a locked phone is the state a
+    managed device spends its life in, so this is the only screen most parents
+    ever see. Putting the manual check only behind the key would mean the one
+    person who might need it has to unlock — which discards their key and mints
+    a new one — to press it.
 
     Removal is deliberately absent: it lives behind the key, on the screen this
     one guards. Diagnostics is not, because a locked phone is the normal state
@@ -8,6 +15,11 @@
 -->
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/actionRefresh"
+        android:title="@string/action_refresh"
+        app:showAsAction="never" />
 
     <item
         android:id="@+id/actionDiagnostics"
