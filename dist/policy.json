@@ -1,7 +1,7 @@
 {
-  "version": 33,
-  "issued_at": "2026-08-10T13:00:00Z",
-  "comment": "Policy 33. Points app_update at drawbridge 0.2.5 (version_code 16), signed after the assets were published and verified to hash to their pins. Back to /releases/latest/download/ rather than a versioned tag: v0.2.5 is a full release and is latest, so the QR and required_apps resolve from it too -- the versioned URLs of policies 27 to 30 existed only because those were DPC-only pre-releases that deliberately did not become latest. Note what this does and does not do on a deployed phone. 0.2.5 is the last version that any device installs by itself: it is also the version that stops installing its own updates, so from here a new drawbridge arrives when someone opens the app, pauses Play Protect and presses the button. Getting 0.2.5 itself onto the one provisioned phone still needs Play Protect paused, because the build doing the installing is 0.2.3 and Play Protect refuses it.",
+  "version": 34,
+  "issued_at": "2026-08-10T15:30:00Z",
+  "comment": "Policy 34. Points app_update at drawbridge 0.2.6 (version_code 17), signed after the assets were published and verified to hash to their pin. Back to a versioned URL rather than /releases/latest/download/, for the reason policies 27 to 30 used one: v0.2.6 is a DPC-only pre-release and must not become latest, because it carries no herald assets and every required_apps URL would 404 on every device the moment it did. v0.2.5 stays latest, so required_apps and the QR keep resolving from it. What 0.2.6 changes is the delivery channel itself: USB debugging now follows the lock rather than protectedSince, so a phone that has been unlocked with the parent's key hands the cable back and can be given a new drawbridge over it. That matters because nothing else can -- Play Protect refuses this package, so no device installs its own update, and before this the cable was available exactly once, before the first lock. Note the pin is honest but inert on the one provisioned phone: it already runs a version_code 17 build, so app_update sees nothing newer and does nothing.",
   "dns": {
     "upstreams": [
       "94.140.14.15",
@@ -334,9 +334,9 @@
   },
   "app_update": {
     "package_name": "app.drawbridge.dpc",
-    "version_code": 16,
-    "url": "https://github.com/Nilss3/drawbridge/releases/latest/download/dpc-release.apk",
-    "sha256": "d7614a4fd3781047c45ec476ffe7753e7fd69ad132292b69d61c06f34dd8d347"
+    "version_code": 17,
+    "url": "https://github.com/Nilss3/drawbridge/releases/download/v0.2.6/dpc-release.apk",
+    "sha256": "da5391134bab355017fbdaa708305db2c0bec43fae75ed4890f37bb78c04bb5a"
   },
   "required_apps": [
     {
