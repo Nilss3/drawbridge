@@ -1,10 +1,27 @@
 # Provisioning a device
 
 drawbridge needs **Device Owner** status. That can only be granted on a device
-with no accounts configured — in practice, a factory-reset or brand-new phone.
-It cannot be added to a phone that is already set up without wiping it first.
+with **no accounts on it at that moment** — which is a removable condition, not a
+permanent one.
 
-There are two ways in, and one of them is much more reliable across ROMs.
+**No factory reset is required.** This file used to say otherwise, and it was
+wrong. Measured on the reference Moto G15 on 2026-08-10: a phone reporting
+`user_setup_complete: 1`, in use, with a Google account signed in, had that
+account removed in Settings and `dpm set-device-owner` succeeded immediately.
+Nothing was wiped. The account was then signed back in.
+
+So the flow on an already-configured phone is **remove accounts → provision →
+sign back in**, and the parent keeps their photos, messages and apps.
+
+> **One thing does get removed.** Locking drawbridge uninstalls every app in
+> `blocked_packages`, immediately, and turning an option back on afterwards does
+> not reinstall them. On a fresh phone that is a no-op; on a phone in daily use
+> it is the change the owner will actually notice. Say so before they start.
+
+There are two ways in. **On a Google-certified handset only one of them
+currently works**, and it is adb — Play Protect refuses to install the DPC, and
+the QR wizard has no way round that while adb does. On a device without Play
+Protect both should work, and the QR one gives a cleaner phone.
 
 > Looking for a guide to hand to a parent rather than a developer? Use
 > [install.md](install.md) — available in
@@ -12,24 +29,52 @@ There are two ways in, and one of them is much more reliable across ROMs.
 
 ## Before you start
 
-Decide the order of these two things, because it matters:
+Three gates are easy to confuse, and only one of them cares about accounts:
 
-1. Provision drawbridge (below).
-2. Add **the parent's** Google account — and only the parent's.
-3. Run setup in the drawbridge app, which locks account changes.
+| Gate | Mechanism | Accounts matter? |
+|---|---|---|
+| Installing the APK | Play Protect verification | **No.** Refused with zero accounts and with one alike; `verifier_verify_adb_installs` is the lever either way |
+| Granting Device Owner | Android platform check | **Yes**, and this is the only one |
+| QR provisioning | Play Protect, at install | No — it fails at the first gate |
 
-The reason is Factory Reset Protection. If someone boots into recovery mode and
-wipes the device — which no software restriction can prevent — FRP demands an
-account that was previously on the device before setup can continue. That is
-only a deterrent if the child cannot satisfy it themselves. Adding the child's
-account, even as a secondary, hands them the key.
+Measured on 2026-08-10 with one account signed in: the APK installed normally
+once the verifier was paused, and `dpm set-device-owner` then threw
+`Not allowed to set the device owner because there are already some accounts on
+the device`. Two different subsystems, and only the second is about the account.
 
-On a de-Googled ROM there is no FRP, so a recovery wipe is a clean removal with
-no backstop. That is inherent, not a bug.
+Then the order, which matters:
 
-## Method 1 — adb (works everywhere)
+1. Remove every account.
+2. Provision drawbridge (below).
+3. Add **the parent's** Google account back — and only the parent's.
+4. Run setup in the drawbridge app and lock it.
 
-The reliable option, and the one to use on LineageOS, /e/OS and generic AOSP.
+Keep the child's account off the device. Note that the reason given here used to
+be Factory Reset Protection, and **that reason is void**: FRP is not armed on a
+fully managed device by default, and a Settings reset does not trigger it
+whatever accounts are present — tested on the G15 on 2026-08-10, which was reset
+and never asked for the account. See
+[design-decisions](design-decisions.md#drawbridge-does-not-prevent-a-factory-reset).
+The remaining reasons are ordinary ones: the child's account is a Play Store that
+is not the parent's, and account changes close at lock.
+
+## Method 1 — adb (the only method that works on a certified device)
+
+Use `tools/provision-adb.sh`. It installs both apps and grants Device Owner:
+
+```bash
+tools/provision-adb.sh
+```
+
+`--serial` picks a device when more than one is attached, `--abi` overrides the
+detected ABI, `--no-herald` skips the browser, `--mono` adds herald mono, and
+`--dry-run` prints the sequence without touching anything. It refuses to start
+if the device has any account on it or already has a device owner, because both
+fail *after* the APKs are pushed and the error is less legible than this one.
+
+### Why it is a script and not three commands
+
+The three commands underneath it are still these:
 
 ```bash
 adb install dpc-release.apk
@@ -37,29 +82,107 @@ adb install herald-arm64-v8a-release.apk
 adb shell dpm set-device-owner app.drawbridge.dpc/app.drawbridge.dpc.admin.DrawbridgeDeviceAdminReceiver
 ```
 
+**On a Google-certified handset the first one fails.** Play Protect refuses
+`app.drawbridge.dpc` by name, with `INSTALL_FAILED_VERIFICATION_FAILURE`, on a
+device with no account signed in and nothing else installed. See
+[handoff](handoff.md).
+
+adb has one lever that the QR path does not:
+
+```bash
+adb shell settings put global verifier_verify_adb_installs 0
+```
+
+That global decides whether adb installs are put to the verifier at all. It is
+writable only from a shell, which is precisely why the QR wizard cannot do the
+equivalent and this method can. Measured on the Moto G15 on 2026-08-10, with the
+same APK each time:
+
+| `verifier_verify_adb_installs` | `adb install app.drawbridge.dpc` |
+|---|---|
+| unset (platform default) | `INSTALL_FAILED_VERIFICATION_FAILURE` |
+| `0` | installs |
+| `1` | `INSTALL_FAILED_VERIFICATION_FAILURE` |
+
+Restoring it afterwards leaves the **installed** copy alone: Device Owner
+survives, `provisioningState` stays 3, and the app runs. Play Protect's verdict
+is applied at install time and is not re-litigated against what is already
+there.
+
+### What the script guarantees about that setting
+
+Turning the verifier off is a real reduction in a device's protection, so the
+script treats putting it back as the thing it must not get wrong:
+
+- the *original* value is read first, and `null` — never written, platform
+  default applies — is restored by deleting the row rather than by writing a
+  value, so the phone is left as it was found;
+- the restore runs on every exit path: success, any failed install, and Ctrl-C;
+- it happens **before** Device Owner is granted, since nothing after the pushes
+  needs it;
+- and if the restore cannot be confirmed, the script says so loudly and exits
+  non-zero rather than printing a success message.
+
+The window is the length of two `adb install` calls. Once the phone is locked,
+`DISALLOW_DEBUGGING_FEATURES` removes USB debugging altogether and no adb install
+is possible on that handset — until somebody unlocks drawbridge with the parent's
+key, which hands it back. See
+[design-decisions](design-decisions.md#usb-debugging-follows-the-lock-not-the-protection).
+
+**The parent never touches Play Protect.** That matters: the alternative doing
+the rounds is to have them switch Play Protect off in the Play Store, which is
+device-wide, indefinite, and asks somebody to disable a protection they should
+not be disabling on a child's phone.
+
 If it fails with "Not allowed to set the device owner because there are already
 some accounts on the device", remove every account in Settings first — or factory
 reset.
 
-**Release builds disconnect adb.** Applying the restrictions switches off USB
-debugging, so the adb connection drops immediately after provisioning succeeds.
-That is the point: it closes the adb removal route. Install both APKs *before*
-provisioning. Debug builds deliberately skip that one restriction so the device
-stays testable.
+**Release builds disconnect adb at lock**, not at provisioning — the restrictions
+land when the parent locks the phone, and USB debugging goes with them. That is
+the point: it closes the adb removal route on a phone in a child's hands.
 
-## Method 2 — QR code (stock devices)
+**Unlocking hands it back**, which is the supported way to put a new build on a
+deployed phone:
+
+```bash
+tools/provision-adb.sh --update
+```
+
+Unlock drawbridge with the parent's key, re-enable USB debugging in developer
+options, run that, then lock again. drawbridge cannot update *itself* — Play
+Protect refuses its `PackageInstaller` session as well — so this is the delivery
+channel. Debug builds skip the restriction entirely so the device stays testable.
+
+## Method 2 — QR code (devices without Play Protect)
 
 On a factory-reset device, tap the welcome screen **six times** to open a hidden
 QR scanner. The device then downloads, verifies and installs drawbridge and
 grants Device Owner, all before any account exists.
 
-**Prefer this on a stock device.** It replaces the consumer setup wizard rather
+> **This does not work on a Google-certified handset today.** The wizard has to
+> install `app.drawbridge.dpc`, Play Protect refuses that package by name at
+> install, and the wizard has no way to switch the verifier off — it is running
+> before anyone can reach a shell or a Settings screen. What you see is
+> *"this device belongs to your organization"* followed by **"Something went
+> wrong"** and a factory reset. Verified on the Moto G15 on 2026-08-10, on the
+> byte-identical build that provisioned the same phone three days earlier.
+>
+> It should still work on a device with no Play Protect — LineageOS, /e/OS,
+> GrapheneOS — where nothing verifies the install. **That is untested.** Use
+> adb until it is.
+
+**Prefer this where it works.** It replaces the consumer setup wizard rather
 than running after it, and the difference is visible: the OEM's *downloaded*
 preloads never arrive at all. On a Moto G15 the adb route produced a phone
 carrying Temu, LinkedIn, Fitbit and a handful of games, none of which drawbridge
 blocks; the QR route produced a phone without them. Preloads baked into the
 system image — Facebook, on that handset — are still there, and are removed by
 the app blocker in the usual way.
+
+That advantage is the reason to keep the QR path alive rather than retire it: a
+phone provisioned over adb carries preloads a QR-provisioned one never receives,
+and no policy removes them because none of them is blocked.
 
 ### What the managed setup skips, and what you must do by hand
 

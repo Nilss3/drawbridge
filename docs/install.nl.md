@@ -1,100 +1,102 @@
-# drawbridge installeren met een QR-code
+# drawbridge installeren via USB
 
 [English](install.md) · **Nederlands** · [Français](install.fr.md)
 
-Dit duurt ongeveer een kwartier. U scant één code, en de telefoon installeert en
-configureert daarna alles zelf — zowel de inhoudsfilter als de browser.
+Dit duurt ongeveer een kwartier. U verbindt de telefoon één keer met een
+computer, voert de installer uit, en de telefoon regelt de rest zelf — zowel de
+inhoudsfilter als de browser.
+
+**Dit werkt op een gewone Android-telefoon die al in gebruik is.** Er is geen
+fabrieksreset nodig, en uw foto's, berichten en apps worden niet gewist.
+
+> **Eén ding verdwijnt wel: de apps die drawbridge blokkeert.** Zodra u
+> vergrendelt, worden alle apps die het beleid blokkeert van de telefoon
+> verwijderd, meteen. Een instelling achteraf weer aanzetten installeert ze niet
+> opnieuw. Op een telefoon die al in gebruik is, is dat een echte verandering —
+> bekijk [wat er geblokkeerd wordt](blocked-apps.md) voor u begint.
 
 ---
 
 ## Voor u begint
 
-> **Hierdoor wordt de telefoon gewist.** drawbridge kan alleen geïnstalleerd
-> worden op een telefoon die net is teruggezet naar de fabrieksinstellingen,
-> omdat Android dit niveau van controle enkel toekent voordat er een account op
-> staat. Maak eerst een back-up van foto's, berichten en al wat u wilt bewaren.
+U hebt nodig:
 
-U hebt verder nodig:
-
+- **Een computer en een USB-kabel.**
 - Een wifinetwerk en het wachtwoord ervan.
 - **Het Google-account van de ouder** — het account van het kind mag er nooit op
-  komen. Dat is wat verhindert dat de controle wordt verwijderd door de telefoon
-  te wissen (zie [Waarom het account belangrijk is](#waarom-het-account-belangrijk-is)).
+  komen. In stap 1 meldt u zich af, in stap 4 weer aan.
 - Ongeveer 300 MB download, dus gebruik wifi en geen mobiele data.
 
----
-
-## Stap 1 — Zet de telefoon terug naar fabrieksinstellingen
-
-Op de telefoon die u wilt beheren:
-
-**Instellingen → Systeem → Opties voor resetten → Alle gegevens wissen
-(fabrieksinstellingen terugzetten)**
-
-Wacht tot de telefoon opnieuw opstart. U zou op het welkomstscherm moeten
-uitkomen.
-
-Is de telefoon gloednieuw en nog nooit ingesteld, sla deze stap dan over.
+Draait uw toestel een deGooglede Android (LineageOS, /e/OS, GrapheneOS) en is het
+vers uit de doos of net gereset, dan kunt u
+[de QR-code](#een-toestel-zonder-google-diensten-de-qr-code) gebruiken en de kabel
+helemaal overslaan.
 
 ---
 
-## Stap 2 — Tik zes keer op het welkomstscherm
+## Stap 1 — Verwijder elk account van de telefoon
 
-Tik op dat eerste welkomstscherm **zes keer op dezelfde plek in het midden van
-het scherm**.
+**Instellingen → Wachtwoorden, toegangssleutels en accounts**
 
-Bij de eerste tikken lijkt er niets te gebeuren — ga gewoon door. Na de zesde tik
-opent de telefoon een QR-scanner. Sommige toestellen vragen eerst om verbinding
-met wifi en downloaden de scanner daarna; dat is normaal.
+Tik op elk account en daarna op **Account verwijderen**. Android geeft dit niveau
+van controle enkel aan een telefoon waar geen account op staat — dat is de enige
+harde voorwaarde, en het is de enige reden waarom de vorige versie van deze gids
+u vroeg de telefoon te wissen. Dat hoeft dus niet. In stap 4 meldt u zich weer
+aan.
 
-> Gebeurt er niets na zes keer tikken, dan heeft het instelscherm van uw telefoon
-> deze functie niet. Zie [Als de QR-scanner niet verschijnt](#als-de-qr-scanner-niet-verschijnt).
-
----
-
-## Stap 3 — Maak verbinding met wifi
-
-Als dat nog niet gevraagd is, verbind de telefoon nu met uw wifi. Er is internet
-nodig om drawbridge te downloaden.
+Een account verwijderen wist de mail, contacten en gesynchroniseerde gegevens van
+dat account **van de telefoon**. Er wordt niets uit uw Google-account zelf
+verwijderd, en alles komt terug zodra u zich opnieuw aanmeldt.
 
 ---
 
-## Stap 4 — Scan deze code
+## Stap 2 — Zet USB-foutopsporing aan
 
-<p align="center">
-  <img src="img/provisioning-qr.png" alt="drawbridge QR-code voor installatie" width="340">
-</p>
+**Instellingen → Over de telefoon**, en tik zeven keer op **Buildnummer**. De
+telefoon meldt dat u nu ontwikkelaar bent.
 
-Richt de scanner van de telefoon op de code hierboven — vanaf een ander scherm of
-vanaf een afdruk.
-
-Om netjes af te drukken, gebruik de vectorversie:
-[provisioning-qr.svg](img/provisioning-qr.svg).
-
-De telefoon doet daarna vanzelf het volgende:
-
-1. drawbridge downloaden en installeren.
-2. drawbridge eigenaar van het toestel maken, zodat het niet zonder uw sleutel
-   verwijderd kan worden.
-3. **herald**, de gefilterde browser, downloaden en installeren.
-4. De inhoudsfilter inschakelen en elke andere browser verbergen.
-
-Dit duurt enkele minuten, grotendeels het downloaden van de browser. Laat de
-telefoon op wifi tot alles klaar is.
+Daarna **Instellingen → Systeem → Ontwikkelaarsopties → USB-foutopsporing**, en
+zet die aan.
 
 ---
 
-## Stap 5 — Voeg uw eigen Google-account toe
+## Stap 3 — Voer de installer uit vanaf uw computer
 
-Wanneer de telefoon bij de gewone instelschermen komt, meld u aan met **uw eigen**
-Google-account — nooit dat van het kind.
+Verbind de telefoon met de USB-kabel. Aanvaard de melding *USB-foutopsporing
+toestaan* die op de telefoon verschijnt.
 
-U kunt het account ook volledig overslaan als u de Play Store niet nodig hebt,
-maar dan verliest u de bescherming die hieronder beschreven staat.
+**Het eenvoudigst is de installerpagina op de website**, die dit alles vanuit
+Chrome of Edge doet zonder iets op te zetten:
+<https://drawbridge.pages.dev/nl/install/usb/>.
+
+Wilt u liever een terminal, voer dan vanuit een kopie van deze repository uit:
+
+```bash
+tools/provision-adb.sh
+```
+
+Dat installeert drawbridge en herald en maakt drawbridge eigenaar van de
+telefoon. Het weigert te starten zolang er nog een account op de telefoon staat,
+en dat is meestal de reden waarom het stopt.
 
 ---
 
-## Stap 6 — Stel de telefoon in in de drawbridge-app
+## Stap 4 — Meld u weer aan met uw eigen Google-account
+
+**Instellingen → Wachtwoorden, toegangssleutels en accounts → Account
+toevoegen.** Meld u aan met **uw eigen** Google-account — nooit dat van het kind.
+
+Doe dit nu. Zodra drawbridge vergrendeld is, zijn accountwijzigingen afgesloten,
+en ze weer openen kost u de sleutel.
+
+U kunt het account ook volledig overslaan als u de Play Store niet nodig hebt.
+
+Zorg ook dat de telefoon op wifi zit: in de volgende stap wordt ongeveer 300 MB
+browser gedownload.
+
+---
+
+## Stap 5 — Stel de telefoon in in de drawbridge-app
 
 Open de app **drawbridge**. Alles wat u beslist staat op dat ene scherm.
 
@@ -111,11 +113,15 @@ Open de app **drawbridge**. Alles wat u beslist staat op dat ene scherm.
 
 ---
 
-## Stap 7 — Vergrendel, en schrijf de sleutel op
+## Stap 6 — Vergrendel, en schrijf de sleutel op
 
 Tik op **drawbridge vergrendelen**. Dat is de enige knop die telt: hij past het
 beleid toe, start de inhoudsfilter en verzegelt het scherm. Sta de uitzondering
 op batterijoptimalisatie toe wanneer daarom gevraagd wordt.
+
+**Dit is het moment waarop de geblokkeerde apps verwijderd worden.** Was de
+telefoon al in gebruik, dan verdwijnen ze nu, en een instelling later weer
+aanzetten brengt ze niet terug.
 
 Daarna krijgt u een **sleutel** te zien: twintig tekens in vier groepen, zoals
 `4XRZS-7QC9N-SPSH9-AWAAE`.
@@ -169,37 +175,68 @@ filter actief is; die kan niet uitgeschakeld worden.
 
 ---
 
-## Waarom het account belangrijk is
+## Een fabrieksreset verwijdert drawbridge, en niets houdt dat tegen
 
 Iedereen kan met de aan-uitknop en de volumeknoppen in de herstelmodus geraken en
-de telefoon wissen. Geen enkele app kan dat verhinderen, drawbridge evenmin.
+de telefoon wissen, of dat vanuit Instellingen doen als hij de
+schermvergrendeling kent. Geen enkele app kan dat verhinderen, drawbridge
+evenmin.
 
-Op een door Google gecertificeerde telefoon wist dat soort reset de
-fabrieksinstellingsbeveiliging (Factory Reset Protection) **niet**: bij het
-opnieuw opstarten vraagt de telefoon om een Google-account dat er eerder op
-aangemeld was. Is dat enkel uw account, dan maakt wissen de telefoon onbruikbaar
-in plaats van vrij — en dat is precies de bedoeling.
+**Factory Reset Protection dekt dit niet, wat u er ook over leest** — ook niet
+wat in eerdere versies van deze gids stond. Op een volledig beheerde telefoon
+staat het standaard niet aan, en een reset vanuit Instellingen zet het niet in
+werking, welke accounts er ook op staan. Dit is op 10 augustus 2026 op echte
+hardware getest: de telefoon werd gereset en de installatie vroeg nooit om het
+Google-account. Vertrouw er niet op.
 
-Is het account van het kind er ooit op gezet, al was het maar even, dan kan het
-kind die vraag zelf beantwoorden en houdt het een propere telefoon zonder
-beperkingen over.
+Wat u wel krijgt, is **weten dát het gebeurd is**. drawbridge zet de datum
+waarop het vergrendeld werd op het vergrendelscherm en in de app. Een telefoon
+die gewist en opnieuw ingesteld is, toont geen datum meer die u herkent — de
+goedkoopste controle op knoeien die er is, zolang u weet wat de telefoon hoort te
+zeggen.
 
-Op telefoons zonder Google-diensten (LineageOS, /e/OS) bestaat die bescherming
-niet, en verwijdert een reset via de herstelmodus drawbridge volledig.
+Houd het account van het kind er sowieso af. Het kost niets en het sluit de
+makkelijkste weg naar een Play Store die niet de uwe is.
 
 ---
 
-## Als de QR-scanner niet verschijnt
+## Een toestel zonder Google-diensten: de QR-code
 
-Sommige toestellen — vooral die met aangepaste software — hebben een instelscherm
-zonder de zes-tik-functie. Installeer drawbridge dan via USB vanaf een computer:
+**Enkel voor deGooglede open-source Android-toestellen** — LineageOS, /e/OS,
+GrapheneOS — **en enkel vers uit de doos of vlak na een fabrieksreset.** Er is
+geen computer en geen kabel voor nodig.
 
-```bash
-adb install dpc-release.apk
-adb shell dpm set-device-owner app.drawbridge.dpc/app.drawbridge.dpc.admin.DrawbridgeDeviceAdminReceiver
-```
+1. Tik op het welkomstscherm **zes keer** op dezelfde plek om een verborgen
+   QR-scanner tevoorschijn te halen. Sommige toestellen vragen eerst om wifi en
+   downloaden de scanner daarna; dat is normaal.
+2. Scan de code hieronder.
+3. Wacht. De telefoon downloadt en installeert drawbridge, maakt het eigenaar van
+   het toestel, downloadt herald en schakelt de filter in — enkele minuten,
+   grotendeels de browser. Laat de telefoon op wifi.
 
-Voor dat tweede commando mag er **geen enkel account** op de telefoon staan.
+<p align="center">
+  <img src="img/provisioning-qr.png" alt="drawbridge QR-code voor installatie" width="340">
+</p>
+
+Om netjes af te drukken, gebruik de vectorversie:
+[provisioning-qr.svg](img/provisioning-qr.svg).
+
+Ga daarna verder vanaf
+[stap 4](#stap-4--meld-u-weer-aan-met-uw-eigen-google-account).
+
+> Dit is op zo'n toestel nog niet bevestigd. Op een telefoon **met** Google Play
+> werkt het helemaal niet — gebruik dan de USB-methode hierboven.
+
+---
+
+## Over de kabel
+
+**Bij het vergrendelen wordt USB-foutopsporing uitgeschakeld.** Ze komt terug
+zodra u drawbridge met uw sleutel ontgrendelt — zo zet u later een nieuwere
+versie via dezelfde kabel op de telefoon. De kabel is dus geen eenmalige kans,
+maar hij blijft dicht tot u de sleutel opnieuw bij de hand hebt.
+
+De technische uitleg staat in [provisioning.md](provisioning.md).
 
 ---
 
@@ -210,6 +247,6 @@ uitschakelen**. Het staat in het overloopmenu en niet op het scherm zelf: het
 gebeurt één keer in het leven van een telefoon.
 
 Alle beperkingen vervallen, verborgen apps komen terug, en **er wordt niets
-gewist**. Het is ook **onomkeerbaar**: de beperkingen opnieuw activeren vraagt
-een fabrieksreset en een nieuwe drawbridge-installatie. Zie
-[verwijderen](removal.md) voor de details.
+gewist**. Vanaf de telefoon zelf kunt u ze niet opnieuw inschakelen — dat vraagt
+weer de kabel, vanaf stap 1 — maar een fabrieksreset is niet nodig. Zie
+[verwijderen](removal.md).

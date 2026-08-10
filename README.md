@@ -137,9 +137,12 @@ Requirements: JDK 21 (the Gradle daemon picks it up automatically via
 
 Then:
 
-- **[docs/install.md](docs/install.md) — installing it on a phone with a QR code**
-  ([Nederlands](docs/install.nl.md) · [Français](docs/install.fr.md))
-- [docs/provisioning.md](docs/provisioning.md) — the same thing for developers, plus adb
+- **[docs/install.md](docs/install.md) — installing it on a phone**
+  ([Nederlands](docs/install.nl.md) · [Français](docs/install.fr.md)). On a phone
+  with Google Play this means over USB: the QR code cannot install drawbridge
+  there, because Play Protect refuses the package.
+- [docs/provisioning.md](docs/provisioning.md) — the same thing for developers,
+  and why `tools/provision-adb.sh` exists
 - [docs/policy.md](docs/policy.md) — changing what is blocked
 - [docs/blocked-apps.md](docs/blocked-apps.md) — every blocked app, as a quick-reference list
 - [docs/blocklist-notes.md](docs/blocklist-notes.md) — what is on the list, and what could not be blocked as asked
@@ -158,6 +161,7 @@ art/          the illustrations every icon and hero image is derived from
 site/         the project website — generated, do not hand-edit
 site-src/     the website's source: content drafts and the sourced blocklist
 tools/        policytool.py (sign policy), qrpayload.py (provisioning QR),
+              provision-adb.sh (provision a device over USB),
               make-artwork.sh (icons and scenes from art/),
               build-site.py (generates site/ from site-src/)
 keys/         signing keys — never committed

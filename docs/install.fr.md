@@ -1,102 +1,105 @@
-# Installer drawbridge avec un code QR
+# Installer drawbridge par USB
 
 [English](install.md) · [Nederlands](install.nl.md) · **Français**
 
-Comptez environ un quart d'heure. Vous scannez un seul code, et le téléphone
-installe et configure ensuite tout seul l'ensemble — le filtre de contenu comme
-le navigateur.
+Comptez environ un quart d'heure. Vous reliez le téléphone à un ordinateur une
+seule fois, vous lancez l'installeur, et le téléphone configure le reste tout
+seul — le filtre de contenu comme le navigateur.
+
+**Cela fonctionne sur un téléphone Android ordinaire déjà utilisé.** Aucune
+réinitialisation d'usine n'est nécessaire, et vos photos, messages et
+applications ne sont pas effacés.
+
+> **Une chose disparaît quand même : les applications que drawbridge bloque.**
+> Dès que vous verrouillez, toutes les applications bloquées par la politique
+> sont désinstallées du téléphone, immédiatement. Réactiver un réglage ensuite ne
+> les réinstalle pas. Sur un téléphone déjà utilisé, c'est un vrai changement —
+> regardez [ce qui est bloqué](blocked-apps.md) avant de commencer.
 
 ---
 
 ## Avant de commencer
 
-> **Cette opération efface le téléphone.** drawbridge ne peut être installé que
-> sur un téléphone qui vient d'être réinitialisé, car Android n'accorde ce niveau
-> de contrôle qu'avant l'ajout du moindre compte. Sauvegardez d'abord les photos,
-> les messages et tout ce que vous souhaitez conserver.
+Il vous faudra :
 
-Il vous faudra également :
-
+- **Un ordinateur et un câble USB.**
 - Un réseau Wi-Fi et son mot de passe.
 - **Le compte Google du parent** — celui de l'enfant ne doit jamais être ajouté.
-  C'est ce qui empêche de supprimer le contrôle en effaçant le téléphone (voir
-  [Pourquoi le compte est important](#pourquoi-le-compte-est-important)).
+  Vous vous déconnectez à l'étape 1 et vous vous reconnectez à l'étape 4.
 - Environ 300 Mo de téléchargement : utilisez le Wi-Fi plutôt que les données
   mobiles.
 
----
-
-## Étape 1 — Réinitialiser le téléphone
-
-Sur le téléphone que vous allez gérer :
-
-**Paramètres → Système → Options de réinitialisation → Effacer toutes les
-données (réinitialisation aux paramètres d'usine)**
-
-Attendez le redémarrage. Vous devriez arriver sur l'écran de bienvenue.
-
-Si le téléphone est neuf et n'a jamais été configuré, passez cette étape.
+Si votre téléphone tourne sous un Android dégooglisé (LineageOS, /e/OS,
+GrapheneOS) et qu'il sort de sa boîte ou vient d'être réinitialisé, vous pouvez
+utiliser [le code QR](#un-appareil-sans-services-google--le-code-qr) et vous
+passer entièrement du câble.
 
 ---
 
-## Étape 2 — Appuyez six fois sur l'écran de bienvenue
+## Étape 1 — Retirez tous les comptes du téléphone
 
-Sur ce premier écran de bienvenue, **appuyez six fois au même endroit, au milieu
-de l'écran**.
+**Paramètres → Mots de passe, clés d'accès et comptes**
 
-Rien ne semble se produire lors des premières pressions — continuez. Après la
-sixième, le téléphone ouvre un lecteur de codes QR. Certains appareils demandent
-d'abord de se connecter au Wi-Fi puis téléchargent le lecteur ; c'est normal.
+Touchez chaque compte, puis **Supprimer le compte**. Android n'accorde ce niveau
+de contrôle qu'à un téléphone ne portant aucun compte — c'est la seule condition
+stricte, et c'est la seule raison pour laquelle la version précédente de ce guide
+vous demandait d'effacer le téléphone. Ce n'est pas nécessaire. Vous vous
+reconnecterez à l'étape 4.
 
-> Si appuyer six fois ne donne rien, l'écran de configuration de votre téléphone
-> ne propose pas cette fonction. Voir
-> [Si le lecteur de code QR n'apparaît pas](#si-le-lecteur-de-code-qr-napparaît-pas).
-
----
-
-## Étape 3 — Se connecter au Wi-Fi
-
-Si cela ne vous a pas déjà été demandé, connectez maintenant le téléphone à votre
-Wi-Fi. Une connexion internet est nécessaire pour télécharger drawbridge.
+Supprimer un compte efface les courriers, contacts et données synchronisées de ce
+compte **du téléphone**. Rien n'est supprimé de votre compte Google lui-même, et
+tout revient dès que vous vous reconnectez.
 
 ---
 
-## Étape 4 — Scannez ce code
+## Étape 2 — Activez le débogage USB
 
-<p align="center">
-  <img src="img/provisioning-qr.png" alt="Code QR d'installation de drawbridge" width="340">
-</p>
+**Paramètres → À propos du téléphone**, puis touchez sept fois **Numéro de
+build**. Le téléphone vous annonce que vous êtes désormais développeur.
 
-Dirigez le lecteur du téléphone vers le code ci-dessus — depuis un autre écran ou
-depuis une impression.
-
-Pour une impression nette, utilisez la version vectorielle :
-[provisioning-qr.svg](img/provisioning-qr.svg).
-
-Le téléphone effectue ensuite tout seul les opérations suivantes :
-
-1. Télécharger et installer drawbridge.
-2. Faire de drawbridge le propriétaire de l'appareil, pour qu'il ne puisse pas
-   être supprimé sans votre clé.
-3. Télécharger et installer **herald**, le navigateur filtré.
-4. Activer le filtre de contenu et masquer tous les autres navigateurs.
-
-Cela prend quelques minutes, principalement le téléchargement du navigateur.
-Laissez le téléphone en Wi-Fi jusqu'à la fin.
+Ensuite **Paramètres → Système → Options pour développeurs → Débogage USB**, et
+activez-le.
 
 ---
 
-## Étape 5 — Ajoutez votre propre compte Google
+## Étape 3 — Lancez l'installeur depuis votre ordinateur
 
-Lorsque le téléphone arrive aux écrans de configuration habituels, connectez-vous
-avec **votre propre** compte Google — jamais celui de l'enfant.
+Reliez le téléphone avec le câble USB. Acceptez l'invite *Autoriser le débogage
+USB* qui s'affiche sur le téléphone.
+
+**Le plus simple est la page d'installation du site**, qui fait tout cela depuis
+Chrome ou Edge sans rien à mettre en place :
+<https://drawbridge.pages.dev/fr/install/usb/>.
+
+Si vous préférez un terminal, depuis une copie de ce dépôt :
+
+```bash
+tools/provision-adb.sh
+```
+
+Cela installe drawbridge et herald, et fait de drawbridge le propriétaire du
+téléphone. La commande refuse de démarrer tant qu'un compte se trouve encore sur
+le téléphone, ce qui en est la raison d'arrêt habituelle.
+
+---
+
+## Étape 4 — Reconnectez-vous avec votre propre compte Google
+
+**Paramètres → Mots de passe, clés d'accès et comptes → Ajouter un compte.**
+Connectez-vous avec **votre propre** compte Google — jamais celui de l'enfant.
+
+Faites-le maintenant. Une fois drawbridge verrouillé, les modifications de compte
+sont fermées, et les rouvrir vous coûte la clé.
 
 Vous pouvez aussi ignorer complètement le compte si vous n'avez pas besoin du
-Play Store, mais vous perdez alors la protection décrite ci-dessous.
+Play Store.
+
+Assurez-vous également que le téléphone est en Wi-Fi : l'étape suivante télécharge
+environ 300 Mo de navigateur.
 
 ---
 
-## Étape 6 — Configurez le téléphone dans l'application drawbridge
+## Étape 5 — Configurez le téléphone dans l'application drawbridge
 
 Ouvrez l'application **drawbridge**. Tout ce que vous décidez tient sur cet écran.
 
@@ -113,11 +116,15 @@ Ouvrez l'application **drawbridge**. Tout ce que vous décidez tient sur cet éc
 
 ---
 
-## Étape 7 — Verrouillez, et notez la clé
+## Étape 6 — Verrouillez, et notez la clé
 
 Appuyez sur **Verrouiller drawbridge**. C'est le seul bouton qui compte : il
 applique la politique, démarre le filtre de contenu et scelle l'écran. Acceptez
 l'exemption d'optimisation de la batterie lorsqu'elle est proposée.
+
+**C'est le moment où les applications bloquées sont désinstallées.** Si le
+téléphone était déjà utilisé, elles disparaissent maintenant, et réactiver un
+réglage plus tard ne les ramène pas.
 
 Une **clé** vous est ensuite montrée : vingt caractères en quatre groupes, comme
 `4XRZS-7QC9N-SPSH9-AWAAE`.
@@ -174,41 +181,70 @@ qui signale que le filtre est actif ; il ne peut pas être désactivé.
 
 ---
 
-## Pourquoi le compte est important
+## Une réinitialisation supprime drawbridge, et rien ne l'empêche
 
 N'importe qui peut maintenir les boutons d'alimentation et de volume pour
 atteindre le mode de récupération et effacer le téléphone. Aucune application ne
 peut l'empêcher, drawbridge pas davantage.
 
-Sur un téléphone certifié par Google, ce type d'effacement ne supprime **pas** la
-protection de réinitialisation (Factory Reset Protection) : au redémarrage, le
-téléphone exige un compte Google qui y était déjà connecté. Si ce n'est jamais
-que le vôtre, effacer le téléphone le rend inutilisable plutôt que libre — et
-c'est bien l'objectif.
+**La protection de réinitialisation (Factory Reset Protection) ne couvre pas
+cela, quoi que vous puissiez lire** — y compris dans les versions précédentes de
+ce guide. Sur un téléphone entièrement géré, elle n'est pas activée par défaut,
+et une réinitialisation depuis les Paramètres ne la déclenche pas, quels que
+soient les comptes présents. Cela a été testé sur du matériel réel le 10 août
+2026 : le téléphone a été réinitialisé et la configuration n'a jamais demandé le
+compte Google. Ne comptez pas dessus.
 
-Si le compte de l'enfant y a été ajouté, ne fût-ce qu'un instant, il peut
-répondre lui-même à cette demande et se retrouver avec un téléphone propre et
-sans restriction.
+Ce que vous obtenez à la place, c'est **de le savoir**. drawbridge inscrit la
+date de son verrouillage sur l'écran de verrouillage et dans l'application. Un
+téléphone effacé puis reconfiguré cesse d'afficher une date que vous reconnaissez
+— le contrôle d'altération le moins coûteux qui soit, pour autant que vous
+sachiez ce que le téléphone est censé afficher.
 
-Sur les téléphones sans services Google (LineageOS, /e/OS), cette protection
-n'existe pas, et un effacement en mode de récupération supprime complètement
-drawbridge.
+Gardez de toute façon le compte de l'enfant hors du téléphone. Cela ne coûte rien
+et cela ferme le chemin le plus simple vers un Play Store qui n'est pas le vôtre.
 
 ---
 
-## Si le lecteur de code QR n'apparaît pas
+## Un appareil sans services Google : le code QR
 
-Certains appareils — surtout ceux dotés d'un système modifié — ont un écran de
-configuration sans la fonction des six pressions. Installez alors drawbridge par
-USB depuis un ordinateur :
+**Uniquement pour les appareils Android open source dégooglisés** — LineageOS,
+/e/OS, GrapheneOS — **et uniquement à la sortie de la boîte ou juste après une
+réinitialisation d'usine.** Ni ordinateur ni câble ne sont nécessaires.
 
-```bash
-adb install dpc-release.apk
-adb shell dpm set-device-owner app.drawbridge.dpc/app.drawbridge.dpc.admin.DrawbridgeDeviceAdminReceiver
-```
+1. Sur l'écran de bienvenue, appuyez **six fois** au même endroit pour révéler un
+   lecteur de codes QR caché. Certains appareils demandent d'abord le Wi-Fi puis
+   téléchargent le lecteur ; c'est normal.
+2. Scannez le code ci-dessous.
+3. Attendez. Le téléphone télécharge et installe drawbridge, en fait le
+   propriétaire de l'appareil, télécharge herald et active le filtre — quelques
+   minutes, principalement le navigateur. Laissez-le en Wi-Fi.
 
-Pour que la seconde commande fonctionne, le téléphone ne doit contenir **aucun
-compte**.
+<p align="center">
+  <img src="img/provisioning-qr.png" alt="Code QR d'installation de drawbridge" width="340">
+</p>
+
+Pour une impression nette, utilisez la version vectorielle :
+[provisioning-qr.svg](img/provisioning-qr.svg).
+
+Reprenez ensuite à
+[l'étape 4](#étape-4--reconnectez-vous-avec-votre-propre-compte-google).
+
+> Cela n'a pas encore été confirmé sur un tel appareil. Sur un téléphone **doté**
+> de Google Play, cela ne fonctionne pas du tout — utilisez la méthode USB
+> ci-dessus.
+
+---
+
+## À propos du câble
+
+**Le verrouillage désactive le débogage USB.** Il revient dès que vous
+déverrouillez drawbridge avec votre clé : c'est ainsi que vous installerez plus
+tard une version plus récente par le même câble. Le câble n'est donc pas une
+occasion unique, mais il reste fermé jusqu'à ce que vous ayez de nouveau la clé
+en main.
+
+Le détail technique se trouve dans [provisioning.md](provisioning.md).
 
 ---
 
@@ -219,6 +255,7 @@ restrictions drawbridge**. C'est dans le menu de débordement plutôt que sur
 l'écran : cela n'arrive qu'une fois dans la vie d'un téléphone.
 
 Toutes les restrictions sont levées, les applications masquées réapparaissent, et
-**rien n'est effacé**. C'est aussi **sans retour** : réactiver les restrictions
-suppose une réinitialisation d'usine et une nouvelle installation de drawbridge.
-Voir [suppression](removal.md) pour les détails.
+**rien n'est effacé**. Vous ne pouvez pas les réactiver depuis le téléphone
+lui-même — cela suppose de reprendre le câble, à partir de l'étape 1 — mais
+aucune réinitialisation d'usine n'est nécessaire. Voir
+[suppression](removal.md).

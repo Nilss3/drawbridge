@@ -19,17 +19,28 @@ the child grows up and you are keeping the phone, or before selling it (followed
 by a normal factory reset, as you would with any phone you are selling — that
 part has nothing to do with drawbridge).
 
-### It is one-way
+### It cannot be undone from the phone, but it does not need a factory reset
 
-**Deactivating cannot be undone from the phone.** Device Owner can only be
-granted on a device with no accounts configured, so switching the restrictions
-back on means a factory reset and a fresh drawbridge install — the same
-procedure as [provisioning](provisioning.md) a new phone.
+**Deactivating cannot be undone from the phone itself.** Device Owner can only be
+granted on a device with no accounts on it at that moment, and nothing inside
+drawbridge can grant it.
 
-The one exception is a device that still has *no* account and still has adb,
-where `dpm set-device-owner` simply works again. That is a bench condition, not
-a deployed one: on a real phone the parent's account is present and
-`DISALLOW_DEBUGGING_FEATURES` removed adb at provisioning time.
+**It does not, however, mean a factory reset.** This file used to say it did, on
+two grounds that have both since been tested and found not to hold:
+
+- *"the parent's account is present"* — remove it in Settings and put it back
+  afterwards. Measured on 2026-08-10: `dpm set-device-owner` succeeded on a phone
+  that had been in use with an account, with no wipe. See
+  [provisioning](provisioning.md).
+- *"`DISALLOW_DEBUGGING_FEATURES` removed adb at provisioning time"* — USB
+  debugging now follows the lock rather than the protection, so it is available
+  whenever drawbridge is unlocked, which is exactly the state a removal happens
+  from. See
+  [design-decisions](design-decisions.md#usb-debugging-follows-the-lock-not-the-protection).
+
+So switching the restrictions back on is: remove the accounts, run
+`tools/provision-adb.sh` over a cable, sign back in, lock. The same procedure as
+[provisioning](provisioning.md) a new phone, and it keeps the phone's contents.
 
 Apps that were *uninstalled* do not come back on their own; reinstall them
 normally. Apps that were *hidden* — preinstalled browsers, mostly — reappear
