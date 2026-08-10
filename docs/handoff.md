@@ -1483,6 +1483,24 @@ Each of these looks like a bug and is not, or bites silently:
   suppressed there with the evidence attached. Adding the permission back to
   silence a lint error would undo a deliberate change and reopen the Play
   Protect question; the emulator check is what settles it, not the annotation.
+- **adb installs are *not* exempt from Play Protect, and the emulator lies about
+  it.** The exemption people remember is from the unknown-sources consent prompt,
+  not from the verifier: `adb install` is verified by default, which is why the
+  `verifier_verify_adb_installs` global exists at all. Measured 2026-08-10 — the
+  Moto G15 has it unset, so the platform default (verify) applies and
+  `app.drawbridge.dpc` is refused; **the Play emulator image ships with it set to
+  `0`**, so every adb install there sails through untouched.
+
+  That is what made the emulator look inconsistent for a whole session: dozens of
+  `adb install` runs of the refused package succeeded, while the one install the
+  DPC started itself — a `PackageInstaller` session, not an adb install — was
+  blocked with a Play Protect dialog. Nothing was contradicting anything; two
+  different code paths were being compared.
+
+  `adb shell settings put global verifier_verify_adb_installs 1` on the emulator
+  turns verification on and should reproduce the refusal locally, on a device
+  with no account and nothing to lose. That is the local rig this problem has
+  wanted all along, and it costs no factory resets.
 - **`tools/qrpayload.py` hardcodes the admin component.** `ADMIN_COMPONENT` at
   the top of the file is a literal `app.drawbridge.dpc/...`, so a payload
   generated for any other package silently names a component that does not exist
