@@ -18,13 +18,25 @@ package app.drawbridge.herald.search
  * sees app-initiated loads too, so putting the rule here means the parameter
  * goes back on every time.
  *
- * **What this does not cover, and it is worth knowing.** These engines are
+ * **What this does not cover, and exactly where it bites.** These engines are
  * single-page apps: a *second* query typed into the engine's own box may not
  * produce a top-level navigation, so there is nothing to intercept. The first
- * load is enforced; a subsequent in-page search is not. That is why an engine
- * whose safe search is only a URL parameter is second-class here, and why the
- * three that drawbridge rewrites at the DNS layer are the ones the policy
- * recommends.
+ * load is enforced; an in-page search after it may not be.
+ *
+ * On a managed phone that reduces to **Ecosia alone**. Google, Bing and
+ * DuckDuckGo are rewritten at the DNS layer, so an in-page search resolves to
+ * the safe host like every other request, and Kagi needs no parameter at all.
+ * Ecosia is the one engine here whose filtering rests entirely on a parameter
+ * this file puts on.
+ *
+ * **Standalone herald is the wider case.** With no drawbridge behind it there is
+ * no DNS rewrite, so all four parameter-carrying engines depend on the first
+ * load — and only the first. Worth knowing before recommending the browser on
+ * its own.
+ *
+ * Untested either way as of 2026-08-10. The test is one page: search, then
+ * search again from the engine's own box, and look at whether the address bar
+ * still carries the parameter.
  *
  * **Engines that were removed rather than enforced.** Brave Search can only be
  * forced by writing a `safesearch` cookie — the vendor answer for enterprise

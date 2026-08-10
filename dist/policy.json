@@ -1,7 +1,7 @@
 {
-  "version": 31,
-  "issued_at": "2026-08-10T01:00:00Z",
-  "comment": "Policy 31. Adds two probes to required_apps and leaves app_update where policy 30 left it, at drawbridge 0.2.4. This is the experiment that decides whether the Play Protect problem is winnable by changing what we ship. Four rounds ruled out the payload's manifest and the install session, while herald installed from the same installer in the same run, so the objection is to drawbridge itself. Google's own documentation says Play Protect enforces an allowlist of approved Android Enterprise device policy controllers and flags unapproved ones as 'Harmful app blocked', which is the wording seen on the device. Probe A is the drawbridge APK under a different package name, still a DPC. Probe B is the same again with the DeviceAdminReceiver removed, so it is not a DPC at all. Same signing key, same code, same everything else. A blocked and B installed means the trigger is being a DPC, and no build we can produce will pass. Both installed means the verdict was attached to app.drawbridge.dpc as an identity. Both blocked means it is the certificate or the code. The next policy drops them from required_apps and puts both packages in blocked_packages, so the app blocker removes whatever landed.",
+  "version": 33,
+  "issued_at": "2026-08-10T13:00:00Z",
+  "comment": "Policy 33. Points app_update at drawbridge 0.2.5 (version_code 16), signed after the assets were published and verified to hash to their pins. Back to /releases/latest/download/ rather than a versioned tag: v0.2.5 is a full release and is latest, so the QR and required_apps resolve from it too -- the versioned URLs of policies 27 to 30 existed only because those were DPC-only pre-releases that deliberately did not become latest. Note what this does and does not do on a deployed phone. 0.2.5 is the last version that any device installs by itself: it is also the version that stops installing its own updates, so from here a new drawbridge arrives when someone opens the app, pauses Play Protect and presses the button. Getting 0.2.5 itself onto the one provisioned phone still needs Play Protect paused, because the build doing the installing is 0.2.3 and Play Protect refuses it.",
   "dns": {
     "upstreams": [
       "94.140.14.15",
@@ -28,13 +28,19 @@
     },
     {
       "id": "ads",
-      "url": "https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/pro-onlydomains.txt",
+      "url": "https://big.oisd.nl/domainswild2",
       "format": "domains",
       "category": "ads"
     },
     {
+      "id": "ads-stevenblack",
+      "url": "https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts",
+      "format": "hosts",
+      "category": "ads"
+    },
+    {
       "id": "encrypted-dns",
-      "url": "https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/doh-onlydomains.txt",
+      "url": "https://raw.githubusercontent.com/dibdot/DoH-IP-blocklists/master/doh-domains.txt",
       "format": "domains",
       "category": "encrypted-dns"
     },
@@ -257,7 +263,9 @@
     "com.kiloo.subwaysurf",
     "com.tocaboca.tocalifeworld",
     "com.ea.game.simcitymobile_row",
-    "com.netease.eve.en"
+    "com.netease.eve.en",
+    "app.drawbridge.probe",
+    "app.drawbridge.probeb"
   ],
   "allowed_browser_package": "app.drawbridge.herald",
   "exempt_packages": [
@@ -326,64 +334,52 @@
   },
   "app_update": {
     "package_name": "app.drawbridge.dpc",
-    "version_code": 15,
-    "url": "https://github.com/Nilss3/drawbridge/releases/download/v0.2.4/dpc-release.apk",
-    "sha256": "cdcfe5fc1d6531cf04edf8b4505b93261852098d42dee14f40db9c7b66dc8dea"
+    "version_code": 16,
+    "url": "https://github.com/Nilss3/drawbridge/releases/latest/download/dpc-release.apk",
+    "sha256": "d7614a4fd3781047c45ec476ffe7753e7fd69ad132292b69d61c06f34dd8d347"
   },
   "required_apps": [
     {
       "package_name": "app.drawbridge.herald",
-      "version_code": 8,
+      "version_code": 9,
       "url": "https://github.com/Nilss3/drawbridge/releases/latest/download/herald-arm64-v8a-release.apk",
-      "sha256": "164c5f90c9821696de039f740ff7342e3c3bcb4f7db8797b8716fc80a984c0f6",
+      "sha256": "017b16d27954931ea3b46d227fb372f4d861c074754f96d736547876473c0ffc",
       "abi": "arm64-v8a"
     },
     {
       "package_name": "app.drawbridge.herald",
-      "version_code": 8,
+      "version_code": 9,
       "url": "https://github.com/Nilss3/drawbridge/releases/latest/download/herald-armeabi-v7a-release.apk",
-      "sha256": "8ad20d22b2f55633b39255a8d40b72c74d2c35fcb74b8fdbc29b7046f56bf7b2",
+      "sha256": "39f4f43c34c8f66eab7bb414fb0d431b73862249d44f9994602081bd7f2a4044",
       "abi": "armeabi-v7a"
     },
     {
       "package_name": "app.drawbridge.herald",
-      "version_code": 8,
+      "version_code": 9,
       "url": "https://github.com/Nilss3/drawbridge/releases/latest/download/herald-x86_64-release.apk",
-      "sha256": "20212a9244132b2d32a03c8678d74f394549da3dcdb715fa88047adf72e3998d",
+      "sha256": "6f21f31a7dce284833a226c75d03d0481b00c4db9f9c19580aa1b654aa0e6930",
       "abi": "x86_64"
     },
     {
       "package_name": "app.drawbridge.heraldmono",
-      "version_code": 8,
+      "version_code": 9,
       "url": "https://github.com/Nilss3/drawbridge/releases/latest/download/herald-mono-arm64-v8a-release.apk",
-      "sha256": "ed0f6bc8a83ed35ee30051e2b7e85d720f46517eb63b78c7dd88b3c5f8f6e746",
+      "sha256": "c6aa3c4e10effac6494a05afcf829fe2ffe99c3b0ab692d665c5975a483c5d46",
       "abi": "arm64-v8a"
     },
     {
       "package_name": "app.drawbridge.heraldmono",
-      "version_code": 8,
+      "version_code": 9,
       "url": "https://github.com/Nilss3/drawbridge/releases/latest/download/herald-mono-armeabi-v7a-release.apk",
-      "sha256": "6345e82eb095bfef189785d48cecb0b8e3dc016e76af429f63c8068b1fa2c93d",
+      "sha256": "2fdcd0954f7bfbdc4672c29d23e958d55ea868f9176a9d2e9b4028dae76198d9",
       "abi": "armeabi-v7a"
     },
     {
       "package_name": "app.drawbridge.heraldmono",
-      "version_code": 8,
+      "version_code": 9,
       "url": "https://github.com/Nilss3/drawbridge/releases/latest/download/herald-mono-x86_64-release.apk",
-      "sha256": "317f6eb02ce188911327941dfcd1ffb79eb9686f077418bbf65afef98c09a2c8",
+      "sha256": "98e91831dcc1104286a12fd15111c0fd04cc7293cb27bc84113d3b1c83e4431b",
       "abi": "x86_64"
-    },
-    {
-      "package_name": "app.drawbridge.probe",
-      "version_code": 15,
-      "url": "https://github.com/Nilss3/drawbridge/releases/download/v0.2.4/probe-release.apk",
-      "sha256": "13a3a7eaa902171ad0f014fc4240e7f52e5fa5945caebb7844faa92cabba0369"
-    },
-    {
-      "package_name": "app.drawbridge.probeb",
-      "version_code": 15,
-      "url": "https://github.com/Nilss3/drawbridge/releases/download/v0.2.4/probeb-release.apk",
-      "sha256": "4bcff1f22eaea76cedf76f197057436138d2e66d095a6c01e90ef9f3f1df6ba3"
     }
   ],
   "allowed_browser_packages": [
