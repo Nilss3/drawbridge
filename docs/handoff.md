@@ -1,4 +1,4 @@
-# Handoff — state as of 2026-08-09
+# Handoff — state as of 2026-08-10
 
 Everything about *how the system works* lives in [README](../README.md),
 [design-decisions](design-decisions.md), [policy](policy.md),
@@ -28,13 +28,163 @@ still broken".
 | Repo | https://github.com/Nilss3/drawbridge — public, `main`, 96 commits |
 | Release | [v0.2.5](https://github.com/Nilss3/drawbridge/releases/tag/v0.2.5), 9 assets, **latest**; v0.2.1 to v0.2.4 are one-asset **pre-releases** on purpose |
 | Live policy | version **33**, live at `dist/policy.signed.json` on `main` |
-| Apps, published | drawbridge `0.2.5` (versionCode 16) and herald + herald mono `0.1.9`. **drawbridge cannot be installed on a certified device at all** — see the Play Protect section |
+| Apps, published | drawbridge `0.2.5` (versionCode 16) and herald + herald mono `0.1.9`. Play Protect refuses `app.drawbridge.dpc` by name, so it cannot install itself and cannot be provisioned by QR — but it **can** be provisioned over adb; see below |
 | Website | trilingual, generated into `site/`, on Cloudflare Pages |
 | Tests | 372 unit tests across four build variants, lint clean |
 
 The two apps are **no longer in lockstep**, and that is deliberate: herald has
 not changed, and rebuilding it purely to move a version number would alter every
 hash and force a policy re-sign for an identical binary.
+
+## The way in is adb, and it costs one global setting
+
+**Found 2026-08-10, on the reference G15, after everything below.** Read this
+before the Play Protect narrative, because it changes what that narrative is
+about: the verdict on `app.drawbridge.dpc` is unchanged and unappealed, and the
+project is no longer stuck behind it.
+
+Play Protect refuses the package at *install*. adb has a lever that the QR
+wizard does not:
+
+```bash
+adb shell settings put global verifier_verify_adb_installs 0
+```
+
+That global decides whether adb installs are put to the verifier at all. It is
+writable only from a shell — which is exactly why the setup wizard cannot do the
+equivalent, and why this reopens adb and not QR. Same APK, same phone, minutes
+apart, zero Google accounts, no device owner:
+
+| `verifier_verify_adb_installs` | `adb install app.drawbridge.dpc` |
+|---|---|
+| unset (platform default) | `INSTALL_FAILED_VERIFICATION_FAILURE` |
+| `0` | **installs** |
+| `1` (restored) | `INSTALL_FAILED_VERIFICATION_FAILURE` |
+
+One variable, flipped three times, the outcome changing each time. Then
+`dpm set-device-owner` succeeded and drawbridge 0.2.5 launched clean.
+
+**Restoring the setting leaves the installed copy alone.** Device Owner survives,
+`provisioningState` stays 3, the app runs. The verdict is applied at install and
+is not re-litigated against what is already on the device — the same asymmetry
+seen on 2026-08-08, when Play Protect was switched back on and the copy that had
+landed while it was off was left where it was.
+
+**The parent never touches Play Protect.** This is the part worth defending. The
+obvious alternative — tell them to switch Play Protect off in the Play Store — is
+device-wide, indefinite, and asks somebody to disable a protection on a child's
+phone. This window is two `adb install` calls long, on a cable, with the operator
+present.
+
+`tools/provision-adb.sh` is the whole path: preconditions, the verifier window,
+both APKs, Device Owner. It treats putting the setting back as the thing it must
+not get wrong — the original value is read first and `null` is restored by
+*deleting* the row rather than writing one, the restore runs on success, on any
+failed install and on Ctrl-C, it happens before Device Owner is granted, and a
+restore it cannot confirm is a loud non-zero exit rather than a success message.
+Exercised on all of those paths.
+
+**What this does not fix**, and do not let it blur:
+
+- **QR provisioning is still closed on certified hardware.** The wizard has no
+  shell. Nothing here touches that.
+- **drawbridge still cannot update itself.** Self-update is a `PackageInstaller`
+  session, not an adb install, and that global does not govern it. 0.2.5's manual
+  [UpdateActivity](../dpc/src/main/java/app/drawbridge/dpc/ui/UpdateActivity.kt)
+  is still the route, and it still asks the parent to pause Play Protect.
+- **QR provisioning is still closed on certified hardware.** The wizard has no
+  shell. Nothing here touches that.
+
+So: new devices can be provisioned today, on certified hardware, without an
+appeal and without a rename.
+
+### No factory reset is needed, and the account was never the install problem
+
+**Tested on the G15 on 2026-08-10, after the owner asked whether two long-standing
+assumptions were actually true. Neither was.**
+
+There are **three gates**, and this project has been conflating them:
+
+| Gate | Mechanism | Does a Google account matter? |
+|---|---|---|
+| Installing the APK | Play Protect verification | **No.** Refused with zero accounts and with one alike; the verifier lever works the same either way |
+| Granting Device Owner | Android platform check | **Yes**, and this is the only one that cares |
+| QR provisioning | Play Protect, at install | No — it fails at the first gate |
+
+With one Google account signed in: the install failed as usual, then succeeded
+the moment `verifier_verify_adb_installs` was set to 0 — identical to the
+zero-account result. Then `dpm set-device-owner` threw *"Not allowed to set the
+device owner because there are already some accounts on the device"*. So the
+account has never been why anything failed to install. It blocks one platform
+call.
+
+**And that call's precondition is removable.** The account was removed in
+Settings and `dpm set-device-owner` succeeded immediately, on a phone reporting
+`user_setup_complete: 1` — fully set up, in use, **never reset for this**. Apps
+intact, both herald editions still installed, nothing wiped but that account's
+local data.
+
+**So the headline claim in the parent-facing guide was false.** It opened with
+*"This erases the phone. drawbridge can only be installed on a phone that has just
+been reset, because Android only hands out this level of control before any
+account exists."* The second clause is nearly right and the conclusion does not
+follow: Android wants no account *at the moment you grant it*, which is a state
+you can pass through. The flow is **remove accounts → provision → sign back in**.
+
+`no_modify_accounts` is not applied and nothing is enforced until lock, so signing
+back in afterwards is unobstructed.
+
+**What this costs, and it must be said in the same breath as "no wipe needed":**
+locking uninstalls every app in `blocked_packages`, straight away, and switching
+an option back on does not reinstall them. On a wiped phone the app blocker has
+nothing to remove; on a phone in daily use it takes things the owner had. That
+caveat now leads [install.md](install.md) in all three languages and the website's
+install page.
+
+The reset path still buys the thing noted on 2026-08-07 — a QR-provisioned phone
+never receives the OEM's *downloaded* preloads — and an in-use phone obviously
+keeps everything it had.
+
+### And the cable is now repeatable, because USB debugging follows the lock
+
+**Decided by the owner on 2026-08-10, and implemented the same day.** The adb
+channel used to be available exactly once — `DISALLOW_DEBUGGING_FEATURES` landed
+at lock and stayed for the life of the device, so a phone in the field could
+never be fixed at all. Since drawbridge cannot update itself either, that made
+every bug found after deployment permanent.
+
+USB debugging is now the one restriction keyed on the **lock** rather than on
+`protectedSince`: applied when the key is committed, cleared when the key is
+used. The rule lives in `DeviceOwnerManager.restrictionsFor` and nowhere else,
+and `applyUserRestrictions` now *clears* whatever the current state leaves out —
+without that half a restriction could go on and never come off.
+
+So delivery to a deployed phone is: unlock drawbridge with the parent's key,
+re-enable USB debugging, `tools/provision-adb.sh --update`, lock again.
+
+**It gives nothing away.** An unlocked drawbridge is one whose configuration
+screen is open, and that screen offers complete removal in its overflow menu.
+Whoever holds the key can already undo everything; the restriction only ever
+protected against somebody who does not have it, and that person cannot unlock
+the phone to begin with.
+
+**The ordering is the part to be careful with.** `MainActivity.lockDevice`
+applies the policy *before* the parent has decided to keep the key, so this
+restriction is applied later, from `LockActivity.sealWithKey`, after
+`ParentKey.commit`. An abandoned reveal therefore leaves a phone that can still
+be worked on — the same reasoning that already leaves it unsealed. Getting that
+backwards would take the cable away from a parent who has not yet written the key
+down.
+
+Covered by `DeviceOwnerRestrictionsTest`, including that unlocking moves *only*
+this entry: dropping `DISALLOW_SAFE_BOOT` or the multi-user restrictions on
+unlock would leave an unlocked phone unfiltered rather than merely reachable, and
+nothing else in the codebase would notice.
+
+**Verified on the G15 by the owner on 2026-08-10**: developer options are greyed
+out while drawbridge is locked and come back after unlocking. That is the half no
+one can check over adb, since the restriction's whole effect is that adb goes
+away.
 
 ### The QR path was broken by our own manifest, not by the DPC allowlist
 
@@ -497,6 +647,11 @@ otherwise cost two launcher icons.
 
 #### So what now
 
+**Nothing in this list is blocking any more** — see the adb section at the top of
+this file, which reopens provisioning on certified hardware without needing any
+of it. What remains below is about reclaiming the *name*, which still governs
+QR provisioning and drawbridge's own self-update.
+
 In rough order of value:
 
 1. **Appeal the verdict on `app.drawbridge.dpc`.** This is a *different* appeal
@@ -853,8 +1008,21 @@ that cost time and are worth knowing:
   organization disclosure; ours is on the keyguard proper. Do not conclude from a
   screenshot of the bouncer that it failed.
 
-Still unverified on real hardware — keyguard rendering is OEM territory, and the
-G15 was wiped before this existed. Check it on the re-provision. And note it only
+**Checked on the G15 on 2026-08-10 and the text was not there.** Open, and not
+yet diagnosed.
+
+Before treating it as a bug, rule out the expected case: the message is set by
+`updateLockScreenInfo`, which deliberately writes **nothing** in the
+never-locked state, and the phone was provisioned but had not been locked. A
+blank keyguard is the designed behaviour there. So the test only means something
+after a lock, and it has to be repeated then.
+
+If it is still blank after locking, the things to check in order are
+`getDeviceOwnerLockScreenInfo` through Diagnostics — the value does *not* appear
+in `dumpsys device_policy` or `settings get secure device_owner_info`, both of
+which come back empty on API 36 — then whether Motorola's keyguard renders the
+owner string at all, and then whether the bouncer is being mistaken for the
+keyguard, which cost time once already. And note it only
 works as a check if the parent knows what the phone is supposed to say, which
 belongs in [provisioning](provisioning.md) rather than only in the code.
 
@@ -885,11 +1053,88 @@ Two things replaced it, and both are weaker than the restriction was:
 Putting the restriction back is on the roadmap, but **only behind a working
 delayed self-removal** — the two ship together or not at all.
 
+### The browser installer exists, and the USB half is untested
+
+**Built 2026-08-10.** `/install/usb/` provisions a phone from Chrome or Edge over
+WebUSB — the same sequence as `tools/provision-adb.sh`, with the same promise
+about `verifier_verify_adb_installs` being restored on every exit path.
+
+Two decisions worth not re-litigating:
+
+- **The APK is served from the site**, at `/assets/dpc-release.apk`, and is
+  committed. GitHub's release downloads carry **no `Access-Control-Allow-Origin`
+  header** — measured through the redirect to `release-assets.githubusercontent.com`
+  — so a browser `fetch` of them is blocked outright. Hosting it here is also the
+  only version that keeps the page's no-third-party-requests property.
+  `.gitignore` only excludes `dist/release/*.apk`, and that rule is about
+  herald's 230 MB rather than about APKs in principle.
+- **The DPC only.** herald is 233 MB down a USB cable; drawbridge fetches it
+  itself from `required_apps` after locking, exactly as the QR path does.
+
+`build-site.py` now **fails the build** if the staged APK does not hash to the
+`app_update` pin in the signed policy. Those are the same claim in two places —
+the policy tells provisioned devices which build is current, this page hands that
+build to a phone that has none — and a build where they disagree is one where
+something is lying. Verified by staging the unpublished 0.2.6 and watching the
+build refuse it.
+
+**This page is the only JavaScript on the site**, which is a real cost against the
+posture in the section below. WebUSB cannot be done without it. Everything it
+loads is same-origin, so "nothing leaves the device" survives; "no client-side
+JS" does not.
+
+`site-src/installer/adb.js` is a small ADB client written out rather than
+vendored, because a bundler and an npm tree would cost the no-build-step
+property that makes Cloudflare Pages work here at all.
+
+**What is verified, and what is not.** The protocol layer was cross-checked
+against ground truth on the build machine: `encodeAndroidPublicKey` reproduces
+the *byte-identical* base64 that adb itself wrote in `~/.android/adbkey.pub` for
+the same private key, which is the part — modulus word order, `n0inv`, `rr` — that
+fails silently on a device. The token signature verifies as a well-formed PKCS#1
+v1.5 block carrying the SHA-1 DigestInfo prefix, and packet framing round-trips.
+In a real browser: key generation, persistence, and the same-origin APK fetch
+verifying against its pin.
+
+**The commands it runs are verified on the G15**, over ordinary adb, on
+2026-08-10 — the point being that the *service semantics* can be checked without
+the browser even though the transport cannot:
+
+- Every preflight command was run and its real output fed back through the
+  page's parsing: `Accounts: 0`, an absent `Device Owner:`, `getprop`, and an
+  unset verifier reading as the string `null`.
+- **`cmd package install -S <size>` is governed by
+  `verifier_verify_adb_installs`**, which had been assumed and is now measured.
+  The APK was streamed to it at the default setting and refused with
+  `INSTALL_FAILED_VERIFICATION_FAILURE`; with the setting at 0 the identical
+  stream returned `Success`. That matters because it is a *different code path*
+  from `adb install`, and the whole page depends on the lever reaching it.
+
+**What remains unexercised is the transport.** The embedded browser has no
+WebUSB chooser, so `requestDevice` cannot be reached there and no USB traffic has
+ever been exchanged: CNXN, the AUTH handshake, and the stream layer
+(OPEN/OKAY/WRTE/CLSE) have never run against a device. Treat the first run on a
+real phone as the actual test, and expect any failure to be there rather than in
+the parts above.
+
 ### There is a website now, and it is generated
 
 Trilingual (EN/NL/FR), static, on Cloudflare Pages, deploying from `main` on
 every push. No framework, no client-side JS, no webfonts, no third-party
 requests — the same "nothing leaves the device" posture as the app.
+
+**The install page was reordered on 2026-08-10** to match what actually works.
+USB now leads and the QR follows, under the heading *"On a phone without Google
+services"*, with a loud callout saying not to scan it on a phone with Google Play
+— a parent who does gets the handset wiped, which is a bad way to learn this. The
+alpha notice now says the true thing rather than the old one: USB provisioning
+*is* confirmed on real hardware, the QR is not. The homepage's "how it works"
+paragraph promised a QR scan "or a button on this website"; the button still does
+not exist, so it now describes the cable.
+
+Checked at 375px in all three languages, no horizontal overflow, and the QR
+warning renders in the same register as the alpha one because it is the same
+class. No CSS changed — every class the new layout uses was already there.
 
 - `site/` is **generated output**. Edit `site-src/` and `tools/build-site.py`,
   rerun `python3 tools/build-site.py`, commit the result. Editing the HTML
@@ -1241,10 +1486,51 @@ brew install --cask android-commandlinetools
   **It is the reference device.** Every claim in this file about real hardware
   came from it.
 
-  **Its current state, 2026-08-10, end of day**: **wiped and unmanaged.** No
-  device owner, no device admins, no Google account, USB debugging on, adb
-  authorised. `app.drawbridge.dpc` will not install on it; the probe package
-  will. It is the only hardware this project has.
+  **Its current state, 2026-08-10, end of day**: **provisioned over adb, and not
+  locked.** drawbridge **0.2.6 (versionCode 17)**, herald and herald mono are
+  installed, all release-signed; drawbridge is Device Owner,
+  `provisioningState: 3`. USB debugging on and adb authorised.
+  `verifier_verify_adb_installs` is unset, exactly as found.
+
+  **Zero Google accounts, and that is a state it was put into rather than reset
+  into** — the owner's account was signed in, removed in Settings to allow
+  `dpm set-device-owner`, and has not yet been signed back in. `user_setup_complete`
+  is 1 and always has been through this; the phone has not been wiped since the
+  FRP test. Signing back in is step 4 of [install.md](install.md).
+
+  0.2.6 is a **local build, not published** — it carries the USB-debugging change
+  and nothing else. There is no release and no policy pointing at it. The live
+  policy's `app_update` still pins versionCode 16, which is lower, so nothing
+  will try to move the phone.
+
+  It lives at `dpc/build/outputs/apk/release/dpc-release.apk`, **not** in
+  `dist/release/`, which deliberately still mirrors the published v0.2.5 and
+  hashes to the tracked `SHA256SUMS`. Push it again with:
+
+  ```bash
+  tools/provision-adb.sh --update --no-herald --dir dpc/build/outputs/apk/release
+  ```
+
+  Nothing is enforced, because nothing has been locked — so the whole window
+  described in [provisioning](provisioning.md) is still open on it: account,
+  screen lock, anything to be installed by cable.
+
+  **The test it is set up for**, which needs a person at the screen because its
+  whole subject is adb going away:
+
+  1. `dumpsys user` → *Device policy restrictions: none*, `adb_enabled` is 1.
+     That is where it stands now.
+  2. Add the parent's Google account and set a screen lock.
+  3. Open drawbridge, **Lock drawbridge**, write the key down, tick the box,
+     press *Done*. adb should drop **at that moment** — not when the button was
+     pressed, since the restriction now lands after `ParentKey.commit`.
+  4. Abandoned-reveal check, worth doing separately: lock again, and press home
+     *before* ticking the box. The phone should stay unsealed and adb should
+     stay up.
+  5. Unlock with the key. Re-enable USB debugging in developer options, and adb
+     should come back. `tools/provision-adb.sh --update` should then work.
+
+  It is the only hardware this project has.
 
   `DISALLOW_DEBUGGING_FEATURES` takes adb away the moment a release build is
   locked, so install everything before locking.
@@ -1572,6 +1858,11 @@ Each of these looks like a bug and is not, or bites silently:
   turns verification on and should reproduce the refusal locally, on a device
   with no account and nothing to lose. That is the local rig this problem has
   wanted all along, and it costs no factory resets.
+
+  **And the inverse of that trap is the way in.** The same global set to `0` on
+  the *phone* is what makes `app.drawbridge.dpc` installable there, which is the
+  whole of `tools/provision-adb.sh`. The fact that spent a session looking like
+  the emulator contradicting itself turned out to be the mechanism worth having.
 - **`tools/qrpayload.py` hardcodes the admin component.** `ADMIN_COMPONENT` at
   the top of the file is a literal `app.drawbridge.dpc/...`, so a payload
   generated for any other package silently names a component that does not exist
@@ -1638,12 +1929,38 @@ Each of these looks like a bug and is not, or bites silently:
 The MVP is done and shipped. What follows is a feature roadmap, in the order the
 owner set on 2026-08-08, not a defect list.
 
+### 0. Provision a non-Googled handset by QR
+
+**Added 2026-08-10, when the project's focus moved here.** Everything in the Play
+Protect narrative is a property of certified Android. LineageOS, /e/OS and
+GrapheneOS have no Play Protect, no verifier and no DPC allowlist, so the QR path
+is expected to work on them exactly as written — and the QR path is the one that
+needs no cable, no computer and no developer options.
+
+It is *expected* to. Nobody has tried it. This project's own history is a list of
+carve-outs that were assumed and did not hold, so treat it as unverified until a
+handset says otherwise. What is needed is a device: a phone with one of those
+ROMs already on it, or one that can take one.
+
+The QR payload itself needs no change. Note the one tool trap that will bite:
+`tools/qrpayload.py` hardcodes `ADMIN_COMPONENT`, so it is only correct while the
+package name is `app.drawbridge.dpc`.
+
 ### 1. Get drawbridge able to update itself again
 
-**Above the FRP test, because without an update channel nothing else can be
-delivered.** A phone that cannot receive a fix is a phone where every bug found
-from here on is permanent. It also shares a root cause with step 2: adding the
-Google account is what activated Play Protect in the first place.
+**No longer blocking provisioning** — `tools/provision-adb.sh` gets a certified
+handset provisioned today, and that is what the top of this file is about. What
+is still broken is delivery to a phone that is already locked: self-update is a
+`PackageInstaller` session rather than an adb install, so the verifier global
+does not touch it, and `DISALLOW_DEBUGGING_FEATURES` has taken the cable away by
+then anyway.
+
+A phone that cannot receive a fix is a phone where every bug found from here on is
+permanent. The decision that has appeared alongside this, and which nobody has
+made yet: **whether `DISALLOW_DEBUGGING_FEATURES` should still be applied at
+lock.** It closes the adb removal route, which is why it is there. It also closes
+the only delivery channel that currently works. Both halves are true and the
+trade is now a real one.
 
 The finding, the evidence and what has already been ruled out are above. Two
 rounds are done: `REQUEST_INSTALL_PACKAGES` is gone and did not help, and the
@@ -1809,12 +2126,18 @@ broken while a timer-based one does not.
 
 ### Standing items, unchanged
 
-- **The QR is blocked, and it is not the allowlist.** The old note here said to
-  retry every couple of weeks because the allowlist "has never blocked this
-  project". That is out of date twice over: provisioning is now blocked, and the
-  mechanism is the Play Protect PHA classification on the package name rather
-  than the DPC allowlist — the two show different warning text. See the Play
-  Protect section.
+- **The QR is blocked on certified hardware, and it is not the allowlist.** The
+  old note here said to retry every couple of weeks because the allowlist "has
+  never blocked this project". That is out of date twice over: QR provisioning is
+  now blocked, and the mechanism is the Play Protect PHA classification on the
+  package name rather than the DPC allowlist — the two show different warning
+  text. See the Play Protect section.
+
+  **adb provisioning is not blocked**, and is the supported route today; see the
+  section at the top of this file. The QR path is still worth reclaiming — it
+  yields a phone without the OEM's downloaded preloads, which adb does not — and
+  it is expected to work untouched on a handset with no Play Protect at all.
+  **That last part is untested**, and is the next thing to put on hardware.
 - **Keep both keys backed up.** Every published release now depends on it.
 - **Drop unused ABIs.** `armeabi-v7a` and `x86_64` have never been downloaded by
   anything and cost ~650 MiB of every release. Removing an ABI means removing
