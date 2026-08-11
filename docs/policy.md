@@ -277,6 +277,23 @@ because both legitimately 404 before the corresponding push:
 
 `--skip-url-check` signs without the network.
 
+**That only helps on the day you sign**, which is the gap: a policy that needs no
+edits can rot for months, and nothing on the device reports it. So the same check
+runs from `verify`:
+
+```bash
+python3 tools/policytool.py verify --check-urls
+```
+
+No private key, no new signature, no file rewritten — safe to run on a schedule,
+and **monthly is about right**, since what it catches is upstream restructuring
+and that happens on nobody's timetable.
+
+It applies a **stricter rule than signing does**, deliberately. The two warnings
+above exist because the documented order writes the policy before pushing the
+commit and uploading the assets. A *published* policy has no such excuse: every
+URL in it is one devices are fetching right now, so a 404 anywhere is fatal.
+
 ## Signing and publishing
 
 ```bash
