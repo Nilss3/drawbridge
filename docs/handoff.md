@@ -1,4 +1,4 @@
-# Handoff — state as of 2026-08-10
+# Handoff — state as of 2026-08-11
 
 Everything about *how the system works* lives in [README](../README.md),
 [design-decisions](design-decisions.md), [policy](policy.md),
@@ -26,15 +26,86 @@ still broken".
 | | |
 |---|---|
 | Repo | https://github.com/Nilss3/drawbridge — public, `main`, 96 commits |
-| Release | [v0.2.5](https://github.com/Nilss3/drawbridge/releases/tag/v0.2.5), 9 assets, **latest**; v0.2.1 to v0.2.4 are one-asset **pre-releases** on purpose |
-| Live policy | version **33**, live at `dist/policy.signed.json` on `main` |
-| Apps, published | drawbridge `0.2.5` (versionCode 16) and herald + herald mono `0.1.9`. Play Protect refuses `app.drawbridge.dpc` by name, so it cannot install itself and cannot be provisioned by QR — but it **can** be provisioned over adb; see below |
-| Website | trilingual, generated into `site/`, on Cloudflare Pages |
+| Release | **[v0.2.7](https://github.com/Nilss3/drawbridge/releases/tag/v0.2.7) is the first alpha** — DPC-only pre-release. [v0.2.5](https://github.com/Nilss3/drawbridge/releases/tag/v0.2.5) stays **latest** because it is the only release carrying herald's six APKs |
+| Live policy | version **36**, live at `dist/policy.signed.json` on `main` |
+| Apps, published | drawbridge **0.2.7** (versionCode 18) and herald + herald mono `0.1.9`. Play Protect refuses `app.drawbridge.dpc` by name, so it cannot install itself — a cable is the delivery channel |
+| Website | trilingual, generated into `site/`, at <https://drawbridge-project.pages.dev>. Provisions and updates a phone from the browser over WebUSB |
 | Tests | 372 unit tests across four build variants, lint clean |
 
 The two apps are **no longer in lockstep**, and that is deliberate: herald has
 not changed, and rebuilding it purely to move a version number would alter every
 hash and force a policy re-sign for an identical binary.
+
+## v0.2.7 is the first alpha, and `main` is frozen around it
+
+**Declared on 2026-08-11.** drawbridge **0.2.7** (versionCode 18) plus **policy
+36** is what testers get, installed from
+<https://drawbridge-project.pages.dev/install/usb/>. The owner runs it on the
+Moto G15 as a daily phone for a few days, then tries a Nothing Phone 3(a).
+
+**Leave this alone.** Not "avoid breaking it" — do not change what `main`
+publishes at all while the alpha is being lived with, because everything a tester
+touches is served from `main`: the install page, the APK it hands out, and the
+policy every device polls. A commit to `main` is live within minutes on the site
+and within three hours on the phones. Development goes to the dev channel below.
+
+What the alpha contains that nothing before it did: provisioning from a website
+over WebUSB with no factory reset, herald arriving before the lock so bookmarks
+can move, updates over the same cable after unlocking, and no QR path at all.
+
+**It ships with the emergency key**, deliberately — see the back-door section.
+Testers are a handful of people who know what they signed up for, the key is in
+the offline backup, and it comes out before any phone belongs to someone who is
+not a knowing tester.
+
+### The dev channel, and why a branch beats a second page
+
+The owner asked for a hidden second install page so end-to-end testing can
+continue while the alpha sits still. A **`dev` branch with its own Cloudflare
+preview deployment** is the better shape, and costs less.
+
+Cloudflare Pages builds non-production branches automatically and serves each at
+`<branch>.<project>.pages.dev`. So pushing to `dev` yields a complete second site
+— its own install page, its own JavaScript, its own APK, its own policy — at an
+address nothing links to. That beats a second page on the production site on
+every axis that matters here:
+
+- **`main` stays byte-frozen.** A second page still means committing to the
+  branch every tester is served from, which is exactly what must not happen.
+- **The whole flow gets exercised, not part of it.** The page, the module, the
+  hash pin and the APK are the production machinery, so a dev run tests the
+  thing that will ship rather than a special case of it.
+- **No new code.** `build-site.py` already refuses to build unless the staged APK
+  hashes to `app_update` in the signed policy — so if the dev branch carries its
+  *own* `dist/policy.signed.json`, signed with the same key, that check works
+  unchanged and keeps dev honest the same way it keeps the alpha honest.
+
+Three things to settle before building it:
+
+1. **Confirm preview deployments are on** for the Pages project. That is a
+   dashboard setting and cannot be checked from here.
+2. **Make `policyUrl` a build-time value.** `PolicyConfig.policyUrl` is already a
+   constructor parameter with a default of `main`'s raw URL, so this is a
+   `buildConfigField` and one line at the call site in
+   `DrawbridgeApplication.policyConfig` — not a restructure. Without it a dev
+   build polls the *alpha's* policy, which means policy changes cannot be tested
+   at all and a dev phone would take live policy edits. With it, `dist/` on the
+   dev branch becomes a real staging path for the document, which is
+   [next steps item 8](#8-a-dev-branch) finally answered.
+3. **Keep one monotonic `versionCode`.** A dev build must outrank the alpha's 18
+   to install over it on the Moto, and the next alpha must outrank whatever dev
+   reached. Simplest is to keep counting: a dev build that turns out good becomes
+   the release, with no renumbering.
+
+**Same package name, deliberately.** Device Owner binds to it permanently, so a
+dev build must be `app.drawbridge.dpc` to replace the alpha on a provisioned
+phone. That does mean a phone can carry the dev build or the alpha but not both,
+which is the real cost of this design and the reason the Nothing Phone should
+take the alpha while the Moto takes dev.
+
+**Dev builds need no GitHub release.** The dev site serves its APK from
+`site/assets/` exactly as the alpha site does, so nothing is published and
+`latest` never moves.
 
 ## The way in is adb, and it costs one global setting
 
@@ -1544,8 +1615,10 @@ quota. Two of the three ABIs have never been downloaded by anything; see
 
 ## Secrets, and where they are
 
-Neither is in git. Both are on the build machine only, and **neither is backed
-up**. This is the single largest risk in the project.
+None of these is in git. **They are backed up offline as of 2026-08-11**, which
+retires what this file called the single largest risk in the project for its
+entire life. What follows is still what each one costs, because the backup is
+only as good as the next person knowing it exists and where.
 
 | What | Where | Consequence of losing it |
 |---|---|---|
@@ -1553,9 +1626,10 @@ up**. This is the single largest risk in the project.
 | Release signing keystore | `keys/drawbridge-release.jks`, password in `keystore.properties` | Every provisioned device is stranded on its installed version forever. Android refuses updates signed with a different key. |
 | Policy signing key | `keys/drawbridge-2026-07.pem` | No device can ever be given a new policy again without reinstalling both apps. |
 
-Both directories are git-ignored. Copy them somewhere offline **before**
-provisioning any phone you care about — after that point neither can be
-replaced.
+Both directories are git-ignored, and both are now copied offline. Keep it that
+way: after a phone is provisioned neither key can be replaced, and the emergency
+key has joined them in mattering, because it is the way back into a *tester's*
+stranded handset rather than just your own.
 
 The QR code pins the *release certificate*, so it stays valid across every
 future release signed with that keystore. Change the keystore and every
@@ -2288,7 +2362,15 @@ against — a phone with no internet and no way to fix it from the phone.
 The clock lock this needs is already in place and applies to every locked
 device, curfew or not.
 
-### 8. A dev branch
+### 8. A dev branch — now the blocking one
+
+**Promoted on 2026-08-11**, because the alpha makes it urgent rather than tidy:
+`main` is what testers are served, so any further development has nowhere to go
+until this exists. The design is written up under
+[the dev channel](#the-dev-channel-and-why-a-branch-beats-a-second-page) — a
+`dev` branch on a Cloudflare preview deployment, carrying its own policy
+document, with `policyUrl` made a build-time value so a dev phone stops polling
+the alpha's policy.
 
 Everything so far has gone straight to `main`, which is also what Cloudflare
 deploys and what every device fetches its policy from. That was tolerable while
@@ -2327,7 +2409,9 @@ broken while a timer-based one does not.
   yields a phone without the OEM's downloaded preloads, which adb does not — and
   it is expected to work untouched on a handset with no Play Protect at all.
   **That last part is untested**, and is the next thing to put on hardware.
-- **Keep both keys backed up.** Every published release now depends on it.
+- ~~**Keep both keys backed up.**~~ **Done, 2026-08-11.** All three — release
+  keystore, policy key, emergency key — are offline. Keep any new key in the same
+  place; the backup is only as good as the next person knowing it exists.
 - **Drop unused ABIs.** `armeabi-v7a` and `x86_64` have never been downloaded by
   anything and cost ~650 MiB of every release. Removing an ABI means removing
   its `required_apps` entry in the same policy.
