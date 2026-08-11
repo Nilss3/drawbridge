@@ -835,12 +835,43 @@ device. It is real and it is dangerous, so:
   an older build and opened with it.
 
 What that costs: it is the same key on every device, it never rotates, and it
-survives every lock. **Do not ship a build carrying one to anybody else, and take
-it out before the first real deployment.** The sanctioned answer to a lost key is
-the delayed self-removal on the roadmap, not this. The key itself lives in
-`keystore.properties` on the build machine, which is git-ignored and **not backed
-up** — the same risk as the two signing keys, and it belongs in the same offline
-copy.
+survives every lock. The key itself lives in `keystore.properties` on the build
+machine, which is git-ignored and **not backed up** — the same risk as the two
+signing keys, and it belongs in the same offline copy.
+
+**It ships through the alpha, by the owner's decision on 2026-08-11.** This file
+used to say "do not ship a build carrying one to anybody else"; that is overruled
+for now, and the reasoning is worth recording because it turns on facts that are
+easy to get wrong in both directions.
+
+*What it is not:* a hole a stranger can walk through. The APK carries only the
+SHA-256 of a twenty-character Crockford key — a hundred bits — so downloading the
+public build from the website yields nothing. Every published release since the
+key was introduced has carried it, verified against the dex of v0.2.7 and of the
+APK the site serves.
+
+*What it is:* a single key that opens every phone running such a build, held in
+one unbacked-up file on one machine. The exposure is entirely the secrecy of that
+file. If it leaks, every device running an alpha build is unlockable by whoever
+has it.
+
+*What it buys:* a way back into a tester's phone when something goes wrong —
+which has already happened once, when the reveal screen sealed the reference
+device with a key nobody had read.
+
+**Two things follow, and neither is optional.** The key belongs in the offline
+backup alongside the signing keys, because losing it now costs a tester's handset
+rather than an afternoon. And this stays an alpha-only measure: the sanctioned
+answer is still the delayed self-removal on the roadmap, and the day a phone
+belongs to someone who is not a knowing tester is the day the build must stop
+carrying it.
+
+**Note the build already announces it.** `DiagnosticsActivity` prints
+`emergency key: true`, and Diagnostics is reachable from the lock screen's
+overflow without the key — so a tester who looks will find out that a second
+route exists, though never its value. That is deliberate and should stay:
+somebody discovering an undisclosed back door is a far worse outcome than
+somebody reading a line they were told about.
 
 ### The emulator reproduces the Play Protect block, which nobody had noticed
 
