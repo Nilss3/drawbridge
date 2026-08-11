@@ -1,7 +1,7 @@
 {
-  "version": 34,
-  "issued_at": "2026-08-10T15:30:00Z",
-  "comment": "Policy 34. Points app_update at drawbridge 0.2.6 (version_code 17), signed after the assets were published and verified to hash to their pin. Back to a versioned URL rather than /releases/latest/download/, for the reason policies 27 to 30 used one: v0.2.6 is a DPC-only pre-release and must not become latest, because it carries no herald assets and every required_apps URL would 404 on every device the moment it did. v0.2.5 stays latest, so required_apps and the QR keep resolving from it. What 0.2.6 changes is the delivery channel itself: USB debugging now follows the lock rather than protectedSince, so a phone that has been unlocked with the parent's key hands the cable back and can be given a new drawbridge over it. That matters because nothing else can -- Play Protect refuses this package, so no device installs its own update, and before this the cable was available exactly once, before the first lock. Note the pin is honest but inert on the one provisioned phone: it already runs a version_code 17 build, so app_update sees nothing newer and does nothing.",
+  "version": 35,
+  "issued_at": "2026-08-10T17:00:00Z",
+  "comment": "Policy 35. Points app_update at drawbridge 0.2.7 (version_code 18), signed after the asset was published and verified to hash to its pin. A versioned URL again rather than /releases/latest/download/, for the same reason as policy 34: v0.2.7 is a DPC-only pre-release and must not become latest, because it carries no herald assets and every required_apps URL would 404 on every device the moment it did. v0.2.5 stays latest. What 0.2.7 changes is when herald arrives. Required apps used to wait for the lock; they no longer do, because installing what this document requires adds a browser rather than enforcing anything, and the window before the lock is the only time a parent has both their old browser and herald in front of them -- which is when bookmarks have to move across. Device Owner is still required and an unrequested run still waits for an unmetered network, so nothing large is pulled over a link somebody pays for by the megabyte. Also note what 0.2.7 deliberately does not do: DISALLOW_MODIFY_ACCOUNTS was added and reverted before shipping, so online accounts can still be added and removed on a locked phone. DISALLOW_ADD_USER is the restriction that matters there and is unconditional.",
   "dns": {
     "upstreams": [
       "94.140.14.15",
@@ -334,9 +334,9 @@
   },
   "app_update": {
     "package_name": "app.drawbridge.dpc",
-    "version_code": 17,
-    "url": "https://github.com/Nilss3/drawbridge/releases/download/v0.2.6/dpc-release.apk",
-    "sha256": "da5391134bab355017fbdaa708305db2c0bec43fae75ed4890f37bb78c04bb5a"
+    "version_code": 18,
+    "url": "https://github.com/Nilss3/drawbridge/releases/download/v0.2.7/dpc-release.apk",
+    "sha256": "85d840257e10426cd2b1673d5b388a7ebb15b65df4c2dc655f16f43cefc6d52d"
   },
   "required_apps": [
     {
