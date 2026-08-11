@@ -2006,9 +2006,14 @@ Each of these looks like a bug and is not, or bites silently:
   before adding it — several `games.txt` candidates were dropped the same way
   (`frostpunkmobile.com` had lapsed to a gambling site, `nuverse.com` is a
   financial firm).
-- **Upstream blocklist URLs rot silently.** See policy 23. `sign` now checks
-  them, but the deeper lesson is that a valid signature says nothing about
-  whether the internet still agrees with the document.
+- **Upstream blocklist URLs rot silently.** See policy 23. A valid signature says
+  nothing about whether the internet still agrees with the document. `sign`
+  checks them — but only when you sign, and a policy that needs no edits can rot
+  for months. `python3 tools/policytool.py verify --check-urls` runs the same
+  check with no key and no signature, and is the thing to put on a monthly
+  reminder. It is deliberately stricter than the signing check: in a published
+  policy a 404 on a repo-hosted list or a release asset is fatal rather than a
+  warning, because there is no "not pushed yet" left to excuse it.
 - **A pushed list is not a served list for several minutes.**
   `raw.githubusercontent.com` caches, so after committing a policy and its
   pinned list together there is a window — measured at roughly three to five

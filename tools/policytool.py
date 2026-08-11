@@ -103,8 +103,11 @@ def pin_local_lists(document: dict) -> None:
         source["sha256"] = digest
 
 
-def check_urls_resolve(document: dict) -> None:
-    """Fetch every URL the policy names, and refuse to sign a dead one.
+def check_urls_resolve(document: dict, *, published: bool = False) -> list[str]:
+    """Fetch every URL the policy names and report the ones that do not resolve.
+
+    Returns the fatal failures; callers decide what to do about them. The
+    caller also decides *which* failures are fatal, through `published`.
 
     A signed, verifying policy is not necessarily a working one: the
     signature covers what the document *says*, not whether the internet still
@@ -113,16 +116,18 @@ def check_urls_resolve(document: dict) -> None:
     nobody happened to click them. Nothing failed loudly, because
     PolicyStore drops an unreachable source and compiles the rest.
 
-    Failure is fatal for third-party blocklists, which is the case that bit,
-    and a warning for anything this repo publishes itself:
+    **Signing and checking a live policy want different answers.** When
+    signing, only third-party blocklists are fatal — the lists this repo hosts
+    are pinned from the working tree and legitimately 404 until the commit is
+    pushed (a brand-new list always would), and `required_apps` / `app_update`
+    404 until the release assets are uploaded, which the documented order does
+    *after* the policy is written. Treating those as fatal would block a
+    correct re-sign.
 
-    - Lists under LOCAL_LIST_URL_PREFIX are pinned from the working tree by
-      pin_local_lists() and legitimately 404 until the commit is pushed. A
-      brand-new list *always* would.
-    - `required_apps` and `app_update` point at /releases/latest/download/,
-      which 404s until the release assets are uploaded. The documented order
-      publishes the release first, so a warning here flags getting that
-      backwards without blocking a legitimate re-sign.
+    Once the policy is published, none of that holds: every URL in it is one
+    devices are fetching right now, so a 404 anywhere means a device is
+    silently getting less than the document promises. `published=True` makes
+    them all fatal, which is what the health check wants.
 
     Use --skip-url-check to sign offline.
     """
@@ -151,11 +156,12 @@ def check_urls_resolve(document: dict) -> None:
     for source in document.get("blocklists", []):
         url = source.get("url", "")
         own = url.startswith(LOCAL_LIST_URL_PREFIX)
-        targets.append((f"blocklist {source.get('id')!r}", url, not own))
+        targets.append((f"blocklist {source.get('id')!r}", url, published or not own))
     for app in document.get("required_apps", []):
-        targets.append((f"required_app {app.get('package_name')} ({app.get('abi')})", app.get("url", ""), False))
+        targets.append((f"required_app {app.get('package_name')} ({app.get('abi')})",
+                        app.get("url", ""), published))
     if document.get("app_update"):
-        targets.append(("app_update", document["app_update"].get("url", ""), False))
+        targets.append(("app_update", document["app_update"].get("url", ""), published))
 
     failures: list[str] = []
     warnings: list[str] = []
@@ -168,13 +174,8 @@ def check_urls_resolve(document: dict) -> None:
 
     for message in warnings:
         print(f"  warning: unreachable, not yet published? {message}")
-    if failures:
-        sys.exit(
-            "Refusing to sign: these URLs do not resolve.\n  "
-            + "\n  ".join(failures)
-            + "\n(--skip-url-check to sign anyway)"
-        )
     print(f"  checked {len(targets)} URLs")
+    return failures
 
 
 def cmd_sign(args: argparse.Namespace) -> None:
@@ -186,7 +187,13 @@ def cmd_sign(args: argparse.Namespace) -> None:
 
     pin_local_lists(document)
     if not args.skip_url_check:
-        check_urls_resolve(document)
+        failures = check_urls_resolve(document)
+        if failures:
+            sys.exit(
+                "Refusing to sign: these URLs do not resolve.\n  "
+                + "\n  ".join(failures)
+                + "\n(--skip-url-check to sign anyway)"
+            )
 
     # Re-emit canonically so the signed bytes and the on-disk source agree.
     payload = (json.dumps(document, indent=2) + "\n").encode()
@@ -244,6 +251,24 @@ def cmd_verify(args: argparse.Namespace) -> None:
           f"{len(document.get('blocklists', []))} blocklist sources, "
           f"{len(document.get('blocked_packages', []))} blocked packages.")
 
+    # The health check the signature cannot give you. A valid signature says
+    # what the document claims; it says nothing about whether the internet
+    # still agrees. Two HaGeZi lists once 404'd on every device for as long as
+    # nobody happened to click one, because an unreachable source is dropped
+    # and the rest compiled. Run this against the *published* policy on a
+    # schedule -- it needs no key, mints no signature, and changes no file.
+    if getattr(args, "check_urls", False):
+        failures = check_urls_resolve(document, published=True)
+        if failures:
+            sys.exit(
+                "\nSignature is valid, but these URLs do not resolve:\n  "
+                + "\n  ".join(failures)
+                + "\n\nDevices fetching this policy are silently getting less than it "
+                  "promises: an unreachable blocklist is dropped and the rest compiled, "
+                  "and an unreachable app simply never installs."
+            )
+        print("Every URL this policy names resolves.")
+
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__,
@@ -268,6 +293,9 @@ def main() -> None:
     sign.set_defaults(func=cmd_sign)
 
     verify = sub.add_parser("verify", help="check a signed envelope against the trusted keys")
+    verify.add_argument("--check-urls", action="store_true",
+                        help="also fetch every URL the policy names, and fail if any is dead "
+                             "(needs no key; the monthly health check for a published policy)")
     verify.add_argument("--in", dest="input",
                         default=str(REPO_ROOT / "dist" / "policy.signed.json"))
     verify.set_defaults(func=cmd_verify)
