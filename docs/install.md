@@ -23,14 +23,9 @@ You will need:
 
 - **A computer and a USB cable.**
 - A Wi-Fi network and its password.
-- **The parent's Google account** — the child's account must never be added. You
-  will sign out of the phone in step 1 and back in at step 4.
+- **A Google account, or none** — see [step 4](#step-4--sign-back-in-or-do-not).
+  Whatever is on the phone now comes off in step 1.
 - About 300 MB of download, so use Wi-Fi rather than mobile data.
-
-If your phone runs a de-Googled Android (LineageOS, /e/OS, GrapheneOS) and is
-fresh out of the box or just reset, you can use
-[the QR code](#a-phone-without-google-services-the-qr-code) instead and skip the
-cable entirely.
 
 ---
 
@@ -79,15 +74,22 @@ reason it stops.
 
 ---
 
-## Step 4 — Sign back in with your own Google account
+## Step 4 — Sign back in, or do not
 
-**Settings → Passwords, passkeys & accounts → Add account.** Sign in with **your
-own** Google account — never the child's.
+**Settings → Passwords, passkeys & accounts → Add account**, if you want one.
 
-Do this now. Once drawbridge is locked, account changes are closed off, and
-opening them again costs you the key.
+**Use an account you do not mind the child having — or none at all.** Whichever
+account is signed in, whoever holds the phone can install from the Play Store, so
+signing in with *your* account does not hold anything back from them. It does the
+opposite: it puts your mail, photos, files and saved payment method on a phone
+somebody else is carrying.
 
-You can skip the account entirely if you do not need the Play Store.
+Leaving the phone with no account at all is the stricter option and a perfectly
+good one. The Play Store cannot install anything without an account, and
+drawbridge itself needs none.
+
+Do this now, either way. Once drawbridge is locked, account changes are closed
+off, and opening them again costs you the key.
 
 Make sure the phone is on Wi-Fi as well: it downloads about 300 MB of browser
 during the next step.
@@ -190,34 +192,6 @@ check there is — as long as you know what the phone is supposed to say.
 
 Keep the child's account off the phone anyway. It costs nothing and it closes the
 easiest route to a Play Store that is not yours.
-
----
-
-## A phone without Google services: the QR code
-
-**For de-Googled open-source Android devices only** — LineageOS, /e/OS,
-GrapheneOS — **and only fresh out of the box or straight after a factory reset.**
-It needs no computer and no cable.
-
-1. On the welcome screen, tap the same spot **six times** to reveal a hidden QR
-   scanner. On some phones it asks for Wi-Fi first, then downloads the scanner;
-   that is normal.
-2. Scan the code below.
-3. Wait. The phone downloads and installs drawbridge, makes it the device owner,
-   downloads herald, and switches on the filter — a few minutes, most of it the
-   browser. Leave it on Wi-Fi.
-
-<p align="center">
-  <img src="img/provisioning-qr.png" alt="drawbridge provisioning QR code" width="340">
-</p>
-
-For a clean printout, use the vector version:
-[provisioning-qr.svg](img/provisioning-qr.svg).
-
-Then carry on from [step 4](#step-4--sign-back-in-with-your-own-google-account).
-
-> This has not yet been confirmed on such a phone. On a phone **with** Google
-> Play it does not work at all — use the USB method above.
 
 ---
 

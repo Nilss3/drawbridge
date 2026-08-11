@@ -112,11 +112,11 @@ run its own encrypted DNS.
 - **Connections to hardcoded IPs with no DNS lookup** bypass a DNS-level filter.
   No mainstream app or site works this way; the well-known encrypted-DNS
   resolvers that do are black-holed explicitly.
-- **A hardware recovery-mode wipe** removes everything. On a Google-certified
-  device, Factory Reset Protection then demands an account that was previously on
-  the device — which is why setup locks account changes with only the parent's
-  account present. De-Googled ROMs have no FRP equivalent, so there is no
-  backstop there at all.
+- **A factory reset removes everything, and nothing stops one.** Recovery mode or
+  Settings, either works. Factory Reset Protection does *not* cover this: it is
+  not armed on a fully managed device by default, tested on hardware on
+  2026-08-10. What stands in for prevention is detection — the protected-since
+  date on the lock screen, which a reset cannot forge.
 - **Between boot and the filter starting**, DNS is briefly unfiltered. See
   [always-on VPN without lockdown](docs/design-decisions.md#always-on-vpn-runs-without-lockdown).
 - **YouTube ads are served from the same domains as the videos**, so neither the
@@ -138,9 +138,8 @@ Requirements: JDK 21 (the Gradle daemon picks it up automatically via
 Then:
 
 - **[docs/install.md](docs/install.md) — installing it on a phone**
-  ([Nederlands](docs/install.nl.md) · [Français](docs/install.fr.md)). On a phone
-  with Google Play this means over USB: the QR code cannot install drawbridge
-  there, because Play Protect refuses the package.
+  ([Nederlands](docs/install.nl.md) · [Français](docs/install.fr.md)). Over USB
+  from a computer, on any Android phone, with no factory reset.
 - [docs/provisioning.md](docs/provisioning.md) — the same thing for developers,
   and why `tools/provision-adb.sh` exists
 - [docs/policy.md](docs/policy.md) — changing what is blocked
@@ -160,7 +159,7 @@ dist/         the published policy document and the lists it references
 art/          the illustrations every icon and hero image is derived from
 site/         the project website — generated, do not hand-edit
 site-src/     the website's source: content drafts and the sourced blocklist
-tools/        policytool.py (sign policy), qrpayload.py (provisioning QR),
+tools/        policytool.py (sign policy),
               provision-adb.sh (provision a device over USB),
               make-artwork.sh (icons and scenes from art/),
               build-site.py (generates site/ from site-src/)

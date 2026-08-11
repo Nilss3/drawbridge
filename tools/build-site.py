@@ -402,11 +402,11 @@ def render_home(lang: str) -> str:
 INSTALL = {
     "en": dict(
         title="Install — drawbridge",
-        description="How to install drawbridge: over USB on a phone with Google Play, or with the QR code on a phone without Google services.",
+        description="How to install drawbridge on an Android phone over USB, from a computer. No factory reset required.",
         h1="Installing drawbridge",
         lede="Install over USB from a computer. No factory reset, and nothing on the phone is erased.",
         alpha_warning="This is still in early alpha testing!!",
-        alpha_detail="Installing over USB has been confirmed on a real phone. The QR code has not. Don't use a device you depend on.",
+        alpha_detail="Installing over USB has been confirmed end to end on a real phone — but on one handset, by the people who built it. Don't use a device you depend on.",
         caveat_title="Locking drawbridge uninstalls the apps it blocks.",
         caveat_text="On a phone that is already in use, those apps are removed the moment you lock it, and switching a setting back on afterwards does not bring them back. Nothing else is erased — your photos, messages and other apps stay where they are.",
         usb_h2="Install over USB",
@@ -421,15 +421,6 @@ INSTALL = {
         coming_text="Install drawbridge straight from this site over USB, with no software to set up. Needs Chrome or Edge.",
         coming_btn="Install over USB",
         meanwhile='In the meantime it is one command from a copy of the repository — <code>tools/provision-adb.sh</code> — which installs both apps and makes drawbridge the owner of the phone. It is documented in <a href="https://github.com/Nilss3/drawbridge/blob/main/docs/provisioning.md">provisioning.md</a>.',
-        qr_h2="Install with a QR code",
-        qr_qualifier="For deGoogled open-source Android devices only, and only after a factory reset or fresh out of the box.",
-        qr_caption="Scan this code during set-up.",
-        qr_alt="The drawbridge provisioning QR code.",
-        qr_steps=[
-            "On the welcome screen, tap the same spot <strong>6 times</strong> to reveal a hidden QR scanner.",
-            "Scan the drawbridge QR code.",
-            "Wait for setup to finish — the device downloads, verifies and installs everything on its own.",
-        ],
         after_h2="After setup",
         after_steps=[
             "Open the drawbridge app and activate it.",
@@ -440,11 +431,11 @@ INSTALL = {
     ),
     "nl": dict(
         title="Installeren — drawbridge",
-        description="Hoe je drawbridge installeert: via USB op een telefoon met Google Play, of met de QR-code op een toestel zonder Google-diensten.",
+        description="Hoe je drawbridge via USB vanaf een computer op een Android-telefoon installeert. Geen factory reset nodig.",
         h1="Drawbridge installeren",
         lede="Installeer via USB vanaf een computer. Geen factory reset, en er wordt niets op de telefoon gewist.",
         alpha_warning="Dit zit nog volop in vroege alfatesting!!",
-        alpha_detail="Installeren via USB is bevestigd op een echte telefoon. De QR-code niet. Gebruik geen toestel waar je van afhangt.",
+        alpha_detail="Installeren via USB is van begin tot eind bevestigd op een echte telefoon — maar op één toestel, door de makers zelf. Gebruik geen toestel waar je van afhangt.",
         caveat_title="Bij het vergrendelen verwijdert drawbridge de apps die het blokkeert.",
         caveat_text="Op een telefoon die al in gebruik is, verdwijnen die apps zodra je vergrendelt, en een instelling achteraf weer aanzetten brengt ze niet terug. Verder wordt er niets gewist — je foto's, berichten en andere apps blijven staan.",
         usb_h2="Installeren via USB",
@@ -459,15 +450,6 @@ INSTALL = {
         coming_text="Installeer drawbridge rechtstreeks vanaf deze site via USB, zonder software op te zetten. Vereist Chrome of Edge.",
         coming_btn="Installeren via USB",
         meanwhile='Ondertussen is het één commando vanuit een kopie van de repository — <code>tools/provision-adb.sh</code> — dat beide apps installeert en drawbridge de eigenaar van de telefoon maakt. De uitleg staat in <a href="https://github.com/Nilss3/drawbridge/blob/main/docs/provisioning.md">provisioning.md</a>.',
-        qr_h2="Installeren met een QR-code",
-        qr_qualifier="Enkel voor deGooglede open-source Android-toestellen, en enkel na een factory reset of vers uit de doos.",
-        qr_caption="Scan deze code tijdens de installatie.",
-        qr_alt="De drawbridge-QR-code voor installatie.",
-        qr_steps=[
-            "Tik op het welkomstscherm <strong>6 keer</strong> op dezelfde plek om een verborgen QR-scanner tevoorschijn te halen.",
-            "Scan de drawbridge-QR-code.",
-            "Wacht tot de installatie is afgerond — het toestel downloadt, verifieert en installeert alles zelf.",
-        ],
         after_h2="Na de installatie",
         after_steps=[
             "Open de drawbridge-app en activeer ze.",
@@ -478,11 +460,11 @@ INSTALL = {
     ),
     "fr": dict(
         title="Installation — drawbridge",
-        description="Comment installer drawbridge : par USB sur un téléphone doté de Google Play, ou avec le QR code sur un appareil sans services Google.",
+        description="Comment installer drawbridge sur un téléphone Android par USB, depuis un ordinateur. Aucune réinitialisation d'usine requise.",
         h1="Installer drawbridge",
         lede="Installez par USB depuis un ordinateur. Aucune réinitialisation, et rien n'est effacé sur le téléphone.",
         alpha_warning="Ceci est encore en phase de test alpha !!",
-        alpha_detail="L'installation par USB a été confirmée sur un vrai téléphone. Le QR code, non. N'utilisez pas un appareil dont vous dépendez.",
+        alpha_detail="L'installation par USB a été confirmée de bout en bout sur un vrai téléphone — mais sur un seul appareil, par ceux qui l'ont construite. N'utilisez pas un appareil dont vous dépendez.",
         caveat_title="Le verrouillage de drawbridge désinstalle les applications qu'il bloque.",
         caveat_text="Sur un téléphone déjà utilisé, ces applications disparaissent dès que vous verrouillez, et réactiver un réglage ensuite ne les rétablit pas. Rien d'autre n'est effacé : vos photos, vos messages et vos autres applications restent en place.",
         usb_h2="Installer par USB",
@@ -497,15 +479,6 @@ INSTALL = {
         coming_text="Installez drawbridge directement depuis ce site par USB, sans logiciel à mettre en place. Nécessite Chrome ou Edge.",
         coming_btn="Installer par USB",
         meanwhile='En attendant, il s\'agit d\'une seule commande depuis une copie du dépôt — <code>tools/provision-adb.sh</code> — qui installe les deux applications et fait de drawbridge le propriétaire du téléphone. Tout est expliqué dans <a href="https://github.com/Nilss3/drawbridge/blob/main/docs/provisioning.md">provisioning.md</a>.',
-        qr_h2="Installer avec un QR code",
-        qr_qualifier="Uniquement pour les appareils Android open source dégooglisés, et uniquement après une réinitialisation d'usine ou à la sortie de la boîte.",
-        qr_caption="Scannez ce code pendant la configuration.",
-        qr_alt="Le QR code d'installation de drawbridge.",
-        qr_steps=[
-            "Sur l'écran d'accueil, tapez <strong>6 fois</strong> au même endroit pour révéler un lecteur de QR code caché.",
-            "Scannez le QR code de drawbridge.",
-            "Attendez la fin de l'installation — l'appareil télécharge, vérifie et installe tout automatiquement.",
-        ],
         after_h2="Après l'installation",
         after_steps=[
             "Ouvrez l'application drawbridge et activez-la.",
@@ -552,15 +525,6 @@ def render_install(lang: str) -> str:
       </div>
 
       <p class="footnote">{c['meanwhile']}</p>
-
-      <h2>{c['qr_h2']}</h2>
-      <p>{c['qr_qualifier']}</p>
-      {steps_html(c['qr_steps'])}
-
-      <figure class="qr-figure">
-        <img src="/assets/img/provisioning-qr.png" alt="{c['qr_alt']}" width="776" height="776" />
-        <figcaption>{c['qr_caption']}</figcaption>
-      </figure>
 
       <h2>{c['after_h2']}</h2>
       {steps_html(c['after_steps'])}

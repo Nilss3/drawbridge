@@ -23,14 +23,9 @@ U hebt nodig:
 
 - **Een computer en een USB-kabel.**
 - Een wifinetwerk en het wachtwoord ervan.
-- **Het Google-account van de ouder** — het account van het kind mag er nooit op
-  komen. In stap 1 meldt u zich af, in stap 4 weer aan.
+- **Een Google-account, of geen** — zie [stap 4](#stap-4--meld-u-weer-aan-of-niet).
+  Wat er nu op de telefoon staat, gaat er in stap 1 af.
 - Ongeveer 300 MB download, dus gebruik wifi en geen mobiele data.
-
-Draait uw toestel een deGooglede Android (LineageOS, /e/OS, GrapheneOS) en is het
-vers uit de doos of net gereset, dan kunt u
-[de QR-code](#een-toestel-zonder-google-diensten-de-qr-code) gebruiken en de kabel
-helemaal overslaan.
 
 ---
 
@@ -81,15 +76,23 @@ en dat is meestal de reden waarom het stopt.
 
 ---
 
-## Stap 4 — Meld u weer aan met uw eigen Google-account
+## Stap 4 — Meld u weer aan, of niet
 
 **Instellingen → Wachtwoorden, toegangssleutels en accounts → Account
-toevoegen.** Meld u aan met **uw eigen** Google-account — nooit dat van het kind.
+toevoegen**, als u er een wilt.
 
-Doe dit nu. Zodra drawbridge vergrendeld is, zijn accountwijzigingen afgesloten,
-en ze weer openen kost u de sleutel.
+**Gebruik een account waarvan het u niet stoort dat het kind het heeft — of
+helemaal geen.** Welk account er ook aangemeld is, wie de telefoon vasthoudt kan
+uit de Play Store installeren. Aanmelden met *uw eigen* account houdt dus niets
+tegen; het doet het omgekeerde, want het zet uw mail, foto's, bestanden en
+opgeslagen betaalmiddel op een telefoon die iemand anders draagt.
 
-U kunt het account ook volledig overslaan als u de Play Store niet nodig hebt.
+De telefoon zonder enig account laten is de striktere keuze, en een prima keuze.
+Zonder account kan de Play Store niets installeren, en drawbridge zelf heeft er
+geen nodig.
+
+Doe dit nu, hoe dan ook. Zodra drawbridge vergrendeld is, zijn accountwijzigingen
+afgesloten, en ze weer openen kost u de sleutel.
 
 Zorg ook dat de telefoon op wifi zit: in de volgende stap wordt ongeveer 300 MB
 browser gedownload.
@@ -197,35 +200,6 @@ zeggen.
 
 Houd het account van het kind er sowieso af. Het kost niets en het sluit de
 makkelijkste weg naar een Play Store die niet de uwe is.
-
----
-
-## Een toestel zonder Google-diensten: de QR-code
-
-**Enkel voor deGooglede open-source Android-toestellen** — LineageOS, /e/OS,
-GrapheneOS — **en enkel vers uit de doos of vlak na een fabrieksreset.** Er is
-geen computer en geen kabel voor nodig.
-
-1. Tik op het welkomstscherm **zes keer** op dezelfde plek om een verborgen
-   QR-scanner tevoorschijn te halen. Sommige toestellen vragen eerst om wifi en
-   downloaden de scanner daarna; dat is normaal.
-2. Scan de code hieronder.
-3. Wacht. De telefoon downloadt en installeert drawbridge, maakt het eigenaar van
-   het toestel, downloadt herald en schakelt de filter in — enkele minuten,
-   grotendeels de browser. Laat de telefoon op wifi.
-
-<p align="center">
-  <img src="img/provisioning-qr.png" alt="drawbridge QR-code voor installatie" width="340">
-</p>
-
-Om netjes af te drukken, gebruik de vectorversie:
-[provisioning-qr.svg](img/provisioning-qr.svg).
-
-Ga daarna verder vanaf
-[stap 4](#stap-4--meld-u-weer-aan-met-uw-eigen-google-account).
-
-> Dit is op zo'n toestel nog niet bevestigd. Op een telefoon **met** Google Play
-> werkt het helemaal niet — gebruik dan de USB-methode hierboven.
 
 ---
 

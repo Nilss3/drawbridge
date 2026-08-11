@@ -1893,12 +1893,13 @@ Each of these looks like a bug and is not, or bites silently:
   the *phone* is what makes `app.drawbridge.dpc` installable there, which is the
   whole of `tools/provision-adb.sh`. The fact that spent a session looking like
   the emulator contradicting itself turned out to be the mechanism worth having.
-- **`tools/qrpayload.py` hardcodes the admin component.** `ADMIN_COMPONENT` at
-  the top of the file is a literal `app.drawbridge.dpc/...`, so a payload
-  generated for any other package silently names a component that does not exist
-  and provisioning fails for a reason that has nothing to do with what is being
-  tested. Caught on 2026-08-10 while generating the probe QR, before it cost a
-  factory reset. Read the package from the APK if that tool is touched again.
+- **A generator that hardcodes the package name will bite whoever renames it.**
+  `tools/qrpayload.py` had `ADMIN_COMPONENT` as a literal `app.drawbridge.dpc/...`,
+  so a payload built for any other package silently named a component that did not
+  exist, and provisioning failed for a reason unrelated to what was being tested —
+  caught on 2026-08-10 while generating a probe QR, before it cost a factory
+  reset. That tool is gone with the QR path, but the shape of the mistake is not:
+  anything generated per-package should read the package from the APK.
 - **A wrong package id is inert; a wrong *domain* is not.** `anima.ai` sat on
   `ai-companions.txt` from the beginning: it is a venture studio, so it blocked
   an unrelated business for months while never blocking the Anima app, which is
@@ -1959,22 +1960,29 @@ Each of these looks like a bug and is not, or bites silently:
 The MVP is done and shipped. What follows is a feature roadmap, in the order the
 owner set on 2026-08-08, not a defect list.
 
-### 0. Provision a non-Googled handset by QR
+### 0. ~~Provision a non-Googled handset by QR~~ — retired
 
-**Added 2026-08-10, when the project's focus moved here.** Everything in the Play
-Protect narrative is a property of certified Android. LineageOS, /e/OS and
-GrapheneOS have no Play Protect, no verifier and no DPC allowlist, so the QR path
-is expected to work on them exactly as written — and the QR path is the one that
-needs no cable, no computer and no developer options.
+**Decided by the owner on 2026-08-10: the QR path is removed altogether.** It had
+been the standing focus item, on the reasoning that LineageOS, /e/OS and
+GrapheneOS have no Play Protect and would therefore take a QR provision exactly
+as written. Nobody ever ran it.
 
-It is *expected* to. Nobody has tried it. This project's own history is a list of
-carve-outs that were assumed and did not hold, so treat it as unverified until a
-handset says otherwise. What is needed is a device: a phone with one of those
-ROMs already on it, or one that can take one.
+The reasoning that retired it: the QR path was already dead on every
+Google-certified handset, so the only audience left was people running
+open-source Android — and those people will have no difficulty with a USB
+install. Keeping a second provisioning route alive for them cost a documented
+flow in three languages, a payload generator, a printed code, and a release asset,
+against an audience that did not need it.
 
-The QR payload itself needs no change. Note the one tool trap that will bite:
-`tools/qrpayload.py` hardcodes `ADMIN_COMPONENT`, so it is only correct while the
-package name is `app.drawbridge.dpc`.
+So `tools/qrpayload.py`, `dist/release/provisioning-qr.json`, both QR images and
+every QR section in the docs and on the website are gone. The website's install
+page is now one method.
+
+**What was deliberately *not* removed**, and should stay: the DPC's
+`GET_PROVISIONING_MODE` and `ADMIN_POLICY_COMPLIANCE` activities. They are inert
+on a phone nobody provisions by QR, they cost nothing, and taking them out would
+re-create the exact fault that silently broke QR provisioning for the life of the
+project up to 2026-08-07. If the path ever comes back, it comes back working.
 
 ### 1. Get drawbridge able to update itself again
 

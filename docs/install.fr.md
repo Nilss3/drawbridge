@@ -24,15 +24,11 @@ Il vous faudra :
 
 - **Un ordinateur et un câble USB.**
 - Un réseau Wi-Fi et son mot de passe.
-- **Le compte Google du parent** — celui de l'enfant ne doit jamais être ajouté.
-  Vous vous déconnectez à l'étape 1 et vous vous reconnectez à l'étape 4.
+- **Un compte Google, ou aucun** — voir
+  [l'étape 4](#étape-4--reconnectez-vous-ou-non). Ce qui se trouve sur le
+  téléphone aujourd'hui en sortira à l'étape 1.
 - Environ 300 Mo de téléchargement : utilisez le Wi-Fi plutôt que les données
   mobiles.
-
-Si votre téléphone tourne sous un Android dégooglisé (LineageOS, /e/OS,
-GrapheneOS) et qu'il sort de sa boîte ou vient d'être réinitialisé, vous pouvez
-utiliser [le code QR](#un-appareil-sans-services-google--le-code-qr) et vous
-passer entièrement du câble.
 
 ---
 
@@ -83,16 +79,25 @@ le téléphone, ce qui en est la raison d'arrêt habituelle.
 
 ---
 
-## Étape 4 — Reconnectez-vous avec votre propre compte Google
+## Étape 4 — Reconnectez-vous, ou non
 
-**Paramètres → Mots de passe, clés d'accès et comptes → Ajouter un compte.**
-Connectez-vous avec **votre propre** compte Google — jamais celui de l'enfant.
+**Paramètres → Mots de passe, clés d'accès et comptes → Ajouter un compte**, si
+vous en voulez un.
 
-Faites-le maintenant. Une fois drawbridge verrouillé, les modifications de compte
-sont fermées, et les rouvrir vous coûte la clé.
+**Utilisez un compte que cela ne vous dérange pas de laisser à l'enfant — ou
+aucun.** Quel que soit le compte connecté, celui qui tient le téléphone peut
+installer depuis le Play Store : vous connecter avec *votre* compte ne lui
+retire donc rien. Cela fait l'inverse, en plaçant vos courriers, vos photos, vos
+fichiers et votre moyen de paiement enregistré sur un téléphone porté par
+quelqu'un d'autre.
 
-Vous pouvez aussi ignorer complètement le compte si vous n'avez pas besoin du
-Play Store.
+Laisser le téléphone sans aucun compte est l'option la plus stricte, et une très
+bonne option : sans compte, le Play Store ne peut rien installer, et drawbridge
+lui-même n'en a pas besoin.
+
+Faites-le maintenant, dans un cas comme dans l'autre. Une fois drawbridge
+verrouillé, les modifications de compte sont fermées, et les rouvrir vous coûte
+la clé.
 
 Assurez-vous également que le téléphone est en Wi-Fi : l'étape suivante télécharge
 environ 300 Mo de navigateur.
@@ -203,36 +208,6 @@ sachiez ce que le téléphone est censé afficher.
 
 Gardez de toute façon le compte de l'enfant hors du téléphone. Cela ne coûte rien
 et cela ferme le chemin le plus simple vers un Play Store qui n'est pas le vôtre.
-
----
-
-## Un appareil sans services Google : le code QR
-
-**Uniquement pour les appareils Android open source dégooglisés** — LineageOS,
-/e/OS, GrapheneOS — **et uniquement à la sortie de la boîte ou juste après une
-réinitialisation d'usine.** Ni ordinateur ni câble ne sont nécessaires.
-
-1. Sur l'écran de bienvenue, appuyez **six fois** au même endroit pour révéler un
-   lecteur de codes QR caché. Certains appareils demandent d'abord le Wi-Fi puis
-   téléchargent le lecteur ; c'est normal.
-2. Scannez le code ci-dessous.
-3. Attendez. Le téléphone télécharge et installe drawbridge, en fait le
-   propriétaire de l'appareil, télécharge herald et active le filtre — quelques
-   minutes, principalement le navigateur. Laissez-le en Wi-Fi.
-
-<p align="center">
-  <img src="img/provisioning-qr.png" alt="Code QR d'installation de drawbridge" width="340">
-</p>
-
-Pour une impression nette, utilisez la version vectorielle :
-[provisioning-qr.svg](img/provisioning-qr.svg).
-
-Reprenez ensuite à
-[l'étape 4](#étape-4--reconnectez-vous-avec-votre-propre-compte-google).
-
-> Cela n'a pas encore été confirmé sur un tel appareil. Sur un téléphone **doté**
-> de Google Play, cela ne fonctionne pas du tout — utilisez la méthode USB
-> ci-dessus.
 
 ---
 

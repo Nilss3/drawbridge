@@ -18,10 +18,13 @@ sign back in**, and the parent keeps their photos, messages and apps.
 > not reinstall them. On a fresh phone that is a no-op; on a phone in daily use
 > it is the change the owner will actually notice. Say so before they start.
 
-There are two ways in. **On a Google-certified handset only one of them
-currently works**, and it is adb — Play Protect refuses to install the DPC, and
-the QR wizard has no way round that while adb does. On a device without Play
-Protect both should work, and the QR one gives a cleaner phone.
+**There is one way in, and it is a cable.** Android's QR provisioning was
+supported until 2026-08-10 and has been retired: Play Protect refuses to install
+the DPC, so the QR path was already dead on any Google-certified handset, and on
+a de-Googled one the owner's judgement was that anybody running LineageOS or
+/e/OS will have no difficulty with a USB install. Keeping a second path alive for
+that audience was not worth the documentation, the payload tool and the printed
+code it cost. See [handoff](handoff.md).
 
 > Looking for a guide to hand to a parent rather than a developer? Use
 > [install.md](install.md) — available in
@@ -35,7 +38,6 @@ Three gates are easy to confuse, and only one of them cares about accounts:
 |---|---|---|
 | Installing the APK | Play Protect verification | **No.** Refused with zero accounts and with one alike; `verifier_verify_adb_installs` is the lever either way |
 | Granting Device Owner | Android platform check | **Yes**, and this is the only one |
-| QR provisioning | Play Protect, at install | No — it fails at the first gate |
 
 Measured on 2026-08-10 with one account signed in: the APK installed normally
 once the verifier was paused, and `dpm set-device-owner` then threw
@@ -46,19 +48,23 @@ Then the order, which matters:
 
 1. Remove every account.
 2. Provision drawbridge (below).
-3. Add **the parent's** Google account back — and only the parent's.
+3. Add an account back, or leave the phone without one.
 4. Run setup in the drawbridge app and lock it.
 
-Keep the child's account off the device. Note that the reason given here used to
-be Factory Reset Protection, and **that reason is void**: FRP is not armed on a
-fully managed device by default, and a Settings reset does not trigger it
-whatever accounts are present — tested on the G15 on 2026-08-10, which was reset
-and never asked for the account. See
+**Which account, if any, is a real choice and the guides no longer prescribe
+one.** The old instruction was the parent's account and never the child's; its
+justification was Factory Reset Protection, and **that reason is void** — FRP is
+not armed on a fully managed device by default, and a Settings reset does not
+trigger it whatever accounts are present, tested on the G15 on 2026-08-10. See
 [design-decisions](design-decisions.md#drawbridge-does-not-prevent-a-factory-reset).
-The remaining reasons are ordinary ones: the child's account is a Play Store that
-is not the parent's, and account changes close at lock.
 
-## Method 1 — adb (the only method that works on a certified device)
+What is left does not support the old rule. Play works for whoever holds the
+phone whichever account is signed in, so the parent's account withholds nothing —
+it merely puts the parent's mail, photos and saved payment method on a handset
+somebody else carries. No account at all is the stricter option: the Play Store
+cannot install without one, and drawbridge needs none.
+
+## Provisioning, over a cable
 
 Use `tools/provision-adb.sh`. It installs both apps and grants Device Owner:
 
@@ -87,16 +93,16 @@ adb shell dpm set-device-owner app.drawbridge.dpc/app.drawbridge.dpc.admin.Drawb
 device with no account signed in and nothing else installed. See
 [handoff](handoff.md).
 
-adb has one lever that the QR path does not:
+adb has one lever that nothing on the phone itself does:
 
 ```bash
 adb shell settings put global verifier_verify_adb_installs 0
 ```
 
 That global decides whether adb installs are put to the verifier at all. It is
-writable only from a shell, which is precisely why the QR wizard cannot do the
-equivalent and this method can. Measured on the Moto G15 on 2026-08-10, with the
-same APK each time:
+writable only from a shell — which is exactly why no on-device flow can do the
+equivalent, and why the cable is the way in. Measured on the Moto G15 on
+2026-08-10, with the same APK each time:
 
 | `verifier_verify_adb_installs` | `adb install app.drawbridge.dpc` |
 |---|---|
@@ -154,49 +160,6 @@ options, run that, then lock again. drawbridge cannot update *itself* — Play
 Protect refuses its `PackageInstaller` session as well — so this is the delivery
 channel. Debug builds skip the restriction entirely so the device stays testable.
 
-## Method 2 — QR code (devices without Play Protect)
-
-On a factory-reset device, tap the welcome screen **six times** to open a hidden
-QR scanner. The device then downloads, verifies and installs drawbridge and
-grants Device Owner, all before any account exists.
-
-> **This does not work on a Google-certified handset today.** The wizard has to
-> install `app.drawbridge.dpc`, Play Protect refuses that package by name at
-> install, and the wizard has no way to switch the verifier off — it is running
-> before anyone can reach a shell or a Settings screen. What you see is
-> *"this device belongs to your organization"* followed by **"Something went
-> wrong"** and a factory reset. Verified on the Moto G15 on 2026-08-10, on the
-> byte-identical build that provisioned the same phone three days earlier.
->
-> It should still work on a device with no Play Protect — LineageOS, /e/OS,
-> GrapheneOS — where nothing verifies the install. **That is untested.** Use
-> adb until it is.
-
-**Prefer this where it works.** It replaces the consumer setup wizard rather
-than running after it, and the difference is visible: the OEM's *downloaded*
-preloads never arrive at all. On a Moto G15 the adb route produced a phone
-carrying Temu, LinkedIn, Fitbit and a handful of games, none of which drawbridge
-blocks; the QR route produced a phone without them. Preloads baked into the
-system image — Facebook, on that handset — are still there, and are removed by
-the app blocker in the usual way.
-
-That advantage is the reason to keep the QR path alive rather than retire it: a
-phone provisioned over adb carries preloads a QR-provisioned one never receives,
-and no policy removes them because none of them is blocked.
-
-### What the managed setup skips, and what you must do by hand
-
-The managed flow is much shorter than the consumer one, and two of the things it
-drops matter:
-
-- **No Google account is added.** Factory Reset Protection is therefore *not
-  armed*, and FRP is the whole backstop against a recovery-mode wipe — see
-  [removal](removal.md). Add the parent's account yourself, before locking.
-- **No screen lock is set.** The phone has no PIN, pattern or fingerprint until
-  someone sets one.
-
-Both have to be done in the window described below.
-
 ### Nothing is enforced until you lock
 
 drawbridge deliberately does nothing to a freshly provisioned phone. No
@@ -212,23 +175,6 @@ This was not always true. Applying the lockdown from inside the setup wizard is
 what stopped a Moto G15 finishing setup at all: Device Owner was granted, the
 policy compiled, and `USER_SETUP_COMPLETE` never flipped, leaving a phone with no
 notification shade and a Settings that closed itself on launch.
-
-Generate the payload from a signed APK:
-
-```bash
-python3 tools/qrpayload.py \
-    --apk release/dpc-release.apk \
-    --url https://github.com/Nilss3/drawbridge/releases/download/v1.0.0/dpc-release.apk \
-    --wifi-ssid "Home" --wifi-password "..."
-```
-
-Then encode it, e.g. `qrencode -o provisioning.png -r dist/provisioning-qr.json`.
-
-The payload pins the **signing certificate**, not the APK file, so it stays valid
-across releases signed with the same key.
-
-Custom ROMs sometimes ship a setup wizard without the six-tap gesture. Use adb
-there.
 
 ## After provisioning
 

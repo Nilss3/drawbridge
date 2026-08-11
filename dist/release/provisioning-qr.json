@@ -1,7 +1,0 @@
-{
-  "android.app.extra.PROVISIONING_DEVICE_ADMIN_COMPONENT_NAME": "app.drawbridge.dpc/app.drawbridge.dpc.admin.DrawbridgeDeviceAdminReceiver",
-  "android.app.extra.PROVISIONING_DEVICE_ADMIN_PACKAGE_DOWNLOAD_LOCATION": "https://github.com/Nilss3/drawbridge/releases/latest/download/dpc-release.apk",
-  "android.app.extra.PROVISIONING_DEVICE_ADMIN_SIGNATURE_CHECKSUM": "9mKoAcA2qM_ra24CBOvJ4dciIENluMDXYdKL_e4P6tM",
-  "android.app.extra.PROVISIONING_SKIP_ENCRYPTION": false,
-  "android.app.extra.PROVISIONING_LEAVE_ALL_SYSTEM_APPS_ENABLED": true
-}

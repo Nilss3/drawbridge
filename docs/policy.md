@@ -325,13 +325,13 @@ removed after it fired on `v0.1.0` and had to be cancelled.
 
 Cut a release like this, in this order:
 
-Release URLs point at `/releases/latest/download/`, so the QR and the policy do
-not change from one release to the next.
+Release URLs point at `/releases/latest/download/`, so the policy does not change
+from one release to the next.
 
 > **Do not mark the newest release as a pre-release or leave it a draft.**
 > GitHub's `/releases/latest` skips both, so `/latest/download/...` would fall
 > back to an older release — or 404 if every release is flagged. That silently
-> breaks QR provisioning and herald's auto-install. Older releases may be flagged
+> breaks herald's auto-install. Older releases may be flagged
 > freely; only the newest one matters. Only rebuild herald when herald has
 actually changed — a rebuild alters its hash and forces a policy re-sign for an
 otherwise identical binary.
@@ -344,8 +344,7 @@ python3 tools/policytool.py sign --key-id drawbridge-2026-07
 cp dist/policy.signed.json policy/src/main/assets/drawbridge/default-policy.json
 ./gradlew :dpc:assembleRelease               # 3. drawbridge last, carrying that policy
 tools/stage-release.sh                       #    again, now that dpc exists
-gh release create vX.Y.Z dist/release/*.apk dist/release/SHA256SUMS \
-    dist/release/provisioning-qr.json
+gh release create vX.Y.Z dist/release/*.apk dist/release/SHA256SUMS
 ```
 
 `assembleRelease` builds **both editions** — six herald APKs, since the mono
