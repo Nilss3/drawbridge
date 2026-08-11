@@ -38,7 +38,7 @@
 
       <div class="callout callout--alpha">
         <strong>Ceci est encore en phase de test alpha !!</strong>
-        <p style="margin: 0.5rem 0 0;">L'installation par USB a été confirmée de bout en bout sur un vrai téléphone — mais sur un seul appareil, par ceux qui l'ont construite. N'utilisez pas un appareil dont vous dépendez.</p>
+        <p style="margin: 0.5rem 0 0;">Cette alpha publique a été testée sur exactement un appareil : un Motorola G15, par ceux qui l'ont construite. Elle y fonctionne de bout en bout. On ne sait rien de son comportement sur un autre téléphone. N'utilisez pas un appareil dont vous dépendez.</p>
       </div>
 
       <div class="callout callout--alpha">
@@ -49,7 +49,7 @@
       <h2>Installer par USB</h2>
       <p>Pour les téléphones Android ordinaires avec Google comme pour les appareils Android open source dégooglisés : installez par USB en suivant les étapes ci-dessous.</p>
       <ol class="steps">
-<li><span class="num">1</span><div><strong>Retirez tous les comptes du téléphone</strong> — Paramètres → Mots de passe, clés d'accès et comptes. Android n'accorde ce niveau de contrôle qu'à un téléphone ne portant aucun compte. Vous vous reconnecterez à l'étape 4.</div></li>
+<li><span class="num">1</span><div><strong>Retirez tous les comptes du téléphone.</strong> Paramètres → Mots de passe, clés d'accès et comptes. Android n'accorde ce niveau de contrôle qu'à un téléphone ne portant aucun compte. Vous vous reconnecterez à l'étape 4.</div></li>
 <li><span class="num">2</span><div>Activez les options pour développeurs (tapez plusieurs fois sur le numéro de build dans Paramètres → À propos du téléphone) et activez le <strong>débogage USB</strong>.</div></li>
 <li><span class="num">3</span><div>Connectez le téléphone à un ordinateur avec un câble USB, et lancez l'installeur.</div></li>
 <li><span class="num">4</span><div>Reconnectez-vous avec un compte Google (ou un autre).</div></li>
@@ -63,13 +63,13 @@
         </div>
       </div>
 
-      <p class="footnote">En attendant, il s'agit d'une seule commande depuis une copie du dépôt — <code>tools/provision-adb.sh</code> — qui installe les deux applications et fait de drawbridge le propriétaire du téléphone. Tout est expliqué dans <a href="https://github.com/Nilss3/drawbridge/blob/main/docs/provisioning.md">provisioning.md</a>.</p>
+      <p class="footnote">En attendant, il s'agit d'une seule commande depuis une copie du dépôt, <code>tools/provision-adb.sh</code>, qui installe les deux applications et fait de drawbridge le propriétaire du téléphone. Tout est expliqué dans <a href="https://github.com/Nilss3/drawbridge/blob/main/docs/provisioning.md">provisioning.md</a>.</p>
 
       <h2>Après l'installation</h2>
       <ol class="steps">
-<li><span class="num">1</span><div><strong>Transférez vos favoris vers herald.</strong> Il s'installe juste après drawbridge : il est donc déjà là. Exportez-les depuis le navigateur que vous quittez, puis dans herald : ⋮ → Favoris → ⋮ → Importer. Faites-le <em>avant</em> l'étape suivante — l'activation supprime les autres navigateurs, et leurs favoris partent avec eux.</div></li>
+<li><span class="num">1</span><div><strong>Transférez vos favoris vers herald.</strong> Il s'installe juste après drawbridge : il est donc déjà là. Exportez-les depuis le navigateur que vous quittez, puis dans herald : ⋮ → Favoris → ⋮ → Importer. Faites-le <em>avant</em> l'étape suivante, car l'activation supprime les autres navigateurs, et leurs favoris partent avec eux.</div></li>
 <li><span class="num">2</span><div>Ouvrez l'application drawbridge et activez-la.</div></li>
-<li><span class="num">3</span><div>Notez le code de désactivation affiché une seule fois — ou pas, si vous voulez que la protection reste active pour de bon.</div></li>
+<li><span class="num">3</span><div>Notez le code de désactivation affiché une seule fois. Ou pas, si vous voulez que la protection reste active pour de bon.</div></li>
 </ol>
 
       <p class="footnote">L'activation désactive le débogage USB. Il revient dès que vous déverrouillez drawbridge avec votre code : c'est ainsi que vous installerez plus tard une version plus récente par le même câble.</p>

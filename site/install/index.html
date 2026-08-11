@@ -38,18 +38,18 @@
 
       <div class="callout callout--alpha">
         <strong>This is still in early alpha testing!!</strong>
-        <p style="margin: 0.5rem 0 0;">Installing over USB has been confirmed end to end on a real phone — but on one handset, by the people who built it. Don't use a device you depend on.</p>
+        <p style="margin: 0.5rem 0 0;">This public alpha has been tested on exactly one device: a Motorola G15, by the people who built it. It works there end to end. Nothing is known about how it behaves on any other phone. Don't use a device you depend on.</p>
       </div>
 
       <div class="callout callout--alpha">
         <strong>Locking drawbridge uninstalls the apps it blocks.</strong>
-        <p style="margin: 0.5rem 0 0;">On a phone that is already in use, those apps are removed the moment you lock it, and switching a setting back on afterwards does not bring them back. Nothing else is erased — your photos, messages and other apps stay where they are.</p>
+        <p style="margin: 0.5rem 0 0;">On a phone that is already in use, those apps are removed the moment you lock it, and switching a setting back on afterwards does not bring them back. Nothing else is erased: your photos, messages and other apps stay where they are.</p>
       </div>
 
       <h2>Install over USB</h2>
       <p>For Google (regular) Android phones and also deGoogled open-source Android devices: install over USB using the flow below.</p>
       <ol class="steps">
-<li><span class="num">1</span><div><strong>Remove every account from the phone</strong> — Settings → Passwords, passkeys &amp; accounts. Android only hands over this level of control to a phone with no account on it. You sign back in at step 4.</div></li>
+<li><span class="num">1</span><div><strong>Remove every account from the phone.</strong> Settings → Passwords, passkeys &amp; accounts. Android only hands over this level of control to a phone with no account on it. You sign back in at step 4.</div></li>
 <li><span class="num">2</span><div>Enable Developer Options (tap the build number in Settings → About phone several times) and turn on <strong>USB debugging</strong>.</div></li>
 <li><span class="num">3</span><div>Connect the phone to a computer with a USB cable, and run the installer.</div></li>
 <li><span class="num">4</span><div>Sign back in with a Google (or other) account.</div></li>
@@ -63,13 +63,13 @@
         </div>
       </div>
 
-      <p class="footnote">In the meantime it is one command from a copy of the repository — <code>tools/provision-adb.sh</code> — which installs both apps and makes drawbridge the owner of the phone. It is documented in <a href="https://github.com/Nilss3/drawbridge/blob/main/docs/provisioning.md">provisioning.md</a>.</p>
+      <p class="footnote">In the meantime it is one command from a copy of the repository, <code>tools/provision-adb.sh</code>, which installs both apps and makes drawbridge the owner of the phone. It is documented in <a href="https://github.com/Nilss3/drawbridge/blob/main/docs/provisioning.md">provisioning.md</a>.</p>
 
       <h2>After setup</h2>
       <ol class="steps">
-<li><span class="num">1</span><div><strong>Move your bookmarks into herald.</strong> It installs itself right after drawbridge, so it is already there. Export them from the browser you are leaving, then in herald: ⋮ → Bookmarks → ⋮ → Import. Do this <em>before</em> the next step — activating removes the other browsers, and their bookmarks go with them.</div></li>
+<li><span class="num">1</span><div><strong>Move your bookmarks into herald.</strong> It installs itself right after drawbridge, so it is already there. Export them from the browser you are leaving, then in herald: ⋮ → Bookmarks → ⋮ → Import. Do this <em>before</em> the next step, because activating removes the other browsers, and their bookmarks go with them.</div></li>
 <li><span class="num">2</span><div>Open the drawbridge app and activate it.</div></li>
-<li><span class="num">3</span><div>Write down the deactivation code shown once — or don't, if you want the protection to stay on for good.</div></li>
+<li><span class="num">3</span><div>Write down the deactivation code shown once. Or don't, if you want the protection to stay on for good.</div></li>
 </ol>
 
       <p class="footnote">Activating switches USB debugging off. Unlocking drawbridge with your code turns it back on, which is how you would put a later version on the phone over the same cable.</p>
