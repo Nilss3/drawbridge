@@ -83,7 +83,14 @@ every axis that matters here:
 Three things to settle before building it:
 
 1. **Confirm preview deployments are on** for the Pages project. That is a
-   dashboard setting and cannot be checked from here.
+   dashboard setting and cannot be checked from here:
+   **Cloudflare dashboard → Workers & Pages → `drawbridge-project` → Settings →
+   Builds & deployments → Branch deployments** (called "Preview deployments" in
+   some versions of the UI). It wants *All non-Production branches*, or an
+   include-list naming `dev`. Production branch stays `main`. Once on, a push to
+   `dev` is served at `dev.drawbridge-project.pages.dev`, and each commit also
+   gets its own `<hash>.drawbridge-project.pages.dev` — useful for pinning a
+   tester to one build rather than to whatever `dev` last became.
 2. **Make `policyUrl` a build-time value.** `PolicyConfig.policyUrl` is already a
    constructor parameter with a default of `main`'s raw URL, so this is a
    `buildConfigField` and one line at the call site in
@@ -2394,6 +2401,63 @@ costs ten minutes. See
 Remember that reinstating it means reversing the `RETIRED_RESTRICTIONS`
 migration too, and that today's escape works even when drawbridge is completely
 broken while a timer-based one does not.
+
+### 10. "This phone, these apps, nothing else" — and the apps still update
+
+**Asked for on 2026-08-11, and it is mostly already built.** The request people
+actually make is not a curated blocklist: it is *let me install the handful of
+apps this person needs, then close the door*. Which apps differs per person, so
+it cannot live in the signed policy.
+
+**The mechanism exists.** `allowed_packages` already flips app control to
+allowlist mode: any *user-installed* package outside the list is removed, system
+and preinstalled apps left alone. What is missing is only that the list is a
+static field in a document signed by this project's key, so it cannot be
+per-person.
+
+**The design that fits: snapshot at lock.** When the parent presses *Lock*,
+record the set of user-installed packages into device-local state, next to the
+selected profile and options, and treat it as an allowlist from then on. The
+install-what-you-need-then-close-the-door flow is exactly the pre-lock window
+that already exists for accounts, screen lock and the cable.
+
+**The update question answers itself, and the reason is worth understanding.**
+An update does not change a package name, so an updated app is still on the
+list. Better than that, `PackageWatcher` never even asks:
+
+```kotlin
+if (intent.getBooleanExtra(Intent.EXTRA_REPLACING, false)) return
+```
+
+A replacement is not a new install and is ignored outright. Play Store keeps
+updating everything on the phone, because Play is a system app and the apps it
+updates keep their identity.
+
+**The obvious alternative is the trap.** `DISALLOW_INSTALL_APPS` looks like the
+right restriction and probably breaks exactly what is being asked for: it stops
+the package installer, which is also how updates arrive. **Untested here** — and
+worth testing before anyone reaches for it, because drawbridge's existing
+remove-after-install design, which looks cruder than blocking the install,
+is precisely what keeps updates working. It never blocks an install; it removes
+afterwards, and an update is never an "afterwards".
+
+**One property this must keep.** The local list may only ever *narrow*. An app
+survives iff it is in the snapshot **and** the policy does not block it —
+intersection, never union. Otherwise a device-local file, unsigned and editable
+by anyone who reaches it, could re-admit something the signed policy forbids.
+
+Consequences to state before building it, not after:
+
+- **Adding an app later costs the key.** Unlock, install, lock again — and
+  locking mints a new key, so "I need one more app" is a credential rotation.
+  That may argue for a narrower door: an *add apps* mode that re-snapshots
+  without re-minting, which is a change to `LockActivity`'s key handling and
+  should be designed deliberately rather than discovered.
+- **The removal window stays.** An app installs and is removed seconds later
+  rather than being refused. That is already true of every blocked package.
+- **The snapshot will catch whatever happened to be there**, including anything
+  the parent installed to migrate data and no longer wants. Showing them the list
+  before sealing it is probably not optional.
 
 ### Standing items, unchanged
 
