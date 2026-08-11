@@ -1120,6 +1120,14 @@ Two decisions worth not re-litigating:
   the 0.2.6 → 0.2.7 release, to the owner. Content-addressing turns it into a
   404, which the page can name exactly: reload. A checksum mismatch now means
   what it says.
+
+  **Except that Cloudflare Pages does not return 404 for a missing asset.** It
+  serves the site's HTML error page with status **200**, measured on 2026-08-10 —
+  so the page's 404 branch is largely decorative there and what actually catches
+  a stale page is the checksum failing against 7 KB of HTML. That is why the
+  mismatch message tells the reader to reload as well; it is the branch that
+  fires. Do not remove that sentence on the grounds that the 404 handler covers
+  it.
 - **The DPC only.** herald is 233 MB down a USB cable; drawbridge fetches it
   itself from `required_apps` after locking, exactly as the QR path does.
 
