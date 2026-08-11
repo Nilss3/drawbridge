@@ -340,3 +340,15 @@ td:first-child, th:first-child { white-space: nowrap; }
    the list does not silently renumber itself mid-run. */
 .installer-steps li[data-state="skipped"] { color: var(--ink-soft); opacity: 0.55; }
 .installer-steps li[data-state="skipped"] .step-dot { border-style: dashed; }
+
+/* Non-production channel band. Deliberately loud and deliberately not themed:
+   the one thing it must never do is look like part of the site. */
+.channel-banner {
+  background: var(--rust);
+  color: #fff;
+  text-align: center;
+  padding: 0.55rem 1rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}

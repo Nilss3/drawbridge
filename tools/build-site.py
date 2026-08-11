@@ -24,6 +24,16 @@ SITE_OUT = REPO_ROOT / "site"
 # · install.fr.md elsewhere in this repo.
 # ---------------------------------------------------------------------------
 
+# A non-production channel marks every page it renders. site-src/channel.txt
+# exists only on the dev branch; main has no such file and renders nothing extra,
+# so this costs the published site nothing.
+#
+# It is not decoration. dev.drawbridge-project.pages.dev and
+# drawbridge-project.pages.dev are the same site with different builds behind
+# them, one of which provisions phones people are relying on. A page that does
+# not say which one it is, is a page somebody will use to flash the wrong build.
+CHANNEL = (SITE_SRC / "channel.txt").read_text().strip() if (SITE_SRC / "channel.txt").exists() else ""
+
 LANGUAGES = ["en", "nl", "fr"]
 LANG_NAMES = {"en": "English", "nl": "Nederlands", "fr": "Français"}
 
@@ -48,6 +58,16 @@ FOOTER = {
     "fr": "Drawbridge est gratuit et open source (MIT).",
 }
 FOOTER_SOURCE = {"en": "Source on GitHub", "nl": "Broncode op GitHub", "fr": "Code source sur GitHub"}
+
+
+def channel_banner() -> str:
+    """A band across the top of every page on a non-production channel."""
+    if not CHANNEL:
+        return ""
+    return (
+        f'<div class="channel-banner">{CHANNEL.upper()} CHANNEL — test builds, '
+        "not the release. Do not use a phone you depend on.</div>\n"
+    )
 
 
 def render_page(
@@ -106,7 +126,7 @@ def render_page(
 <link rel="stylesheet" href="/assets/css/style.css" />
 </head>
 <body>
-<header class="site-header">
+{channel_banner()}<header class="site-header">
   <div class="wrap">
     <a class="brand" href="{home_href}">
       <img src="/assets/img/icon.webp" alt="" />

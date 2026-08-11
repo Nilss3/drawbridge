@@ -31,7 +31,9 @@ class DrawbridgeApplication : Application() {
 
     companion object {
         /** drawbridge and herald read the same signed document from the same URL. */
-        val policyConfig = PolicyConfig()
+        // BuildConfig.POLICY_URL is main's URL unless a build overrides it; see
+        // dpc/build.gradle.kts. The dev channel is the only thing that does.
+        val policyConfig = PolicyConfig(policyUrl = BuildConfig.POLICY_URL)
 
         fun policy(context: Context): PolicyManager =
             PolicyManager.getInstance(context, policyConfig)

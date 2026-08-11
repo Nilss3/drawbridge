@@ -58,7 +58,44 @@ Testers are a handful of people who know what they signed up for, the key is in
 the offline backup, and it comes out before any phone belongs to someone who is
 not a knowing tester.
 
-### The dev channel, and why a branch beats a second page
+### The dev channel exists, on the `dev` branch
+
+**Built 2026-08-11.** `dev` is forked from the alpha commit and is identical to
+`main` except for the plumbing below. Cloudflare serves it at
+**<https://dev.drawbridge-project.pages.dev>** with no further setup, because
+Branch control is already set to all non-Production branches.
+
+Three differences from `main`, and nothing else:
+
+1. **`gradle.properties` sets `drawbridgePolicyUrl`** to this branch's copy of the
+   signed policy, so a dev build polls `dev/dist/policy.signed.json` instead of
+   the document every alpha phone fetches. Edit and re-sign `dist/` here and only
+   dev phones see it.
+2. **`site-src/channel.txt`** contains `dev`, which puts a rust band across the
+   top of every page: *DEV CHANNEL — test builds, not the release.* `main` has no
+   such file and renders nothing. This is not decoration — the two sites are the
+   same pages with different builds behind them, and one of them provisions
+   phones people rely on.
+3. **The plumbing itself**: `BuildConfig.POLICY_URL` in `dpc/build.gradle.kts`,
+   read by `DrawbridgeApplication.policyConfig`. Its fallback is
+   character-for-character `PolicyConfig.DEFAULT_POLICY_URL`, verified, so
+   merging this into `main` changes no behaviour there.
+
+**Working on dev:** commit as usual, push, and the site rebuilds itself. A dev
+APK goes in the same way a release does — bump `versionCode`, build, copy to
+`dist/release/`, re-sign this branch's policy so `app_update` names the new hash,
+`python3 tools/build-site.py`. That last step refuses to build unless the staged
+APK matches the pin, which keeps dev exactly as honest as the alpha.
+
+**Keep one monotonic `versionCode`.** Dev must outrank the alpha's 18 to install
+over it, and the next alpha must outrank whatever dev reached. A dev build that
+turns out good becomes the release, with no renumbering.
+
+**A phone takes one channel or the other.** Same package name — Device Owner
+binds to it — so installing dev on a phone replaces the alpha there. The Moto is
+the dev phone; anything a tester holds stays on `main`.
+
+### Why a branch beat a second page
 
 The owner asked for a hidden second install page so end-to-end testing can
 continue while the alpha sits still. A **`dev` branch with its own Cloudflare
