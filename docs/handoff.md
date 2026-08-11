@@ -82,15 +82,13 @@ every axis that matters here:
 
 Three things to settle before building it:
 
-1. **Confirm preview deployments are on** for the Pages project. That is a
-   dashboard setting and cannot be checked from here:
-   **Cloudflare dashboard → Workers & Pages → `drawbridge-project` → Settings →
-   Builds & deployments → Branch deployments** (called "Preview deployments" in
-   some versions of the UI). It wants *All non-Production branches*, or an
-   include-list naming `dev`. Production branch stays `main`. Once on, a push to
-   `dev` is served at `dev.drawbridge-project.pages.dev`, and each commit also
-   gets its own `<hash>.drawbridge-project.pages.dev` — useful for pinning a
-   tester to one build rather than to whatever `dev` last became.
+1. ~~**Confirm preview deployments are on.**~~ **Checked 2026-08-11: they are.**
+   The setting is **Cloudflare dashboard → Workers & Pages → `drawbridge-project`
+   → Settings → Builds & deployments → Branch control**, and it is already set to
+   *All non-Production branches*. Production stays `main`. So a push to `dev` is
+   served at `dev.drawbridge-project.pages.dev` with no further setup, and each
+   commit also gets its own `<hash>.drawbridge-project.pages.dev` — useful for
+   pinning a tester to one build rather than to whatever `dev` last became.
 2. **Make `policyUrl` a build-time value.** `PolicyConfig.policyUrl` is already a
    constructor parameter with a default of `main`'s raw URL, so this is a
    `buildConfigField` and one line at the call site in
