@@ -334,3 +334,9 @@ td:first-child, th:first-child { white-space: nowrap; }
 .log-line--ok { color: var(--ink); }
 .log-line--error { color: var(--rust); font-weight: 600; }
 .log-line--prompt { color: var(--ink); font-weight: 600; }
+
+/* A step the run does not reach — granting device ownership when this is an
+   update rather than a first provision. Struck through rather than hidden, so
+   the list does not silently renumber itself mid-run. */
+.installer-steps li[data-state="skipped"] { color: var(--ink-soft); opacity: 0.55; }
+.installer-steps li[data-state="skipped"] .step-dot { border-style: dashed; }

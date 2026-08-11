@@ -69,6 +69,15 @@
 
       <pre class="installer-log" id="installer-log" hidden></pre>
 
+      <div id="installer-done-update" hidden>
+        <h2>Now lock it again</h2>
+        <ol class="steps">
+<li><span class="num">1</span><div>Open <strong>drawbridge</strong>. You can check the new version under ⋮ → Diagnostics.</div></li>
+<li><span class="num">2</span><div>Tap <strong>Lock drawbridge</strong>, and write down the key it shows. Locking mints a fresh one, so the key you had before stops working.</div></li>
+</ol>
+        <p class="footnote">Locking switches USB debugging off. It comes back when you unlock drawbridge with your key, which is how you would install a later version over the same cable.</p>
+      </div>
+
       <div id="installer-done" hidden>
         <div class="callout callout--alpha">
           <strong>Locking drawbridge uninstalls the apps it blocks.</strong>
@@ -102,6 +111,7 @@ init({
   apkUrl: "/assets/dpc-release.apk",
   apkSha256: "da5391134bab355017fbdaa708305db2c0bec43fae75ed4890f37bb78c04bb5a",
   apkName: "dpc-release.apk",
+  text: { updateDetected: "This phone is already managed by drawbridge ({version}). Updating it instead of provisioning \u2014 nothing is reset, and the phone keeps everything on it." },
 });
 </script>
 </body>

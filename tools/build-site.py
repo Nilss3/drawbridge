@@ -574,6 +574,12 @@ USB_INSTALLER = {
         ],
         caveat_title="Locking drawbridge uninstalls the apps it blocks.",
         caveat_text="That happens later, on the phone, when you press Lock — not here. On a phone already in use those apps go and do not come back.",
+        update_detected="This phone is already managed by drawbridge ({version}). Updating it instead of provisioning — nothing is reset, and the phone keeps everything on it.",
+        update_done_h2="Now lock it again",
+        update_done_steps=[
+            "Open <strong>drawbridge</strong>. You can check the new version under ⋮ → Diagnostics.",
+            "Tap <strong>Lock drawbridge</strong>, and write down the key it shows. Locking mints a fresh one, so the key you had before stops working.",
+        ],
         done_h2="Now finish on the phone",
         done_steps=[
             "Sign back in with <strong>your own</strong> Google account — never the child's.",
@@ -612,6 +618,12 @@ USB_INSTALLER = {
         ],
         caveat_title="Bij het vergrendelen verwijdert drawbridge de apps die het blokkeert.",
         caveat_text="Dat gebeurt later, op de telefoon, wanneer u op Vergrendelen drukt — niet hier. Op een telefoon die al in gebruik is verdwijnen die apps en komen ze niet terug.",
+        update_detected="Deze telefoon wordt al beheerd door drawbridge ({version}). Hij wordt bijgewerkt in plaats van opnieuw ingericht — er wordt niets teruggezet en alles op de telefoon blijft staan.",
+        update_done_h2="Vergrendel hem opnieuw",
+        update_done_steps=[
+            "Open <strong>drawbridge</strong>. De nieuwe versie kunt u nakijken onder ⋮ → Diagnostics.",
+            "Tik op <strong>drawbridge vergrendelen</strong> en schrijf de sleutel op die verschijnt. Bij elke vergrendeling wordt een nieuwe gemaakt, dus uw vorige sleutel werkt niet meer.",
+        ],
         done_h2="Nu afwerken op de telefoon",
         done_steps=[
             "Meld u weer aan met <strong>uw eigen</strong> Google-account — nooit dat van het kind.",
@@ -650,6 +662,12 @@ USB_INSTALLER = {
         ],
         caveat_title="Le verrouillage de drawbridge désinstalle les applications qu'il bloque.",
         caveat_text="Cela se produit plus tard, sur le téléphone, quand vous appuyez sur Verrouiller — pas ici. Sur un téléphone déjà utilisé, ces applications disparaissent et ne reviennent pas.",
+        update_detected="Ce téléphone est déjà géré par drawbridge ({version}). Il sera mis à jour plutôt que reconfiguré : rien n'est réinitialisé et tout ce qui s'y trouve est conservé.",
+        update_done_h2="Verrouillez-le de nouveau",
+        update_done_steps=[
+            "Ouvrez <strong>drawbridge</strong>. Vous pouvez vérifier la nouvelle version sous ⋮ → Diagnostics.",
+            "Appuyez sur <strong>Verrouiller drawbridge</strong> et notez la clé affichée. Chaque verrouillage en crée une nouvelle, donc votre clé précédente ne fonctionne plus.",
+        ],
         done_h2="Terminez maintenant sur le téléphone",
         done_steps=[
             "Reconnectez-vous avec <strong>votre propre</strong> compte Google — jamais celui de l'enfant.",
@@ -664,6 +682,8 @@ USB_INSTALLER = {
 
 
 def render_usb_installer(lang: str, apk: dict) -> str:
+    import json
+
     c = USB_INSTALLER[lang]
     prefix = lang_prefix(lang)
 
@@ -703,6 +723,12 @@ def render_usb_installer(lang: str, apk: dict) -> str:
 
       <pre class="installer-log" id="installer-log" hidden></pre>
 
+      <div id="installer-done-update" hidden>
+        <h2>{c['update_done_h2']}</h2>
+        {steps_html(c['update_done_steps'])}
+        <p class="footnote">{c['done_note']}</p>
+      </div>
+
       <div id="installer-done" hidden>
         <div class="callout callout--alpha">
           <strong>{c['caveat_title']}</strong>
@@ -724,6 +750,7 @@ init({{
   apkUrl: "/assets/{apk['name']}",
   apkSha256: "{apk['sha256']}",
   apkName: "{apk['name']}",
+  text: {{ updateDetected: {json.dumps(c['update_detected'])} }},
 }});
 </script>
 """

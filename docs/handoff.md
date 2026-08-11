@@ -1092,6 +1092,19 @@ JS" does not.
 vendored, because a bundler and an npm tree would cost the no-build-step
 property that makes Cloudflare Pages work here at all.
 
+**It updates as well as provisions**, which is the half that matters for a phone
+already in someone's hands: Play Protect refuses drawbridge's own installs, so a
+cable is how a fix arrives. The page detects which it is doing rather than asking
+— drawbridge owns the phone or nothing does, so offering the choice would only be
+a chance to get it wrong — and says which it picked before it changes anything.
+A device owner that is *not* drawbridge is refused outright.
+
+Only provisioning checks for accounts. It is `dpm set-device-owner` that Android
+refuses while an account is present, not the install, so an update runs happily
+on a phone carrying whatever account its owner chose. An update also needs the
+phone **unlocked**, which is not a check the page makes: a locked phone has no
+USB debugging, so it never reaches the page at all.
+
 **What is verified, and what is not.** The protocol layer was cross-checked
 against ground truth on the build machine: `encodeAndroidPublicKey` reproduces
 the *byte-identical* base64 that adb itself wrote in `~/.android/adbkey.pub` for

@@ -155,8 +155,11 @@ deployed phone:
 tools/provision-adb.sh --update
 ```
 
-Unlock drawbridge with the parent's key, re-enable USB debugging in developer
-options, run that, then lock again. drawbridge cannot update *itself* — Play
+Or the same thing from the website's installer page, which detects that the
+phone is already managed and updates it instead of provisioning it.
+
+Either way: unlock drawbridge with the parent's key, re-enable USB debugging in
+developer options, run it, then lock again. drawbridge cannot update *itself* — Play
 Protect refuses its `PackageInstaller` session as well — so this is the delivery
 channel. Debug builds skip the restriction entirely so the device stays testable.
 

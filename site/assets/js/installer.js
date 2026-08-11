@@ -82,12 +82,50 @@ async function restoreVerifier() {
     return true;
 }
 
+/**
+ * Works out whether this is a first provision or an update, and refuses
+ * anything else.
+ *
+ * The two are mutually exclusive on the device itself — drawbridge owns the
+ * phone or nothing does — so asking the person which one they meant would only
+ * be a chance to get it wrong. What the page owes them instead is saying which
+ * it picked, before it changes anything.
+ *
+ * Returns "provision", "update", or null if the run cannot go ahead.
+ */
 async function preflight() {
     setStep(2, "active");
     log("Checking the phone…");
 
-    // The same line tools/provision-adb.sh reads, and for the same reason: it is
-    // the one that was checked against real output on hardware. Counting
+    const model = clean(await adb.shell("getprop ro.product.model"));
+    const release = clean(await adb.shell("getprop ro.build.version.release"));
+    log(`${model}, Android ${release}.`);
+
+    const owner = await adb.shell("dumpsys device_policy | grep -A1 'Device Owner:'");
+    if (owner.includes("Device Owner:")) {
+        if (!owner.includes(PACKAGE)) {
+            setStep(2, "error");
+            fail(
+                "This phone is already managed by something other than drawbridge, so it " +
+                    "cannot be provisioned or updated from here.",
+            );
+            return null;
+        }
+        const installed = clean(
+            (await adb.shell(`dumpsys package ${PACKAGE} | grep -m1 versionName`)),
+        ).replace(/^versionName=/, "");
+        log(ui.text.updateDetected.replace("{version}", installed || "?"), "prompt");
+        setStep(2, "done");
+        setStep(5, "skipped");
+        return "update";
+    }
+
+    // Only provisioning cares about accounts: it is `dpm set-device-owner` that
+    // Android refuses while any account is present, not the install. An update
+    // runs on a phone that already has whatever account its owner chose.
+    //
+    // This reads the same line tools/provision-adb.sh does, and for the same
+    // reason: it is the one checked against real output on hardware. Counting
     // "Account {" entries instead would be one dumpsys format change away from
     // refusing a phone that is actually clean.
     const accounts = clean(await adb.shell("dumpsys account | grep -m1 'Accounts: '"));
@@ -100,23 +138,11 @@ async function preflight() {
                 "passkeys & accounts, then run this again. You sign back in afterwards, and " +
                 "nothing else is erased.",
         );
-        return false;
+        return null;
     }
-    log("No accounts on the phone.", "ok");
-
-    const policy = await adb.shell("dumpsys device_policy | grep 'Device Owner:'");
-    if (policy.includes("Device Owner:")) {
-        setStep(2, "error");
-        fail("This phone already has a device owner. Remove it from inside drawbridge first.");
-        return false;
-    }
-    log("No device owner yet.", "ok");
-
-    const model = clean(await adb.shell("getprop ro.product.model"));
-    const release = clean(await adb.shell("getprop ro.build.version.release"));
-    log(`${model}, Android ${release}.`);
+    log("No accounts on the phone, and no device owner yet.", "ok");
     setStep(2, "done");
-    return true;
+    return "provision";
 }
 
 async function fetchApk() {
@@ -206,15 +232,26 @@ async function run() {
         log("Connected.", "ok");
         setStep(1, "done");
 
-        if (!(await preflight())) return;
+        const mode = await preflight();
+        if (!mode) return;
         const apk = await fetchApk();
         if (!(await installApk(apk))) return;
-        if (!(await setDeviceOwner())) return;
+        if (mode === "provision" && !(await setDeviceOwner())) return;
+
+        const installed = clean(
+            await adb.shell(`dumpsys package ${PACKAGE} | grep -m1 versionName`),
+        ).replace(/^versionName=/, "");
 
         ui.status.textContent = "Done.";
         ui.status.className = "installer-status installer-status--ok";
-        ui.done.hidden = false;
-        log("Finished. Follow the steps below on the phone itself.", "ok");
+        (mode === "update" ? ui.doneUpdate : ui.done).hidden = false;
+        log(`drawbridge on this phone is now ${installed || "installed"}.`, "ok");
+        log(
+            mode === "update"
+                ? "Finished. Lock drawbridge again on the phone."
+                : "Finished. Follow the steps below on the phone itself.",
+            "ok",
+        );
     } catch (error) {
         if (error && error.name === "NotFoundError") {
             log("No phone was chosen.");
@@ -247,10 +284,12 @@ export function init(config) {
     ui.log = el("installer-log");
     ui.status = el("installer-status");
     ui.done = el("installer-done");
+    ui.doneUpdate = el("installer-done-update");
     ui.unsupported = el("installer-unsupported");
     ui.apkUrl = config.apkUrl;
     ui.apkSha256 = config.apkSha256;
     ui.apkName = config.apkName;
+    ui.text = config.text;
 
     if (!("usb" in navigator)) {
         ui.unsupported.hidden = false;

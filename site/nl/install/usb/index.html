@@ -69,6 +69,15 @@
 
       <pre class="installer-log" id="installer-log" hidden></pre>
 
+      <div id="installer-done-update" hidden>
+        <h2>Vergrendel hem opnieuw</h2>
+        <ol class="steps">
+<li><span class="num">1</span><div>Open <strong>drawbridge</strong>. De nieuwe versie kunt u nakijken onder ⋮ → Diagnostics.</div></li>
+<li><span class="num">2</span><div>Tik op <strong>drawbridge vergrendelen</strong> en schrijf de sleutel op die verschijnt. Bij elke vergrendeling wordt een nieuwe gemaakt, dus uw vorige sleutel werkt niet meer.</div></li>
+</ol>
+        <p class="footnote">Bij het vergrendelen gaat USB-foutopsporing uit. Ze komt terug zodra u drawbridge met uw sleutel ontgrendelt — zo installeert u later een nieuwere versie via dezelfde kabel.</p>
+      </div>
+
       <div id="installer-done" hidden>
         <div class="callout callout--alpha">
           <strong>Bij het vergrendelen verwijdert drawbridge de apps die het blokkeert.</strong>
@@ -102,6 +111,7 @@ init({
   apkUrl: "/assets/dpc-release.apk",
   apkSha256: "da5391134bab355017fbdaa708305db2c0bec43fae75ed4890f37bb78c04bb5a",
   apkName: "dpc-release.apk",
+  text: { updateDetected: "Deze telefoon wordt al beheerd door drawbridge ({version}). Hij wordt bijgewerkt in plaats van opnieuw ingericht \u2014 er wordt niets teruggezet en alles op de telefoon blijft staan." },
 });
 </script>
 </body>
