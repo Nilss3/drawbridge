@@ -1049,7 +1049,7 @@ it on the next apply. See
 Two things replaced it, and both are weaker than the restriction was:
 
 - **Factory Reset Protection**, which depends on the parent's Google account
-  being the only one on the device — and `lockAccounts()` is dead code, so
+  being the only one on the device — and `lockAccounts()` was dead code, so
   nothing stops a child adding their own. See the unverified list.
 - **The protected-since date**, which is why the clock is now locked on every
   device: winding it back a year, locking, and winding it forward forges a year
@@ -1722,29 +1722,29 @@ Verified for the browser work:
 
 Not verified, and worth doing:
 
-- **`lockAccounts()` is dead code, and a doc promises otherwise.**
-  `DISALLOW_MODIFY_ACCOUNTS` is never applied: the function exists,
-  `unlockAccounts()` is called during removal, and nothing ever calls
-  `lockAccounts()`. Meanwhile [provisioning.md](provisioning.md) step 3 tells
-  parents that running setup "locks account changes".
+- ~~**`lockAccounts()` is dead code, and a doc promises otherwise.**~~ **Fixed
+  2026-08-10.** `DISALLOW_MODIFY_ACCOUNTS` had never been applied on any device:
+  the function existed, `unlockAccounts()` ran during removal, and nothing ever
+  called `lockAccounts()` — while all three install guides told parents that
+  account changes close at lock. Confirmed on hardware on 2026-08-08, when an
+  account was added to a *locked* G15 and nothing objected.
 
-  **Confirmed on hardware, 2026-08-08**: a Google account was added to the G15
-  while drawbridge was locked, on a device that had none before. Nothing
-  objected. This is no longer inferred from reading the code.
+  It is now the second restriction keyed on the **lock** rather than on
+  `protectedSince`, alongside USB debugging, and `lockAccounts()` is gone —
+  applying it is `restrictionsFor`'s job. The pre-lock window is when the parent
+  chooses what account the phone carries, and unlocking is how they change their
+  mind; keying it on protection would have sealed that choice at the first lock
+  and put it out of reach without a factory reset.
 
-  Note the consequence for the fix: wiring `lockAccounts()` into `lockDevice()`
-  makes the documented order — account first, then lock — *mandatory* rather
-  than advisory. A parent who locks first and then needs their account on the
-  phone has to unlock to add it, which mints a new key and invalidates the one
-  they wrote down. Probably acceptable, but decide it rather than discover it.
+  **Not yet seen on hardware.** The unit tests cover the rule, but no phone has
+  been watched refusing an account after a lock, or accepting one after an
+  unlock. That is the check to run on the next provision.
 
-  This matters more since `DISALLOW_FACTORY_RESET` was dropped, because FRP is
-  now a load-bearing backstop rather than a second line. The FRP argument is that
-  a child cannot answer the challenge, having never had an account on the
-  device — but if account changes are not locked, they can add their own at any
-  point afterwards and answer it themselves. Wiring `lockAccounts()` into
-  `lockDevice()` is the fix and fits the enforcement rule exactly; it was left
-  alone deliberately so it would not obstruct the FRP and Family Link testing.
+  Two consequences to know rather than discover. It blocks *removing* accounts as
+  well as adding them, so an app that signs in through `AccountManager` cannot be
+  set up on a locked phone — the parent unlocks for that, which costs them the
+  key. And it makes the documented order mandatory rather than advisory: any
+  account the phone is to carry goes on before the lock.
 
 - ~~**Whether FRP behaves as assumed at all.**~~ **Tested on 2026-08-10, and it
   does not.** See the section below: the phone was factory reset and never asked
@@ -2065,15 +2065,12 @@ left is the protected-since date telling the parent afterwards. That would be
 worth knowing before deciding anything else, and might well argue for bringing
 step 8 forward once the timer exists.
 
-**Fix `lockAccounts()` at the same time.** `DISALLOW_MODIFY_ACCOUNTS` is never
-applied — the function exists, `unlockAccounts()` runs during removal, nothing
-calls `lockAccounts()` — so even with FRP armed a child can add their own
-account afterwards and answer the challenge themselves. [provisioning](provisioning.md)
-tells parents that setup "locks account changes", which is currently false.
-Wiring it into `lockDevice()` fits the enforcement rule exactly: the parent adds
-their account in the window before locking, and locking closes it. It was left
-alone deliberately so it would not obstruct this very test — do the test first,
-then wire it.
+~~**Fix `lockAccounts()` at the same time.**~~ **Done on 2026-08-10**, and not
+via `lockDevice()`: `DISALLOW_MODIFY_ACCOUNTS` is now in `MANAGED_RESTRICTIONS`
+and withheld while the phone is unlocked, so it lands from
+`LockActivity.sealWithKey` after the key is committed and lifts again on unlock.
+`lockAccounts()` is deleted. See the unverified list above for what still has to
+be watched on a device.
 
 ### 2a. Decide whether "never the child's account" is still advice worth giving
 

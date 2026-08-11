@@ -55,19 +55,62 @@ class DeviceOwnerRestrictionsTest {
         )
     }
 
+    @Test
+    fun `locked release build closes account changes`() {
+        val restrictions = DeviceOwnerManager.restrictionsFor(
+            isLocked = true,
+            retainAdbAccess = false,
+        )
+        assertTrue(
+            "the install guides promise account changes close at lock",
+            restrictions.contains(UserManager.DISALLOW_MODIFY_ACCOUNTS),
+        )
+    }
+
+    @Test
+    fun `unlocked phone can have its accounts changed`() {
+        val restrictions = DeviceOwnerManager.restrictionsFor(
+            isLocked = false,
+            retainAdbAccess = false,
+        )
+        assertFalse(
+            "the pre-lock window is when the parent chooses the phone's account",
+            restrictions.contains(UserManager.DISALLOW_MODIFY_ACCOUNTS),
+        )
+    }
+
     /**
-     * The rule is meant to move exactly one entry. A change that quietly dropped
-     * [UserManager.DISALLOW_SAFE_BOOT] or the multi-user restrictions on unlock
-     * would leave an unlocked phone unfiltered rather than merely reachable, and
-     * nothing else in the codebase would notice.
+     * A debug build keeps adb so the device stays testable, and that flag must
+     * not quietly take anything else with it — least of all the account rule,
+     * which has nothing to do with debugging.
      */
     @Test
-    fun `unlocking moves only the debugging restriction`() {
+    fun `retaining adb withholds debugging and nothing else`() {
+        val strict = DeviceOwnerManager.restrictionsFor(isLocked = true, retainAdbAccess = false)
+        val debug = DeviceOwnerManager.restrictionsFor(isLocked = true, retainAdbAccess = true)
+
+        assertEquals(
+            setOf(UserManager.DISALLOW_DEBUGGING_FEATURES),
+            strict.toSet() - debug.toSet(),
+        )
+    }
+
+    /**
+     * The rule is meant to move exactly two entries. A change that quietly
+     * dropped [UserManager.DISALLOW_SAFE_BOOT] or the multi-user restrictions on
+     * unlock would leave an unlocked phone unfiltered rather than merely
+     * reachable and open to account changes, and nothing else would notice.
+     */
+    @Test
+    fun `unlocking moves only the two lock-scoped restrictions`() {
         val locked = DeviceOwnerManager.restrictionsFor(isLocked = true, retainAdbAccess = false)
         val unlocked = DeviceOwnerManager.restrictionsFor(isLocked = false, retainAdbAccess = false)
 
         assertEquals(
-            setOf(UserManager.DISALLOW_DEBUGGING_FEATURES),
+            setOf(
+                UserManager.DISALLOW_DEBUGGING_FEATURES,
+                UserManager.DISALLOW_MODIFY_ACCOUNTS,
+            ),
             locked.toSet() - unlocked.toSet(),
         )
         assertEquals(

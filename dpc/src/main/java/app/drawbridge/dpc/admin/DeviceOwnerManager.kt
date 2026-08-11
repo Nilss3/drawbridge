@@ -352,19 +352,14 @@ class DeviceOwnerManager(context: Context) {
     }
 
     /**
-     * Blocks the kid from adding their own Google account.
+     * Opens account changes again, on the way out.
      *
-     * Set only once the parent's account is already on the device: it is what
-     * makes the Factory Reset Protection backstop hold. If the child's account
-     * were ever added, they could satisfy FRP themselves after a recovery-mode
-     * wipe and end up with a clean, unmanaged phone.
+     * Redundant with [clearUserRestrictions], which now covers this restriction
+     * too — and kept anyway, because teardown order is load-bearing here and an
+     * explicit, ordered step is cheaper than reasoning about whether the general
+     * one still catches it. There is no matching `lockAccounts()`: applying it is
+     * [restrictionsFor]'s job, keyed on the lock.
      */
-    fun lockAccounts() {
-        if (!isDeviceOwner) return
-        runCatching { dpm.addUserRestriction(admin, UserManager.DISALLOW_MODIFY_ACCOUNTS) }
-            .onFailure { Log.e(TAG, "Could not lock accounts", it) }
-    }
-
     fun unlockAccounts() {
         if (!isDeviceOwner) return
         runCatching { dpm.clearUserRestriction(admin, UserManager.DISALLOW_MODIFY_ACCOUNTS) }
@@ -466,16 +461,38 @@ class DeviceOwnerManager(context: Context) {
         private const val TAG = "DeviceOwnerManager"
 
         /**
-         * The restriction set for a given state, and the only place the
-         * USB-debugging rule lives.
+         * The restriction set for a given state, and the only place the two
+         * lock-scoped rules live.
          *
-         * **USB debugging follows the lock, not the protection.** Every other
-         * restriction here is keyed on [ParentKey.protectedSince] through
+         * **Two restrictions follow the lock rather than the protection.** The
+         * rest are keyed on [ParentKey.protectedSince] through
          * [reapplyIfProtected], which survives unlocking on purpose: a parent
          * changing a setting has not withdrawn their protection, and the phone
-         * should stay filtered while they do it. This one is deliberately
-         * different, and the reason is that it is the project's only working
-         * delivery channel.
+         * should stay filtered while they do it. These two are deliberately
+         * different, for different reasons.
+         *
+         * **Accounts** ([UserManager.DISALLOW_MODIFY_ACCOUNTS]) are closed while
+         * the phone is locked and open while it is not. That is what the install
+         * guides have always promised — "once drawbridge is locked, account
+         * changes are closed off" — and until now it was simply untrue: the
+         * restriction lived outside [MANAGED_RESTRICTIONS] and the function that
+         * applied it was never called from anywhere.
+         *
+         * It has to be the *lock* and not [ParentKey.protectedSince], because the
+         * pre-lock window is exactly when the parent decides what account the
+         * phone will carry, and unlocking is how they change their mind later.
+         * Keying it on protection would seal that decision at the first lock and
+         * make it unreachable without a factory reset.
+         *
+         * What it buys is the stricter half of the advice the install guides now
+         * give: a phone left with **no account** stays that way, so the Play
+         * Store cannot install anything. Without this, a child signs in and has a
+         * working store. Note it blocks *removing* accounts too, so an app that
+         * signs in through `AccountManager` cannot be set up on a locked phone
+         * either — the parent unlocks for that, which costs them the key.
+         *
+         * **USB debugging** is the other, and the reason is that it is the
+         * project's only working delivery channel.
          *
          * Play Protect refuses to install `app.drawbridge.dpc`, so a phone
          * cannot update drawbridge by itself and cannot be provisioned by QR.
@@ -495,21 +512,22 @@ class DeviceOwnerManager(context: Context) {
          * Note this does not switch USB debugging *on*. It stops the platform
          * refusing it; the developer options toggle is still a deliberate act.
          */
-        fun restrictionsFor(isLocked: Boolean, retainAdbAccess: Boolean): List<String> =
-            if (retainAdbAccess || !isLocked) {
-                MANAGED_RESTRICTIONS - UserManager.DISALLOW_DEBUGGING_FEATURES
-            } else {
-                MANAGED_RESTRICTIONS
+        fun restrictionsFor(isLocked: Boolean, retainAdbAccess: Boolean): List<String> {
+            val withheld = buildSet {
+                if (!isLocked || retainAdbAccess) add(UserManager.DISALLOW_DEBUGGING_FEATURES)
+                if (!isLocked) add(UserManager.DISALLOW_MODIFY_ACCOUNTS)
             }
+            return MANAGED_RESTRICTIONS - withheld
+        }
 
-        /**
-         * DISALLOW_MODIFY_ACCOUNTS is deliberately not here — it is applied
-         * separately by [lockAccounts] once the parent's account is in place, so
-         * that provisioning does not lock the parent out of adding it.
-         */
         val MANAGED_RESTRICTIONS: List<String> = buildList {
             add(UserManager.DISALLOW_CONFIG_VPN)
             add(UserManager.DISALLOW_DEBUGGING_FEATURES)
+            // Applied only while the phone is locked — see [restrictionsFor].
+            // It used to live outside this list, applied by a `lockAccounts()`
+            // that nothing ever called, so the promise that setup "locks account
+            // changes" was false on every device that ever ran.
+            add(UserManager.DISALLOW_MODIFY_ACCOUNTS)
             add(UserManager.DISALLOW_SAFE_BOOT)
             add(UserManager.DISALLOW_ADD_USER)
             add(UserManager.DISALLOW_ADD_MANAGED_PROFILE)

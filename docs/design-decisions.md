@@ -1014,14 +1014,38 @@ drawbridge's app blocker seconds after the device was provisioned, because a
 browser whose package name is not the allowed one is exactly what that code
 exists to remove.
 
-## USB debugging follows the lock, not the protection
+## Two restrictions follow the lock, not the protection
 
-Every other restriction is keyed on `ParentKey.protectedSince`, which survives
+Most restrictions are keyed on `ParentKey.protectedSince`, which survives
 unlocking on purpose: a parent changing a setting has not withdrawn their
 protection, and the phone should stay filtered while they do it.
-`DISALLOW_DEBUGGING_FEATURES` is deliberately the exception. It goes on when the
-key is committed and comes off when the key is used, and
-`DeviceOwnerManager.restrictionsFor` is the only place that rule lives.
+`DISALLOW_DEBUGGING_FEATURES` and `DISALLOW_MODIFY_ACCOUNTS` are deliberately the
+exceptions. They go on when the key is committed and come off when the key is
+used, and `DeviceOwnerManager.restrictionsFor` is the only place that rule lives.
+
+### Accounts
+
+The install guides have always told parents that "once drawbridge is locked,
+account changes are closed off". That was simply false: the restriction sat
+outside `MANAGED_RESTRICTIONS` and the `lockAccounts()` that applied it was never
+called from anywhere, on any device, ever. The sentence is now true.
+
+It is keyed on the lock rather than on protection because **the pre-lock window
+is when the parent decides what account the phone will carry**, and unlocking is
+how they change their mind later. Keying it on protection would seal that
+decision at the first lock and put it out of reach without a factory reset.
+
+What it buys is the stricter half of the advice the guides now give — *use an
+account you do not mind the child having, or none at all*. A phone left with no
+account stays that way, so the Play Store cannot install anything. Without the
+restriction the child simply signs in and has a working store, which is most of
+what the lockdown was for.
+
+The cost is worth stating plainly: it blocks *removing* accounts as well as
+adding them, so an app that signs in through `AccountManager` cannot be set up on
+a locked phone. The parent unlocks for that, and unlocking costs them the key.
+
+### USB debugging
 
 **The reason is that a cable is the only delivery channel this project has.**
 Play Protect refuses to install `app.drawbridge.dpc`, so drawbridge cannot update
