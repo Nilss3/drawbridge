@@ -794,6 +794,10 @@ FAQ = {
             ("h2", "Who is drawbridge for?"),
             ("p", "Drawbridge is for anyone who needs to carry a smartphone but doesn't want that phone to make room or time for harmful and addictive apps and websites. That can be an adult protecting themselves, or someone managing another person's device (a child, for instance)."),
 
+            ("h2", "Can I use drawbridge together with Family Link?"),
+            ("p", "No. A drawbridge phone is a fully managed device, and Android does not let Family Link supervise one — setting it up fails partway through. That is a limitation of Android itself, not something drawbridge can lift, and it applies to any tool of this kind."),
+            ("p", 'So it is one or the other. If you want to keep Family Link, install <a href="/#herald">herald</a> on its own instead: it is the browser without the device management, and the browser is the gap Family Link leaves open.'),
+
             ("h2", "Why not just use parental controls or an app blocker?"),
             ("p", "Parental controls have a lot of downsides:"),
             ("ul", [
@@ -850,6 +854,10 @@ FAQ = {
             ("h2", "Voor wie is drawbridge?"),
             ("p", "Drawbridge is er voor iedereen die om een of andere reden een smartphone moet bijhebben maar geen ruimte of tijd wil geven aan schadelijke en verslavende apps en websites. Dat kunnen volwassenen zijn voor zichzelf, of om het toestel van een andere persoon beheren (bv. een ouder voor een kind)."),
 
+            ("h2", "Kan ik drawbridge samen met Family Link gebruiken?"),
+            ("p", "Nee. Een drawbridge-telefoon is een volledig beheerd toestel, en Android laat Family Link zo'n toestel niet mee beheren — het instellen loopt halverwege vast. Dat is een beperking van Android zelf, niet iets wat drawbridge kan opheffen, en ze geldt voor elk soortgelijk hulpmiddel."),
+            ("p", 'Het is dus het een of het ander. Wil je Family Link houden, installeer dan enkel <a href="/nl/#herald">herald</a>: dat is de browser zonder het toestelbeheer, en net de browser is het gat dat Family Link openlaat.'),
+
             ("h2", "Waarom niet gewoon parental controls of een app blocker gebruiken?"),
             ("p", "Parental controls hebben veel nadelen:"),
             ("ul", [
@@ -905,6 +913,10 @@ FAQ = {
 
             ("h2", "Pour qui est drawbridge ?"),
             ("p", "Drawbridge s'adresse à toute personne qui doit, pour une raison ou une autre, avoir un smartphone sur soi, mais qui ne veut pas que ce téléphone laisse de la place ou du temps à des applications et des sites nuisibles et addictifs. Cela peut être un adulte qui se protège lui-même, ou une personne qui gère l'appareil de quelqu'un d'autre (un enfant, par exemple)."),
+
+            ("h2", "Puis-je utiliser drawbridge en même temps que Family Link ?"),
+            ("p", "Non. Un téléphone drawbridge est un appareil entièrement géré, et Android ne permet pas à Family Link d'en assurer la supervision : la configuration échoue en cours de route. C'est une limite d'Android lui-même, que drawbridge ne peut pas lever, et elle vaut pour tout outil de ce type."),
+            ("p", 'C\'est donc l\'un ou l\'autre. Si vous tenez à garder Family Link, installez plutôt <a href="/fr/#herald">herald</a> seul : c\'est le navigateur sans la gestion de l\'appareil, et le navigateur est précisément la faille que Family Link laisse ouverte.'),
 
             ("h2", "Pourquoi ne pas simplement utiliser un contrôle parental ou un bloqueur d'applications ?"),
             ("p", "Les contrôles parentaux ont beaucoup d'inconvénients :"),

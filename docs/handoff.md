@@ -2085,18 +2085,32 @@ What is left of the argument is weak and, worse, partly points the other way:
   Nothing in the docs has ever mentioned this, and it is a larger risk than the
   one the advice was written to prevent.
 
-**What is genuinely unknown, and is the reason not to just delete the line:**
-what a *supervised* Family Link account does on a device that already has a
-Device Owner. Family Link may refuse to manage a fully managed device, may try to
-install its own admin and conflict, or may work and quietly fight drawbridge over
-the same settings. "Can I use this alongside Family Link" is a question every
-parent will ask, and nobody has run it.
+**The Family Link half is now answered, and the answer is no.** Tried on the
+provisioned G15 on 2026-08-10: setting Family Link up fails partway through, with
+Family Link itself reporting that it cannot be used together with this. That
+matches the documented platform behaviour — a device with a Device Owner is
+fully managed, and Family Link does not supervise managed devices — so it is
+inherent rather than a drawbridge fault, and it applies to any tool of this kind.
 
-So: **test first, then edit the wording** — the outcome could turn the advice
-into something better justified than it ever was, or delete it outright.
+**This is the question every parent will ask**, so it is now an FAQ entry in all
+three languages, with the honest consequence: it is one or the other, and a
+parent who wants to keep Family Link should install **herald on its own**. That
+is the standalone deliverable the README already describes, and the browser is
+exactly the gap Family Link leaves open. Worth noticing that this makes the
+standalone browser more important rather than less.
+
+What that leaves of the child-account question: a *supervised* account is not
+possible at all, so the advice can only ever be about an ordinary one — and
+against an ordinary account the reasoning above still applies, symmetrical and
+partly backwards. The wording is still worth rewriting; the likeliest honest
+replacement is "use an account you do not mind the child having, or none at all"
+rather than a flat prohibition. Not yet done.
+
+The exact on-screen wording of the failure was not captured. If it is seen again,
+write it down — it is the sentence a parent will search for.
 
 Note `DISALLOW_MODIFY_ACCOUNTS` is still never applied, so accounts can be added
-to a locked phone without unlocking it. That is the state the test runs in.
+to a locked phone without unlocking it. That is the state this was tried in.
 
 ### 3. herald must force safe search everywhere, or refuse the engine
 
