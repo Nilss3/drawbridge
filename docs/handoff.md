@@ -2092,12 +2092,22 @@ matches the documented platform behaviour — a device with a Device Owner is
 fully managed, and Family Link does not supervise managed devices — so it is
 inherent rather than a drawbridge fault, and it applies to any tool of this kind.
 
-**This is the question every parent will ask**, so it is now an FAQ entry in all
-three languages, with the honest consequence: it is one or the other, and a
-parent who wants to keep Family Link should install **herald on its own**. That
-is the standalone deliverable the README already describes, and the browser is
-exactly the gap Family Link leaves open. Worth noticing that this makes the
-standalone browser more important rather than less.
+**It matters less than it first looked, and the owner was right to say so.** The
+first draft of this note called it "the question every parent will ask". It is
+not: Family Link supervises a *child's* account, and drawbridge is for teenagers
+and adults. The two barely address the same person.
+
+The sharper version, which is now in the FAQ: at 13 — or whatever the local age
+is — **the teenager can end supervision themselves**, and the parent is only
+notified. So Family Link stops being something a parent can rely on at exactly
+the age drawbridge is built for. That is a point in drawbridge's favour rather
+than a limitation to apologise for, and the answer says so.
+
+It is still worth an FAQ entry, because somebody tried it and hit a confusing
+failure — that is what FAQ entries are for — with the honest consequence that it
+is one or the other, and a parent who would rather keep Family Link should
+install **herald on its own**. That is the standalone deliverable the README
+already describes, and the browser is exactly the gap Family Link leaves open.
 
 What that leaves of the child-account question: a *supervised* account is not
 possible at all, so the advice can only ever be about an ordinary one — and
