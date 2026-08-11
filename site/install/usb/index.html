@@ -33,7 +33,7 @@
   <section class="section">
     <div class="wrap">
       <h1>Install over USB</h1>
-      <p class="lede">This page installs drawbridge onto a phone plugged into this computer. Nothing is uploaded anywhere — the app is served from this site and goes straight down the cable.</p>
+      <p class="lede">This page installs drawbridge onto a phone plugged into this computer. Nothing is uploaded anywhere: the app is served from this site and goes straight down the cable.</p>
       <p class="footnote">Needs Chrome, Edge or another Chromium browser. Firefox and Safari have no WebUSB.</p>
 
       <div class="callout" id="installer-unsupported" hidden>
@@ -42,16 +42,11 @@
 
       <h2>On the phone, first</h2>
       <ol class="steps">
-<li><span class="num">1</span><div><strong>Remove every account</strong> — Settings → Passwords, passkeys &amp; accounts. You sign back in at the end. Nothing else is erased.</div></li>
+<li><span class="num">1</span><div><strong>Remove every account.</strong> Settings → Passwords, passkeys &amp; accounts. You sign back in at the end. Nothing else is erased.</div></li>
 <li><span class="num">2</span><div>Enable Developer Options: Settings → About phone, tap <strong>Build number</strong> seven times.</div></li>
 <li><span class="num">3</span><div>Settings → System → Developer options → turn on <strong>USB debugging</strong>.</div></li>
 <li><span class="num">4</span><div>Plug the phone into this computer.</div></li>
 </ol>
-
-      <div class="callout">
-        <strong>Close any adb running on this computer.</strong>
-        <p style="margin: 0.5rem 0 0;">Only one program can hold the phone's debug connection. If you have Android tools installed, run <code>adb kill-server</code> first, or this page will not see the device.</p>
-      </div>
 
       <h2>Then, here</h2>
       <div class="btn-row">
@@ -81,7 +76,7 @@
       <div id="installer-done" hidden>
         <div class="callout callout--alpha">
           <strong>Locking drawbridge uninstalls the apps it blocks.</strong>
-          <p style="margin: 0.5rem 0 0;">That happens later, on the phone, when you press Lock — not here. On a phone already in use those apps go and do not come back.</p>
+          <p style="margin: 0.5rem 0 0;">That happens later, on the phone, when you press Lock, not here. On a phone already in use those apps go and do not come back.</p>
         </div>
         <h2>Now finish on the phone</h2>
         <ol class="steps">
@@ -94,15 +89,15 @@
       </div>
 
       <h2>Updating a phone that already has drawbridge</h2>
-      <p>Same page, same button — it notices the phone is already managed and updates it instead. Nothing is reset and nothing on the phone is lost. drawbridge cannot update itself, so this cable is how a new version gets there.</p>
+      <p>Same page, same button. It notices the phone is already managed and updates it instead. Nothing is reset and nothing on the phone is lost. drawbridge cannot update itself, so this cable is how a new version gets there.</p>
       <ol class="steps">
 <li><span class="num">1</span><div>On the phone, open <strong>drawbridge</strong> and enter your key to unlock it. That is what hands USB debugging back.</div></li>
 <li><span class="num">2</span><div>Turn <strong>USB debugging</strong> back on: Settings → System → Developer options.</div></li>
 <li><span class="num">3</span><div>Plug the phone in and press the button below.</div></li>
-<li><span class="num">4</span><div>When it finishes, <strong>lock drawbridge again</strong> on the phone and write down the new key — locking makes a fresh one, so your old key stops working.</div></li>
+<li><span class="num">4</span><div>When it finishes, <strong>lock drawbridge again</strong> on the phone and write down the new key. Locking makes a fresh one, so your old key stops working.</div></li>
 </ol>
 
-      <p class="footnote">This page runs <a href="https://github.com/Nilss3/drawbridge/tree/main/site-src/installer">a small ADB client</a> in your browser. It pauses Android's check on cable installs for the length of the copy, then puts it back exactly as it found it — on success, on failure, and if you unplug the phone.</p>
+      <p class="footnote">This page runs <a href="https://github.com/Nilss3/drawbridge/tree/main/site-src/installer">a small ADB client</a> in your browser. It pauses Android's check on cable installs for the length of the copy, then puts it back exactly as it found it: on success, on failure, and if you unplug the phone.</p>
     </div>
   </section>
 
@@ -120,7 +115,7 @@ init({
   apkUrl: "/assets/dpc-85d840257e10426c.apk",
   apkSha256: "85d840257e10426cd2b1673d5b388a7ebb15b65df4c2dc655f16f43cefc6d52d",
   apkName: "dpc-85d840257e10426c.apk",
-  text: { updateDetected: "This phone is already managed by drawbridge ({version}). Updating it instead of provisioning \u2014 nothing is reset, and the phone keeps everything on it." },
+  text: { updateDetected: "This phone is already managed by drawbridge ({version}). Updating it instead of provisioning. Nothing is reset, and the phone keeps everything on it." },
 });
 </script>
 </body>

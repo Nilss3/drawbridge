@@ -37,18 +37,18 @@
 
       <div class="callout callout--alpha">
         <strong>Dit zit nog volop in vroege alfatesting!!</strong>
-        <p style="margin: 0.5rem 0 0;">Installeren via USB is van begin tot eind bevestigd op een echte telefoon — maar op één toestel, door de makers zelf. Gebruik geen toestel waar je van afhangt.</p>
+        <p style="margin: 0.5rem 0 0;">Deze publieke alfa is op precies één toestel getest: een Motorola G15, door de makers zelf. Daar werkt ze van begin tot eind. Over het gedrag op eender welke andere telefoon is niets bekend. Gebruik geen toestel waar je van afhangt.</p>
       </div>
 
       <div class="callout callout--alpha">
         <strong>Bij het vergrendelen verwijdert drawbridge de apps die het blokkeert.</strong>
-        <p style="margin: 0.5rem 0 0;">Op een telefoon die al in gebruik is, verdwijnen die apps zodra je vergrendelt, en een instelling achteraf weer aanzetten brengt ze niet terug. Verder wordt er niets gewist — je foto's, berichten en andere apps blijven staan.</p>
+        <p style="margin: 0.5rem 0 0;">Op een telefoon die al in gebruik is, verdwijnen die apps zodra je vergrendelt, en een instelling achteraf weer aanzetten brengt ze niet terug. Verder wordt er niets gewist: je foto's, berichten en andere apps blijven staan.</p>
       </div>
 
       <h2>Installeren via USB</h2>
       <p>Voor gewone Android-telefoons met Google én voor deGooglede open-source Android-toestellen: installeer via USB met de stappen hieronder.</p>
       <ol class="steps">
-<li><span class="num">1</span><div><strong>Verwijder elk account van de telefoon</strong> — Instellingen → Wachtwoorden, toegangssleutels en accounts. Android geeft dit niveau van controle enkel weg aan een toestel waar geen account op staat. In stap 4 meld je je weer aan.</div></li>
+<li><span class="num">1</span><div><strong>Verwijder elk account van de telefoon.</strong> Instellingen → Wachtwoorden, toegangssleutels en accounts. Android geeft dit niveau van controle enkel weg aan een toestel waar geen account op staat. In stap 4 meld je je weer aan.</div></li>
 <li><span class="num">2</span><div>Activeer Ontwikkelaarsopties (tik meerdere keren op het buildnummer in Instellingen → Over de telefoon) en schakel <strong>USB-debugging</strong> in.</div></li>
 <li><span class="num">3</span><div>Verbind de telefoon met een computer via een USB-kabel, en voer de installer uit.</div></li>
 <li><span class="num">4</span><div>Meld je weer aan met een Google-account (of een ander account).</div></li>
@@ -62,16 +62,16 @@
         </div>
       </div>
 
-      <p class="footnote">Ondertussen is het één commando vanuit een kopie van de repository — <code>tools/provision-adb.sh</code> — dat beide apps installeert en drawbridge de eigenaar van de telefoon maakt. De uitleg staat in <a href="https://github.com/Nilss3/drawbridge/blob/main/docs/provisioning.md">provisioning.md</a>.</p>
+      <p class="footnote">Ondertussen is het één commando vanuit een kopie van de repository, <code>tools/provision-adb.sh</code>, dat beide apps installeert en drawbridge de eigenaar van de telefoon maakt. De uitleg staat in <a href="https://github.com/Nilss3/drawbridge/blob/main/docs/provisioning.md">provisioning.md</a>.</p>
 
       <h2>Na de installatie</h2>
       <ol class="steps">
-<li><span class="num">1</span><div><strong>Zet je bladwijzers over naar herald.</strong> Die installeert zichzelf meteen na drawbridge en staat er dus al. Exporteer ze uit de browser die je verlaat, en kies daarna in herald: ⋮ → Bladwijzers → ⋮ → Importeren. Doe dit <em>vóór</em> de volgende stap — bij het activeren verdwijnen de andere browsers, en hun bladwijzers gaan mee.</div></li>
+<li><span class="num">1</span><div><strong>Zet je bladwijzers over naar herald.</strong> Die installeert zichzelf meteen na drawbridge en staat er dus al. Exporteer ze uit de browser die je verlaat, en kies daarna in herald: ⋮ → Bladwijzers → ⋮ → Importeren. Doe dit <em>vóór</em> de volgende stap, want bij het activeren verdwijnen de andere browsers, en hun bladwijzers gaan mee.</div></li>
 <li><span class="num">2</span><div>Open de drawbridge-app en activeer ze.</div></li>
-<li><span class="num">3</span><div>Schrijf de eenmalig getoonde deactivatiecode op — of niet, als je wil dat de bescherming voorgoed aanblijft.</div></li>
+<li><span class="num">3</span><div>Schrijf de eenmalig getoonde deactivatiecode op. Of niet, als je wil dat de bescherming voorgoed aanblijft.</div></li>
 </ol>
 
-      <p class="footnote">Bij het activeren wordt USB-debugging uitgeschakeld. Ontgrendel je drawbridge met je code, dan komt ze terug — zo zet je later een nieuwere versie via dezelfde kabel op de telefoon.</p>
+      <p class="footnote">Bij het activeren wordt USB-debugging uitgeschakeld. Ontgrendel je drawbridge met je code, dan komt ze terug. Zo zet je later een nieuwere versie via dezelfde kabel op de telefoon.</p>
 
       <p>Lees de <a href="/nl/faq/">Q&amp;A</a> voor wat er geblokkeerd wordt en waarom, of bekijk het <a href="/nl/why-blocked/">volledige, onderbouwde overzicht</a>.</p>
     </div>

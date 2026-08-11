@@ -33,7 +33,7 @@
   <section class="section">
     <div class="wrap">
       <h1>Installeren via USB</h1>
-      <p class="lede">Deze pagina installeert drawbridge op een telefoon die aan deze computer hangt. Er wordt niets geüpload — de app komt van deze site en gaat rechtstreeks door de kabel.</p>
+      <p class="lede">Deze pagina installeert drawbridge op een telefoon die aan deze computer hangt. Er wordt niets geüpload: de app komt van deze site en gaat rechtstreeks door de kabel.</p>
       <p class="footnote">Vereist Chrome, Edge of een andere Chromium-browser. Firefox en Safari hebben geen WebUSB.</p>
 
       <div class="callout" id="installer-unsupported" hidden>
@@ -42,16 +42,11 @@
 
       <h2>Eerst op de telefoon</h2>
       <ol class="steps">
-<li><span class="num">1</span><div><strong>Verwijder elk account</strong> — Instellingen → Wachtwoorden, toegangssleutels en accounts. Op het einde meldt u zich weer aan. Verder wordt er niets gewist.</div></li>
+<li><span class="num">1</span><div><strong>Verwijder elk account.</strong> Instellingen → Wachtwoorden, toegangssleutels en accounts. Op het einde meldt u zich weer aan. Verder wordt er niets gewist.</div></li>
 <li><span class="num">2</span><div>Zet Ontwikkelaarsopties aan: Instellingen → Over de telefoon, tik zeven keer op <strong>Buildnummer</strong>.</div></li>
 <li><span class="num">3</span><div>Instellingen → Systeem → Ontwikkelaarsopties → zet <strong>USB-foutopsporing</strong> aan.</div></li>
 <li><span class="num">4</span><div>Sluit de telefoon aan op deze computer.</div></li>
 </ol>
-
-      <div class="callout">
-        <strong>Sluit elke adb die op deze computer draait.</strong>
-        <p style="margin: 0.5rem 0 0;">Maar één programma tegelijk kan de debugverbinding van de telefoon vasthouden. Hebt u Android-tools geïnstalleerd, voer dan eerst <code>adb kill-server</code> uit, anders ziet deze pagina het toestel niet.</p>
-      </div>
 
       <h2>Daarna hier</h2>
       <div class="btn-row">
@@ -75,13 +70,13 @@
 <li><span class="num">1</span><div>Open <strong>drawbridge</strong>. De nieuwe versie kunt u nakijken onder ⋮ → Diagnostics.</div></li>
 <li><span class="num">2</span><div>Tik op <strong>drawbridge vergrendelen</strong> en schrijf de sleutel op die verschijnt. Bij elke vergrendeling wordt een nieuwe gemaakt, dus uw vorige sleutel werkt niet meer.</div></li>
 </ol>
-        <p class="footnote">Bij het vergrendelen gaat USB-foutopsporing uit. Ze komt terug zodra u drawbridge met uw sleutel ontgrendelt — zo installeert u later een nieuwere versie via dezelfde kabel.</p>
+        <p class="footnote">Bij het vergrendelen gaat USB-foutopsporing uit. Ze komt terug zodra u drawbridge met uw sleutel ontgrendelt. Zo installeert u later een nieuwere versie via dezelfde kabel.</p>
       </div>
 
       <div id="installer-done" hidden>
         <div class="callout callout--alpha">
           <strong>Bij het vergrendelen verwijdert drawbridge de apps die het blokkeert.</strong>
-          <p style="margin: 0.5rem 0 0;">Dat gebeurt later, op de telefoon, wanneer u op Vergrendelen drukt — niet hier. Op een telefoon die al in gebruik is verdwijnen die apps en komen ze niet terug.</p>
+          <p style="margin: 0.5rem 0 0;">Dat gebeurt later, op de telefoon, wanneer u op Vergrendelen drukt, niet hier. Op een telefoon die al in gebruik is verdwijnen die apps en komen ze niet terug.</p>
         </div>
         <h2>Nu afwerken op de telefoon</h2>
         <ol class="steps">
@@ -90,19 +85,19 @@
 <li><span class="num">3</span><div>Open <strong>drawbridge</strong>, kies de taal, lees het beleid, zet de opties.</div></li>
 <li><span class="num">4</span><div>Tik op <strong>drawbridge vergrendelen</strong> en schrijf de sleutel op vóór u dat scherm verlaat.</div></li>
 </ol>
-        <p class="footnote">Bij het vergrendelen gaat USB-foutopsporing uit. Ze komt terug zodra u drawbridge met uw sleutel ontgrendelt — zo installeert u later een nieuwere versie via dezelfde kabel.</p>
+        <p class="footnote">Bij het vergrendelen gaat USB-foutopsporing uit. Ze komt terug zodra u drawbridge met uw sleutel ontgrendelt. Zo installeert u later een nieuwere versie via dezelfde kabel.</p>
       </div>
 
       <h2>Een telefoon bijwerken die drawbridge al heeft</h2>
-      <p>Zelfde pagina, zelfde knop — die merkt dat de telefoon al beheerd wordt en werkt hem bij in plaats van hem opnieuw in te richten. Er wordt niets teruggezet en er gaat niets verloren. drawbridge kan zichzelf niet bijwerken, dus via deze kabel komt een nieuwe versie binnen.</p>
+      <p>Zelfde pagina, zelfde knop. Die merkt dat de telefoon al beheerd wordt en werkt hem bij in plaats van hem opnieuw in te richten. Er wordt niets teruggezet en er gaat niets verloren. drawbridge kan zichzelf niet bijwerken, dus via deze kabel komt een nieuwe versie binnen.</p>
       <ol class="steps">
 <li><span class="num">1</span><div>Open op de telefoon <strong>drawbridge</strong> en voer je sleutel in om te ontgrendelen. Daardoor komt USB-foutopsporing terug.</div></li>
 <li><span class="num">2</span><div>Zet <strong>USB-foutopsporing</strong> weer aan: Instellingen → Systeem → Ontwikkelaarsopties.</div></li>
 <li><span class="num">3</span><div>Sluit de telefoon aan en druk op de knop hieronder.</div></li>
-<li><span class="num">4</span><div>Als het klaar is, <strong>vergrendel drawbridge opnieuw</strong> op de telefoon en schrijf de nieuwe sleutel op — bij elke vergrendeling wordt er een nieuwe gemaakt, dus je oude sleutel werkt niet meer.</div></li>
+<li><span class="num">4</span><div>Als het klaar is, <strong>vergrendel drawbridge opnieuw</strong> op de telefoon en schrijf de nieuwe sleutel op. Bij elke vergrendeling wordt er een nieuwe gemaakt, dus je oude sleutel werkt niet meer.</div></li>
 </ol>
 
-      <p class="footnote">Deze pagina draait <a href="https://github.com/Nilss3/drawbridge/tree/main/site-src/installer">een kleine ADB-client</a> in uw browser. Ze zet de controle van Android op kabelinstallaties even uit, alleen zolang het kopiëren duurt, en zet ze daarna precies terug zoals ze was — bij succes, bij mislukking, en als u de telefoon loskoppelt.</p>
+      <p class="footnote">Deze pagina draait <a href="https://github.com/Nilss3/drawbridge/tree/main/site-src/installer">een kleine ADB-client</a> in uw browser. Ze zet de controle van Android op kabelinstallaties even uit, alleen zolang het kopiëren duurt, en zet ze daarna precies terug zoals ze was: bij succes, bij mislukking, en als u de telefoon loskoppelt.</p>
     </div>
   </section>
 
@@ -120,7 +115,7 @@ init({
   apkUrl: "/assets/dpc-85d840257e10426c.apk",
   apkSha256: "85d840257e10426cd2b1673d5b388a7ebb15b65df4c2dc655f16f43cefc6d52d",
   apkName: "dpc-85d840257e10426c.apk",
-  text: { updateDetected: "Deze telefoon wordt al beheerd door drawbridge ({version}). Hij wordt bijgewerkt in plaats van opnieuw ingericht \u2014 er wordt niets teruggezet en alles op de telefoon blijft staan." },
+  text: { updateDetected: "Deze telefoon wordt al beheerd door drawbridge ({version}). Hij wordt bijgewerkt in plaats van opnieuw ingericht. Er wordt niets teruggezet en alles op de telefoon blijft staan." },
 });
 </script>
 </body>

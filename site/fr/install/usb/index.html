@@ -42,16 +42,11 @@
 
       <h2>D'abord, sur le téléphone</h2>
       <ol class="steps">
-<li><span class="num">1</span><div><strong>Retirez tous les comptes</strong> — Paramètres → Mots de passe, clés d'accès et comptes. Vous vous reconnecterez à la fin. Rien d'autre n'est effacé.</div></li>
+<li><span class="num">1</span><div><strong>Retirez tous les comptes.</strong> Paramètres → Mots de passe, clés d'accès et comptes. Vous vous reconnecterez à la fin. Rien d'autre n'est effacé.</div></li>
 <li><span class="num">2</span><div>Activez les options pour développeurs : Paramètres → À propos du téléphone, touchez sept fois <strong>Numéro de build</strong>.</div></li>
 <li><span class="num">3</span><div>Paramètres → Système → Options pour développeurs → activez le <strong>débogage USB</strong>.</div></li>
 <li><span class="num">4</span><div>Branchez le téléphone à cet ordinateur.</div></li>
 </ol>
-
-      <div class="callout">
-        <strong>Fermez tout adb en cours sur cet ordinateur.</strong>
-        <p style="margin: 0.5rem 0 0;">Un seul programme à la fois peut détenir la connexion de débogage du téléphone. Si vous avez les outils Android installés, lancez d'abord <code>adb kill-server</code>, sinon cette page ne verra pas l'appareil.</p>
-      </div>
 
       <h2>Ensuite, ici</h2>
       <div class="btn-row">
@@ -81,7 +76,7 @@
       <div id="installer-done" hidden>
         <div class="callout callout--alpha">
           <strong>Le verrouillage de drawbridge désinstalle les applications qu'il bloque.</strong>
-          <p style="margin: 0.5rem 0 0;">Cela se produit plus tard, sur le téléphone, quand vous appuyez sur Verrouiller — pas ici. Sur un téléphone déjà utilisé, ces applications disparaissent et ne reviennent pas.</p>
+          <p style="margin: 0.5rem 0 0;">Cela se produit plus tard, sur le téléphone, quand vous appuyez sur Verrouiller, pas ici. Sur un téléphone déjà utilisé, ces applications disparaissent et ne reviennent pas.</p>
         </div>
         <h2>Terminez maintenant sur le téléphone</h2>
         <ol class="steps">
@@ -99,10 +94,10 @@
 <li><span class="num">1</span><div>Sur le téléphone, ouvrez <strong>drawbridge</strong> et saisissez votre clé pour le déverrouiller. C'est ce qui rend le débogage USB de nouveau disponible.</div></li>
 <li><span class="num">2</span><div>Réactivez le <strong>débogage USB</strong> : Paramètres → Système → Options pour développeurs.</div></li>
 <li><span class="num">3</span><div>Branchez le téléphone et appuyez sur le bouton ci-dessous.</div></li>
-<li><span class="num">4</span><div>Une fois terminé, <strong>verrouillez de nouveau drawbridge</strong> sur le téléphone et notez la nouvelle clé — chaque verrouillage en crée une, donc votre ancienne clé ne fonctionne plus.</div></li>
+<li><span class="num">4</span><div>Une fois terminé, <strong>verrouillez de nouveau drawbridge</strong> sur le téléphone et notez la nouvelle clé. Chaque verrouillage en crée une, donc votre ancienne clé ne fonctionne plus.</div></li>
 </ol>
 
-      <p class="footnote">Cette page exécute <a href="https://github.com/Nilss3/drawbridge/tree/main/site-src/installer">un petit client ADB</a> dans votre navigateur. Elle suspend le contrôle d'Android sur les installations par câble, le temps de la copie seulement, puis le rétablit exactement tel qu'il était — en cas de succès, d'échec, et si vous débranchez le téléphone.</p>
+      <p class="footnote">Cette page exécute <a href="https://github.com/Nilss3/drawbridge/tree/main/site-src/installer">un petit client ADB</a> dans votre navigateur. Elle suspend le contrôle d'Android sur les installations par câble, le temps de la copie seulement, puis le rétablit exactement tel qu'il était : en cas de succès, d'échec, et si vous débranchez le téléphone.</p>
     </div>
   </section>
 
