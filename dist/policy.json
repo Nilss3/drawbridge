@@ -1,7 +1,7 @@
 {
-  "version": 35,
-  "issued_at": "2026-08-10T17:00:00Z",
-  "comment": "Policy 35. Points app_update at drawbridge 0.2.7 (version_code 18), signed after the asset was published and verified to hash to its pin. A versioned URL again rather than /releases/latest/download/, for the same reason as policy 34: v0.2.7 is a DPC-only pre-release and must not become latest, because it carries no herald assets and every required_apps URL would 404 on every device the moment it did. v0.2.5 stays latest. What 0.2.7 changes is when herald arrives. Required apps used to wait for the lock; they no longer do, because installing what this document requires adds a browser rather than enforcing anything, and the window before the lock is the only time a parent has both their old browser and herald in front of them -- which is when bookmarks have to move across. Device Owner is still required and an unrequested run still waits for an unmetered network, so nothing large is pulled over a link somebody pays for by the megabyte. Also note what 0.2.7 deliberately does not do: DISALLOW_MODIFY_ACCOUNTS was added and reverted before shipping, so online accounts can still be added and removed on a locked phone. DISALLOW_ADD_USER is the restriction that matters there and is unconditional.",
+  "version": 36,
+  "issued_at": "2026-08-11T12:00:00Z",
+  "comment": "Policy 36. Prose only -- no rule changes, and app_update still points at drawbridge 0.2.7 (version_code 18). The profile description claimed two things that were not true. It said safe search is forced on YouTube, which is inert: YouTube is blocked as six packages, so there is nothing to force safe search on. And it said video platforms are blocked as apps and as websites, which overclaims badly -- the YouTube family and Twitch are blocked, and Vimeo, Dailymotion and the rest are not. Video platforms are allowed for now, so the sentence no longer mentions them. Worth remembering that this paragraph is the main thing a parent reads before locking a phone, so it is UI and goes stale like UI: it describes what the document does and does not update itself when the document changes.",
   "dns": {
     "upstreams": [
       "94.140.14.15",
@@ -276,7 +276,7 @@
       "id": "default",
       "name": "Default policy",
       "subtitle": "Keeps out the toxic internet, for devices from 14yo minimum",
-      "description": "The web, filtered: adult sites, gambling, ads and trackers do not resolve, and safe search is forced on Google, Bing and YouTube. Social networks, video platforms, games and AI companions are blocked both as apps and as websites. herald and herald mono are the only browsers that can exist on the phone. All other apps \u2014 tools, productivity, streaming media and the like \u2014 stay untouched.",
+      "description": "The web, filtered: adult sites, gambling, ads and trackers do not resolve, and safe search is forced on Google and Bing. Social networks, games and AI companions are blocked both as apps and as websites. herald and herald mono are the only browsers that can exist on the phone. All other apps \u2014 tools, productivity, streaming media and the like \u2014 stay untouched.",
       "name_i18n": {
         "nl": "Standaardbeleid",
         "fr": "Politique par d\u00e9faut"
@@ -286,8 +286,8 @@
         "fr": "Tient l'internet toxique \u00e0 distance, pour des appareils \u00e0 partir de 14 ans minimum"
       },
       "description_i18n": {
-        "nl": "Het web, gefilterd: pornosites, gokken, advertenties en trackers worden niet opgelost, en veilig zoeken staat vast aan op Google, Bing en YouTube. Sociale netwerken, videoplatformen, games en AI-gezelschapsapps zijn geblokkeerd, zowel als app als als website. herald en herald mono zijn de enige browsers die op de telefoon mogen bestaan. Alle andere apps \u2014 gereedschap, productiviteit, streamingdiensten en dergelijke \u2014 blijven ongemoeid.",
-        "fr": "Le web, filtr\u00e9 : les sites pour adultes, les jeux d'argent, la publicit\u00e9 et les traceurs ne se r\u00e9solvent pas, et la recherche s\u00e9curis\u00e9e est impos\u00e9e sur Google, Bing et YouTube. Les r\u00e9seaux sociaux, les plateformes vid\u00e9o, les jeux et les compagnons IA sont bloqu\u00e9s, en tant qu'applications comme en tant que sites. herald et herald mono sont les seuls navigateurs autoris\u00e9s sur le t\u00e9l\u00e9phone. Toutes les autres applications \u2014 outils, productivit\u00e9, services de streaming et autres \u2014 restent intactes."
+        "nl": "Het web, gefilterd: pornosites, gokken, advertenties en trackers worden niet opgelost, en veilig zoeken staat vast aan op Google en Bing. Sociale netwerken, games en AI-gezelschapsapps zijn geblokkeerd, zowel als app als als website. herald en herald mono zijn de enige browsers die op de telefoon mogen bestaan. Alle andere apps \u2014 gereedschap, productiviteit, streamingdiensten en dergelijke \u2014 blijven ongemoeid.",
+        "fr": "Le web, filtr\u00e9 : les sites pour adultes, les jeux d'argent, la publicit\u00e9 et les traceurs ne se r\u00e9solvent pas, et la recherche s\u00e9curis\u00e9e est impos\u00e9e sur Google et Bing. Les r\u00e9seaux sociaux, les jeux et les compagnons IA sont bloqu\u00e9s, en tant qu'applications comme en tant que sites. herald et herald mono sont les seuls navigateurs autoris\u00e9s sur le t\u00e9l\u00e9phone. Toutes les autres applications \u2014 outils, productivit\u00e9, services de streaming et autres \u2014 restent intactes."
       }
     }
   ],
