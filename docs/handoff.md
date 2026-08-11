@@ -1104,13 +1104,22 @@ about `verifier_verify_adb_installs` being restored on every exit path.
 
 Two decisions worth not re-litigating:
 
-- **The APK is served from the site**, at `/assets/dpc-release.apk`, and is
-  committed. GitHub's release downloads carry **no `Access-Control-Allow-Origin`
+- **The APK is served from the site**, named after its own hash
+  (`/assets/dpc-<sha16>.apk`), and is committed. GitHub's release downloads carry **no `Access-Control-Allow-Origin`
   header** — measured through the redirect to `release-assets.githubusercontent.com`
   — so a browser `fetch` of them is blocked outright. Hosting it here is also the
   only version that keeps the page's no-third-party-requests property.
   `.gitignore` only excludes `dist/release/*.apk`, and that rule is about
   herald's 230 MB rather than about APKs in principle.
+
+  **The hashed filename is not cosmetic.** The page carries the expected checksum
+  inline and refuses anything that does not match it — and with a stable
+  filename, page and APK are two URLs with two cache lifetimes. A page held in a
+  tab from before a release fetches the *new* APK and refuses it, which reads as
+  a corrupt download rather than a stale page. That happened on 2026-08-10, on
+  the 0.2.6 → 0.2.7 release, to the owner. Content-addressing turns it into a
+  404, which the page can name exactly: reload. A checksum mismatch now means
+  what it says.
 - **The DPC only.** herald is 233 MB down a USB cable; drawbridge fetches it
   itself from `required_apps` after locking, exactly as the QR path does.
 

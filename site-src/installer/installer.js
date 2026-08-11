@@ -148,16 +148,33 @@ async function preflight() {
 async function fetchApk() {
     setStep(3, "active");
     log(`Downloading drawbridge (${ui.apkName})…`);
-    const response = await fetch(ui.apkUrl);
-    if (!response.ok) throw new AdbError(`Could not download the app: HTTP ${response.status}`);
+    // `cache: "no-cache"` revalidates rather than trusting whatever is stored:
+    // this page and the APK are separate URLs, and the checksum below only means
+    // anything if they came from the same release.
+    const response = await fetch(ui.apkUrl, { cache: "no-cache" });
+    if (!response.ok) {
+        setStep(3, "error");
+        // The APK is named after its own hash, so a 404 means this page is older
+        // than the release it is pointing at — not that anything is broken.
+        throw new AdbError(
+            response.status === 404
+                ? "This page is out of date: the version it was built for has been " +
+                      "replaced. Reload the page and try again."
+                : `Could not download the app: HTTP ${response.status}`,
+        );
+    }
     const buffer = await response.arrayBuffer();
 
     const digest = await sha256Hex(buffer);
     if (digest !== ui.apkSha256) {
         setStep(3, "error");
         throw new AdbError(
-            "The downloaded app does not match its published checksum, so it will not be " +
-                "installed. Expected " + ui.apkSha256 + ", got " + digest + ".",
+            "The downloaded app does not match the checksum this page expects, so it will " +
+                "not be installed.\n\nReload the page and try again — if this page was open " +
+                "before a new version was published, that is the cause.\n\nExpected " +
+                ui.apkSha256 +
+                "\nGot      " +
+                digest,
         );
     }
     log(`Checksum verified (${(buffer.byteLength / 1048576).toFixed(1)} MB).`, "ok");

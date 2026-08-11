@@ -1160,11 +1160,28 @@ def stage_installer_assets() -> dict:
 
     assets = SITE_OUT / "assets"
     (assets / "js").mkdir(parents=True, exist_ok=True)
-    shutil.copy2(apk_src, assets / "dpc-release.apk")
-    for name in ("adb.js", "installer.js"):
-        shutil.copy2(SITE_SRC / "installer" / name, assets / "js" / name)
 
-    return {"name": "dpc-release.apk", "sha256": digest, "size": apk_src.stat().st_size}
+    # The APK is named after its own hash, and that is not cosmetic.
+    #
+    # The installer page carries the expected checksum inline and refuses to
+    # install anything that does not match it. With a stable filename those two
+    # are separate URLs with separate cache lifetimes, so a page held in a tab
+    # from before a release fetches the *new* APK and refuses it — which is what
+    # happened on 2026-08-10, and reads to the person in front of it as the
+    # download being corrupt rather than the page being old.
+    #
+    # Content-addressing removes the failure instead of explaining it: a stale
+    # page asks for an APK that no longer exists, and a 404 is something the page
+    # can name exactly ("reload this page"). A mismatch now means what it says.
+    name = f"dpc-{digest[:16]}.apk"
+    for stale in sorted(set(assets.glob("dpc-*.apk"))):
+        if stale.name != name:
+            stale.unlink()
+    shutil.copy2(apk_src, assets / name)
+    for js in ("adb.js", "installer.js"):
+        shutil.copy2(SITE_SRC / "installer" / js, assets / "js" / js)
+
+    return {"name": name, "sha256": digest, "size": apk_src.stat().st_size}
 
 
 def build_all() -> None:
