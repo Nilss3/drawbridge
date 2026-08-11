@@ -91,15 +91,36 @@ De telefoon zonder enig account laten is de striktere keuze, en een prima keuze.
 Zonder account kan de Play Store niets installeren, en drawbridge zelf heeft er
 geen nodig.
 
-Doe dit nu, hoe dan ook. Zodra drawbridge vergrendeld is, zijn accountwijzigingen
-afgesloten, en ze weer openen kost u de sleutel.
+U kunt later ook nog accounts toevoegen of verwijderen, vergrendeld of niet —
+drawbridge beperkt dat niet. Wat wel voorgoed geblokkeerd is, is het toevoegen
+van een tweede *gebruiker* aan de telefoon: die zou een eigen, ongefilterde
+internetverbinding krijgen.
 
 Zorg ook dat de telefoon op wifi zit: in de volgende stap wordt ongeveer 300 MB
 browser gedownload.
 
 ---
 
-## Stap 5 — Stel de telefoon in in de drawbridge-app
+## Stap 5 — Zet uw bladwijzers over naar herald
+
+**herald installeert zichzelf meteen na drawbridge**, op dezelfde wifi, en staat
+er dus al vóór u vergrendelt. Geef het bij een verse installatie een paar
+minuten.
+
+Doe dit nu, want het vergrendelen is wat de andere browsers verwijdert — en hun
+bladwijzers verdwijnen mee.
+
+1. Exporteer in de browser die u verlaat uw bladwijzers naar een HTML-bestand.
+   In Chrome: ⋮ → Bladwijzers → Bladwijzerbeheer → ⋮ → Bladwijzers exporteren.
+2. Open **herald** → ⋮ → Bladwijzers → ⋮ → Importeren, en kies dat bestand.
+
+herald leest hetzelfde formaat dat Chrome en Firefox schrijven. Wat het niet
+veilig kan maken — `javascript:`-items bijvoorbeeld — laat het vallen in plaats
+van te importeren.
+
+---
+
+## Stap 6 — Stel de telefoon in in de drawbridge-app
 
 Open de app **drawbridge**. Alles wat u beslist staat op dat ene scherm.
 
@@ -116,7 +137,7 @@ Open de app **drawbridge**. Alles wat u beslist staat op dat ene scherm.
 
 ---
 
-## Stap 6 — Vergrendel, en schrijf de sleutel op
+## Stap 7 — Vergrendel, en schrijf de sleutel op
 
 Tik op **drawbridge vergrendelen**. Dat is de enige knop die telt: hij past het
 beleid toe, start de inhoudsfilter en verzegelt het scherm. Sta de uitzondering

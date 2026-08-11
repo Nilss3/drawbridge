@@ -461,38 +461,26 @@ class DeviceOwnerManager(context: Context) {
         private const val TAG = "DeviceOwnerManager"
 
         /**
-         * The restriction set for a given state, and the only place the two
-         * lock-scoped rules live.
+         * The restriction set for a given state, and the only place the
+         * USB-debugging rule lives.
          *
-         * **Two restrictions follow the lock rather than the protection.** The
-         * rest are keyed on [ParentKey.protectedSince] through
+         * **USB debugging follows the lock, not the protection.** Every other
+         * restriction here is keyed on [ParentKey.protectedSince] through
          * [reapplyIfProtected], which survives unlocking on purpose: a parent
          * changing a setting has not withdrawn their protection, and the phone
-         * should stay filtered while they do it. These two are deliberately
-         * different, for different reasons.
+         * should stay filtered while they do it. This one is deliberately
+         * different, and the reason is that it is the project's only working
+         * delivery channel.
          *
-         * **Accounts** ([UserManager.DISALLOW_MODIFY_ACCOUNTS]) are closed while
-         * the phone is locked and open while it is not. That is what the install
-         * guides have always promised — "once drawbridge is locked, account
-         * changes are closed off" — and until now it was simply untrue: the
-         * restriction lived outside [MANAGED_RESTRICTIONS] and the function that
-         * applied it was never called from anywhere.
-         *
-         * It has to be the *lock* and not [ParentKey.protectedSince], because the
-         * pre-lock window is exactly when the parent decides what account the
-         * phone will carry, and unlocking is how they change their mind later.
-         * Keying it on protection would seal that decision at the first lock and
-         * make it unreachable without a factory reset.
-         *
-         * What it buys is the stricter half of the advice the install guides now
-         * give: a phone left with **no account** stays that way, so the Play
-         * Store cannot install anything. Without this, a child signs in and has a
-         * working store. Note it blocks *removing* accounts too, so an app that
-         * signs in through `AccountManager` cannot be set up on a locked phone
-         * either — the parent unlocks for that, which costs them the key.
-         *
-         * **USB debugging** is the other, and the reason is that it is the
-         * project's only working delivery channel.
+         * **Adding online accounts is deliberately *not* restricted.**
+         * `DISALLOW_MODIFY_ACCOUNTS` was wired up here on 2026-08-10 and taken
+         * straight back out: people legitimately carry several accounts, and
+         * blocking the lot to stop one is the wrong trade. It also blocked
+         * *removing* accounts, so any app signing in through `AccountManager`
+         * became unusable on a locked phone. What actually matters is
+         * [UserManager.DISALLOW_ADD_USER], which is unconditional and stops a
+         * second user profile — the one that would get unfiltered network,
+         * since always-on VPN is per-user.
          *
          * Play Protect refuses to install `app.drawbridge.dpc`, so a phone
          * cannot update drawbridge by itself and cannot be provisioned by QR.
@@ -512,22 +500,16 @@ class DeviceOwnerManager(context: Context) {
          * Note this does not switch USB debugging *on*. It stops the platform
          * refusing it; the developer options toggle is still a deliberate act.
          */
-        fun restrictionsFor(isLocked: Boolean, retainAdbAccess: Boolean): List<String> {
-            val withheld = buildSet {
-                if (!isLocked || retainAdbAccess) add(UserManager.DISALLOW_DEBUGGING_FEATURES)
-                if (!isLocked) add(UserManager.DISALLOW_MODIFY_ACCOUNTS)
+        fun restrictionsFor(isLocked: Boolean, retainAdbAccess: Boolean): List<String> =
+            if (!isLocked || retainAdbAccess) {
+                MANAGED_RESTRICTIONS - UserManager.DISALLOW_DEBUGGING_FEATURES
+            } else {
+                MANAGED_RESTRICTIONS
             }
-            return MANAGED_RESTRICTIONS - withheld
-        }
 
         val MANAGED_RESTRICTIONS: List<String> = buildList {
             add(UserManager.DISALLOW_CONFIG_VPN)
             add(UserManager.DISALLOW_DEBUGGING_FEATURES)
-            // Applied only while the phone is locked — see [restrictionsFor].
-            // It used to live outside this list, applied by a `lockAccounts()`
-            // that nothing ever called, so the promise that setup "locks account
-            // changes" was false on every device that ever ran.
-            add(UserManager.DISALLOW_MODIFY_ACCOUNTS)
             add(UserManager.DISALLOW_SAFE_BOOT)
             add(UserManager.DISALLOW_ADD_USER)
             add(UserManager.DISALLOW_ADD_MANAGED_PROFILE)

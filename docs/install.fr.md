@@ -95,16 +95,37 @@ Laisser le téléphone sans aucun compte est l'option la plus stricte, et une tr
 bonne option : sans compte, le Play Store ne peut rien installer, et drawbridge
 lui-même n'en a pas besoin.
 
-Faites-le maintenant, dans un cas comme dans l'autre. Une fois drawbridge
-verrouillé, les modifications de compte sont fermées, et les rouvrir vous coûte
-la clé.
+Vous pourrez aussi ajouter ou retirer des comptes plus tard, verrouillé ou non :
+drawbridge ne l'empêche pas. Ce qui reste bloqué définitivement, c'est l'ajout
+d'un second *utilisateur* au téléphone, qui disposerait sinon de son propre accès
+internet non filtré.
 
 Assurez-vous également que le téléphone est en Wi-Fi : l'étape suivante télécharge
 environ 300 Mo de navigateur.
 
 ---
 
-## Étape 5 — Configurez le téléphone dans l'application drawbridge
+## Étape 5 — Transférez vos favoris vers herald
+
+**herald s'installe juste après drawbridge**, sur le même Wi-Fi, et il est donc
+là avant que vous verrouilliez. Laissez-lui quelques minutes lors d'une première
+installation.
+
+Faites-le maintenant : c'est le verrouillage qui supprime les autres
+navigateurs — et leurs favoris partent avec eux.
+
+1. Dans le navigateur que vous quittez, exportez les favoris vers un fichier
+   HTML. Dans Chrome : ⋮ → Favoris → Gestionnaire de favoris → ⋮ → Exporter les
+   favoris.
+2. Ouvrez **herald** → ⋮ → Favoris → ⋮ → Importer, et choisissez ce fichier.
+
+herald lit le même format que celui écrit par Chrome et Firefox. Ce qu'il ne peut
+pas rendre sûr — les entrées `javascript:`, par exemple — est écarté plutôt
+qu'importé.
+
+---
+
+## Étape 6 — Configurez le téléphone dans l'application drawbridge
 
 Ouvrez l'application **drawbridge**. Tout ce que vous décidez tient sur cet écran.
 
@@ -121,7 +142,7 @@ Ouvrez l'application **drawbridge**. Tout ce que vous décidez tient sur cet éc
 
 ---
 
-## Étape 6 — Verrouillez, et notez la clé
+## Étape 7 — Verrouillez, et notez la clé
 
 Appuyez sur **Verrouiller drawbridge**. C'est le seul bouton qui compte : il
 applique la politique, démarre le filtre de contenu et scelle l'écran. Acceptez

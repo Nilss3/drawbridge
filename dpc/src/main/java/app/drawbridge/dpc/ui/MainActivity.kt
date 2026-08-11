@@ -353,11 +353,12 @@ class MainActivity : AppCompatActivity() {
         // and not opening the app.
         deviceOwner.applyManagedDevicePolicy()
 
-        // Moved here from provisioning for the same reason. On a QR-provisioned
-        // phone this is the first moment the parent has asked for any of it, so
-        // it is also the right moment to fetch the current policy and pull the
-        // browsers down.
-        DrawbridgeApplication.startEnforcing(this)
+        // Herald is normally already here, fetched at provisioning so the parent
+        // could move their bookmarks across before locking. This run is the
+        // catch-up: a phone that was provisioned on a metered connection, or that
+        // failed the download, gets another go at the moment somebody is standing
+        // over it waiting.
+        DrawbridgeApplication.fetchPolicyAndRequiredApps(this)
 
         requestBatteryOptimisationExemption()
 

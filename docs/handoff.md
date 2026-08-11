@@ -145,6 +145,44 @@ The reset path still buys the thing noted on 2026-08-07 — a QR-provisioned pho
 never receives the OEM's *downloaded* preloads — and an in-use phone obviously
 keeps everything it had.
 
+### herald arrives before the lock, and accounts are left alone
+
+**Two decisions taken on 2026-08-10, after the first full provision from the
+website.**
+
+**herald now installs at provisioning rather than at lock.** The gate on required
+apps was `protectedSince`, on the reasoning that installing what the policy
+requires is enforcement. It is not: nothing is restricted and nothing is removed,
+a browser is added. What made the wait look necessary was the QR path, where this
+ran inside the setup wizard and a ~470 MiB download competed with it — and that
+path is retired.
+
+The reason to want it early is **bookmarks**. The window before the lock is the
+only time the parent has both their old browser and herald in front of them, and
+locking is what removes the old one. herald arriving after the lock is herald
+arriving after the bookmarks it should have inherited are gone. All three install
+guides and the website now carry a step for moving them across, before locking.
+
+Device Owner is still required — these are silent `PackageInstaller` sessions —
+and an unrequested run still waits for an unmetered network.
+`DrawbridgeApplication.startEnforcing` is renamed `fetchPolicyAndRequiredApps`,
+because it only ever added things and the old name claimed otherwise.
+
+**`DISALLOW_MODIFY_ACCOUNTS` was wired up and taken straight back out.** It was
+requested, implemented, and then rejected on seeing the behaviour: people carry
+several online accounts legitimately, and blocking all of them to stop one is the
+wrong trade. It also blocks *removing* accounts, so anything signing in through
+`AccountManager` would have been unusable on a locked phone.
+
+What actually matters is `DISALLOW_ADD_USER`, which is unconditional and already
+applied: always-on VPN is per-user, so a second profile would get unfiltered
+network. That is the restriction the concern was really about.
+
+Note the observation that prompted this was made on **0.2.6, which predates the
+change** — so it was never evidence the restriction failed, only that it was not
+in the build. The install guides' line about account changes closing at lock is
+gone with it.
+
 ### And the cable is now repeatable, because USB debugging follows the lock
 
 **Decided by the owner on 2026-08-10, and implemented the same day.** The adb

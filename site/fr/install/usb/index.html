@@ -93,6 +93,15 @@
         <p class="footnote">Le verrouillage désactive le débogage USB. Il revient dès que vous déverrouillez drawbridge avec votre clé : c'est ainsi que vous installerez plus tard une version plus récente par le même câble.</p>
       </div>
 
+      <h2>Mettre à jour un téléphone qui a déjà drawbridge</h2>
+      <p>Même page, même bouton : il détecte que le téléphone est déjà géré et le met à jour au lieu de le reconfigurer. Rien n'est réinitialisé et rien n'est perdu. drawbridge ne peut pas se mettre à jour tout seul : c'est par ce câble qu'une nouvelle version arrive.</p>
+      <ol class="steps">
+<li><span class="num">1</span><div>Sur le téléphone, ouvrez <strong>drawbridge</strong> et saisissez votre clé pour le déverrouiller. C'est ce qui rend le débogage USB de nouveau disponible.</div></li>
+<li><span class="num">2</span><div>Réactivez le <strong>débogage USB</strong> : Paramètres → Système → Options pour développeurs.</div></li>
+<li><span class="num">3</span><div>Branchez le téléphone et appuyez sur le bouton ci-dessous.</div></li>
+<li><span class="num">4</span><div>Une fois terminé, <strong>verrouillez de nouveau drawbridge</strong> sur le téléphone et notez la nouvelle clé — chaque verrouillage en crée une, donc votre ancienne clé ne fonctionne plus.</div></li>
+</ol>
+
       <p class="footnote">Cette page exécute <a href="https://github.com/Nilss3/drawbridge/tree/main/site-src/installer">un petit client ADB</a> dans votre navigateur. Elle suspend le contrôle d'Android sur les installations par câble, le temps de la copie seulement, puis le rétablit exactement tel qu'il était — en cas de succès, d'échec, et si vous débranchez le téléphone.</p>
     </div>
   </section>

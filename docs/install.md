@@ -88,15 +88,33 @@ Leaving the phone with no account at all is the stricter option and a perfectly
 good one. The Play Store cannot install anything without an account, and
 drawbridge itself needs none.
 
-Do this now, either way. Once drawbridge is locked, account changes are closed
-off, and opening them again costs you the key.
+You can add or remove accounts later too, locked or not — drawbridge does not
+restrict that. What it does stop, permanently, is adding a second *user* to the
+phone, which would otherwise get its own unfiltered internet.
 
 Make sure the phone is on Wi-Fi as well: it downloads about 300 MB of browser
 during the next step.
 
 ---
 
-## Step 5 — Set the phone up in the drawbridge app
+## Step 5 — Move your bookmarks into herald
+
+**herald installs itself right after drawbridge**, on the same Wi-Fi, and it is
+there before you lock. Give it a few minutes on a fresh provision.
+
+Do this now, because locking is what removes the other browsers — and their
+bookmarks go with them.
+
+1. In the browser you are leaving, export bookmarks to an HTML file. In Chrome:
+   ⋮ → Bookmarks → Bookmark manager → ⋮ → Export bookmarks.
+2. Open **herald** → ⋮ → Bookmarks → ⋮ → Import, and pick that file.
+
+herald reads the same format Chrome and Firefox write. Anything it cannot make
+safe — `javascript:` entries, for instance — it drops rather than imports.
+
+---
+
+## Step 6 — Set the phone up in the drawbridge app
 
 Open the **drawbridge** app. Everything you decide is on that one screen.
 
@@ -112,7 +130,7 @@ Open the **drawbridge** app. Everything you decide is on that one screen.
 
 ---
 
-## Step 6 — Lock it, and write down the key
+## Step 7 — Lock it, and write down the key
 
 Tap **Lock drawbridge**. This is the one button that matters: it applies the
 policy, starts the content filter, and seals the screen. Allow the battery

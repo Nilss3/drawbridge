@@ -794,6 +794,28 @@ install locking is meant to trigger. The explicit trigger carries a flag saying
 "the parent asked for this"; the timestamp says "this phone is already
 protected"; either is sufficient.
 
+### herald is the exception, and it is not enforcement
+
+Installing what the policy *requires* used to wait for the lock along with
+everything else. It no longer does, and the distinction is worth keeping
+straight: the deferral exists to stop drawbridge **taking things away** before
+anybody asked — restrictions, removed apps, a filter. Adding a browser takes
+nothing away.
+
+What made the wait look necessary was the QR path, where this ran inside the
+setup wizard and a ~470 MiB download competed with it for the network at the
+moment it was trying to finish. That path is retired, and provisioning now
+happens over a cable on a phone that has already completed setup.
+
+The reason to want it early is bookmarks. The window before the lock is the only
+time the parent has both their old browser and herald in front of them, so it is
+the only time anything can be moved across. herald arriving after the lock is
+herald arriving after the browser it should have inherited from has been removed.
+
+It still requires Device Owner — these are silent `PackageInstaller` sessions —
+and an unrequested run still waits for an unmetered network, because 235 MiB per
+browser on somebody's mobile data is its own kind of surprise.
+
 ## drawbridge does not prevent a factory reset
 
 An earlier version set `DISALLOW_FACTORY_RESET`. Its documentation says it stops
@@ -1014,36 +1036,38 @@ drawbridge's app blocker seconds after the device was provisioned, because a
 browser whose package name is not the allowed one is exactly what that code
 exists to remove.
 
-## Two restrictions follow the lock, not the protection
+## USB debugging follows the lock, not the protection
 
 Most restrictions are keyed on `ParentKey.protectedSince`, which survives
 unlocking on purpose: a parent changing a setting has not withdrawn their
 protection, and the phone should stay filtered while they do it.
-`DISALLOW_DEBUGGING_FEATURES` and `DISALLOW_MODIFY_ACCOUNTS` are deliberately the
-exceptions. They go on when the key is committed and come off when the key is
-used, and `DeviceOwnerManager.restrictionsFor` is the only place that rule lives.
+`DISALLOW_DEBUGGING_FEATURES` is deliberately the exception. It goes on when the
+key is committed and comes off when the key is used, and
+`DeviceOwnerManager.restrictionsFor` is the only place that rule lives.
 
-### Accounts
+### Accounts are deliberately not restricted
 
-The install guides have always told parents that "once drawbridge is locked,
-account changes are closed off". That was simply false: the restriction sat
-outside `MANAGED_RESTRICTIONS` and the `lockAccounts()` that applied it was never
-called from anywhere, on any device, ever. The sentence is now true.
+`DISALLOW_MODIFY_ACCOUNTS` was wired into this rule on 2026-08-10 and taken back
+out the same day, on the owner's decision. It is recorded because the reasoning
+is worth not repeating.
 
-It is keyed on the lock rather than on protection because **the pre-lock window
-is when the parent decides what account the phone will carry**, and unlocking is
-how they change their mind later. Keying it on protection would seal that
-decision at the first lock and put it out of reach without a factory reset.
+The case for it was that a phone left with **no account** would stay that way, so
+the Play Store could install nothing. The case against, which won: people carry
+several online accounts legitimately, and blocking all of them to prevent one is
+the wrong trade. It also blocks *removing* accounts, so any app signing in
+through `AccountManager` becomes unusable on a locked phone — a cost paid
+constantly for a benefit that only applies to a phone whose owner chose to have
+no account at all.
 
-What it buys is the stricter half of the advice the guides now give — *use an
-account you do not mind the child having, or none at all*. A phone left with no
-account stays that way, so the Play Store cannot install anything. Without the
-restriction the child simply signs in and has a working store, which is most of
-what the lockdown was for.
+**`DISALLOW_ADD_USER` is the restriction that actually matters here**, and it is
+unconditional. Always-on VPN is per-user, so a second profile would get
+unfiltered network — which is a hole, where a second Google account is just a
+second mailbox.
 
-The cost is worth stating plainly: it blocks *removing* accounts as well as
-adding them, so an app that signs in through `AccountManager` cannot be set up on
-a locked phone. The parent unlocks for that, and unlocking costs them the key.
+The install guides said "once drawbridge is locked, account changes are closed
+off" for as long as the project existed, and it was never true: the restriction
+sat outside `MANAGED_RESTRICTIONS` and the `lockAccounts()` that applied it was
+never called from anywhere. That sentence is now gone rather than made true.
 
 ### USB debugging
 

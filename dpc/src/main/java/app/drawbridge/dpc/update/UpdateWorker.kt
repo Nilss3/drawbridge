@@ -16,7 +16,7 @@ import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import androidx.work.workDataOf
 import app.drawbridge.dpc.DrawbridgeApplication
-import app.drawbridge.dpc.security.ParentKey
+import app.drawbridge.dpc.admin.DeviceOwnerManager
 import java.util.concurrent.TimeUnit
 
 /** Applies app updates named by the signed policy document. */
@@ -39,18 +39,22 @@ class UpdateWorker(
         // Required apps first: a device missing herald has no browser at all,
         // which matters more than drawbridge being a version behind.
         //
-        // But not before the phone has been locked. Installing what the policy
-        // requires is enforcement, and enforcement waits for the parent to ask —
-        // otherwise a provisioned-but-unlocked phone quietly pulls down ~470 MiB
-        // of browsers on its next daily run, which is exactly the surprise the
-        // rest of the deferral exists to avoid.
+        // These installs no longer wait for the lock, and the reversal is
+        // deliberate. They used to, on the grounds that installing what the
+        // policy requires is enforcement — but it is not: nothing is restricted
+        // and nothing is removed, a browser is simply added. What made the wait
+        // look necessary was the QR path, where this ran inside the setup wizard
+        // and a ~470 MiB download competed with it; that path is retired.
         //
-        // [requested] rather than a plain protectedSince check, because locking
-        // calls runNow *before* it mints the key: the flag is what distinguishes
-        // "the parent just asked for this" from "the daily poll came round", and
-        // avoids a race with an ordering that is correct for other reasons.
+        // The window before the lock is now the only time the parent has both
+        // their old browser and herald in front of them, which is when bookmarks
+        // have to move across. Herald arriving after the lock is herald arriving
+        // after the browser it should have inherited from is gone.
+        //
+        // Device Owner is still required, because these are silent
+        // PackageInstaller sessions and nothing else could commit them.
         val requested = inputData.getBoolean(KEY_REQUESTED, false)
-        val protectedPhone = ParentKey(applicationContext).protectedSince > 0L
+        val canInstall = DeviceOwnerManager(applicationContext).isDeviceOwner
 
         // The browsers are ~235 MiB each, so they wait for an unmetered network
         // -- but drawbridge's own update, a few lines down, does not. That split
@@ -63,8 +67,8 @@ class UpdateWorker(
         // no browser at all is worse than a download they chose to start.
         val unmetered = isUnmetered()
         val required = when {
-            !requested && !protectedPhone -> {
-                Log.i(TAG, "Not installing required apps: phone has never been locked")
+            !canInstall -> {
+                Log.i(TAG, "Not installing required apps: not device owner")
                 emptyMap()
             }
             !requested && !unmetered -> {

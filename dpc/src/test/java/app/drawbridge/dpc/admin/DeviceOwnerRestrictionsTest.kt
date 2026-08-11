@@ -55,28 +55,29 @@ class DeviceOwnerRestrictionsTest {
         )
     }
 
+    /**
+     * Online accounts are deliberately left alone, on the owner's decision of
+     * 2026-08-10: people carry several legitimately, and the restriction blocks
+     * removing them as well as adding them. A second *user* is the real hazard —
+     * always-on VPN is per-user, so a guest profile would get unfiltered
+     * network — and that is covered unconditionally.
+     */
     @Test
-    fun `locked release build closes account changes`() {
-        val restrictions = DeviceOwnerManager.restrictionsFor(
-            isLocked = true,
-            retainAdbAccess = false,
-        )
-        assertTrue(
-            "the install guides promise account changes close at lock",
-            restrictions.contains(UserManager.DISALLOW_MODIFY_ACCOUNTS),
-        )
-    }
-
-    @Test
-    fun `unlocked phone can have its accounts changed`() {
-        val restrictions = DeviceOwnerManager.restrictionsFor(
-            isLocked = false,
-            retainAdbAccess = false,
-        )
-        assertFalse(
-            "the pre-lock window is when the parent chooses the phone's account",
-            restrictions.contains(UserManager.DISALLOW_MODIFY_ACCOUNTS),
-        )
+    fun `accounts are never restricted, users always are`() {
+        for (locked in listOf(true, false)) {
+            val restrictions = DeviceOwnerManager.restrictionsFor(
+                isLocked = locked,
+                retainAdbAccess = false,
+            )
+            assertFalse(
+                "adding an online account stays possible, locked or not",
+                restrictions.contains(UserManager.DISALLOW_MODIFY_ACCOUNTS),
+            )
+            assertTrue(
+                "a second user would get unfiltered network",
+                restrictions.contains(UserManager.DISALLOW_ADD_USER),
+            )
+        }
     }
 
     /**
@@ -96,21 +97,18 @@ class DeviceOwnerRestrictionsTest {
     }
 
     /**
-     * The rule is meant to move exactly two entries. A change that quietly
-     * dropped [UserManager.DISALLOW_SAFE_BOOT] or the multi-user restrictions on
-     * unlock would leave an unlocked phone unfiltered rather than merely
-     * reachable and open to account changes, and nothing else would notice.
+     * The rule is meant to move exactly one entry. A change that quietly dropped
+     * [UserManager.DISALLOW_SAFE_BOOT] or the multi-user restrictions on unlock
+     * would leave an unlocked phone unfiltered rather than merely reachable, and
+     * nothing else in the codebase would notice.
      */
     @Test
-    fun `unlocking moves only the two lock-scoped restrictions`() {
+    fun `unlocking moves only the debugging restriction`() {
         val locked = DeviceOwnerManager.restrictionsFor(isLocked = true, retainAdbAccess = false)
         val unlocked = DeviceOwnerManager.restrictionsFor(isLocked = false, retainAdbAccess = false)
 
         assertEquals(
-            setOf(
-                UserManager.DISALLOW_DEBUGGING_FEATURES,
-                UserManager.DISALLOW_MODIFY_ACCOUNTS,
-            ),
+            setOf(UserManager.DISALLOW_DEBUGGING_FEATURES),
             locked.toSet() - unlocked.toSet(),
         )
         assertEquals(

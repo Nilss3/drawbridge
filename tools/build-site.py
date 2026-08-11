@@ -423,6 +423,7 @@ INSTALL = {
         meanwhile='In the meantime it is one command from a copy of the repository — <code>tools/provision-adb.sh</code> — which installs both apps and makes drawbridge the owner of the phone. It is documented in <a href="https://github.com/Nilss3/drawbridge/blob/main/docs/provisioning.md">provisioning.md</a>.',
         after_h2="After setup",
         after_steps=[
+            "<strong>Move your bookmarks into herald.</strong> It installs itself right after drawbridge, so it is already there. Export them from the browser you are leaving, then in herald: ⋮ → Bookmarks → ⋮ → Import. Do this <em>before</em> the next step — activating removes the other browsers, and their bookmarks go with them.",
             "Open the drawbridge app and activate it.",
             "Write down the deactivation code shown once — or don't, if you want the protection to stay on for good.",
         ],
@@ -452,6 +453,7 @@ INSTALL = {
         meanwhile='Ondertussen is het één commando vanuit een kopie van de repository — <code>tools/provision-adb.sh</code> — dat beide apps installeert en drawbridge de eigenaar van de telefoon maakt. De uitleg staat in <a href="https://github.com/Nilss3/drawbridge/blob/main/docs/provisioning.md">provisioning.md</a>.',
         after_h2="Na de installatie",
         after_steps=[
+            "<strong>Zet je bladwijzers over naar herald.</strong> Die installeert zichzelf meteen na drawbridge en staat er dus al. Exporteer ze uit de browser die je verlaat, en kies daarna in herald: ⋮ → Bladwijzers → ⋮ → Importeren. Doe dit <em>vóór</em> de volgende stap — bij het activeren verdwijnen de andere browsers, en hun bladwijzers gaan mee.",
             "Open de drawbridge-app en activeer ze.",
             "Schrijf de eenmalig getoonde deactivatiecode op — of niet, als je wil dat de bescherming voorgoed aanblijft.",
         ],
@@ -481,6 +483,7 @@ INSTALL = {
         meanwhile='En attendant, il s\'agit d\'une seule commande depuis une copie du dépôt — <code>tools/provision-adb.sh</code> — qui installe les deux applications et fait de drawbridge le propriétaire du téléphone. Tout est expliqué dans <a href="https://github.com/Nilss3/drawbridge/blob/main/docs/provisioning.md">provisioning.md</a>.',
         after_h2="Après l'installation",
         after_steps=[
+            "<strong>Transférez vos favoris vers herald.</strong> Il s'installe juste après drawbridge : il est donc déjà là. Exportez-les depuis le navigateur que vous quittez, puis dans herald : ⋮ → Favoris → ⋮ → Importer. Faites-le <em>avant</em> l'étape suivante — l'activation supprime les autres navigateurs, et leurs favoris partent avec eux.",
             "Ouvrez l'application drawbridge et activez-la.",
             "Notez le code de désactivation affiché une seule fois — ou pas, si vous voulez que la protection reste active pour de bon.",
         ],
@@ -553,6 +556,14 @@ USB_INSTALLER = {
         lede="This page installs drawbridge onto a phone plugged into this computer. Nothing is uploaded anywhere — the app is served from this site and goes straight down the cable.",
         browser_note="Needs Chrome, Edge or another Chromium browser. Firefox and Safari have no WebUSB.",
         unsupported="This browser cannot talk to USB devices. Open this page in Chrome or Edge, or use <code>tools/provision-adb.sh</code> from a terminal instead.",
+        update_h2="Updating a phone that already has drawbridge",
+        update_intro="Same page, same button — it notices the phone is already managed and updates it instead. Nothing is reset and nothing on the phone is lost. drawbridge cannot update itself, so this cable is how a new version gets there.",
+        update_steps=[
+            "On the phone, open <strong>drawbridge</strong> and enter your key to unlock it. That is what hands USB debugging back.",
+            "Turn <strong>USB debugging</strong> back on: Settings → System → Developer options.",
+            "Plug the phone in and press the button below.",
+            "When it finishes, <strong>lock drawbridge again</strong> on the phone and write down the new key — locking makes a fresh one, so your old key stops working.",
+        ],
         prep_h2="On the phone, first",
         prep_steps=[
             "<strong>Remove every account</strong> — Settings → Passwords, passkeys &amp; accounts. You sign back in at the end. Nothing else is erased.",
@@ -597,6 +608,14 @@ USB_INSTALLER = {
         lede="Deze pagina installeert drawbridge op een telefoon die aan deze computer hangt. Er wordt niets geüpload — de app komt van deze site en gaat rechtstreeks door de kabel.",
         browser_note="Vereist Chrome, Edge of een andere Chromium-browser. Firefox en Safari hebben geen WebUSB.",
         unsupported="Deze browser kan niet met USB-toestellen praten. Open deze pagina in Chrome of Edge, of gebruik <code>tools/provision-adb.sh</code> vanuit een terminal.",
+        update_h2="Een telefoon bijwerken die drawbridge al heeft",
+        update_intro="Zelfde pagina, zelfde knop — die merkt dat de telefoon al beheerd wordt en werkt hem bij in plaats van hem opnieuw in te richten. Er wordt niets teruggezet en er gaat niets verloren. drawbridge kan zichzelf niet bijwerken, dus via deze kabel komt een nieuwe versie binnen.",
+        update_steps=[
+            "Open op de telefoon <strong>drawbridge</strong> en voer je sleutel in om te ontgrendelen. Daardoor komt USB-foutopsporing terug.",
+            "Zet <strong>USB-foutopsporing</strong> weer aan: Instellingen → Systeem → Ontwikkelaarsopties.",
+            "Sluit de telefoon aan en druk op de knop hieronder.",
+            "Als het klaar is, <strong>vergrendel drawbridge opnieuw</strong> op de telefoon en schrijf de nieuwe sleutel op — bij elke vergrendeling wordt er een nieuwe gemaakt, dus je oude sleutel werkt niet meer.",
+        ],
         prep_h2="Eerst op de telefoon",
         prep_steps=[
             "<strong>Verwijder elk account</strong> — Instellingen → Wachtwoorden, toegangssleutels en accounts. Op het einde meldt u zich weer aan. Verder wordt er niets gewist.",
@@ -641,6 +660,14 @@ USB_INSTALLER = {
         lede="Cette page installe drawbridge sur un téléphone relié à cet ordinateur. Rien n'est téléversé où que ce soit : l'application vient de ce site et passe directement par le câble.",
         browser_note="Nécessite Chrome, Edge ou un autre navigateur Chromium. Firefox et Safari n'ont pas WebUSB.",
         unsupported="Ce navigateur ne peut pas communiquer avec les appareils USB. Ouvrez cette page dans Chrome ou Edge, ou utilisez <code>tools/provision-adb.sh</code> depuis un terminal.",
+        update_h2="Mettre à jour un téléphone qui a déjà drawbridge",
+        update_intro="Même page, même bouton : il détecte que le téléphone est déjà géré et le met à jour au lieu de le reconfigurer. Rien n'est réinitialisé et rien n'est perdu. drawbridge ne peut pas se mettre à jour tout seul : c'est par ce câble qu'une nouvelle version arrive.",
+        update_steps=[
+            "Sur le téléphone, ouvrez <strong>drawbridge</strong> et saisissez votre clé pour le déverrouiller. C'est ce qui rend le débogage USB de nouveau disponible.",
+            "Réactivez le <strong>débogage USB</strong> : Paramètres → Système → Options pour développeurs.",
+            "Branchez le téléphone et appuyez sur le bouton ci-dessous.",
+            "Une fois terminé, <strong>verrouillez de nouveau drawbridge</strong> sur le téléphone et notez la nouvelle clé — chaque verrouillage en crée une, donc votre ancienne clé ne fonctionne plus.",
+        ],
         prep_h2="D'abord, sur le téléphone",
         prep_steps=[
             "<strong>Retirez tous les comptes</strong> — Paramètres → Mots de passe, clés d'accès et comptes. Vous vous reconnecterez à la fin. Rien d'autre n'est effacé.",
@@ -738,6 +765,10 @@ def render_usb_installer(lang: str, apk: dict) -> str:
         {steps_html(c['done_steps'])}
         <p class="footnote">{c['done_note']}</p>
       </div>
+
+      <h2>{c['update_h2']}</h2>
+      <p>{c['update_intro']}</p>
+      {steps_html(c['update_steps'])}
 
       <p class="footnote">{c['source_note']}</p>
     </div>

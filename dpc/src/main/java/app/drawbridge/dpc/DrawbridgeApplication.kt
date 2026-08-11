@@ -4,7 +4,6 @@ import android.app.Application
 import android.content.Context
 import app.drawbridge.dpc.admin.DeviceOwnerManager
 import app.drawbridge.dpc.admin.ProvisioningLog
-import app.drawbridge.dpc.security.ParentKey
 import app.drawbridge.dpc.update.UpdateWorker
 import app.drawbridge.policy.PolicyConfig
 import app.drawbridge.policy.PolicyManager
@@ -41,33 +40,37 @@ class DrawbridgeApplication : Application() {
         fun onAdminEnabled(context: Context) {
             DeviceOwnerManager(context).reapplyIfProtected()
 
-            // Held back until the phone has actually been locked, for the same
-            // reason the restrictions are. This runs during QR provisioning,
-            // while the setup wizard is still on screen, and UpdateWorker.runNow
-            // starts a ~470 MiB download of both browsers -- competing with the
-            // wizard for the network at the exact moment it is trying to finish.
-            // Nothing here is urgent: both workers are scheduled periodically,
-            // and locking calls startEnforcing directly.
-            if (ParentKey(context).protectedSince == 0L) {
-                ProvisioningLog.record(context, "onAdminEnabled skipped (never locked)")
-                return
-            }
-            startEnforcing(context)
+            // Herald comes down now, before the phone is locked, and that is a
+            // deliberate reversal.
+            //
+            // It used to wait for the lock, because this method ran *inside* the
+            // QR setup wizard and starting a ~470 MiB download underneath the
+            // wizard is what left a Moto G15 unable to finish setup at all. With
+            // the QR path retired there is no such moment left: provisioning
+            // happens over a cable, on a phone that has already finished setup.
+            //
+            // And there is a reason to want it early. The window before the lock
+            // is the only time the parent has both browsers in front of them, so
+            // it is the only time they can move bookmarks out of the browser they
+            // are about to lose. A herald that appears after the lock is a herald
+            // that appears after their bookmarks are gone.
+            //
+            // Nothing here enforces anything: no restriction is applied, no app
+            // is removed. Installing what the policy *requires* is additive, and
+            // it is the removals that wait for the parent to ask.
+            fetchPolicyAndRequiredApps(context)
         }
 
         /**
          * Fetches the current policy and installs whatever it requires.
          *
-         * Called when the parent locks the phone, and from [onAdminEnabled] on a
-         * device that is already protected. Not at provisioning time: on the QR
-         * path that lands inside the setup wizard, and pulling both browsers down
-         * underneath it is what left a Moto G15 unable to finish setup at all.
+         * Called at provisioning and again when the parent locks the phone. It
+         * only ever *adds*: the restrictions, the filter and the app removals are
+         * [DeviceOwnerManager]'s, and they still wait for the lock.
          */
-        fun startEnforcing(context: Context) {
-            ProvisioningLog.record(context, "startEnforcing: policy refresh + required apps")
+        fun fetchPolicyAndRequiredApps(context: Context) {
+            ProvisioningLog.record(context, "fetchPolicyAndRequiredApps: policy refresh + required apps")
             PolicyWorker.refreshNow(context)
-            // Pulls herald down: by then every other browser is gone, so nothing
-            // else on the device could fetch it.
             UpdateWorker.runNow(context)
         }
     }
