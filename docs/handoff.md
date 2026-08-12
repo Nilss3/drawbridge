@@ -81,8 +81,28 @@ Three differences from `main`, and nothing else:
    character-for-character `PolicyConfig.DEFAULT_POLICY_URL`, verified, so
    merging this into `main` changes no behaviour there.
 
-**`dev` is on policy 37**, `main` on 36. Policy 37 is the search-engine block;
-next steps item 3 has the reasoning.
+**`dev` is on drawbridge 0.2.8 (versionCode 19) and policy 38**; `main` on 0.2.7
+(18) and policy 37. Built 2026-08-12 — the first build this channel has ever
+carried, and the point at which the plumbing stopped being theoretical.
+
+What 0.2.8 has that the alpha does not: app removal follows the lock rather than
+nothing at all, the disconnect philosophy with its curfew, Diagnostics reporting
+the policy's last check / success / error / URL, and a no-cache header on the
+manual check. Policy 38 is policy 37 plus an `app_update` pointing at this build.
+
+**Policy 38 must not be merged to `main` as it stands.** Its `app_update` names
+versionCode 19 and a URL on the dev site; `main`'s names 0.2.7, which is what
+testers install. Re-signing on `main` fixes every list URL automatically but not
+this — `app_update` is a deliberate value, not a derived one.
+
+**The APK carries policy 37 as its bundled fallback, not 38.** That is inherent
+rather than an oversight: the policy pins the APK's hash, so it can only be
+signed after the APK exists, and rebuilding to embed it would change the hash it
+pins. Same shape as herald's bundled copy being one behind. Harmless — the
+bundled document only applies until the first poll.
+
+To install it: <https://dev.drawbridge-project.pages.dev/install/usb/>, which
+serves `dpc-e517d91148e5fcab.apk` and refuses anything whose hash does not match.
 
 **A list's URL follows the branch it is signed on, as of 2026-08-12.** The
 channel gave the *document* a staging path, but the lists it names are separate

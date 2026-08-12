@@ -1,7 +1,7 @@
 {
-  "version": 37,
-  "issued_at": "2026-08-12T12:00:00Z",
-  "comment": "Policy 37. Blocks the search engines herald does not offer. herald dropped Brave, Startpage and Qwant on 2026-08-10 because their safe search cannot be forced, but dropping an engine from a browser's list does not make it unreachable -- it is still a website, and its name typed into the address bar reaches it unfiltered. dist/lists/search.txt is the other half of that decision: the three that were dropped, the majors never offered (Yandex across its country domains, Baidu, Yahoo, Naver, Daum, Seznam, Sogou), the independents, and the ones marketed on not filtering. Where the parent domain is a portal people use for mail, only the search host is blocked. It also blocks the unforced front doors of the engines that ARE allowed -- html./lite./start.duckduckgo.com, cn./www4.bing.com, encrypted./images.google.com -- which resolve today and match none of DnsFilter's rewrite rules, so each was the allowed engine without its safe hostname. Those belong in the policy rather than in DnsFilter because a list entry reaches a phone in three hours and a code change needs a release Play Protect will not let a deployed phone install. The set of search engines is open and this does not close it; see docs/blocklist-notes.md for what was left out and why.",
+  "version": 38,
+  "issued_at": "2026-08-12T14:00:00Z",
+  "comment": "Policy 38, DEV CHANNEL ONLY. Points app_update at drawbridge 0.2.8 (version_code 19), served from the dev site rather than from a GitHub release -- dev builds are not published, so the URL is the dev install page's own asset, content-addressed by the hash below. Everything else is policy 37: the search-engine block and its list. This document must not be merged to main as it stands; main's app_update still names 0.2.7 (version_code 18), which is what testers install, and re-signing on main is what puts every list URL back on that branch. What 0.2.8 carries that 0.2.7 does not: app removal follows the lock rather than nothing at all, so an unlocked phone keeps what you install on it; the disconnect philosophy (always offline, always online, or a curfew with separate weekday and weekend windows); Diagnostics reporting when the policy was last checked, whether it succeeded, the last error and the policy URL; and a no-cache header on the manual policy check.",
   "dns": {
     "upstreams": [
       "94.140.14.15",
@@ -341,9 +341,9 @@
   },
   "app_update": {
     "package_name": "app.drawbridge.dpc",
-    "version_code": 18,
-    "url": "https://github.com/Nilss3/drawbridge/releases/download/v0.2.7/dpc-release.apk",
-    "sha256": "85d840257e10426cd2b1673d5b388a7ebb15b65df4c2dc655f16f43cefc6d52d"
+    "version_code": 19,
+    "url": "https://dev.drawbridge-project.pages.dev/assets/dpc-e517d91148e5fcab.apk",
+    "sha256": "e517d91148e5fcaba86a2f2b02bc34f8cc365d421cdc7fbaead4b7570f44c135"
   },
   "required_apps": [
     {
