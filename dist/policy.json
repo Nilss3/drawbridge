@@ -1,7 +1,7 @@
 {
-  "version": 39,
-  "issued_at": "2026-08-12T16:00:00Z",
-  "comment": "Policy 39, DEV CHANNEL ONLY. Two corrections to what the default policy tells a parent, and an app_update pointing at drawbridge 0.2.8 build 20. The profile's words are the owner's: the subtitle now carries the age as (+14) rather than a sentence, and the description names what is refused -- adult sites, gambling, ads, algorithmic social media, harmful games, AI companions, and search engines other than the five herald offers -- ending on what the old text never said, that the rest of the internet is cautiously welcome. Translated into Dutch and French with it, unreviewed like the rest. This document must not be merged to main as it stands: app_update names build 20 and a dev URL, while main's must go on naming 0.2.7 build 18, which is what testers install.",
+  "version": 40,
+  "issued_at": "2026-08-12T18:00:00Z",
+  "comment": "Policy 40, DEV CHANNEL ONLY. app_update points at drawbridge 0.2.8 build 21, which adds the curfew backstop worker, the lock screen's settings lines and the curfew's own diagnostics. Policy content is unchanged from 39. Must not be merged to main as it stands: app_update names build 21 and a dev URL, and main's must go on naming 0.2.7 build 18.",
   "dns": {
     "upstreams": [
       "94.140.14.15",
@@ -341,9 +341,9 @@
   },
   "app_update": {
     "package_name": "app.drawbridge.dpc",
-    "version_code": 20,
-    "url": "https://dev.drawbridge-project.pages.dev/assets/dpc-9ad503c822d247e0.apk",
-    "sha256": "9ad503c822d247e026e85b37dd3edc9491b386420f670de579477c4d2b3ee71f"
+    "version_code": 21,
+    "url": "https://dev.drawbridge-project.pages.dev/assets/dpc-29c3aadbc33ed4a2.apk",
+    "sha256": "29c3aadbc33ed4a27f51d5826b2b3e9f33ab36f1fcffdc0eea018798e8c398fa"
   },
   "required_apps": [
     {

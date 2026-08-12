@@ -139,4 +139,10 @@
     <string name="curfew_window">Offline from %1$s to %2$s</string>
     <string name="curfew_pick_start">Offline from</string>
     <string name="curfew_pick_end">Back online at</string>
+
+    <string name="lock_current_policy">Policy: %1$s</string>
+    <string name="lock_current_policy_unnamed">the document\'s own rules</string>
+    <string name="lock_current_offline">Internet: always offline</string>
+    <string name="lock_current_online">Internet: always allowed</string>
+    <string name="lock_current_curfew">Offline %1$s–%2$s on weekdays, %3$s–%4$s at weekends</string>
 </resources>

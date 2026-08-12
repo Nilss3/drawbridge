@@ -117,4 +117,10 @@
     <string name="curfew_window">Hors ligne de %1$s à %2$s</string>
     <string name="curfew_pick_start">Hors ligne à partir de</string>
     <string name="curfew_pick_end">De nouveau en ligne à</string>
+
+    <string name="lock_current_policy">Politique : %1$s</string>
+    <string name="lock_current_policy_unnamed">les règles du document lui-même</string>
+    <string name="lock_current_offline">Internet : toujours hors ligne</string>
+    <string name="lock_current_online">Internet : toujours autorisé</string>
+    <string name="lock_current_curfew">Hors ligne %1$s–%2$s en semaine, %3$s–%4$s le week-end</string>
 </resources>

@@ -20,6 +20,7 @@ import app.drawbridge.dpc.DrawbridgeApplication
 import app.drawbridge.dpc.R
 import app.drawbridge.dpc.admin.DeviceOwnerManager
 import app.drawbridge.dpc.curfew.CurfewController
+import app.drawbridge.dpc.curfew.DisconnectSettings
 import app.drawbridge.dpc.security.ParentKey
 import app.drawbridge.dpc.update.AppInstaller
 import app.drawbridge.policy.PolicyManager
@@ -92,6 +93,7 @@ class LockActivity : AppCompatActivity() {
         keyView.text = revealedKey.orEmpty()
         if (!revealing) {
             showLockHistory()
+            showCurrentSettings()
             showUpdateNotice()
         }
 
@@ -169,6 +171,51 @@ class LockActivity : AppCompatActivity() {
      * the first cannot be moved at all without clearing drawbridge's data, which
      * is the case worth catching.
      */
+    /**
+     * What the phone is set to, on the screen it spends its life on.
+     *
+     * The dates above say when it was locked; these two say what it was locked
+     * into. The curfew hours are the line that earns this: they are what gets
+     * asked about at half past nine, and until now reading them cost the key —
+     * which mints a new one, so checking a setting was a credential rotation.
+     *
+     * Both are read fresh rather than cached, because the policy name comes from
+     * a document that changes under the phone.
+     */
+    private fun showCurrentSettings() {
+        val policyLine = findViewById<TextView>(R.id.currentPolicy)
+        val disconnectLine = findViewById<TextView>(R.id.currentDisconnect)
+
+        if (parentKey.protectedSince <= 0) {
+            policyLine.visibility = View.GONE
+            disconnectLine.visibility = View.GONE
+            return
+        }
+
+        // PolicyManager.selectedProfile already resolves the stored choice, then
+        // the document's default, then nothing -- the same answer the
+        // configuration screen shows, rather than a second reading of it.
+        val profile = DrawbridgeApplication.policy(this).selectedProfile
+        policyLine.text = getString(
+            R.string.lock_current_policy,
+            profile?.displayName(Languages.current())
+                ?: getString(R.string.lock_current_policy_unnamed),
+        )
+
+        val settings = DisconnectSettings(this)
+        disconnectLine.text = when (settings.mode) {
+            DisconnectSettings.Mode.OFFLINE -> getString(R.string.lock_current_offline)
+            DisconnectSettings.Mode.ONLINE -> getString(R.string.lock_current_online)
+            DisconnectSettings.Mode.CURFEW -> getString(
+                R.string.lock_current_curfew,
+                settings.weekdayWindow.start,
+                settings.weekdayWindow.end,
+                settings.weekendWindow.start,
+                settings.weekendWindow.end,
+            )
+        }
+    }
+
     private fun showLockHistory() {
         val protectedSince = findViewById<TextView>(R.id.protectedSince)
         val lockedSince = findViewById<TextView>(R.id.lockedSince)

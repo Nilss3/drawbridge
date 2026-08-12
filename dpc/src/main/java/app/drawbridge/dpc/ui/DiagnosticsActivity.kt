@@ -18,7 +18,9 @@ import app.drawbridge.dpc.DrawbridgeApplication
 import app.drawbridge.dpc.R
 import app.drawbridge.dpc.admin.DeviceOwnerManager
 import app.drawbridge.dpc.admin.ProvisioningLog
+import app.drawbridge.dpc.curfew.DisconnectSettings
 import app.drawbridge.dpc.vpn.DnsFilterService
+import java.time.LocalDateTime
 
 /**
  * What this phone actually did, in a form someone can paste into a bug report.
@@ -108,6 +110,24 @@ class DiagnosticsActivity : AppCompatActivity() {
             appendLine("policy succeeded:  ${timestamp(state.lastSuccessMillis)}")
             appendLine("policy error:      ${state.lastError ?: "(none)"}")
             appendLine("policy url:        ${DrawbridgeApplication.policyConfig.policyUrl}")
+
+            // Connectivity, for the same reason the policy lines above exist: on
+            // 2026-08-12 a phone went offline at its curfew boundary and did not
+            // come back, and nothing on the device could say whether the alarm
+            // had fired, what the schedule was, or what state the controller
+            // believed it was in. "next boundary" is the line that answers it —
+            // a missing one is an alarm that was never set.
+            val disconnect = DisconnectSettings(this@DiagnosticsActivity)
+            val now = LocalDateTime.now()
+            appendLine("disconnect mode:   ${disconnect.mode}")
+            appendLine(
+                "curfew weekdays:   ${disconnect.weekdayWindow.start}-${disconnect.weekdayWindow.end}",
+            )
+            appendLine(
+                "curfew weekend:    ${disconnect.weekendWindow.start}-${disconnect.weekendWindow.end}",
+            )
+            appendLine("should be offline: ${disconnect.isOfflineAt(now)}")
+            appendLine("next boundary:     ${disconnect.nextChangeAfter(now) ?: "(none)"}")
             appendLine("blocked packages:  ${policy.blockedPackages.size}")
             appendLine("browsers allowed:  ${policy.browserPackages.joinToString()}")
             appendLine()

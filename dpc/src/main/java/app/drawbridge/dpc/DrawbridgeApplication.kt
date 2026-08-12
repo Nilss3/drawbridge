@@ -7,6 +7,7 @@ import app.drawbridge.dpc.admin.DeviceOwnerManager
 import app.drawbridge.dpc.admin.ProvisioningLog
 import app.drawbridge.dpc.apps.AppBlocker
 import app.drawbridge.dpc.curfew.CurfewController
+import app.drawbridge.dpc.curfew.CurfewWorker
 import app.drawbridge.dpc.update.UpdateWorker
 import app.drawbridge.policy.PolicyConfig
 import app.drawbridge.policy.PolicyManager
@@ -39,6 +40,9 @@ class DrawbridgeApplication : Application() {
         // Note this does *not* need to run after a policy refresh any more. The
         // schedule is device-local, so no document can change it.
         CurfewController(this).apply()
+        // The alarm is punctual and this is not; between them, a boundary that
+        // is missed is late rather than permanent. See CurfewWorker.
+        CurfewWorker.schedule(this)
     }
 
     companion object {

@@ -143,9 +143,30 @@
                 android:layout_height="wrap_content"
                 android:alpha="0.75"
                 android:paddingTop="6dp"
-                android:paddingBottom="24dp"
+                android:paddingBottom="16dp"
                 android:text="@string/lock_since_hint"
                 android:textAppearance="?attr/textAppearanceBodySmall" />
+
+            <!--
+                What this phone is actually set to. The lock screen is the screen
+                a managed phone spends its life on, and until now it said when the
+                phone was locked without ever saying what it was locked *into* —
+                so the curfew hours, the thing most likely to be questioned at
+                half past nine, could only be read by spending the key.
+            -->
+            <TextView
+                android:id="@+id/currentPolicy"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="?attr/textAppearanceBodyLarge" />
+
+            <TextView
+                android:id="@+id/currentDisconnect"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="2dp"
+                android:paddingBottom="24dp"
+                android:textAppearance="?attr/textAppearanceBodyLarge" />
 
             <TextView
                 android:layout_width="match_parent"

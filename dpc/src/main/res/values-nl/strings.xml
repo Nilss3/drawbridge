@@ -117,4 +117,10 @@
     <string name="curfew_window">Offline van %1$s tot %2$s</string>
     <string name="curfew_pick_start">Offline vanaf</string>
     <string name="curfew_pick_end">Weer online om</string>
+
+    <string name="lock_current_policy">Beleid: %1$s</string>
+    <string name="lock_current_policy_unnamed">de regels van het document zelf</string>
+    <string name="lock_current_offline">Internet: altijd offline</string>
+    <string name="lock_current_online">Internet: altijd toegestaan</string>
+    <string name="lock_current_curfew">Offline %1$s–%2$s op weekdagen, %3$s–%4$s in het weekend</string>
 </resources>

@@ -2585,10 +2585,31 @@ package names, and no per-transport carve-out exists in the Device Owner API.
 Exempting particular *apps* is expressible, but that leaks on every transport
 rather than one, which is a different and worse thing.
 
-**Untested on hardware.** `DisconnectSettingsTest` covers the window logic
-including the Friday-into-Saturday case, but no phone has been watched going
-offline at nine and back at eight, and nothing has confirmed that calls and SMS
-survive it on a real network. That is the first thing to do with the dev build.
+**First run on hardware, 2026-08-12, and it half worked.** Always-offline works.
+The curfew goes offline at its boundary and **did not come back online** at the
+morning one — which is the failure direction that matters, and the one everything
+here is supposed to be designed against. Also reported: changing only the *times*
+did not take effect until the philosophy was re-selected.
+
+Neither is explained by reading the code, so two things were built rather than a
+guess being shipped:
+
+- **`CurfewWorker`**, a periodic re-evaluation every fifteen minutes,
+  deliberately **unconstrained** — every other worker here waits for a network,
+  which is precisely wrong for the one that repairs *having no network*. The
+  alarm stays the primary mechanism because it is punctual; this makes a missed
+  boundary late rather than permanent, and it self-heals both reports.
+- **Diagnostics now prints the curfew's own state**: mode, both windows, whether
+  it should be offline now, and the **next boundary**. That last line is the one
+  that will settle it — a missing next boundary is an alarm that was never set,
+  and no amount of reading the source can tell you which happened on a device.
+
+Still unconfirmed: whether calls and SMS survive the lockdown on a real network.
+
+**The lock screen now shows what the phone is set to** — the policy name and the
+disconnect philosophy, with the curfew's hours spelled out. Asked for by the
+owner, and it earns its place: those hours are what gets questioned at half past
+nine, and reading them used to cost the key, which mints a new one.
 
 ### 7a. The old curfew note, for the reasoning
 
