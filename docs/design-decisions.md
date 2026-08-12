@@ -773,18 +773,51 @@ the backstop that makes a recovery-mode wipe useless to a child. Both must be
 done by hand, and both are impossible once the restrictions land, as is enabling
 USB debugging on an unfamiliar handset.
 
-`ParentKey.protectedSince` is the signal, not `isLocked`. It survives unlocking,
-so a parent who unlocks to change a setting has not withdrawn their protection
-and the phone stays locked down while they do it. Only removal clears it, which
-is right: removal is the off switch.
+`ParentKey.protectedSince` is the signal for the *restrictions and the filter*,
+not `isLocked`. It survives unlocking, so a parent who unlocks to change a
+setting has not withdrawn their protection and the phone stays filtered while
+they do it. Only removal clears it, which is right: removal is the off switch.
 
-The same rule governs the configuration screen. Choosing a policy or ticking an
-option records the choice and touches nothing until the phone is locked —
-otherwise a parent comparing two policies before deciding would have apps
-uninstalled out from under them by the act of looking. (The confirmation dialog
-in front of policy selection still describes the old behaviour, and wants
-rewording rather than deleting: it is false before the first lock and true after
-it.)
+### Except app removal, which follows the lock
+
+**Changed 2026-08-12, after the owner found it on a real phone.** Two things are
+keyed on the lock rather than on `protectedSince`: USB debugging, and **taking
+apps away**. Everything else — the DNS filter, the multi-user restrictions, safe
+boot — stays on through an unlock, because dropping those would leave an unlocked
+phone unfiltered rather than merely open.
+
+The bug was that removal followed *nothing at all*. `AppBlocker.evaluate` had no
+gate; `PackageWatcher` lives inside the always-on filter service, which keeps
+running after an unlock by design, so apps went on being uninstalled from an
+unlocked phone. The one gate that existed was on the configuration screen and
+asked `protectedSince != 0` — which reads as *has ever been locked* and stays
+true forever, so unlocking never reopened anything.
+
+**What that cost is the point of unlocking.** A parent unlocks to move data off
+the phone, to migrate an account, to try a second browser before deciding — and
+each of those needs an app to survive longer than the fifteen-minute sweep. An
+unlock that reopens Settings but still deletes what you install is not a window,
+it is a taunt.
+
+It gives nothing away, for exactly the reason USB debugging is keyed there:
+unlocking costs the parent's key, and an unlocked drawbridge already offers
+complete removal from its own overflow menu. Whoever reaches this state can undo
+everything anyway.
+
+**The cost, said plainly.** Every other browser is removed because a browser with
+its own encrypted DNS routes around a DNS-only filter. While the phone is
+unlocked that protection is off, so an unlocked phone carrying a second browser
+is filtered less than it looks. `LockActivity.sealWithKey` runs a full sweep the
+moment the key is committed, which is what makes the window close properly rather
+than fifteen minutes later — and it cannot be left to the watcher, whose own
+startup sweep runs from `lockDevice`, on a phone that is not locked yet.
+
+The configuration screen follows from this rather than needing its own rule: it
+only exists while the phone is unlocked, so choosing a policy or ticking an
+option records the choice and removes nothing. It now says so — the toast reads
+"applied, anything it removes goes when you lock the phone" instead of counting
+zero removals. (The confirmation dialog in front of policy selection still
+describes the old behaviour and wants rewording rather than deleting.)
 
 One wrinkle worth knowing. `lockDevice` triggers the policy fetch and the
 required-app install *before* it mints the key, because everything needing the

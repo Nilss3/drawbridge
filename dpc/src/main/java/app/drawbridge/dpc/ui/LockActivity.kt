@@ -241,6 +241,12 @@ class LockActivity : AppCompatActivity() {
         // parent who has not yet decided to keep the key — and an abandoned
         // reveal is supposed to leave a phone that can still be worked on.
         deviceOwner.applyUserRestrictions()
+        // And app removal is keyed on the lock for the same reason, so this is
+        // the moment it can finally run. Before the commit AppBlocker.evaluate
+        // declines every package, which includes the full sweep PackageWatcher
+        // does when the filter service starts — that happens back in
+        // lockDevice(), on a phone that is not locked yet.
+        DrawbridgeApplication.sweepOnLock(this)
         finish()
     }
 
@@ -311,7 +317,7 @@ class LockActivity : AppCompatActivity() {
     private fun refreshPolicy() {
         lifecycleScope.launch {
             val policy = DrawbridgeApplication.policy(this@LockActivity)
-            val message = when (val outcome = policy.refresh()) {
+            val message = when (val outcome = policy.refresh(userInitiated = true)) {
                 is PolicyManager.RefreshOutcome.Success ->
                     getString(R.string.policy_refreshed, outcome.version)
                 is PolicyManager.RefreshOutcome.Failure ->

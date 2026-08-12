@@ -22,6 +22,8 @@
     <string name="policy_applying_title">Application de la politique</string>
     <string name="policy_applying_message">Téléchargement des listes de blocage et vérification des applications installées…</string>
     <string name="policy_apply_failed">Cette politique ne figure plus dans le document.</string>
+    <string name="change_applied_at_lock">%1$s appliqué. Ce qui doit être retiré partira au verrouillage du téléphone.</string>
+    <string name="change_applied_plain">%1$s appliqué.</string>
 
     <string name="options_heading">Options</string>
     <string name="options_explanation">Autorisez les services suivants à vos propres risques.</string>

@@ -7,6 +7,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.PowerManager
 import android.provider.Settings
+import android.text.format.DateUtils
 import android.view.View
 import android.widget.Button
 import android.widget.TextView
@@ -95,6 +96,18 @@ class DiagnosticsActivity : AppCompatActivity() {
             // exactly why it belongs here.
             appendLine("battery exempt:    ${isIgnoringBatteryOptimisations()}")
             appendLine("policy version:    ${policy.version}")
+            // Why the version is what it is, which the version alone never says.
+            // On 2026-08-12 a phone sat on policy 36 after 37 was published and
+            // there was no way to tell from the device whether the refresh had
+            // failed, had not run, or had succeeded against a stale CDN copy --
+            // the manual check's toast is transient and binary, and all three
+            // look identical afterwards. The state has been written on every
+            // refresh since the beginning; it was simply never shown.
+            val state = DrawbridgeApplication.policy(this@DiagnosticsActivity).state()
+            appendLine("policy checked:    ${timestamp(state.lastCheckMillis)}")
+            appendLine("policy succeeded:  ${timestamp(state.lastSuccessMillis)}")
+            appendLine("policy error:      ${state.lastError ?: "(none)"}")
+            appendLine("policy url:        ${DrawbridgeApplication.policyConfig.policyUrl}")
             appendLine("blocked packages:  ${policy.blockedPackages.size}")
             appendLine("browsers allowed:  ${policy.browserPackages.joinToString()}")
             appendLine()
@@ -110,6 +123,18 @@ class DiagnosticsActivity : AppCompatActivity() {
             appendLine(ProvisioningLog.read(this@DiagnosticsActivity) ?: "  (nothing recorded)")
         }
     }
+
+    /** Absolute rather than "3 hours ago": this is pasted into bug reports. */
+    private fun timestamp(millis: Long): String =
+        if (millis == 0L) {
+            "(never)"
+        } else {
+            DateUtils.formatDateTime(
+                this,
+                millis,
+                DateUtils.FORMAT_SHOW_DATE or DateUtils.FORMAT_SHOW_YEAR or DateUtils.FORMAT_SHOW_TIME,
+            )
+        }
 
     private fun isIgnoringBatteryOptimisations(): Boolean =
         getSystemService(PowerManager::class.java).isIgnoringBatteryOptimizations(packageName)

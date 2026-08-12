@@ -351,7 +351,24 @@ python3 tools/policytool.py verify
 git add dist/ && git commit -m "policy: block ..." && git push
 ```
 
-Devices pick it up within a day.
+Devices pick it up within three hours, on the periodic poll.
+
+**But not for the first five minutes, however hard you ask.**
+`raw.githubusercontent.com` serves the policy with `cache-control: max-age=300`,
+so for five minutes after a push an edge can still hand back the previous
+document. A phone checked inside that window reports the *old* version and says
+it succeeded, because it did — it fetched a document, and the document was stale.
+
+This cost a debugging round on 2026-08-12, when policy 37 was pushed and a phone
+went on reporting 36 in both apps. Nothing was wrong. Two things came out of it:
+the manual check now sends `Cache-Control: no-cache` (the scheduled poll does
+not, since it runs hourly-ish and cannot care), and Diagnostics now prints
+`policy checked`, `policy succeeded`, `policy error` and the policy URL, so the
+next person can tell a failure from a stale success without a cable.
+
+Note the no-cache header is a request, not a guarantee: some CDNs deliberately
+ignore request-side no-cache. If a phone still reports the old version inside
+five minutes, wait rather than debug.
 
 ## The signing key
 

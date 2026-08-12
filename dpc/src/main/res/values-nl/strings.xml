@@ -22,6 +22,8 @@
     <string name="policy_applying_title">Beleid toepassen</string>
     <string name="policy_applying_message">Bloklijsten downloaden en geïnstalleerde apps nakijken…</string>
     <string name="policy_apply_failed">Dat beleid staat niet meer in het document.</string>
+    <string name="change_applied_at_lock">%1$s toegepast. Wat hierdoor verdwijnt, gaat weg zodra je de telefoon vergrendelt.</string>
+    <string name="change_applied_plain">%1$s toegepast.</string>
 
     <string name="options_heading">Opties</string>
     <string name="options_explanation">Sta de volgende diensten toe op eigen risico.</string>

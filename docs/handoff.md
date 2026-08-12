@@ -351,6 +351,69 @@ out while drawbridge is locked and come back after unlocking. That is the half n
 one can check over adb, since the restriction's whole effect is that adb goes
 away.
 
+### App removal followed nothing, and now follows the lock
+
+**Found by the owner on the reference phone, 2026-08-12: "drawbridge removes apps
+even when not locked. That's not the point. A person needs to be able to still
+move out his contents."** Correct on every count, and the code was worse than the
+report — removal was gated on *nothing at all*.
+
+`AppBlocker.evaluate` had no protection check. `PackageWatcher` lives inside
+`DnsFilterService`, which deliberately keeps running after an unlock so the phone
+stays filtered, so its install receiver and its fifteen-minute sweep went on
+uninstalling from an unlocked phone. The only gate anywhere was in
+`MainActivity.sweep`, and it asked `protectedSince != 0` — *has ever been
+locked*, which is true forever after the first lock and therefore never reopens.
+
+Now `evaluate` declines every package unless `ParentKey.isLocked`, which is the
+one choke point all three callers pass through. Removal joins USB debugging as
+the second thing keyed on the lock rather than on protection; the filter, safe
+boot and the multi-user restrictions stay on through an unlock, because dropping
+those would leave an unlocked phone unfiltered rather than merely open.
+
+**Locking still removes immediately**, and that part needed its own line:
+`LockActivity.sealWithKey` now runs a full sweep after `ParentKey.commit`. It
+cannot be left to the watcher — the watcher's startup sweep runs from
+`lockDevice`, which is *before* the parent has decided to keep the key, so it
+would find an unlocked phone and do nothing, and the next pass is fifteen minutes
+out.
+
+**The cost is real and belongs in the same breath.** Other browsers are removed
+because a browser with its own encrypted DNS routes around a DNS-only filter, so
+an unlocked phone carrying one is filtered less than it looks. That is now the
+deliberate shape of the unlock window rather than an oversight.
+
+**It also unblocks the browser testing the owner asked for**: unlock, install the
+browsers to be tried, test them against the filter — which stays on — then lock,
+and the sweep takes them away.
+
+The configuration screen stops claiming otherwise. It only exists while unlocked,
+so its toast no longer says "0 apps removed"; it says the change lands when the
+phone is locked, in all three languages.
+
+Covered by `AppBlockerLockGateTest`, including the specific case that was broken:
+locked, then unlocked, with `protectedSince` still set.
+
+### Diagnostics now says why the policy is what it is
+
+**2026-08-12.** Policy 37 was published and the phone reported 36 in both apps.
+Nothing was wrong — `raw.githubusercontent.com` sends `max-age=300`, so an edge
+served the previous document for five minutes — but **there was no way to tell
+that from the phone.** The manual check's toast is transient and binary, and a
+stale success, a failed refresh and a poll that never ran all look identical
+afterwards.
+
+`StoredState` has recorded `lastCheckMillis`, `lastSuccessMillis` and `lastError`
+on every refresh since the beginning, and Diagnostics printed none of them. It
+now prints all three, plus the policy URL — which also makes it obvious at a
+glance whether a handset is on the dev channel or the alpha.
+
+The manual check now sends `Cache-Control: no-cache`; the scheduled poll does
+not, since it runs every three hours and a five-minute window costs it nothing.
+**Whether the CDN honours it is unverified** — some deliberately ignore
+request-side no-cache to stop cache-busting — so it is a polite ask rather than a
+mechanism, and worth watching on a device before anyone relies on it.
+
 ### The QR path was broken by our own manifest, not by the DPC allowlist
 
 **This section used to say the allowlist was the thing that could stop

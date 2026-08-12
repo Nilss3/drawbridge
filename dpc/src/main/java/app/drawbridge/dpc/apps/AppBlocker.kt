@@ -11,6 +11,7 @@ import android.util.Log
 import app.drawbridge.dpc.BuildConfig
 import app.drawbridge.dpc.DrawbridgeApplication
 import app.drawbridge.dpc.admin.DrawbridgeDeviceAdminReceiver
+import app.drawbridge.dpc.security.ParentKey
 import app.drawbridge.policy.model.Policy
 
 /**
@@ -34,11 +35,42 @@ class AppBlocker(context: Context) {
     private val dpm =
         appContext.getSystemService(Context.DEVICE_POLICY_SERVICE) as DevicePolicyManager
     private val admin = DrawbridgeDeviceAdminReceiver.componentName(appContext)
+    private val parentKey = ParentKey(appContext)
 
     enum class Action { NONE, UNINSTALLED, SUSPENDED, FAILED }
 
-    /** Applies policy to a single package, e.g. one that has just been installed. */
+    /**
+     * Applies policy to a single package, e.g. one that has just been installed.
+     *
+     * **Removal follows the lock**, which is the single gate every path into this
+     * class goes through — the install receiver, the periodic sweep, and the
+     * configuration screen alike.
+     *
+     * It used to follow nothing at all. [PackageWatcher] lives inside
+     * [DnsFilterService], the filter deliberately keeps running after the parent
+     * unlocks, and so removals kept happening on an unlocked phone: an app
+     * installed to move data off the device was uninstalled seconds later, and a
+     * second browser could not be kept long enough to try it. The one gate that
+     * did exist was on the configuration screen and asked
+     * `protectedSince != 0` — *has ever been locked* — which stays true forever
+     * once the phone has been locked once, so unlocking never reopened anything.
+     *
+     * Keying it on the lock gives nothing away, for the same reason USB debugging
+     * is keyed there (see [DeviceOwnerManager.restrictionsFor]): unlocking costs
+     * the parent's key, and an unlocked drawbridge already offers complete
+     * removal from its own overflow menu. Whoever can reach this state can undo
+     * everything anyway.
+     *
+     * **What it does cost, and it should be said plainly.** Every other browser
+     * is removed because a browser carrying its own encrypted DNS routes around
+     * a DNS-only filter. While the phone is unlocked that protection is off, so
+     * an unlocked phone with a second browser on it is filtered less than it
+     * looks. Re-locking sweeps it away again — [LockActivity.sealWithKey] runs a
+     * full sweep the moment the key is committed.
+     */
     fun evaluate(packageName: String): Action {
+        if (!parentKey.isLocked) return Action.NONE
+
         val policy = DrawbridgeApplication.policy(appContext).policy.value
 
         if (isProtected(packageName, policy)) return Action.NONE

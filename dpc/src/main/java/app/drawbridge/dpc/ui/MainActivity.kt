@@ -436,7 +436,7 @@ class MainActivity : AppCompatActivity() {
 
             progress.dismiss()
             if (selected) {
-                toast(applied(choice.displayName(Languages.current()), removed))
+                toast(applied(choice.displayName(Languages.current()), removed, mayRemove = true))
             } else {
                 toast(getString(R.string.policy_apply_failed))
             }
@@ -492,7 +492,7 @@ class MainActivity : AppCompatActivity() {
             // download and nothing to wait for — but an option turned *off*
             // leaves an app on the device that policy no longer allows.
             val removed = if (enabled) 0 else sweep()
-            toast(applied(option.displayName(Languages.current()), removed))
+            toast(applied(option.displayName(Languages.current()), removed, mayRemove = !enabled))
             renderOptions()
         }
     }
@@ -507,26 +507,48 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
-     * Removes what the current selection no longer allows — but only once the
-     * phone has been locked.
+     * Removes what the current selection no longer allows — which, from this
+     * screen, is now always nothing.
      *
-     * Before the first lock the configuration screen is a draft: choosing a
-     * policy or ticking an option records the choice and touches nothing. That
-     * is the same rule [DeviceOwnerManager.reapplyIfProtected] applies, and it
-     * has to hold here too, or a parent comparing two policies before deciding
-     * would have apps uninstalled out from under them by the act of looking.
+     * The configuration screen only exists while the phone is unlocked: before
+     * the first lock, or after the parent has spent their key. Removal is keyed
+     * on the lock, so a sweep started here declines every package and the honest
+     * thing to tell the parent is that their change lands when they lock.
+     *
+     * **The gate here used to be `protectedSince != 0`, and that was the bug.**
+     * It reads as "has ever been locked" and stays true forever afterwards, so
+     * unlocking never reopened the window it was supposed to protect. The draft
+     * behaviour it was written for — comparing two policies without having apps
+     * uninstalled by the act of looking — is now what happens at every unlock,
+     * not just before the first lock.
+     *
+     * The call is kept rather than deleted because it is the truthful place for
+     * the count to come from if the gate ever moves again.
      */
     private suspend fun sweep(): Int {
-        if (parentKey.protectedSince == 0L) return 0
+        if (!parentKey.isLocked) return 0
         return withContext(Dispatchers.IO) { AppBlocker(this@MainActivity).sweep().size }
     }
 
-    private fun applied(name: String, removed: Int): String =
-        resources.getQuantityString(R.plurals.change_applied, removed, name, removed)
+    /**
+     * What to tell the parent after a change.
+     *
+     * Three cases rather than one, because removal follows the lock and this
+     * screen only exists while the phone is unlocked. [mayRemove] is the caller's
+     * knowledge of whether the change is the kind that takes apps away at all —
+     * switching an option *on* never does, so promising a removal at the next
+     * lock would be a lie in the other direction.
+     */
+    private fun applied(name: String, removed: Int, mayRemove: Boolean): String = when {
+        removed > 0 ->
+            resources.getQuantityString(R.plurals.change_applied, removed, name, removed)
+        mayRemove -> getString(R.string.change_applied_at_lock, name)
+        else -> getString(R.string.change_applied_plain, name)
+    }
 
     private fun refreshPolicy() {
         lifecycleScope.launch {
-            val message = when (val outcome = policy.refresh()) {
+            val message = when (val outcome = policy.refresh(userInitiated = true)) {
                 is PolicyManager.RefreshOutcome.Success ->
                     getString(R.string.policy_refreshed, outcome.version)
                 is PolicyManager.RefreshOutcome.Failure ->

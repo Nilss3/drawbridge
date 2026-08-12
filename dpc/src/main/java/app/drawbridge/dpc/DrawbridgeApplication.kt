@@ -2,8 +2,10 @@ package app.drawbridge.dpc
 
 import android.app.Application
 import android.content.Context
+import android.util.Log
 import app.drawbridge.dpc.admin.DeviceOwnerManager
 import app.drawbridge.dpc.admin.ProvisioningLog
+import app.drawbridge.dpc.apps.AppBlocker
 import app.drawbridge.dpc.update.UpdateWorker
 import app.drawbridge.policy.PolicyConfig
 import app.drawbridge.policy.PolicyManager
@@ -75,5 +77,41 @@ class DrawbridgeApplication : Application() {
             PolicyWorker.refreshNow(context)
             UpdateWorker.runNow(context)
         }
+
+        /**
+         * Process-scoped, because the work below has to outlive the activity that
+         * asks for it: [LockActivity] finishes itself in the same breath.
+         */
+        private val lockScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+
+        /**
+         * Removes everything the policy disallows, the moment the phone becomes
+         * locked.
+         *
+         * **This is what makes removal-follows-the-lock complete**, and it cannot
+         * be left to [PackageWatcher]. That watcher does a full sweep when
+         * [DnsFilterService] starts — but on a first lock the service is started
+         * by `MainActivity.lockDevice`, which runs *before* the parent has
+         * decided to keep the key, so the sweep would find an unlocked phone and
+         * do nothing. Its periodic pass is fifteen minutes away, and a parent who
+         * presses Lock is entitled to see the phone change now.
+         *
+         * Called from [LockActivity.sealWithKey], after `ParentKey.commit` and
+         * for the same reason USB debugging is applied there: until the key is
+         * committed there is no lock, and an abandoned reveal must leave the
+         * phone as it was.
+         */
+        fun sweepOnLock(context: Context) {
+            val appContext = context.applicationContext
+            lockScope.launch {
+                runCatching { AppBlocker(appContext).sweep() }
+                    .onSuccess { removed ->
+                        Log.i(TAG, "Lock sweep removed ${removed.size} packages: ${removed.keys}")
+                    }
+                    .onFailure { Log.e(TAG, "Lock sweep failed", it) }
+            }
+        }
+
+        private const val TAG = "DrawbridgeApplication"
     }
 }

@@ -28,6 +28,11 @@
     <string name="policy_applying_title">Applying policy</string>
     <string name="policy_applying_message">Downloading blocklists and checking installed apps…</string>
     <string name="policy_apply_failed">That policy is no longer in the document.</string>
+    <!-- Removal follows the lock, and this screen only exists while the phone is
+         unlocked, so a change made here takes apps away at the next lock rather
+         than now. Saying "0 apps removed" was the alternative. -->
+    <string name="change_applied_at_lock">%1$s applied. Anything it removes goes when you lock the phone.</string>
+    <string name="change_applied_plain">%1$s applied.</string>
 
     <string name="options_heading">Options</string>
     <string name="options_explanation">Allow the following services at own peril.</string>
