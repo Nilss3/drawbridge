@@ -78,7 +78,67 @@ def cmd_genkey(args: argparse.Namespace) -> None:
     print("device is stuck on its current policy until it is re-provisioned.")
 
 
-LOCAL_LIST_URL_PREFIX = "https://raw.githubusercontent.com/Nilss3/drawbridge/main/"
+LOCAL_LIST_URL_BASE = "https://raw.githubusercontent.com/Nilss3/drawbridge/"
+
+# The branches a signed policy may name. A list URL is rewritten to whichever of
+# these is checked out, so the channel a policy belongs to is derived rather than
+# typed — see rewrite_local_list_urls.
+CHANNELS = ("main", "dev")
+
+
+def local_list_path(url: str) -> str | None:
+    """The repo-relative path of a blocklist this repo hosts, or None.
+
+    Recognises the URL on any channel, because the same list is served from
+    `main` for the alpha and from `dev` for test builds.
+    """
+    if not url.startswith(LOCAL_LIST_URL_BASE):
+        return None
+    rest = url[len(LOCAL_LIST_URL_BASE):]
+    branch, _, path = rest.partition("/")
+    return path if branch in CHANNELS and path else None
+
+
+def current_channel() -> str | None:
+    """The checked-out branch, when it is one a policy may be signed on."""
+    branch = subprocess.run(
+        ["git", "rev-parse", "--abbrev-ref", "HEAD"],
+        cwd=REPO_ROOT, capture_output=True, text=True,
+    ).stdout.strip()
+    return branch if branch in CHANNELS else None
+
+
+def rewrite_local_list_urls(document: dict) -> None:
+    """Point every list this repo hosts at the branch being signed on.
+
+    The dev channel gives the *document* a staging path, but a document is a set
+    of URLs and the lists it names are fetched separately. A policy signed on
+    `dev` that still names `main`'s copy of a list cannot test a change to that
+    list at all: the file does not exist on `main` yet, PolicyStore drops an
+    unreachable source and compiles the rest, and the device quietly filters
+    less than the document promises.
+
+    Hand-editing the branch into the URL is the obvious fix and the dangerous
+    one, because it survives a merge: `dev`'s policy landing on `main` would
+    point every alpha phone at `dev`'s lists. Deriving it from the checked-out
+    branch instead means signing on `main` always produces `main` URLs, and the
+    trap cannot be set.
+
+    On any other branch the URLs are left exactly as they are, since a policy
+    signed there names a branch that may never be pushed.
+    """
+    channel = current_channel()
+    if channel is None:
+        return
+
+    for source in document.get("blocklists", []):
+        path = local_list_path(source.get("url", ""))
+        if path is None:
+            continue
+        wanted = f"{LOCAL_LIST_URL_BASE}{channel}/{path}"
+        if source["url"] != wanted:
+            print(f"  channel {source['id']}: -> {channel}")
+            source["url"] = wanted
 
 
 def pin_local_lists(document: dict) -> None:
@@ -91,10 +151,10 @@ def pin_local_lists(document: dict) -> None:
     import hashlib
 
     for source in document.get("blocklists", []):
-        url = source.get("url", "")
-        if not url.startswith(LOCAL_LIST_URL_PREFIX):
+        path = local_list_path(source.get("url", ""))
+        if path is None:
             continue
-        local = REPO_ROOT / url[len(LOCAL_LIST_URL_PREFIX):]
+        local = REPO_ROOT / path
         if not local.exists():
             sys.exit(f"Blocklist {source['id']!r} points at {local}, which does not exist")
         digest = hashlib.sha256(local.read_bytes()).hexdigest()
@@ -155,7 +215,7 @@ def check_urls_resolve(document: dict, *, published: bool = False) -> list[str]:
     targets: list[tuple[str, str, bool]] = []  # (label, url, fatal)
     for source in document.get("blocklists", []):
         url = source.get("url", "")
-        own = url.startswith(LOCAL_LIST_URL_PREFIX)
+        own = local_list_path(url) is not None
         targets.append((f"blocklist {source.get('id')!r}", url, published or not own))
     for app in document.get("required_apps", []):
         targets.append((f"required_app {app.get('package_name')} ({app.get('abi')})",
@@ -185,6 +245,7 @@ def cmd_sign(args: argparse.Namespace) -> None:
     if "version" not in document:
         sys.exit("Policy document has no 'version' field")
 
+    rewrite_local_list_urls(document)
     pin_local_lists(document)
     if not args.skip_url_check:
         failures = check_urls_resolve(document)

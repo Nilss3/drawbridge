@@ -2310,15 +2310,43 @@ write it down — it is the sentence a parent will search for.
 Note `DISALLOW_MODIFY_ACCOUNTS` is still never applied, so accounts can be added
 to a locked phone without unlocking it. That is the state this was tried in.
 
-### 3. herald must force safe search everywhere, or refuse the engine
+### 3. ~~herald must force safe search everywhere, or refuse the engine~~ — done, with one code fix left
 
-The policy already rewrites Google, Bing and YouTube at the DNS layer, and that
-covers the engines it names and nothing else. A search engine drawbridge has
-never heard of resolves normally and returns whatever it likes. herald is the
-only browser on the device, so it is the right place to close this: force safe
-search on every engine it offers, and for any engine where that cannot be forced,
-do not offer it at all. Note that DNS rewriting cannot do this alone — the engine
-list lives in the browser.
+**Both halves are done.** herald refuses what it cannot force — Brave, Startpage
+and Qwant were dropped on 2026-08-10 — and **policy 37 blocks the engines it does
+not offer**, published to `main` on 2026-08-12 by the owner's decision, since a
+policy is the one thing that reaches a deployed phone unaided and the alpha
+freeze is about the APK and the site rather than the document. Dropping an engine
+from a browser's list
+never made it unreachable: it is still a website, and its name typed into the
+address bar reached it unfiltered. `dist/lists/search.txt` covers the three
+dropped, the majors never offered, the independents, and the ones marketed on not
+filtering.
+
+**The find that mattered more than the tail.** The engines that *are* allowed had
+unforced front doors: `html.duckduckgo.com`, `lite.duckduckgo.com`,
+`start.duckduckgo.com`, `cn.bing.com`, `www4.bing.com`, `encrypted.google.com`
+and `images.google.com` all resolve and match none of `DnsFilter`'s rewrite
+rules, so each was the allowed engine with its safe hostname skipped — including
+the default one. They are blocked in the policy rather than fixed in `DnsFilter`
+deliberately: **a list entry reaches a phone in three hours and a code change
+needs a release Play Protect will not let a deployed phone install.** That trade
+is worth remembering for anything else of this shape.
+
+**Still open, and it needs a build:**
+
+- **`SafeSearch` and `DnsFilter` are documented as mirrors and are not.**
+  `SafeSearch.isGoogleSearchHost` folds an `images.` prefix;
+  `DnsFilter.safeSearchTargetFor` does not. The KDoc at
+  [SafeSearch.kt](../herald/src/main/java/app/drawbridge/herald/search/SafeSearch.kt)
+  says to change the two together, and nobody has. Small, and exactly the drift
+  this project keeps finding.
+- **Ecosia rests entirely on a parameter herald puts back**, with no DNS rewrite
+  behind it, so an in-page second search may not be enforced. Untested since
+  2026-08-10 and still the one-page test described in that file.
+- **The tail is not closeable.** Anyone can run a SearXNG instance in five
+  minutes. See [blocklist-notes](blocklist-notes.md) for what was left out and
+  why — public instances, AI search, archive sites, the translate proxy.
 
 ### 4. A setting for video streaming, with or without YouTube
 

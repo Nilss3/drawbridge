@@ -1,0 +1,107 @@
+# drawbridge — search engines that are not the five herald offers
+#
+# Curated and pinned by SHA-256 in dist/policy.json, unlike the large upstream
+# lists which rotate daily. Entries cover the parent domain only; matching is
+# suffix-based, so `yandex.ru` also blocks `images.yandex.ru`.
+#
+# **Why this list exists.** herald offers an engine only if its safe search can
+# actually be forced, and three engines were dropped on 2026-08-10 for failing
+# that test. Dropping an engine from the browser's list does not make it
+# unreachable: it is still a website, and typing its name into the address bar
+# reaches it unfiltered. This list is the other half of that decision.
+#
+# What stays reachable, deliberately: DuckDuckGo, Google, Bing (all three
+# rewritten to their safe hostnames by DnsFilter), Ecosia and Kagi. Nothing
+# here may block `safe.duckduckgo.com`, `strict.bing.com` or
+# `forcesafesearch.google.com` — those are the rewrite targets, and blocking one
+# would take the engine down rather than filter it.
+#
+# **What this list cannot do**, stated here so nobody later mistakes it for a
+# wall: the set of search engines is open. Anyone can run a SearXNG instance on
+# any hostname in five minutes, and dozens of public ones exist and churn
+# weekly. This blocks the engines a person can name. The backstop for the rest
+# is that the adult and gambling lists block the *destinations* — an unfiltered
+# engine returns a result list, and the click still fails.
+# See docs/blocklist-notes.md for what was deliberately left out.
+
+# The three herald dropped on 2026-08-10, because their safe search cannot be
+# forced without TLS interception (Brave), or has no parameter to set at all
+# (Startpage searches by POST), or documents one that is not heeded (Qwant).
+#
+# brave.com is deliberately absent: it is the vendor's site, not the engine.
+# qwantjunior.com is deliberately absent: it is the filtered edition, and
+# blocking a child-safe engine to enforce child safety would be perverse.
+search.brave.com
+startpage.com
+qwant.com
+
+# Yandex, which was never offered. Each country domain is its own registrable
+# name, so suffix matching does not cover them from one entry. Yandex Images is
+# the specific reason this block is not optional.
+yandex.com
+yandex.ru
+yandex.by
+yandex.kz
+yandex.com.tr
+yandex.eu
+ya.ru
+
+# The other majors never offered. Where the parent domain is a portal carrying
+# mail and other things people legitimately use, only the search host is
+# blocked — the front page's search box posts to it and fails there.
+baidu.com
+search.yahoo.com
+search.naver.com
+search.daum.net
+search.seznam.cz
+search.aol.com
+sogou.com
+so.com
+360.cn
+
+# The nostalgia tier. Still live, still returning results, and still exactly as
+# unforced as the day they were last fashionable.
+ask.com
+lycos.com
+excite.com
+dogpile.com
+webcrawler.com
+metacrawler.com
+info.com
+search.com
+
+# Independent indexes. None of them filters, most of them cannot, and all of
+# them are one address-bar entry away.
+mojeek.com
+yep.com
+marginalia.nu
+stract.com
+rightdao.com
+presearch.com
+presearch.io
+wiby.me
+teclis.com
+metager.de
+swisscows.com
+
+# Engines that market themselves on not filtering. This is the tier a teenager
+# actually searches for, and the tier that rots fastest — names appear and
+# disappear, so treat a miss here as expected rather than as a bug.
+gibiru.com
+lukol.com
+freespoke.com
+
+# Unforced front doors of the engines that ARE allowed. These resolve today and
+# match none of DnsFilter's rewrite rules, so each one is the allowed engine
+# without its safe hostname — which is a larger hole than any engine above.
+#
+# Blocking them here rather than adding them to DnsFilter is deliberate: a list
+# entry reaches every phone within three hours, and a code change needs a
+# release that Play Protect will not let a deployed phone install.
+html.duckduckgo.com
+lite.duckduckgo.com
+start.duckduckgo.com
+cn.bing.com
+www4.bing.com
+encrypted.google.com
+images.google.com
