@@ -98,6 +98,32 @@ expressible thing is exempting particular apps, which is not the same request an
 would leak on every transport rather than one. Asked for on 2026-08-12 and not
 built, because it cannot be.
 
+### The radios stay on, and the reason is asymmetry
+
+**Raised and rejected on 2026-08-12.** The suggestion was to switch Wi-Fi and
+mobile data *off* while offline, and lock those settings — on the good reasoning
+that apps behave better seeing no network than seeing a network that fails every
+connection.
+
+What Android actually offers is lopsided:
+
+| | Available to a Device Owner? |
+|---|---|
+| Turn Wi-Fi off | Probably. `setWifiEnabled` always fails for ordinary apps from API 29, and Device Owners are documented as exempt. **Unverified here** — this project has been wrong about four such carve-outs already. |
+| Turn mobile data off | **No.** The only API is `@SystemApi` behind `MODIFY_PHONE_STATE`, which a sideloaded DPC cannot hold. |
+| Stop either being *changed* | Yes — `DISALLOW_CONFIG_WIFI`, `DISALLOW_CHANGE_WIFI_STATE`, `DISALLOW_CONFIG_MOBILE_NETWORKS`. But that freezes the switch, it does not turn it off. |
+
+So the buildable version is Wi-Fi dark and mobile data connected-but-failing,
+which is half the benefit and a new inconsistency — **the owner's call was that a
+half-working version reads as buggy, and a phone that looks broken in one place
+and fine in another is worse than one that is honestly offline everywhere.** It
+also costs a parent the ability to join a network without unlocking.
+
+Worth knowing before anyone revisits this: the lockdown already fails Android's
+connectivity check, so the network is marked unvalidated and shows *No internet*.
+Apps that read `NET_CAPABILITY_VALIDATED` therefore do see the phone is offline,
+which is some of what switching the radios off was meant to buy.
+
 The bug above is the feature. "Every non-DNS packet dropped, every `connect()`
 failing with EPERM, in every app" is a broken phone as a permanent state and an
 exact description of what an evening internet curfew should do. So the curfew
