@@ -81,9 +81,11 @@ Three differences from `main`, and nothing else:
    character-for-character `PolicyConfig.DEFAULT_POLICY_URL`, verified, so
    merging this into `main` changes no behaviour there.
 
-**`dev` is on drawbridge 0.2.8 (versionCode 19) and policy 38**; `main` on 0.2.7
-(18) and policy 37. Built 2026-08-12 — the first build this channel has ever
-carried, and the point at which the plumbing stopped being theoretical.
+**`dev` is on drawbridge 0.2.8 build 20 and policy 39**; `main` on 0.2.7 (18)
+and policy 37. Built 2026-08-12 — the first builds this channel has ever carried,
+and the point at which the plumbing stopped being theoretical. Build 19 lasted
+one round: the owner read the screen and found two things it said that were not
+true, which is exactly what a dev channel is for.
 
 What 0.2.8 has that the alpha does not: app removal follows the lock rather than
 nothing at all, the disconnect philosophy with its curfew, Diagnostics reporting
@@ -102,7 +104,16 @@ pins. Same shape as herald's bundled copy being one behind. Harmless — the
 bundled document only applies until the first poll.
 
 To install it: <https://dev.drawbridge-project.pages.dev/install/usb/>, which
-serves `dpc-e517d91148e5fcab.apk` and refuses anything whose hash does not match.
+serves `dpc-9ad503c822d247e0.apk` and refuses anything whose hash does not match.
+
+**What build 20 fixes**, all found by looking at the screen rather than the code:
+selecting a disconnect philosophy no longer toasts "applied", because it is
+selected rather than applied and the radio moving says so already; the curfew
+explanation no longer claims drawbridge keeps its own connection, which stopped
+being true the moment the lockdown exemption came out; the default policy's own
+words are rewritten in three languages; and the lock confirmation now describes
+what locking actually does — removes apps, so migrate bookmarks first, and
+applies the disconnect philosophy.
 
 **A list's URL follows the branch it is signed on, as of 2026-08-12.** The
 channel gave the *document* a staging path, but the lists it names are separate

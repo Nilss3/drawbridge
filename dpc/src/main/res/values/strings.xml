@@ -65,7 +65,7 @@
 
     <!-- Locking -->
     <string name="lock_confirm_title">Lock drawbridge?</string>
-    <string name="lock_confirm_message">This applies the policy, starts the content filter and seals this screen.\n\nAndroid will ask whether drawbridge may keep running in the background. <b>Allow it.</b> Declining does not stop the filter, but it lets the phone put the daily check for policy updates to sleep — so the phone would go on filtering against an out-of-date list without saying so.\n\nYou will be shown a key. It is the only way back in, it is shown once, and there is no reset — not by email, not by us, not by anyone.\n\nWrite it down, or decide on purpose not to.</string>
+    <string name="lock_confirm_message">Locking drawbridge removes apps which are not according to the policy, like certain games, social media and browsers. Migrate your data (like bookmarks) beforehand. It will also apply the disconnect philosophy.\n\nIf Android asks whether drawbridge can run in the background, allow it. Drawbridge works either way, but like that it can update the web filter.\n\nYou will be shown a key. It\'s the only way to unlock except by factory reset of the device. The key is shown only once. Write it down or have your device forever like this, which is your choice.</string>
     <string name="lock_confirm_yes">Lock and show the key</string>
     <string name="lock_needs_filter">The content filter has to be running before the phone can be locked.</string>
 
@@ -133,7 +133,7 @@
     <string name="disconnect_online_description">Device can always go online.</string>
     <string name="disconnect_curfew_name">Curfew for the internet</string>
     <string name="disconnect_curfew_description">Only allow internet between certain times. Recommended is at least a half hour per week to install updates.</string>
-    <string name="curfew_explanation">The phone is offline between these hours. drawbridge itself keeps a connection so the phone can still receive its policy and updates.</string>
+    <string name="curfew_explanation">The phone is offline between these hours.</string>
     <string name="curfew_weekdays">Monday to Friday</string>
     <string name="curfew_weekend">Saturday and Sunday</string>
     <string name="curfew_window">Offline from %1$s to %2$s</string>

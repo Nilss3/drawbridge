@@ -336,12 +336,18 @@ class MainActivity : AppCompatActivity() {
         ).apply { setTitle(titleRes) }.show()
     }
 
+    /**
+     * No toast. The radio moving is the feedback, and the schedule appearing
+     * under the curfew is the rest of it — while "applied" would have been two
+     * kinds of wrong at once: the choice is not applied until the phone is
+     * locked, and saying so on every tap is noise on a screen a parent is still
+     * reading through.
+     */
     private fun selectDisconnect(mode: DisconnectSettings.Mode) {
         if (mode == disconnect.mode) return
         disconnect.mode = mode
         renderDisconnect()
         applyDisconnect()
-        toast(applied(getString(choiceFor(mode).title), removed = 0, mayRemove = false))
     }
 
     /**
@@ -351,9 +357,6 @@ class MainActivity : AppCompatActivity() {
      * contract every other control on this screen has.
      */
     private fun applyDisconnect() = CurfewController(this).apply()
-
-    private fun choiceFor(mode: DisconnectSettings.Mode): DisconnectChoice =
-        DisconnectChoice.entries.first { it.mode == mode }
 
     /** The screen's words for each mode, kept next to the mode they describe. */
     private enum class DisconnectChoice(
