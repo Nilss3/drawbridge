@@ -251,7 +251,7 @@ class LockActivity : AppCompatActivity() {
         // Connectivity too: the chosen philosophy is a draft until this moment,
         // like everything else on the configuration screen, and protectedSince
         // is only non-zero once commit() above has run.
-        CurfewController(this).applyIfProtected()
+        CurfewController(this).apply()
         finish()
     }
 
@@ -281,6 +281,16 @@ class LockActivity : AppCompatActivity() {
         // rather than the protection so that a parent holding the key can put a
         // fix on the phone over a cable. See DeviceOwnerManager.restrictionsFor.
         deviceOwner.applyUserRestrictions()
+
+        // And the phone comes back online, whatever the disconnect philosophy
+        // says: an unlocked drawbridge is a parent working on the phone, and
+        // everything they unlocked to do — install something, move data off,
+        // try a browser — needs a network. It goes dark again at the next lock.
+        CurfewController(this).apply()
+        // Which makes this the moment to catch up on the blocklists. A phone
+        // that has been offline has a stale policy, and the parent is about to
+        // use the network it just got back.
+        DrawbridgeApplication.fetchPolicyAndRequiredApps(this)
 
         startActivity(
             Intent(this, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP),

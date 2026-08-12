@@ -2526,16 +2526,24 @@ the settings store, the screen, and a caller.
   document signed by this project cannot carry them for somebody else's
   teenager. `Policy.curfew` still parses and is now a *suggestion* nothing
   enforces.
-- **drawbridge exempts its own package from the lockdown**, which is what stops
-  a curfew that cannot lift: an offline phone can still fetch the policy that
-  would give it internet back, while the person holding it has none. That
-  answers the old "guaranteed thirty minutes a day" requirement better than a
-  hole in the schedule would — a hole has hours a child can learn. **API 29+**;
-  on 28 the allowlist is dropped and an offline phone really cannot poll.
-- **It is keyed on `protectedSince`, not the lock** — the opposite of the app
-  blocker, deliberately. Unlocking to change a setting is not a request for the
-  internet back, and a curfew that lifted whenever somebody opened the
-  configuration screen would be a curfew in name only.
+- **Nothing is exempt from the lockdown, including drawbridge.** The first
+  version of this kept the DPC's own package out of it so a phone could still
+  poll — reasoning that belonged to a design where the schedule came from the
+  signed document, and that did not survive the schedule becoming device-local
+  in the same commit. **The owner caught it**: the way back online is unlocking
+  and changing the setting, which needs no network. So offline means offline,
+  and the screen's promise is literally true.
+
+  The policy going stale on a permanently offline phone is harmless — the
+  blocklists filter traffic and there is none. A curfewed phone polls in its
+  online hours, and a refresh is asked for the moment it comes back, at the
+  morning boundary or at an unlock, rather than waiting up to three hours.
+- **It follows the lock, like the app blocker** — not `protectedSince`, which is
+  what the first version used. An unlocked drawbridge is a parent working on the
+  phone, and installing something, moving data off or trying a browser all need
+  a network. It goes dark again at the next lock. The clock lock stays keyed on
+  protection, since a child does not stop being able to wind the clock forward
+  because a parent is mid-setting.
 
 **Bluetooth tethering is covered, and USB ethernet cannot be spared.** Lockdown
 is a rule about the user rather than about a network, so it catches Wi-Fi, mobile

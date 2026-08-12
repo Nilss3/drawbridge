@@ -50,22 +50,38 @@ households actually run and because a full seven-day editor is a lot of screen
 for two answers. Each is stored as the evening it *starts*, which is what makes
 Friday 21:00–08:00 cover Saturday morning without Saturday being named.
 
-### drawbridge keeps its own network, in every mode
+### Offline means offline, and unlocking is what lifts it
 
-The failure to design against is a curfew that cannot lift — a phone with no
-internet has no way to hear about the setting that would give it some back, and
-"offline until somebody drives to the house" is not a feature.
+Two rules, and the first is what makes the second unnecessary.
 
-The lockdown allowlist answers it: drawbridge's own package is always exempt. It
-has no browsing surface, so exempting it hands nobody anything, and it means the
-phone can always fetch its policy and its updates while the *person holding it*
-is completely offline. That is a better answer than the guaranteed daily window
-this originally called for, which would have been a hole in the schedule that a
-child could learn the hours of.
+**Nothing is exempt from the lockdown, including drawbridge.** The first version
+of this kept the DPC's own package out of it so the phone could still poll,
+reasoning that a phone with no internet cannot hear about the setting that would
+give it some back. That reasoning belonged to a design where the schedule came
+from the signed document — and it did not survive the schedule becoming
+device-local, which happened in the same commit. The way back online is a parent
+unlocking and changing the setting, and that needs no network at all. Keeping the
+exemption would have been a hole justified by a problem that no longer existed.
 
-On API 28 the allowlist does not exist and the lockdown is absolute, so there an
-offline phone genuinely cannot poll and the only way back is the configuration
-screen in somebody's hand.
+So the promise on screen — *this device cannot connect to the internet* — is
+literally true, which is worth more than a background poll.
+
+**The policy goes stale on a permanently offline phone, and that is fine.** The
+blocklists exist to filter traffic, and there is none. A phone on a curfew polls
+during its online hours like any other, and the moment it comes back online — at
+the morning boundary, or when a parent unlocks — drawbridge asks for a refresh
+rather than waiting up to three hours for the next scheduled one.
+
+**And the curfew follows the lock, not the protection.** An unlocked drawbridge
+is a parent working on the phone, and everything they unlocked to do — install
+something, move data off, try a browser — needs a network. This is the same rule
+as the app blocker, for the same reason: unlocking costs the key, and whoever
+holds the key can remove drawbridge outright. It goes dark again at the next
+lock.
+
+What stays keyed on protection is the clock lock, because a wall-clock window is
+only as trustworthy as the clock and a child does not stop being able to wind it
+forward because a parent is halfway through changing a setting.
 
 ### It covers Bluetooth tethering, and cannot spare USB ethernet
 

@@ -38,7 +38,7 @@ class DrawbridgeApplication : Application() {
         //
         // Note this does *not* need to run after a policy refresh any more. The
         // schedule is device-local, so no document can change it.
-        CurfewController(this).applyIfProtected()
+        CurfewController(this).apply()
     }
 
     companion object {

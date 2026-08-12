@@ -350,7 +350,7 @@ class MainActivity : AppCompatActivity() {
      * locked this records the choice and changes nothing, which is the same
      * contract every other control on this screen has.
      */
-    private fun applyDisconnect() = CurfewController(this).applyIfProtected()
+    private fun applyDisconnect() = CurfewController(this).apply()
 
     private fun choiceFor(mode: DisconnectSettings.Mode): DisconnectChoice =
         DisconnectChoice.entries.first { it.mode == mode }

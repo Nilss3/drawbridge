@@ -33,7 +33,7 @@ class BootReceiver : BroadcastReceiver() {
         // happened to be scheduled — which is none. apply() recomputes from the
         // clock rather than trusting any stored state, so it both restores the
         // right connectivity and sets the next alarm.
-        CurfewController(context).applyIfProtected()
+        CurfewController(context).apply()
 
         // Returns a consent intent when the app is not Device Owner, which cannot
         // be shown from a receiver; in that case the parent starts it from the

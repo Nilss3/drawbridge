@@ -26,6 +26,19 @@ import java.time.ZoneId
  * ethernet alike, without naming any of them. Calls and SMS are carrier-side and
  * unaffected, and GPS and FM radio are receive-only — which is exactly the
  * "calls and SMS only" the offline mode promises.
+ *
+ * **Nothing is exempt, including drawbridge.** An earlier version of this kept
+ * the DPC's own package out of the lockdown so it could still poll, on the
+ * reasoning that a phone with no internet cannot hear about the policy that
+ * would give it some back. That reasoning belonged to a design where the
+ * schedule came from the signed document, and it did not survive the schedule
+ * becoming device-local: the way back online is a parent unlocking and changing
+ * the setting, which needs no network at all. So offline means offline, which is
+ * both simpler to explain and exactly what the screen promises.
+ *
+ * The policy does go stale while a phone is permanently offline, and that is
+ * harmless: the blocklists exist to filter traffic, and there is none. A phone
+ * on a curfew polls during its online hours like any other.
  */
 class CurfewController(context: Context) {
 
@@ -44,75 +57,39 @@ class CurfewController(context: Context) {
     fun apply(now: LocalDateTime = LocalDateTime.now()) {
         if (!owner.isDeviceOwner) return
 
-        val mode = settings.mode
-        if (mode == DisconnectSettings.Mode.ONLINE) {
-            owner.setNetworkLockdown(enabled = false)
-            owner.clearClockLock()
-            cancelWakeUp()
-            return
-        }
+        val key = ParentKey(appContext)
+        // Nothing at all before the first lock. Even switching the lockdown
+        // *off* would name drawbridge as the always-on VPN and start the filter,
+        // which is the whole thing the pre-lock window exists to hold back.
+        if (key.protectedSince == 0L) return
 
-        // A wall-clock window is only as trustworthy as the clock, so the lock
-        // goes on whenever a curfew exists rather than only while one is running.
-        // Permanent offline does not depend on the clock and does not need it.
+        val mode = settings.mode
+
+        // The clock lock is keyed on protection, like every other restriction: a
+        // wall-clock window is only as trustworthy as the clock, and a child does
+        // not stop being able to wind it forward because a parent is halfway
+        // through changing a setting.
         if (mode == DisconnectSettings.Mode.CURFEW) owner.applyClockLock() else owner.clearClockLock()
 
-        owner.setNetworkLockdown(
-            enabled = settings.isOfflineAt(now),
-            allowedPackages = alwaysAllowed(),
-        )
+        // **Offline follows the lock.** An unlocked drawbridge is a parent
+        // working on the phone: installing something, moving data off it, trying
+        // a browser. All of that needs a network, and an unlock that reopened
+        // Settings but left the phone dark would be the same taunt as an unlock
+        // that still deleted the apps you installed. It gives nothing away for
+        // the same reason as everything else keyed here — unlocking costs the
+        // key, and whoever holds the key can remove drawbridge outright.
+        val offline = key.isLocked && settings.isOfflineAt(now)
+        owner.setNetworkLockdown(enabled = offline)
 
-        val next = settings.nextChangeAfter(now)
+        // Only a locked phone has boundaries to wake up for. Locking recomputes
+        // from scratch, so nothing is lost by dropping the alarm while unlocked.
+        val next = if (key.isLocked) settings.nextChangeAfter(now) else null
         if (next != null) {
             scheduleWakeUp(next)
         } else {
-            // Both constant modes land here, and so does a curfew whose two
-            // windows never change state -- which the model reports rather than
-            // guesses at. Nothing to wake up for.
             cancelWakeUp()
-            Log.i(TAG, "Connectivity never changes state under $mode; no wake-up scheduled")
+            Log.i(TAG, "No connectivity boundary to wake for under $mode; alarm cleared")
         }
-    }
-
-    /**
-     * drawbridge itself keeps its network, in every mode.
-     *
-     * **This is what stops a curfew that cannot lift**, which is the failure
-     * worth designing against here: a phone with no internet has no way to hear
-     * about the policy that would give it some back, and "offline until someone
-     * drives to the house" is not a feature. The DPC is the one package that
-     * must keep polling — it carries no browsing surface of its own, so
-     * exempting it hands nobody anything.
-     *
-     * It also answers the "guaranteed thirty minutes a day" requirement more
-     * cleanly than a hole in the schedule would: the phone can always fetch its
-     * policy and its updates, and the *user* is still offline the whole time.
-     *
-     * **The allowlist needs API 29** and `minSdk` is 28, where
-     * [DeviceOwnerManager.setNetworkLockdown] drops it and the lockdown is
-     * absolute. On such a device an offline phone really cannot poll, and the
-     * only way back is the configuration screen in somebody's hand.
-     */
-    private fun alwaysAllowed(): Set<String> = setOf(appContext.packageName)
-
-    /**
-     * The automatic entry point: boot, policy refresh, and anything else that
-     * runs without a person present.
-     *
-     * Keyed on `protectedSince` rather than on the lock, because connectivity is
-     * enforcement of the same kind as the filter — a parent who unlocks to change
-     * a setting has not asked for the internet back, and a phone that came back
-     * online every time somebody opened the configuration screen would be a
-     * curfew in name only. The setting itself is one tap away on that screen for
-     * a parent who does want it back.
-     *
-     * Contrast [app.drawbridge.dpc.apps.AppBlocker], which *is* keyed on the
-     * lock: the difference is between taking something away and letting the
-     * phone keep doing what it was already doing.
-     */
-    fun applyIfProtected(now: LocalDateTime = LocalDateTime.now()) {
-        if (ParentKey(appContext).protectedSince == 0L) return
-        apply(now)
     }
 
     /**
