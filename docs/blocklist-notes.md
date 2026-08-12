@@ -75,6 +75,54 @@ Android build to block. `rockstargames.com` and the Social Club domain are in
 `games.txt`, which stops the web account and companion pages, but nothing on the
 phone was ever going to run it.
 
+### Every other search engine
+
+**Blocked as far as a list can go, which is not all the way, and this entry
+exists so nobody later reads `search.txt` as a wall.** Added in policy 37, after
+herald dropped Brave Search, Startpage and Qwant on 2026-08-10 for having a safe
+search that cannot be forced. Removing an engine from a browser's list does not
+make it unreachable — it is still a website — so `dist/lists/search.txt` blocks
+the engines a person can name: the three dropped, the majors never offered, the
+independents, and the ones marketed on not filtering.
+
+**The set is open, and no curation closes it.** Anyone can run a SearXNG instance
+on any hostname in five minutes; ten public ones resolved in a sample taken on
+2026-08-12 and searx.space lists dozens more that churn weekly. Treat a miss as
+expected rather than as a bug.
+
+What keeps that from mattering as much as it sounds is the second layer: the
+adult and gambling lists block the *destinations*. An unfiltered engine returns a
+result list and the click still fails. The engines that genuinely matter are the
+ones rendering images inline **on their own domain**, which is why forcing
+DuckDuckGo, Google and Bing is worth more than blocking Mojeek.
+
+Left out deliberately, each for its own reason:
+
+- **Public SearXNG instances and front ends** (`searx.be`, `4get.ca`,
+  `librex.me`, Whoogle). Vendoring a snapshot of searx.space the way
+  `vendor-ublock.sh` pins uBlock Origin was considered and rejected for now: it
+  is new tooling plus a list that is stale between refreshes, and it still cannot
+  catch a self-hosted one.
+- **AI search** — `perplexity.ai`, `you.com`, `phind.com`. These are search
+  engines with no safe search at all, and blocking them would reverse the
+  standing decision above that general-purpose assistants stay unblocked. Left
+  as a known and chosen hole rather than an oversight.
+- **Archive and cache sites** — `web.archive.org`, `archive.ph`, `12ft.io`. They
+  serve copies of pages the filter blocks, which is a real route, but the
+  Internet Archive has ordinary homework uses and this is a different problem
+  from search.
+- **`translate.google.com`**, which proxies whole pages and is a genuine
+  circumvention route. Blocking it costs translation, which is an ordinary need.
+- **`brave.com`** and **`qwantjunior.com`**. The first is the vendor's site
+  rather than the engine; the second is the filtered edition, and blocking a
+  child-safe engine to enforce child safety would be perverse.
+- **`bing.net`**, which is Bing's CDN rather than a front end. Blocking it would
+  break the engine that is allowed.
+
+`swisscows.com` **is** blocked despite advertising itself as family-safe, on the
+rule that only the five engines herald offers should work. That is consistency
+rather than a judgement about its content.
+
 ## Deliberate omissions
 
 - **Minecraft** — see above.

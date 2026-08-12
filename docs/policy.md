@@ -226,11 +226,40 @@ other engine serves image results from its own CDN, which no domain blocklist
 covers — its safe-search setting is a cookie the user controls, not something
 this system can enforce.
 
-That is why the default is DuckDuckGo, why the shipped list is Google, Bing,
-DuckDuckGo, Brave Search, Qwant, Ecosia, Startpage and Kagi, and why **Yandex and
-Baidu are absent rather than merely unselected**. Narrowing `search_engines` to
-the first three is the strict setting; adding an engine to that list is a
-decision to trust its own safe search.
+That is why the default is DuckDuckGo and why the shipped list is **Google, Bing,
+DuckDuckGo, Ecosia and Kagi**. Narrowing `search_engines` to the first three is
+the strict setting; adding an engine to that list is a decision to trust its own
+safe search.
+
+**Brave Search, Qwant and Startpage were dropped on 2026-08-10**, having been
+shipped until then. Brave can only be forced with a `safesearch` cookie, and the
+vendor's own answer for filters rewrites the Cookie header behind TLS
+interception, which this project will not do. Startpage searches by POST
+deliberately, so there is no parameter to set. Qwant documents one that reference
+implementations record as not heeded. See
+[SearchEngineCatalogue](../herald/src/main/java/app/drawbridge/herald/search/SearchEngineCatalogue.kt).
+
+**Dropping an engine from the browser is only half of it, which is what policy 37
+is about.** An engine herald does not offer is still a website: its name typed
+into the address bar reaches it, unfiltered, and Yandex being *absent* from the
+list never stopped anyone from visiting Yandex. `dist/lists/search.txt` blocks
+the engines a person can name — the three dropped, the majors never offered, the
+independents, and the ones marketed on not filtering.
+
+It also blocks the **unforced front doors of the engines that are allowed**, and
+that half matters more: `html.duckduckgo.com`, `lite.duckduckgo.com`,
+`cn.bing.com` and `encrypted.google.com` all resolve and match none of
+`DnsFilter`'s rewrite rules, so each one was the allowed engine with its safe
+hostname skipped. They are blocked in the policy rather than rewritten in
+`DnsFilter` on purpose: a list entry reaches every phone within three hours, and
+a code change needs a release that Play Protect will not let a deployed phone
+install.
+
+**None of this closes the set.** Anyone can run a SearXNG instance on any
+hostname in minutes. The list stops the engines someone can name, and the
+backstop for the rest is that the adult and gambling lists block the
+destinations — an unfiltered engine returns a result list, and the click still
+fails. [blocklist-notes](blocklist-notes.md) records what was left out.
 
 **Kagi is the exception worth understanding.** Its settings live on the account,
 server side, rather than in a cookie — so unlike every other engine here, what it
@@ -256,6 +285,26 @@ pinned: they are rebuilt daily, and pinning them would mean re-signing the polic
 every day. They are protected by HTTPS and by the signed policy that names them.
 Unpinned lists are re-fetched once a day; pinned ones only when their hash
 changes.
+
+### A list's URL follows the channel it is signed on
+
+The dev channel gives the *document* a staging path, but a document is a set of
+URLs and the lists it names are fetched separately. A policy signed on `dev` that
+still named `main`'s copy of a list could not test a change to that list at all:
+the file does not exist on `main` yet, `PolicyStore` drops an unreachable source
+and compiles the rest, and the device quietly filters less than the document
+promises.
+
+So `sign` **rewrites the URL of every list this repo hosts to the branch it is
+run on**, and prints each one it moves. Signing on `main` produces `main` URLs;
+signing on `dev` produces `dev` URLs. On any other branch it changes nothing,
+since a policy signed there names a branch that may never be pushed.
+
+**It is derived rather than typed, and that is the point.** Hand-editing the
+branch into a URL is the obvious version and the dangerous one, because it
+survives a merge — `dev`'s policy landing on `main` would point every alpha phone
+at `dev`'s lists. Re-signing on `main` is now enough to undo that, and re-signing
+is already the documented step after any edit.
 
 ### A signed policy is not necessarily a working one
 

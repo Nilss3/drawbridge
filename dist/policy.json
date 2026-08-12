@@ -1,7 +1,7 @@
 {
-  "version": 36,
-  "issued_at": "2026-08-11T12:00:00Z",
-  "comment": "Policy 36. Prose only -- no rule changes, and app_update still points at drawbridge 0.2.7 (version_code 18). The profile description claimed two things that were not true. It said safe search is forced on YouTube, which is inert: YouTube is blocked as six packages, so there is nothing to force safe search on. And it said video platforms are blocked as apps and as websites, which overclaims badly -- the YouTube family and Twitch are blocked, and Vimeo, Dailymotion and the rest are not. Video platforms are allowed for now, so the sentence no longer mentions them. Worth remembering that this paragraph is the main thing a parent reads before locking a phone, so it is UI and goes stale like UI: it describes what the document does and does not update itself when the document changes.",
+  "version": 37,
+  "issued_at": "2026-08-12T12:00:00Z",
+  "comment": "Policy 37. Blocks the search engines herald does not offer. herald dropped Brave, Startpage and Qwant on 2026-08-10 because their safe search cannot be forced, but dropping an engine from a browser's list does not make it unreachable -- it is still a website, and its name typed into the address bar reaches it unfiltered. dist/lists/search.txt is the other half of that decision: the three that were dropped, the majors never offered (Yandex across its country domains, Baidu, Yahoo, Naver, Daum, Seznam, Sogou), the independents, and the ones marketed on not filtering. Where the parent domain is a portal people use for mail, only the search host is blocked. It also blocks the unforced front doors of the engines that ARE allowed -- html./lite./start.duckduckgo.com, cn./www4.bing.com, encrypted./images.google.com -- which resolve today and match none of DnsFilter's rewrite rules, so each was the allowed engine without its safe hostname. Those belong in the policy rather than in DnsFilter because a list entry reaches a phone in three hours and a code change needs a release Play Protect will not let a deployed phone install. The set of search engines is open and this does not close it; see docs/blocklist-notes.md for what was left out and why.",
   "dns": {
     "upstreams": [
       "94.140.14.15",
@@ -46,24 +46,31 @@
     },
     {
       "id": "social",
-      "url": "https://raw.githubusercontent.com/Nilss3/drawbridge/main/dist/lists/social.txt",
+      "url": "https://raw.githubusercontent.com/Nilss3/drawbridge/dev/dist/lists/social.txt",
       "format": "domains",
       "category": "social",
       "sha256": "7c1a7f1a8c0ddaa1a31f2afdad09960422ecdb7627f02e560effeec302a47975"
     },
     {
       "id": "ai-companions",
-      "url": "https://raw.githubusercontent.com/Nilss3/drawbridge/main/dist/lists/ai-companions.txt",
+      "url": "https://raw.githubusercontent.com/Nilss3/drawbridge/dev/dist/lists/ai-companions.txt",
       "format": "domains",
       "category": "ai-companions",
       "sha256": "bf7ce0a7e13820791e89ddf77f0ff95ab5d025f01a1e25ba4d10189dee6af778"
     },
     {
       "id": "games",
-      "url": "https://raw.githubusercontent.com/Nilss3/drawbridge/main/dist/lists/games.txt",
+      "url": "https://raw.githubusercontent.com/Nilss3/drawbridge/dev/dist/lists/games.txt",
       "format": "domains",
       "category": "games",
       "sha256": "dda44f8797c0239d1237619eb4033944405ff746fcfda270bad01a0a0ea0b868"
+    },
+    {
+      "id": "search",
+      "url": "https://raw.githubusercontent.com/Nilss3/drawbridge/dev/dist/lists/search.txt",
+      "format": "domains",
+      "category": "search",
+      "sha256": "d1097eccb517005714c01538c71b67d2ba3bd5a4acf1461d5d7edb4af8d09c4a"
     }
   ],
   "blocked_domains": [
