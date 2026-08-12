@@ -2658,6 +2658,17 @@ guess being shipped:
   that will settle it — a missing next boundary is an alarm that was never set,
   and no amount of reading the source can tell you which happened on a device.
 
+**Build 21: the curfew lifted.** Reported by the owner on 2026-08-12 — the phone
+came back online at its boundary, which is the half that failed on build 19.
+
+**Which mechanism did it is unknown, and the difference matters.** A lift exactly
+on the boundary is the alarm working; a lift up to fifteen minutes late is
+`CurfewWorker` carrying a broken alarm and nobody noticing. Diagnostics'
+`next boundary` line plus the time it actually came back separates them. Worth
+one deliberate look before treating the alarm as sound, because a phone that
+depends on the backstop is one OEM battery policy away from a curfew that lasts
+until someone opens the app.
+
 Still unconfirmed: whether calls and SMS survive the lockdown on a real network.
 
 **The lock screen now shows what the phone is set to** — the policy name and the
