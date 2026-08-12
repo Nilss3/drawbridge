@@ -2506,7 +2506,52 @@ absent from the allowed list is installed and removed on a loop, which is the
 trap the two-list rule exists to prevent. Whatever ships must keep those two in
 agreement.
 
-### 7. The curfew, with a floor of half an hour of internet a day
+### 7. ~~The curfew~~ — built 2026-08-12, as three philosophies
+
+**Done, and shaped by the owner's spec rather than by the old draft.** The
+configuration screen gained a **Disconnect philosophy** section *above* Policy,
+with three choices: *Always blissfully offline* (calls, SMS, GPS and FM radio
+only), *Sadly always online*, and *Curfew for the internet*. Choosing the curfew
+reveals two editable windows — Monday–Friday and Saturday–Sunday — defaulting to
+**21:00–08:00**.
+
+The mechanism was already there and needed no invention: the always-on VPN's
+lockdown flag, `CurfewController`, and `Curfew`'s window arithmetic. What was
+missing was everything around it — the manifest `<receiver>`, the boot re-apply,
+the settings store, the screen, and a caller.
+
+**Three things worth knowing before touching it:**
+
+- **The schedule is device-local, not policy.** Hours belong to a household; a
+  document signed by this project cannot carry them for somebody else's
+  teenager. `Policy.curfew` still parses and is now a *suggestion* nothing
+  enforces.
+- **drawbridge exempts its own package from the lockdown**, which is what stops
+  a curfew that cannot lift: an offline phone can still fetch the policy that
+  would give it internet back, while the person holding it has none. That
+  answers the old "guaranteed thirty minutes a day" requirement better than a
+  hole in the schedule would — a hole has hours a child can learn. **API 29+**;
+  on 28 the allowlist is dropped and an offline phone really cannot poll.
+- **It is keyed on `protectedSince`, not the lock** — the opposite of the app
+  blocker, deliberately. Unlocking to change a setting is not a request for the
+  internet back, and a curfew that lifted whenever somebody opened the
+  configuration screen would be a curfew in name only.
+
+**Bluetooth tethering is covered, and USB ethernet cannot be spared.** Lockdown
+is a rule about the user rather than about a network, so it catches Wi-Fi, mobile
+data, a second phone's Bluetooth tether and USB ethernet without naming any of
+them. The requested *"always allow ethernet over USB"* toggle is **not
+buildable**: the only exemption `setAlwaysOnVpnPackage` accepts is a set of
+package names, and no per-transport carve-out exists in the Device Owner API.
+Exempting particular *apps* is expressible, but that leaks on every transport
+rather than one, which is a different and worse thing.
+
+**Untested on hardware.** `DisconnectSettingsTest` covers the window logic
+including the Friday-into-Saturday case, but no phone has been watched going
+offline at nine and back at eight, and nothing has confirmed that calls and SMS
+survive it on a real network. That is the first thing to do with the dev build.
+
+### 7a. The old curfew note, for the reasoning
 
 Drafted and never run on a device: the schema, the window arithmetic and the
 Device Owner calls exist and are tested, nothing reads them, and no published

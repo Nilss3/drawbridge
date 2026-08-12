@@ -103,4 +103,18 @@
     <string name="filter_channel_name">Filtre de contenu</string>
     <string name="filter_notification_title">Filtre de contenu actif</string>
     <string name="filter_notification_text">Filtre le DNS de toutes les applications de cet appareil</string>
+
+    <string name="disconnect_heading">Philosophie de déconnexion</string>
+    <string name="disconnect_offline_name">Toujours délicieusement hors ligne</string>
+    <string name="disconnect_offline_description">Cet appareil ne peut pas se connecter à internet. Appels et SMS uniquement, avec la réception GPS et la radio FM si elle est présente.</string>
+    <string name="disconnect_online_name">Hélas toujours en ligne</string>
+    <string name="disconnect_online_description">L\'appareil peut toujours se connecter.</string>
+    <string name="disconnect_curfew_name">Couvre-feu pour internet</string>
+    <string name="disconnect_curfew_description">N\'autoriser internet qu\'entre certaines heures. Il est recommandé de prévoir au moins une demi-heure par semaine pour installer les mises à jour.</string>
+    <string name="curfew_explanation">Le téléphone est hors ligne entre ces heures. drawbridge lui-même garde une connexion, afin que l\'appareil continue de recevoir sa politique et ses mises à jour.</string>
+    <string name="curfew_weekdays">Du lundi au vendredi</string>
+    <string name="curfew_weekend">Samedi et dimanche</string>
+    <string name="curfew_window">Hors ligne de %1$s à %2$s</string>
+    <string name="curfew_pick_start">Hors ligne à partir de</string>
+    <string name="curfew_pick_end">De nouveau en ligne à</string>
 </resources>

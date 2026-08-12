@@ -6,6 +6,7 @@ import android.util.Log
 import app.drawbridge.dpc.admin.DeviceOwnerManager
 import app.drawbridge.dpc.admin.ProvisioningLog
 import app.drawbridge.dpc.apps.AppBlocker
+import app.drawbridge.dpc.curfew.CurfewController
 import app.drawbridge.dpc.update.UpdateWorker
 import app.drawbridge.policy.PolicyConfig
 import app.drawbridge.policy.PolicyManager
@@ -29,6 +30,15 @@ class DrawbridgeApplication : Application() {
         // Restrictions can be dropped by an OS upgrade, so re-assert them on every
         // process start rather than only at provisioning time.
         DeviceOwnerManager(this).reapplyIfProtected()
+
+        // Connectivity is recomputed from the clock on every process start too.
+        // The alarm is the primary mechanism and this is the backstop: Doze can
+        // defer an inexact alarm, and a phone that missed its 08:00 boundary
+        // should not stay offline until 21:00 because of it.
+        //
+        // Note this does *not* need to run after a policy refresh any more. The
+        // schedule is device-local, so no document can change it.
+        CurfewController(this).applyIfProtected()
     }
 
     companion object {

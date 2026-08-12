@@ -1,10 +1,12 @@
 package app.drawbridge.dpc.ui
 
+import android.app.TimePickerDialog
 import android.content.Intent
 import android.graphics.Typeface
 import android.os.Bundle
 import android.os.PowerManager
 import android.provider.Settings
+import android.text.format.DateFormat
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
@@ -27,6 +29,8 @@ import app.drawbridge.dpc.R
 import app.drawbridge.dpc.admin.DeviceOwnerManager
 import app.drawbridge.dpc.admin.ProvisioningLog
 import app.drawbridge.dpc.apps.AppBlocker
+import app.drawbridge.dpc.curfew.CurfewController
+import app.drawbridge.dpc.curfew.DisconnectSettings
 import app.drawbridge.dpc.policy.SelectionProvider
 import app.drawbridge.dpc.security.ParentKey
 import app.drawbridge.dpc.update.AppInstaller
@@ -63,7 +67,13 @@ class MainActivity : AppCompatActivity() {
     private val parentKey by lazy { ParentKey(this) }
     private val policy by lazy { DrawbridgeApplication.policy(this) }
 
+    private val disconnect by lazy { DisconnectSettings(this) }
+
     private lateinit var updateNotice: View
+    private lateinit var disconnectContainer: LinearLayout
+    private lateinit var curfewSchedule: LinearLayout
+    private lateinit var curfewWeekdayButton: Button
+    private lateinit var curfewWeekendButton: Button
     private lateinit var policyContainer: LinearLayout
     private lateinit var optionContainer: LinearLayout
     private lateinit var optionsExplanation: TextView
@@ -104,6 +114,10 @@ class MainActivity : AppCompatActivity() {
         findViewById<View>(R.id.root).applyScreenInsets()
 
         updateNotice = findViewById(R.id.updateNotice)
+        disconnectContainer = findViewById(R.id.disconnectContainer)
+        curfewSchedule = findViewById(R.id.curfewSchedule)
+        curfewWeekdayButton = findViewById(R.id.curfewWeekdayButton)
+        curfewWeekendButton = findViewById(R.id.curfewWeekendButton)
         policyContainer = findViewById(R.id.policyContainer)
         optionContainer = findViewById(R.id.optionContainer)
         optionsExplanation = findViewById(R.id.optionsExplanation)
@@ -229,9 +243,139 @@ class MainActivity : AppCompatActivity() {
                     View.GONE
                 }
 
+            renderDisconnect()
             renderPolicies()
             renderOptions()
         }
+    }
+
+    // --- Disconnect philosophy -----------------------------------------------
+
+    /**
+     * The three philosophies, above the policy because it is the larger
+     * question: the policy says what the web may contain, this says whether the
+     * phone reaches the web at all.
+     *
+     * Unlike the policies, these are not read from the signed document. They are
+     * a property of this household — "offline at nine on weeknights" cannot be
+     * signed by this project for somebody else's teenager — so the words come
+     * from string resources and the choice is stored on the device.
+     */
+    private fun renderDisconnect() {
+        disconnectContainer.removeAllViews()
+        val current = disconnect.mode
+        val inflater = LayoutInflater.from(this)
+
+        for (choice in DisconnectChoice.entries) {
+            val card = inflater.inflate(R.layout.item_policy, disconnectContainer, false)
+                as MaterialCardView
+            card.findViewById<TextView>(R.id.policyName).setText(choice.title)
+            // No subtitle: the policies use it for "who this is for", and these
+            // three are for everyone.
+            card.findViewById<TextView>(R.id.policySubtitle).visibility = View.GONE
+            card.findViewById<TextView>(R.id.policyDescription).setText(choice.description)
+            card.findViewById<RadioButton>(R.id.policySelected).isChecked = choice.mode == current
+            card.isChecked = choice.mode == current
+            card.setOnClickListener { selectDisconnect(choice.mode) }
+            disconnectContainer.addView(card)
+        }
+
+        curfewSchedule.visibility =
+            if (current == DisconnectSettings.Mode.CURFEW) View.VISIBLE else View.GONE
+        renderCurfewWindows()
+    }
+
+    private fun renderCurfewWindows() {
+        curfewWeekdayButton.text = windowLabel(disconnect.weekdayWindow)
+        curfewWeekendButton.text = windowLabel(disconnect.weekendWindow)
+        curfewWeekdayButton.setOnClickListener {
+            editWindow(disconnect.weekdayWindow) { disconnect.weekdayWindow = it }
+        }
+        curfewWeekendButton.setOnClickListener {
+            editWindow(disconnect.weekendWindow) { disconnect.weekendWindow = it }
+        }
+    }
+
+    private fun windowLabel(window: DisconnectSettings.Window): String =
+        getString(R.string.curfew_window, window.start, window.end)
+
+    /**
+     * Asks for the two ends of one window, in order.
+     *
+     * A plain [TimePickerDialog] rather than the Material picker: this runs on
+     * whatever handset a parent was given, and the platform dialog follows that
+     * phone's own 12- or 24-hour setting without being told. The value stored is
+     * always `HH:mm` regardless of how it was displayed, because the schedule is
+     * compared against a wall clock rather than shown back to Android.
+     */
+    private fun editWindow(
+        current: DisconnectSettings.Window,
+        store: (DisconnectSettings.Window) -> Unit,
+    ) {
+        pickTime(R.string.curfew_pick_start, current.start) { start ->
+            pickTime(R.string.curfew_pick_end, current.end) { end ->
+                store(DisconnectSettings.Window(start, end))
+                renderCurfewWindows()
+                applyDisconnect()
+            }
+        }
+    }
+
+    private fun pickTime(titleRes: Int, initial: String, onPicked: (String) -> Unit) {
+        val parts = initial.split(":")
+        val hour = parts.getOrNull(0)?.toIntOrNull() ?: 21
+        val minute = parts.getOrNull(1)?.toIntOrNull() ?: 0
+        TimePickerDialog(
+            this,
+            { _, pickedHour, pickedMinute ->
+                onPicked("%02d:%02d".format(pickedHour, pickedMinute))
+            },
+            hour,
+            minute,
+            DateFormat.is24HourFormat(this),
+        ).apply { setTitle(titleRes) }.show()
+    }
+
+    private fun selectDisconnect(mode: DisconnectSettings.Mode) {
+        if (mode == disconnect.mode) return
+        disconnect.mode = mode
+        renderDisconnect()
+        applyDisconnect()
+        toast(applied(getString(choiceFor(mode).title), removed = 0, mayRemove = false))
+    }
+
+    /**
+     * Enforcement is keyed on protection rather than on the lock — see
+     * [CurfewController.applyIfProtected] — so on a phone that has never been
+     * locked this records the choice and changes nothing, which is the same
+     * contract every other control on this screen has.
+     */
+    private fun applyDisconnect() = CurfewController(this).applyIfProtected()
+
+    private fun choiceFor(mode: DisconnectSettings.Mode): DisconnectChoice =
+        DisconnectChoice.entries.first { it.mode == mode }
+
+    /** The screen's words for each mode, kept next to the mode they describe. */
+    private enum class DisconnectChoice(
+        val mode: DisconnectSettings.Mode,
+        val title: Int,
+        val description: Int,
+    ) {
+        OFFLINE(
+            DisconnectSettings.Mode.OFFLINE,
+            R.string.disconnect_offline_name,
+            R.string.disconnect_offline_description,
+        ),
+        ONLINE(
+            DisconnectSettings.Mode.ONLINE,
+            R.string.disconnect_online_name,
+            R.string.disconnect_online_description,
+        ),
+        CURFEW(
+            DisconnectSettings.Mode.CURFEW,
+            R.string.disconnect_curfew_name,
+            R.string.disconnect_curfew_description,
+        ),
     }
 
     /**

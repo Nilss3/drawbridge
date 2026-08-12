@@ -192,6 +192,16 @@
         </receiver>
 
         <!--
+            Woken by AlarmManager at each curfew boundary. Not exported: the only
+            thing that may start it is drawbridge's own PendingIntent, and an
+            exported receiver here would let any app on the phone announce that
+            the curfew had ended.
+        -->
+        <receiver
+            android:name=".curfew.CurfewReceiver"
+            android:exported="false" />
+
+        <!--
             Read-only, and exported on purpose: herald is a separate app and has
             no other way to learn what the parent chose. readPermission alone —
             no writePermission — because there is deliberately no way to write.

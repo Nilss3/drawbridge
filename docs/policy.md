@@ -440,12 +440,13 @@ CI still runs tests and lint on every push, which is what it is good for.
 
 ## Curfew: an evening with no internet
 
-> **Drafted, not enforced.** The schema below parses, the window arithmetic is
-> tested, and the Device Owner calls exist — but nothing invokes them on a live
-> device and no published policy carries a `curfew`. Writing one into
-> `dist/policy.json` today does nothing. Turning it on means calling
-> `CurfewController.apply` from `BootReceiver`, after a policy refresh, and
-> registering `CurfewReceiver` in the manifest.
+> **The curfew is enforced as of 2026-08-12, but not from here.** It is chosen on
+> the phone, under *Disconnect philosophy* on the configuration screen, and
+> stored in the device's own preferences — because the hours belong to one
+> household and this document is signed for everybody. `Policy.curfew` still
+> parses and is still a reasonable place to *suggest* a default; nothing reads it
+> for enforcement. The schema below is therefore the shape of the setting, and
+> the field remains available if a profile ever wants to propose one.
 
 ```jsonc
 {

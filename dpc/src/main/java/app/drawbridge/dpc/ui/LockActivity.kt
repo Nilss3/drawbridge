@@ -19,6 +19,7 @@ import androidx.lifecycle.lifecycleScope
 import app.drawbridge.dpc.DrawbridgeApplication
 import app.drawbridge.dpc.R
 import app.drawbridge.dpc.admin.DeviceOwnerManager
+import app.drawbridge.dpc.curfew.CurfewController
 import app.drawbridge.dpc.security.ParentKey
 import app.drawbridge.dpc.update.AppInstaller
 import app.drawbridge.policy.PolicyManager
@@ -247,6 +248,10 @@ class LockActivity : AppCompatActivity() {
         // does when the filter service starts — that happens back in
         // lockDevice(), on a phone that is not locked yet.
         DrawbridgeApplication.sweepOnLock(this)
+        // Connectivity too: the chosen philosophy is a draft until this moment,
+        // like everything else on the configuration screen, and protectedSince
+        // is only non-zero once commit() above has run.
+        CurfewController(this).applyIfProtected()
         finish()
     }
 

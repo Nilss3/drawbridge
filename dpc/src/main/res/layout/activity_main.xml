@@ -83,6 +83,69 @@
             android:text="@string/welcome_subtitle"
             android:textAppearance="?attr/textAppearanceBodyMedium" />
 
+        <!--
+            Above the policy on purpose. The policy says what the web may
+            contain; this says whether the phone reaches the web at all, which is
+            the larger question and the one a parent has usually already decided
+            before they open this screen.
+        -->
+        <TextView
+            style="@style/TextAppearance.Drawbridge.SectionHeading"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/disconnect_heading" />
+
+        <LinearLayout
+            android:id="@+id/disconnectContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="24dp" />
+
+        <!-- Shown only while the curfew is the chosen philosophy. -->
+        <LinearLayout
+            android:id="@+id/curfewSchedule"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="28dp"
+            android:orientation="vertical"
+            android:paddingHorizontal="24dp"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="4dp"
+                android:paddingBottom="12dp"
+                android:text="@string/curfew_explanation"
+                android:textAppearance="?attr/textAppearanceBodySmall" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/curfew_weekdays"
+                android:textAppearance="?attr/textAppearanceTitleSmall" />
+
+            <Button
+                android:id="@+id/curfewWeekdayButton"
+                style="@style/Widget.Material3.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/curfew_weekend"
+                android:textAppearance="?attr/textAppearanceTitleSmall" />
+
+            <Button
+                android:id="@+id/curfewWeekendButton"
+                style="@style/Widget.Material3.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
         <TextView
             style="@style/TextAppearance.Drawbridge.SectionHeading"
             android:layout_width="match_parent"

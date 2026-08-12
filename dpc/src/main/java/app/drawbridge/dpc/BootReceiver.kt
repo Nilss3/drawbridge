@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.util.Log
 import app.drawbridge.dpc.admin.DeviceOwnerManager
+import app.drawbridge.dpc.curfew.CurfewController
 import app.drawbridge.dpc.vpn.DnsFilterService
 
 /**
@@ -26,6 +27,13 @@ class BootReceiver : BroadcastReceiver() {
 
         Log.i(TAG, "Boot completed; re-applying policy")
         DeviceOwnerManager(context).reapplyIfProtected()
+
+        // Alarms do not survive a reboot, so without this a phone rebooted
+        // during a curfew would stay offline until the next boundary that
+        // happened to be scheduled — which is none. apply() recomputes from the
+        // clock rather than trusting any stored state, so it both restores the
+        // right connectivity and sets the next alarm.
+        CurfewController(context).applyIfProtected()
 
         // Returns a consent intent when the app is not Device Owner, which cannot
         // be shown from a receiver; in that case the parent starts it from the

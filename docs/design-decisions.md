@@ -30,9 +30,57 @@ built on NetGuard or RethinkDNS rather than from scratch.
 
 ## The curfew is that same lockdown, used on purpose
 
-*Drafted, not enabled.* The model, the window arithmetic and the Device Owner
-calls exist and are tested; nothing reads a curfew on a live device and no
-published policy carries one.
+**Enabled 2026-08-12**, as one of three *disconnect philosophies* the parent
+chooses on the configuration screen, above the policy: always offline, always
+online, or a curfew. The mechanism below is unchanged; what changed is that
+something now calls it.
+
+### The philosophy is the parent's, so it is not in the policy
+
+The signed document says what the *web* may contain. Whether this phone reaches
+the web at all, and between which hours, is a property of one household — a
+document signed by this project's key cannot carry "offline at nine on
+weeknights" for somebody else's teenager. So `DisconnectSettings` lives in the
+device's own preferences, next to the chosen profile and options, and
+`Policy.curfew` becomes a default a document may suggest rather than the thing
+enforced.
+
+The schedule is two windows, weekdays and weekend, because that is the split
+households actually run and because a full seven-day editor is a lot of screen
+for two answers. Each is stored as the evening it *starts*, which is what makes
+Friday 21:00–08:00 cover Saturday morning without Saturday being named.
+
+### drawbridge keeps its own network, in every mode
+
+The failure to design against is a curfew that cannot lift — a phone with no
+internet has no way to hear about the setting that would give it some back, and
+"offline until somebody drives to the house" is not a feature.
+
+The lockdown allowlist answers it: drawbridge's own package is always exempt. It
+has no browsing surface, so exempting it hands nobody anything, and it means the
+phone can always fetch its policy and its updates while the *person holding it*
+is completely offline. That is a better answer than the guaranteed daily window
+this originally called for, which would have been a hole in the schedule that a
+child could learn the hours of.
+
+On API 28 the allowlist does not exist and the lockdown is absolute, so there an
+offline phone genuinely cannot poll and the only way back is the configuration
+screen in somebody's hand.
+
+### It covers Bluetooth tethering, and cannot spare USB ethernet
+
+Lockdown is a rule about the *user*, not about a network: every packet from every
+app must go through the tunnel. So it covers Wi-Fi, mobile data, Bluetooth
+tethering from a second phone and USB ethernet alike, without naming any of them
+— which is the right shape, since a list of transports would be a list to forget
+something from.
+
+**That is also why "always allow ethernet over USB" is not offered.** The
+exemption `setAlwaysOnVpnPackage` accepts is a set of *package names*; there is
+no per-transport carve-out anywhere in the Device Owner API. The nearest
+expressible thing is exempting particular apps, which is not the same request and
+would leak on every transport rather than one. Asked for on 2026-08-12 and not
+built, because it cannot be.
 
 The bug above is the feature. "Every non-DNS packet dropped, every `connect()`
 failing with EPERM, in every app" is a broken phone as a permanent state and an
