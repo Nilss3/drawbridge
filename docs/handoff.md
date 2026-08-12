@@ -117,7 +117,7 @@ every axis that matters here:
   *own* `dist/policy.signed.json`, signed with the same key, that check works
   unchanged and keeps dev honest the same way it keeps the alpha honest.
 
-Three things to settle before building it:
+Three things had to be settled before building it. All three are:
 
 1. ~~**Confirm preview deployments are on.**~~ **Checked 2026-08-11: they are.**
    The setting is **Cloudflare dashboard → Workers & Pages → `drawbridge-project`
@@ -126,18 +126,19 @@ Three things to settle before building it:
    served at `dev.drawbridge-project.pages.dev` with no further setup, and each
    commit also gets its own `<hash>.drawbridge-project.pages.dev` — useful for
    pinning a tester to one build rather than to whatever `dev` last became.
-2. **Make `policyUrl` a build-time value.** `PolicyConfig.policyUrl` is already a
-   constructor parameter with a default of `main`'s raw URL, so this is a
-   `buildConfigField` and one line at the call site in
-   `DrawbridgeApplication.policyConfig` — not a restructure. Without it a dev
-   build polls the *alpha's* policy, which means policy changes cannot be tested
-   at all and a dev phone would take live policy edits. With it, `dist/` on the
-   dev branch becomes a real staging path for the document, which is
-   [next steps item 8](#8-a-dev-branch) finally answered.
-3. **Keep one monotonic `versionCode`.** A dev build must outrank the alpha's 18
-   to install over it on the Moto, and the next alpha must outrank whatever dev
-   reached. Simplest is to keep counting: a dev build that turns out good becomes
-   the release, with no renumbering.
+2. ~~**Make `policyUrl` a build-time value.**~~ **Done 2026-08-11.**
+   `BuildConfig.POLICY_URL` in `dpc/build.gradle.kts`, read by
+   `DrawbridgeApplication.policyConfig`, taking `drawbridgePolicyUrl` from
+   `gradle.properties` and falling back to `PolicyConfig.DEFAULT_POLICY_URL`
+   everywhere else. Without it a dev build polled the *alpha's* policy, so policy
+   changes could not be tested at all and a dev phone would have taken live
+   policy edits. With it, `dist/` on this branch is a real staging path for the
+   document.
+3. ~~**Keep one monotonic `versionCode`.**~~ **Settled, and it is a standing rule
+   rather than a task.** A dev build must outrank the alpha's 18 to install over
+   it on the Moto, and the next alpha must outrank whatever dev reached. Keep
+   counting: a dev build that turns out good becomes the release, with no
+   renumbering.
 
 **Same package name, deliberately.** Device Owner binds to it permanently, so a
 dev build must be `app.drawbridge.dpc` to replace the alpha on a provisioned
@@ -1231,8 +1232,10 @@ it on the next apply. See
 Two things replaced it, and both are weaker than the restriction was:
 
 - **Factory Reset Protection**, which depends on the parent's Google account
-  being the only one on the device — and `lockAccounts()` was dead code, so
-  nothing stops a child adding their own. See the unverified list.
+  being the only one on the device — and nothing stops a child adding their own,
+  since `DISALLOW_MODIFY_ACCOUNTS` is deliberately never applied. Weaker still
+  than that: FRP turned out not to be armed at all, see
+  [FRP does not protect this phone](#frp-does-not-protect-this-phone-and-never-did).
 - **The protected-since date**, which is why the clock is now locked on every
   device: winding it back a year, locking, and winding it forward forges a year
   of protection that never happened.
@@ -1240,11 +1243,17 @@ Two things replaced it, and both are weaker than the restriction was:
 Putting the restriction back is on the roadmap, but **only behind a working
 delayed self-removal** — the two ship together or not at all.
 
-### The browser installer exists, and the USB half is untested
+### The browser installer exists, and the USB half works — on one handset
 
 **Built 2026-08-10.** `/install/usb/` provisions a phone from Chrome or Edge over
 WebUSB — the same sequence as `tools/provision-adb.sh`, with the same promise
 about `verifier_verify_adb_installs` being restored on every exit path.
+
+**This heading said "the USB half is untested" until 2026-08-12**, by which point
+the section under it recorded the transport working from the deployed site, the
+whole path provisioning a phone end to end, and the alpha being installed this
+way by everyone who has one. A heading is the only part of a long section most
+readers take away, so it is worth correcting even when the body is right.
 
 Two decisions worth not re-litigating:
 
@@ -1937,29 +1946,32 @@ Verified for the browser work:
 
 Not verified, and worth doing:
 
-- ~~**`lockAccounts()` is dead code, and a doc promises otherwise.**~~ **Fixed
-  2026-08-10.** `DISALLOW_MODIFY_ACCOUNTS` had never been applied on any device:
+- ~~**`lockAccounts()` is dead code, and a doc promises otherwise.**~~ **Resolved
+  2026-08-10, though not the way this entry expected.**
+  `DISALLOW_MODIFY_ACCOUNTS` had never been applied on any device:
   the function existed, `unlockAccounts()` ran during removal, and nothing ever
   called `lockAccounts()` — while all three install guides told parents that
   account changes close at lock. Confirmed on hardware on 2026-08-08, when an
   account was added to a *locked* G15 and nothing objected.
 
-  It is now the second restriction keyed on the **lock** rather than on
-  `protectedSince`, alongside USB debugging, and `lockAccounts()` is gone —
-  applying it is `restrictionsFor`'s job. The pre-lock window is when the parent
-  chooses what account the phone carries, and unlocking is how they change their
-  mind; keying it on protection would have sealed that choice at the first lock
-  and put it out of reach without a factory reset.
+  It was then keyed on the **lock** rather than on `protectedSince`, alongside
+  USB debugging — and **taken straight back out the same day**, on seeing the
+  behaviour: people legitimately carry several accounts, and it blocks *removing*
+  one as well as adding it. See
+  [accounts are left alone](#herald-arrives-before-the-lock-and-accounts-are-left-alone).
+  `lockAccounts()` is gone either way, and the install guides' claim went with it.
 
-  **Not yet seen on hardware.** The unit tests cover the rule, but no phone has
-  been watched refusing an account after a lock, or accepting one after an
-  unlock. That is the check to run on the next provision.
+  **There is nothing here left to watch on a device.** `restrictionsFor` never
+  adds `DISALLOW_MODIFY_ACCOUNTS` in either state, and
+  `DeviceOwnerRestrictionsTest` asserts exactly that, locked and unlocked. An
+  earlier version of this entry said no phone had yet been seen refusing an
+  account after a lock; none ever will, because that is not what the build does.
+  **Corrected 2026-08-12**, having claimed a live restriction for two days after
+  it was removed.
 
-  Two consequences to know rather than discover. It blocks *removing* accounts as
-  well as adding them, so an app that signs in through `AccountManager` cannot be
-  set up on a locked phone — the parent unlocks for that, which costs them the
-  key. And it makes the documented order mandatory rather than advisory: any
-  account the phone is to carry goes on before the lock.
+  What does the work instead is `DISALLOW_ADD_USER`, which is unconditional and
+  already applied: always-on VPN is per-user, so a second profile is what would
+  have got unfiltered network.
 
 - ~~**Whether FRP behaves as assumed at all.**~~ **Tested on 2026-08-10, and it
   does not.** See the section below: the phone was factory reset and never asked
@@ -2208,17 +2220,25 @@ project up to 2026-08-07. If the path ever comes back, it comes back working.
 
 **No longer blocking provisioning** — `tools/provision-adb.sh` gets a certified
 handset provisioned today, and that is what the top of this file is about. What
-is still broken is delivery to a phone that is already locked: self-update is a
-`PackageInstaller` session rather than an adb install, so the verifier global
-does not touch it, and `DISALLOW_DEBUGGING_FEATURES` has taken the cable away by
-then anyway.
+is still broken is delivery to a phone that is already locked *and stays locked*:
+self-update is a `PackageInstaller` session rather than an adb install, so the
+verifier global does not touch it, and `DISALLOW_DEBUGGING_FEATURES` has taken
+the cable away for as long as the lock holds.
 
-A phone that cannot receive a fix is a phone where every bug found from here on is
-permanent. The decision that has appeared alongside this, and which nobody has
-made yet: **whether `DISALLOW_DEBUGGING_FEATURES` should still be applied at
-lock.** It closes the adb removal route, which is why it is there. It also closes
-the only delivery channel that currently works. Both halves are true and the
-trade is now a real one.
+A phone that cannot receive a fix is a phone where every bug found from here on
+is permanent. **The decision this raised has since been taken.** On 2026-08-10
+`DISALLOW_DEBUGGING_FEATURES` became the one restriction keyed on the lock rather
+than on `protectedSince`, so a parent with the key can unlock, re-enable USB
+debugging, run `tools/provision-adb.sh --update` and lock again — and it gives
+nothing away, since whoever holds the key can already remove drawbridge entirely
+from the configuration screen. See
+[the cable is now repeatable](#and-the-cable-is-now-repeatable-because-usb-debugging-follows-the-lock).
+**Corrected 2026-08-12**; this entry called the trade undecided for two days
+after it was decided and shipped.
+
+So what is left of this item is narrower than it reads: an *unaided* update — one
+that reaches a phone with nobody at the cable — still needs the Play Protect
+verdict on the package name lifted.
 
 The finding, the evidence and what has already been ruled out are above. Two
 rounds are done: `REQUEST_INSTALL_PACKAGES` is gone and did not help, and the
@@ -2285,12 +2305,14 @@ left is the protected-since date telling the parent afterwards. That would be
 worth knowing before deciding anything else, and might well argue for bringing
 step 8 forward once the timer exists.
 
-~~**Fix `lockAccounts()` at the same time.**~~ **Done on 2026-08-10**, and not
-via `lockDevice()`: `DISALLOW_MODIFY_ACCOUNTS` is now in `MANAGED_RESTRICTIONS`
-and withheld while the phone is unlocked, so it lands from
-`LockActivity.sealWithKey` after the key is committed and lifts again on unlock.
-`lockAccounts()` is deleted. See the unverified list above for what still has to
-be watched on a device.
+~~**Fix `lockAccounts()` at the same time.**~~ **Done on 2026-08-10, and reversed
+the same day.** `DISALLOW_MODIFY_ACCOUNTS` was wired into `MANAGED_RESTRICTIONS`
+keyed on the lock, then removed again: blocking every account to stop one is the
+wrong trade, and it blocks *removing* accounts too. `lockAccounts()` is deleted
+and accounts are deliberately unrestricted — which is what the closing note of 2a
+below already says, and what `DeviceOwnerRestrictionsTest` asserts. **Corrected
+2026-08-12**; this entry described the restriction as live for two days after it
+came out.
 
 ### 2a. Decide whether "never the child's account" is still advice worth giving
 
@@ -2404,24 +2426,31 @@ against — a phone with no internet and no way to fix it from the phone.
 The clock lock this needs is already in place and applies to every locked
 device, curfew or not.
 
-### 8. A dev branch — now the blocking one
+### 8. ~~A dev branch~~ — built on 2026-08-11
 
-**Promoted on 2026-08-11**, because the alpha makes it urgent rather than tidy:
-`main` is what testers are served, so any further development has nowhere to go
-until this exists. The design is written up under
-[the dev channel](#the-dev-channel-and-why-a-branch-beats-a-second-page) — a
-`dev` branch on a Cloudflare preview deployment, carrying its own policy
-document, with `policyUrl` made a build-time value so a dev phone stops polling
-the alpha's policy.
+**Done, and this entry is kept only so the roadmap's numbering does not move.**
+The channel is described under
+[the dev channel](#the-dev-channel-exists-on-the-dev-branch): `dev` on a
+Cloudflare preview deployment at <https://dev.drawbridge-project.pages.dev>,
+carrying its own signed policy, with `policyUrl` a build-time value so a dev
+build stops polling the alpha's document.
 
-Everything so far has gone straight to `main`, which is also what Cloudflare
-deploys and what every device fetches its policy from. That was tolerable while
-the only device was on the desk. It stops being tolerable now that a real phone
-is provisioned: a policy pushed to `main` is live within minutes, and
-`dist/policy.signed.json` has no staging path at all.
+That also answers the question this entry used to leave open — whether the
+*policy* gets a channel of its own. It does: a dev build polls `dev`'s copy of
+`dist/policy.signed.json`, so the document has a staging path for the first time
+rather than being edited live on the branch every device fetches.
 
-Worth deciding at the same time: whether the *policy* gets a channel of its own,
-since a branch protects the code but the live document is a URL on `main`.
+**What exists is the plumbing, not the proof.** No dev APK has been built, no dev
+policy has been re-signed on this branch, and no phone has ever run a build from
+it — so the first real use of the channel is still ahead, and it is what would
+find any mistake in it.
+
+**Nothing blocks that.** `dev` and `main` are the same code today and serve the
+same APK, so putting the Moto on the dev channel costs nothing and changes
+nothing about what it runs. The Moto is a test phone rather than a handset anyone
+depends on, and it already runs the current build. The one-channel-per-phone rule
+below is a real constraint on the day the two branches diverge, not a reason to
+wait now.
 
 ### 9. Lock factory reset — last, and only with the timer
 
@@ -2514,9 +2543,12 @@ Consequences to state before building it, not after:
 - **Drop unused ABIs.** `armeabi-v7a` and `x86_64` have never been downloaded by
   anything and cost ~650 MiB of every release. Removing an ABI means removing
   its `required_apps` entry in the same policy.
-- **Build the WebADB installer.** The `/install/` page still has a disabled
-  "Install over USB" button. Less urgent now that QR provisioning works, and
-  still the only path that needs no cable and no allowlist.
+- ~~**Build the WebADB installer.**~~ **Built, and it is the alpha's only install
+  route.** <https://drawbridge-project.pages.dev/install/usb/> provisions and
+  updates a phone over WebUSB; `dev` serves the same page from its own build.
+  **Corrected 2026-08-12**: this entry still described a disabled button, and
+  justified itself with QR provisioning "working" and needing "no cable" — QR is
+  retired, and the installer it was asking for is a cable path by design.
 - **Localise herald.** drawbridge speaks three languages; the browser is
   English-only, ~45 strings. drawbridge cannot set it — a per-app locale cannot
   be set by another app — so herald needs its own picker.
