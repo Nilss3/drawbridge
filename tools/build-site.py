@@ -433,6 +433,7 @@ INSTALL = {
         usb_qualifier="For Google (regular) Android phones and also deGoogled open-source Android devices: install over USB using the flow below.",
         usb_steps=[
             "<strong>Remove every account from the phone.</strong> Settings → Passwords, passkeys &amp; accounts. Android only hands over this level of control to a phone with no account on it. You sign back in at step 4.",
+            "<strong>Delete the Private Space, if the phone has one.</strong> Settings → Security &amp; privacy → Private Space → Delete private space. Android refuses this level of control while any second profile exists, and a Private Space is hidden — it does not appear in the user switcher, and it needs its own PIN. Any other extra user is in Settings → System → Multiple users.",
             "Enable Developer Options (tap the build number in Settings → About phone several times) and turn on <strong>USB debugging</strong>.",
             "Connect the phone to a computer with a USB cable, and run the installer.",
             "Sign back in with a Google (or other) account.",
@@ -463,6 +464,7 @@ INSTALL = {
         usb_qualifier="Voor gewone Android-telefoons met Google én voor deGooglede open-source Android-toestellen: installeer via USB met de stappen hieronder.",
         usb_steps=[
             "<strong>Verwijder elk account van de telefoon.</strong> Instellingen → Wachtwoorden, toegangssleutels en accounts. Android geeft dit niveau van controle enkel weg aan een toestel waar geen account op staat. In stap 4 meld je je weer aan.",
+            "<strong>Verwijder de privéruimte, als de telefoon er een heeft.</strong> Instellingen → Beveiliging en privacy → Privéruimte → Privéruimte verwijderen. Android weigert dit niveau van controle zolang er een tweede profiel bestaat, en een privéruimte is verborgen — ze staat niet in de gebruikerswissel en heeft een eigen pincode. Andere extra gebruikers staan in Instellingen → Systeem → Meerdere gebruikers.",
             "Activeer Ontwikkelaarsopties (tik meerdere keren op het buildnummer in Instellingen → Over de telefoon) en schakel <strong>USB-debugging</strong> in.",
             "Verbind de telefoon met een computer via een USB-kabel, en voer de installer uit.",
             "Meld je weer aan met een Google-account (of een ander account).",
@@ -493,6 +495,7 @@ INSTALL = {
         usb_qualifier="Pour les téléphones Android ordinaires avec Google comme pour les appareils Android open source dégooglisés : installez par USB en suivant les étapes ci-dessous.",
         usb_steps=[
             "<strong>Retirez tous les comptes du téléphone.</strong> Paramètres → Mots de passe, clés d'accès et comptes. Android n'accorde ce niveau de contrôle qu'à un téléphone ne portant aucun compte. Vous vous reconnecterez à l'étape 4.",
+            "<strong>Supprimez l'espace privé, si le téléphone en a un.</strong> Paramètres → Sécurité et confidentialité → Espace privé → Supprimer l'espace privé. Android refuse ce niveau de contrôle tant qu'un second profil existe, et un espace privé est masqué — il n'apparaît pas dans le sélecteur d'utilisateur et possède son propre code PIN. Les autres utilisateurs supplémentaires se trouvent dans Paramètres → Système → Utilisateurs multiples.",
             "Activez les options pour développeurs (tapez plusieurs fois sur le numéro de build dans Paramètres → À propos du téléphone) et activez le <strong>débogage USB</strong>.",
             "Connectez le téléphone à un ordinateur avec un câble USB, et lancez l'installeur.",
             "Reconnectez-vous avec un compte Google (ou un autre).",
@@ -587,6 +590,7 @@ USB_INSTALLER = {
         prep_h2="On the phone, first",
         prep_steps=[
             "<strong>Remove every account.</strong> Settings → Passwords, passkeys &amp; accounts. You sign back in at the end. Nothing else is erased.",
+            "<strong>Delete the Private Space, if there is one.</strong> Settings → Security &amp; privacy → Private Space. Android will not hand over the phone while a second profile exists, and this one is hidden from the user switcher. Deleting it removes what is inside it.",
             "Enable Developer Options: Settings → About phone, tap <strong>Build number</strong> seven times.",
             "Settings → System → Developer options → turn on <strong>USB debugging</strong>.",
             "Plug the phone into this computer.",
@@ -637,6 +641,7 @@ USB_INSTALLER = {
         prep_h2="Eerst op de telefoon",
         prep_steps=[
             "<strong>Verwijder elk account.</strong> Instellingen → Wachtwoorden, toegangssleutels en accounts. Op het einde meldt u zich weer aan. Verder wordt er niets gewist.",
+            "<strong>Verwijder de privéruimte, als die er is.</strong> Instellingen → Beveiliging en privacy → Privéruimte. Android geeft de telefoon niet uit handen zolang er een tweede profiel bestaat, en deze is verborgen in de gebruikerswissel. Wat erin zit, verdwijnt mee.",
             "Zet Ontwikkelaarsopties aan: Instellingen → Over de telefoon, tik zeven keer op <strong>Buildnummer</strong>.",
             "Instellingen → Systeem → Ontwikkelaarsopties → zet <strong>USB-foutopsporing</strong> aan.",
             "Sluit de telefoon aan op deze computer.",
@@ -687,6 +692,7 @@ USB_INSTALLER = {
         prep_h2="D'abord, sur le téléphone",
         prep_steps=[
             "<strong>Retirez tous les comptes.</strong> Paramètres → Mots de passe, clés d'accès et comptes. Vous vous reconnecterez à la fin. Rien d'autre n'est effacé.",
+            "<strong>Supprimez l'espace privé, s'il y en a un.</strong> Paramètres → Sécurité et confidentialité → Espace privé. Android ne confie pas le téléphone tant qu'un second profil existe, et celui-ci est masqué dans le sélecteur d'utilisateur. Ce qu'il contient disparaît avec lui.",
             "Activez les options pour développeurs : Paramètres → À propos du téléphone, touchez sept fois <strong>Numéro de build</strong>.",
             "Paramètres → Système → Options pour développeurs → activez le <strong>débogage USB</strong>.",
             "Branchez le téléphone à cet ordinateur.",

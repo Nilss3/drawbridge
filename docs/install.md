@@ -42,6 +42,33 @@ Removing an account deletes that account's mail, contacts and synced data *from
 the phone*. Nothing is deleted from your Google account itself, and it all comes
 back when you sign in again.
 
+**Every account counts, not only Google ones.** A phone whose accounts were a
+password manager, a messaging app and three banking apps was refused just the
+same. Whatever appears on that screen has to go.
+
+---
+
+## Step 1b — Delete the Private Space, if the phone has one
+
+**Settings → Security & privacy → Private Space → Delete private space**
+
+Android refuses this level of control while the phone carries a *second profile*,
+and on Android 15 and later a Private Space is exactly that. It is checked before
+the accounts are, so a phone with both is refused for this first — clear the
+accounts and you get the same refusal in different words.
+
+**It is easy not to know you have one.** A Private Space does not appear in the
+user switcher, has its own PIN, and hides its apps from the launcher. On the
+phone this step was written for, the owner had one and did not remember setting
+it up.
+
+**Deleting it removes everything inside it**, so look before you delete. If you
+cannot get in — the PIN is separate from the phone's — deleting is still
+possible from that same screen.
+
+Any other extra user lives in **Settings → System → Multiple users** and has to
+go as well.
+
 ---
 
 ## Step 2 — Turn on USB debugging

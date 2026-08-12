@@ -136,8 +136,41 @@ if [ "${update_only}" = 1 ]; then
         exit 1
     fi
 else
+    # Secondary users block Device Owner, and this check has to come *first*
+    # because Android checks it first: a phone with both a second user and
+    # accounts reports only the user, so fixing the accounts alone gets you the
+    # same refusal again with a different sentence.
+    #
+    # Found on a Nothing Phone (A059, Android 16) on 2026-08-12, where the second
+    # "user" was a **Private Space** — Android 15's hidden profile, which the
+    # owner did not remember creating. It does not appear in the user switcher
+    # and is invisible from `dumpsys account`, so without this check the failure
+    # is a stack trace after both APKs have been pushed.
+    #
+    # Android refuses for the reason drawbridge would: the always-on VPN is
+    # per-user, so a second profile gets unfiltered network. That is also why
+    # DISALLOW_ADD_USER is applied unconditionally after provisioning.
+    users="$(adb shell pm list users | grep -c 'UserInfo{')"
+    if [ "${users:-1}" -gt 1 ]; then
+        echo >&2
+        echo "This device has ${users} users or profiles on it, so Device Owner cannot be" >&2
+        echo "granted. Android refuses while any secondary user exists." >&2
+        echo >&2
+        adb shell pm list users | grep 'UserInfo{' | sed 's/^/    /' >&2
+        echo >&2
+        echo "A 'Private space' is Android 15's hidden profile. Delete it in" >&2
+        echo "Settings -> Security & privacy -> Private Space -> Delete private space." >&2
+        echo "It needs its own PIN to open, and deleting it removes everything inside." >&2
+        echo "Any other extra user is in Settings -> System -> Multiple users." >&2
+        exit 1
+    fi
+
     # Device Owner can only be granted over adb on a device with no accounts. The
     # error `dpm` gives is clear enough, but it arrives after both APKs are pushed.
+    #
+    # Every account counts, not only Google ones — confirmed on the A059 on
+    # 2026-08-12, which was refused with seven accounts of which none was Google
+    # (DAVx5, Telegram and three banking apps).
     accounts="$(adb shell dumpsys account | sed -n 's/.*Accounts: \([0-9][0-9]*\).*/\1/p' | head -1)"
     if [ "${accounts:-0}" != "0" ]; then
         echo >&2

@@ -256,6 +256,60 @@ Exercised on all of those paths.
 So: new devices can be provisioned today, on certified hardware, without an
 appeal and without a rename.
 
+### A second handset, 2026-08-12: a Private Space blocks provisioning, and the alpha installed
+
+**Three findings from the owner's Nothing Phone (A059, Android 16), and the first
+of them contradicts this file.**
+
+**1. The alpha installed with `adb install`, first try, verifier untouched.**
+`app.drawbridge.dpc` versionCode 18, hash-checked against the alpha's pin,
+`Success`. No `verifier_verify_adb_installs` lever, no Play Protect dialog, on a
+phone with zero Google accounts — which is exactly the condition under which the
+G15 refuses the same package by name. **So the package-name verdict is not
+universal.** One handset refuses it and another does not, and nothing here says
+which is the exception. It could be the GMS build, the OEM, or a verdict that has
+moved since 2026-08-10; a rename is no better justified than it was.
+
+**2. Device Owner was refused for a reason nothing here had considered:**
+
+> `Not allowed to set the device owner because there are already several users on
+> the device.`
+
+`pm list users` showed `UserInfo{10:Private space:1090}` — Android 15's hidden
+profile. It does not appear in the user switcher, does not show in
+`dumpsys account`, and the owner did not remember creating it. **This check runs
+before the accounts check**, so a phone carrying both is refused for the users
+first, and clearing the accounts earns the same refusal in different words.
+
+Android is refusing for the reason drawbridge would: always-on VPN is per-user, so
+a second profile gets unfiltered network — the same argument that makes
+`DISALLOW_ADD_USER` unconditional after provisioning.
+
+**Neither tool checked for this.** Both preflighted accounts and device owner and
+nothing else, so this phone would have passed preflight, taken both APKs, and
+failed at the grant with a stack trace. A users check is now the *first* thing
+both do, naming Private Space and where to delete it, and the same step is in all
+three install guides and on both website install pages.
+
+**3. And with the Private Space gone, the accounts really do block — including
+non-Google ones.** Seven accounts, none of them Google (three DAVx5, Telegram,
+three banking apps), and `dpm set-device-owner` was refused with *"there are
+already some accounts on the device"*. That settles a question this file has been
+guessing at: the platform enumerates every `AccountManager` account, and the only
+ones it tolerates carry a feature no ordinary app declares. Every account counts.
+
+**Whether a Private Space is created by default is unknown**, and worth finding
+out rather than assuming — the owner could not say whether they had ever set one
+up. It is opt-in as far as the documentation goes; this phone had one anyway,
+and Nothing OS is a skin rather than stock, so the honest answer is that nobody
+here knows.
+
+**Next time one turns up, read its creation date before deleting it**:
+`adb shell dumpsys user` carries a `creationTime` per user, so a Private Space
+made on the day the phone was set up and one made two years later are
+distinguishable — which is the difference between "the phone did this" and "I
+did this and forgot". This one was deleted before anyone thought to look.
+
 ### No factory reset is needed, and the account was never the install problem
 
 **Tested on the G15 on 2026-08-10, after the owner asked whether two long-standing

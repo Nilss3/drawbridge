@@ -120,9 +120,38 @@ async function preflight() {
         return "update";
     }
 
+    // Secondary users come first, because Android checks them first: a phone
+    // with both a second user and accounts is refused for the user alone, so
+    // clearing the accounts would earn the same refusal with a different
+    // sentence. Found on a Nothing Phone on 2026-08-12, where the second user
+    // was a Private Space the owner did not remember creating — invisible in the
+    // user switcher, invisible to `dumpsys account`, and without this check it
+    // surfaced as a stack trace after the APK had been pushed.
+    const users = clean(await adb.shell("pm list users"));
+    const userCount = (users.match(/UserInfo\{/g) || []).length;
+    if (userCount > 1) {
+        setStep(2, "error");
+        const isPrivateSpace = /private\s*space/i.test(users);
+        fail(
+            `This phone has ${userCount} users or profiles on it, so Android will not hand over ` +
+                "device ownership while any of them exists. " +
+                (isPrivateSpace
+                    ? "One of them is a Private Space — Android's hidden profile, which does not " +
+                      "appear in the user switcher. Delete it in Settings → Security & privacy → " +
+                      "Private Space → Delete private space. It needs its own PIN to open, and " +
+                      "deleting it removes everything inside it."
+                    : "Remove the extra users in Settings → System → Multiple users.") +
+                " Then run this again.",
+        );
+        return null;
+    }
+
     // Only provisioning cares about accounts: it is `dpm set-device-owner` that
     // Android refuses while any account is present, not the install. An update
     // runs on a phone that already has whatever account its owner chose.
+    //
+    // Every account counts, not only Google ones: an A059 with seven accounts
+    // and no Google account among them was refused on 2026-08-12.
     //
     // This reads the same line tools/provision-adb.sh does, and for the same
     // reason: it is the one checked against real output on hardware. Counting

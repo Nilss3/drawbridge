@@ -46,6 +46,35 @@ Supprimer un compte efface les courriers, contacts et données synchronisées de
 compte **du téléphone**. Rien n'est supprimé de votre compte Google lui-même, et
 tout revient dès que vous vous reconnectez.
 
+**Tous les comptes comptent, pas seulement celui de Google.** Un téléphone dont
+les comptes étaient un gestionnaire de mots de passe, une messagerie et trois
+applications bancaires a été refusé tout autant. Tout ce qui figure sur cet écran
+doit partir.
+
+---
+
+## Étape 1b — Supprimez l'espace privé, si le téléphone en a un
+
+**Paramètres → Sécurité et confidentialité → Espace privé → Supprimer l'espace privé**
+
+Android refuse ce niveau de contrôle tant que le téléphone porte un *second
+profil*, et sur Android 15 et suivants un espace privé est exactement cela. Il est
+vérifié avant les comptes : un téléphone qui a les deux est donc refusé pour
+celui-ci d'abord, et retirer les comptes ne fait revenir le même refus en
+d'autres termes.
+
+**Il est facile de ne pas savoir qu'on en a un.** Un espace privé n'apparaît pas
+dans le sélecteur d'utilisateur, possède son propre code PIN et masque ses
+applications dans l'écran d'accueil. Sur le téléphone pour lequel cette étape a
+été écrite, le propriétaire en avait un et ne se souvenait pas de l'avoir créé.
+
+**Le supprimer efface tout ce qu'il contient**, alors regardez d'abord. Si vous
+n'y entrez pas — le code PIN est distinct de celui du téléphone — la suppression
+reste possible depuis ce même écran.
+
+Tout autre utilisateur supplémentaire se trouve dans **Paramètres → Système →
+Utilisateurs multiples** et doit partir également.
+
 ---
 
 ## Étape 2 — Activez le débogage USB

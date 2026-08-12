@@ -43,6 +43,34 @@ Een account verwijderen wist de mail, contacten en gesynchroniseerde gegevens va
 dat account **van de telefoon**. Er wordt niets uit uw Google-account zelf
 verwijderd, en alles komt terug zodra u zich opnieuw aanmeldt.
 
+**Elk account telt, niet alleen dat van Google.** Een telefoon met een
+wachtwoordbeheerder, een berichtenapp en drie bankapps werd net zo goed geweigerd.
+Alles wat op dat scherm staat, moet weg.
+
+---
+
+## Stap 1b — Verwijder de privéruimte, als de telefoon er een heeft
+
+**Instellingen → Beveiliging en privacy → Privéruimte → Privéruimte verwijderen**
+
+Android weigert dit niveau van controle zolang de telefoon een *tweede profiel*
+draagt, en op Android 15 en later is een privéruimte precies dat. Ze wordt vóór
+de accounts gecontroleerd, dus een telefoon met allebei wordt hierom als eerste
+geweigerd — wist u de accounts, dan krijgt u dezelfde weigering in andere
+woorden.
+
+**Het is makkelijk om niet te weten dat u er een hebt.** Een privéruimte staat
+niet in de gebruikerswissel, heeft een eigen pincode en verbergt haar apps in het
+startscherm. Op de telefoon waarvoor deze stap is geschreven, had de eigenaar er
+een en herinnerde zich niet ze te hebben aangemaakt.
+
+**Verwijderen wist alles wat erin zit**, dus kijk eerst. Raakt u er niet in — de
+pincode staat los van die van de telefoon — dan kan verwijderen nog steeds vanaf
+datzelfde scherm.
+
+Andere extra gebruikers staan in **Instellingen → Systeem → Meerdere gebruikers**
+en moeten er ook af.
+
 ---
 
 ## Stap 2 — Zet USB-foutopsporing aan
