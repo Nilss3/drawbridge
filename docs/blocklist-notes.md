@@ -59,11 +59,29 @@ Music is blocked again and comes back with the toggle, so *Allow YouTube (16+)*
 now restores all six apps — YouTube, Kids, TV, Creator Studio, YouTube TV and
 Music.
 
-**The five front ends stay blocked either way**, and the reason is not the same
-one. With the toggle *off* they cannot reach the CDN anyway. With it *on* they
-would give unrestricted YouTube while the policy promises Restricted Mode, which
-is the more interesting failure: the toggle's whole claim is that Restricted Mode
-comes with it, and a client that bypasses the front end bypasses that too.
+**The third-party front ends are deliberately allowed**, as of policy 49, and
+this reversed a decision made two policies earlier. NewPipe, PipePipe, LibreTube,
+Tubular, ReVanced and SkyTube were blocked in policy 47 because they stream
+straight from `googlevideo.com` and would bypass Restricted Mode.
+
+The owner's argument for allowing them is the better one: they strip the ads,
+drop the recommendation feed and allow background play. Blocking them was
+defending the ad-supported, algorithm-driven version of YouTube against the quiet
+one, which is the opposite of what this project is for. And the difference in
+*content* between Restricted Mode and not is slight; the difference in how the
+app behaves is not.
+
+Nothing is named to allow them. They are simply absent from `blocked_packages`,
+which is also why the unbounded tail of similar clients needs no decision at all
+— an omission scales where an enumeration does not. They still need
+`googlevideo.com` and `youtubei.googleapis.com`, which stay behind the toggle, so
+they are inert while YouTube is off and work when it is on.
+
+**The toggle's description says Restricted Mode covers the YouTube app and the
+browser**, which is what the DNS redirect actually reaches, and does not
+enumerate what else is on the phone. That is accurate rather than complete, and
+deliberately so: a parent-facing sentence should say what is enforced where, not
+inventory every way around it.
 
 ### Snapchat My AI
 
