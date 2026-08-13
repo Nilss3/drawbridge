@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "herald content filter",
   "version": "1.0",
-  "description": "Blocks subresource requests to filtered domains.",
+  "description": "Blocks subresource requests to filtered domains, and unwinds YouTube Shorts.",
   "applications": {
     "gecko": {
       "id": "blocklist@herald.drawbridge.app"
@@ -15,6 +15,21 @@
     "<all_urls>"
   ],
   "background": {
-    "scripts": ["background.js"]
-  }
+    "scripts": [
+      "background.js"
+    ]
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "*://*.youtube.com/*",
+        "*://youtube.com/*"
+      ],
+      "js": [
+        "shorts.js"
+      ],
+      "run_at": "document_start",
+      "all_frames": false
+    }
+  ]
 }

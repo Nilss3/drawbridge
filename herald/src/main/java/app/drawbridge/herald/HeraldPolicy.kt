@@ -1,6 +1,7 @@
 package app.drawbridge.herald
 
 import android.content.Context
+import app.drawbridge.herald.BuildConfig
 import app.drawbridge.policy.PolicyConfig
 import app.drawbridge.policy.PolicyManager
 
@@ -33,6 +34,9 @@ object HeraldPolicy {
     fun config(context: Context): PolicyConfig = cachedConfig ?: synchronized(this) {
         cachedConfig ?: PolicyConfig(
             selectionSource = DrawbridgeSelection(context),
+            // Blank in every build but a dev-channel one, where it has to match
+            // the URL drawbridge polls; see herald/build.gradle.kts.
+            policyUrl = BuildConfig.POLICY_URL.ifBlank { PolicyConfig.DEFAULT_POLICY_URL },
         ).also { cachedConfig = it }
     }
 

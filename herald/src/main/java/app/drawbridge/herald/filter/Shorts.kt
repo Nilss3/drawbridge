@@ -27,6 +27,14 @@ package app.drawbridge.herald.filter
  * Shorts are untouched in all of them. This makes herald a nicer place to watch
  * YouTube; it does not make the phone a place without Shorts.
  *
+ * **Nor does it reach a tap inside YouTube itself.** GeckoView reports
+ * navigations, and YouTube is a single-page app: tapping a Short in the feed is
+ * a `history.pushState`, so nothing arrives here at all. Found on the reference
+ * phone on 2026-08-13, where this looked simply broken. That case is covered by
+ * `assets/extensions/blocklist/shorts.js`, a content script that watches
+ * `location` — the two halves are deliberately separate, because this one is
+ * exact and that one runs inside the page.
+ *
  * Deliberately built on raw string handling rather than `android.net.Uri`, for
  * the same two reasons as [app.drawbridge.herald.search.SafeSearch]: it keeps
  * this plain JVM code the test source set can exercise without Robolectric, and

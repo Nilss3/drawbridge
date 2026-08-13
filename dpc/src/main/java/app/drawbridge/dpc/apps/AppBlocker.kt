@@ -164,8 +164,15 @@ class AppBlocker(context: Context) {
      * The cost of that restriction: a *preinstalled* app that stops being in
      * `blocked_packages` is not restored automatically. Removing drawbridge
      * still restores everything.
+     *
+     * **Public, and called outside a sweep on purpose.** Until 2026-08-13 this
+     * ran only from [sweep], which the configuration screen skips while the
+     * phone is unlocked — so switching *Allow YouTube* on did nothing visible
+     * and the hidden app stayed hidden until the next reboot or lock. Restoring
+     * is additive, like installing herald and like starting the filter, so it
+     * belongs with the things that do not wait for the lock.
      */
-    private fun restoreNowAllowed() {
+    fun restoreNowAllowed() {
         if (!dpm.isDeviceOwnerApp(appContext.packageName)) return
         val policy = DrawbridgeApplication.policy(appContext).policy.value
         val wanted = (policy.browserPackages + policy.exemptPackages) - policy.blockedPackages.toSet()

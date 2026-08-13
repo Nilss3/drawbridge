@@ -578,6 +578,7 @@ class MainActivity : AppCompatActivity() {
             // the app sweep below runs against the policy that is actually in
             // force rather than the one being replaced.
             val selected = policy.selectProfile(choice.id)
+            if (selected) restoreNewlyAllowed()
             val removed = if (selected) sweep() else 0
             if (selected) SelectionProvider.notifyChanged(this@MainActivity)
 
@@ -638,6 +639,9 @@ class MainActivity : AppCompatActivity() {
             // No blocklist changes with an option, so there is nothing to
             // download and nothing to wait for — but an option turned *off*
             // leaves an app on the device that policy no longer allows.
+            // An option switched *on* can un-block a package that is currently
+            // hidden, which is the half that used to need a reboot.
+            if (enabled) restoreNewlyAllowed()
             val removed = if (enabled) 0 else sweep()
             toast(applied(option.displayName(Languages.current()), removed, mayRemove = !enabled))
             renderOptions()
@@ -675,6 +679,19 @@ class MainActivity : AppCompatActivity() {
     private suspend fun sweep(): Int {
         if (!parentKey.isLocked) return 0
         return withContext(Dispatchers.IO) { AppBlocker(this@MainActivity).sweep().size }
+    }
+
+    /**
+     * Brings back anything the change just started allowing.
+     *
+     * Unlike [sweep] this is **not** gated on the lock, because it only ever
+     * adds. Switching *Allow YouTube* on used to leave a hidden YouTube hidden
+     * until the next reboot, since the only caller of the restore was a sweep
+     * the configuration screen skips while unlocked — which is exactly the state
+     * this screen is always in.
+     */
+    private suspend fun restoreNewlyAllowed() = withContext(Dispatchers.IO) {
+        runCatching { AppBlocker(this@MainActivity).restoreNowAllowed() }
     }
 
     /**
