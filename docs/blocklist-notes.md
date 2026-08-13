@@ -39,12 +39,30 @@ filter in herald — which already ships uBlock Origin and a bundled extension o
 its own — and that only helps in herald, not in the YouTube app or in the other
 four browsers.
 
-**YouTube Music is deliberately not part of the option.** Its package stays
-blocked and `music.youtube.com` is a distinct hostname, so it can be separated at
-the entry point — but it streams from `googlevideo.com` and talks to
-`youtubei.googleapis.com`, both shared with YouTube proper. Allowing Music alone
-therefore opens the shared media backend, though not `youtube.com` itself. Worth
-testing on a device before anyone promises it works.
+**YouTube Music is not part of the option because it is not blocked at all**, as
+of policy 47. It is a music service rather than social media, so its package left
+`blocked_packages` and `music.youtube.com` is in `allowed_domains` permanently,
+carving itself out of the social list's `youtube.com` entry.
+
+**What that costs, stated plainly.** Music streams from `googlevideo.com` and
+calls `youtubei.googleapis.com`, both shared with YouTube proper, so both had to
+become permanently allowed. **The YouTube video CDN is therefore open whether the
+YouTube option is on or not.** `youtube.com` itself stays blocked, so neither the
+site nor the app is reachable with the option off — but anything able to
+construct a `googlevideo.com` URL can stream.
+
+That is not hypothetical, which is why **NewPipe, LibreTube, Tubular, ReVanced
+and SkyTube are now blocked by name**: they are YouTube front ends that talk to
+the API and the CDN directly and never touch `youtube.com`. None is on the Play
+Store, which is precisely why they had to be named rather than left to a rule.
+The long tail of such clients cannot be enumerated, and that is the residual hole
+this trade buys.
+
+**Untested:** whether Music still plays. `youtubei.googleapis.com` is
+DNS-redirected to `restrictmoderate.youtube.com`, and now that the host is
+allowed rather than blocked, that redirect applies to Music's API traffic too.
+It may simply mean Restricted Mode covers Music, which is arguably what you want;
+it may break it. One device answers this.
 
 ### Snapchat My AI
 

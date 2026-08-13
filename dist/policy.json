@@ -1,7 +1,7 @@
 {
-  "version": 46,
-  "issued_at": "2026-08-13T14:00:00Z",
-  "comment": "Policy 46, DEV CHANNEL ONLY. required_apps moves to herald 0.1.10 (version_code 10), pinned by hash at v0.2.8-dev.1's *versioned* URLs rather than /releases/latest/download/. That is the whole trick keeping the alpha still: v0.2.5 keeps the latest flag, so main's policy 37 goes on resolving herald 0.1.9 exactly as before, while dev names the new build explicitly. herald 0.1.10 differs from 0.1.9 by 102 lines in two files -- Shorts.kt and a hook in HeraldRequestInterceptor -- which rewrite youtube.com/shorts/<id> to watch?v=<id> and send the Shorts feed entry point to the site root.",
+  "version": 47,
+  "issued_at": "2026-08-13T15:00:00Z",
+  "comment": "Policy 47. Two changes asked for from the Moto, and one that follows from the second. The YouTube option now restores the whole family rather than the main app alone -- Kids, TV, Creator Studio, YouTube TV. And YouTube Music is unblocked outright: it is a music service, not social media, so it leaves blocked_packages and music.youtube.com joins allowed_domains permanently. What follows: Music streams from googlevideo.com and calls youtubei.googleapis.com, both shared with YouTube proper, so those had to move to the top-level allowed_domains -- which means the video CDN is now open whether YouTube is on or not. Third-party front ends such as NewPipe, LibreTube, Tubular and ReVanced stream straight from that CDN without ever touching youtube.com, so they are now blocked by name. None is on Play, which is exactly why they needed naming. Untested: whether Music still plays, since youtubei.googleapis.com is DNS-redirected to restrictmoderate.youtube.com and that redirect now applies to Music's API traffic too.",
   "dns": {
     "upstreams": [
       "94.140.14.15",
@@ -91,7 +91,12 @@
     "signal.org",
     "signal.me",
     "signalcaptchas.org",
-    "whispersystems.org"
+    "whispersystems.org",
+    "music.youtube.com",
+    "googlevideo.com",
+    "youtubei.googleapis.com",
+    "ytimg.com",
+    "yt3.ggpht.com"
   ],
   "blocked_packages": [
     "ai.botify.app",
@@ -104,6 +109,7 @@
     "anima.virtual.ai.robot.friend",
     "app.drawbridge.probe",
     "app.drawbridge.probeb",
+    "app.revanced.android.youtube",
     "ch.protonvpn.android",
     "com.AgainstGravity.RecRoom",
     "com.AlfaBravo.CombatMaster",
@@ -162,10 +168,10 @@
     "com.garena.game.kgvn",
     "com.generagames.resistance",
     "com.gettr.gettr",
+    "com.github.libretube",
     "com.glu.zbs",
     "com.google.android.apps.youtube.creator",
     "com.google.android.apps.youtube.kids",
-    "com.google.android.apps.youtube.music",
     "com.google.android.apps.youtube.unplugged",
     "com.google.android.youtube",
     "com.google.android.youtube.tv",
@@ -282,6 +288,7 @@
     "com.withfeelingai.test",
     "com.zhiliaoapp.musically",
     "de.mobileconcepts.cyberghost",
+    "free.rm.skytube.oss",
     "free.vpn.unblock.proxy.turbovpn",
     "hotspotshield.android.vpn",
     "jp.konami.pesam",
@@ -295,6 +302,8 @@
     "org.getlantern.lantern",
     "org.joinmastodon.android",
     "org.outline.android.client",
+    "org.polymorphicshade.tubular",
+    "org.schabi.newpipe",
     "org.telegram.messenger",
     "org.telegram.messenger.web",
     "org.telegram.plus",
@@ -360,28 +369,27 @@
       "id": "youtube",
       "name": "Allow YouTube",
       "recommended_age": 16,
-      "description": "YouTube's recommendation feed and Shorts are built to keep you watching, which is why it is blocked by default. Switching this on restores the app and the website \u2014 and turns Google's own Restricted Mode on at the same time, which the phone enforces and nobody can switch off from inside YouTube. YouTube Kids, TV, Creator Studio and Music stay blocked.",
+      "description": "YouTube's recommendation feed and Shorts are built to keep you watching, which is why it is blocked by default. Switching this on restores YouTube and its family \u2014 Kids, TV, Creator Studio \u2014 and turns Google's own Restricted Mode on at the same time, which the phone enforces and nobody can switch off from inside YouTube. In herald, Shorts open as ordinary videos. YouTube Music is not part of this: it is a music service and is always allowed.",
       "default_enabled": false,
       "exempt_packages": [
-        "com.google.android.youtube"
+        "com.google.android.youtube",
+        "com.google.android.apps.youtube.kids",
+        "com.google.android.youtube.tv",
+        "com.google.android.apps.youtube.creator",
+        "com.google.android.apps.youtube.unplugged"
       ],
       "allowed_domains": [
         "youtube.com",
         "youtu.be",
-        "youtube-nocookie.com",
-        "ytimg.com",
-        "yt3.ggpht.com",
-        "googlevideo.com",
-        "youtubei.googleapis.com",
-        "youtube.googleapis.com"
+        "youtube-nocookie.com"
       ],
       "name_i18n": {
         "nl": "YouTube toestaan",
         "fr": "Autoriser YouTube"
       },
       "description_i18n": {
-        "nl": "De aanbevelingsfeed en Shorts van YouTube zijn gemaakt om je te laten doorkijken, en daarom staat YouTube standaard uit. Zet je dit aan, dan komen de app en de website terug \u2014 en gaat meteen Google's eigen Beperkte modus aan, die de telefoon afdwingt en die niemand vanuit YouTube kan uitzetten. YouTube Kids, TV, Creator Studio en Music blijven geblokkeerd.",
-        "fr": "Le fil de recommandations et les Shorts de YouTube sont con\u00e7us pour vous garder devant l'\u00e9cran : c'est pourquoi YouTube est bloqu\u00e9 par d\u00e9faut. En activant ceci, l'application et le site reviennent \u2014 et le mode Restreint de Google s'active en m\u00eame temps, impos\u00e9 par le t\u00e9l\u00e9phone et impossible \u00e0 d\u00e9sactiver depuis YouTube. YouTube Kids, TV, Creator Studio et Music restent bloqu\u00e9s."
+        "nl": "De aanbevelingsfeed en Shorts van YouTube zijn gemaakt om je te laten doorkijken, en daarom staat YouTube standaard uit. Zet je dit aan, dan komen YouTube en zijn familie terug \u2014 Kids, TV, Creator Studio \u2014 en gaat meteen Google's eigen Beperkte modus aan, die de telefoon afdwingt en die niemand vanuit YouTube kan uitzetten. In herald openen Shorts als gewone video's. YouTube Music hoort hier niet bij: dat is een muziekdienst en is altijd toegestaan.",
+        "fr": "Le fil de recommandations et les Shorts de YouTube sont con\u00e7us pour vous garder devant l'\u00e9cran : c'est pourquoi YouTube est bloqu\u00e9 par d\u00e9faut. En activant ceci, YouTube et sa famille reviennent \u2014 Kids, TV, Creator Studio \u2014 et le mode Restreint de Google s'active en m\u00eame temps, impos\u00e9 par le t\u00e9l\u00e9phone et impossible \u00e0 d\u00e9sactiver depuis YouTube. Dans herald, les Shorts s'ouvrent comme des vid\u00e9os ordinaires. YouTube Music n'en fait pas partie : c'est un service de musique, toujours autoris\u00e9."
       }
     },
     {
