@@ -154,8 +154,7 @@ class AppBlocker(context: Context) {
      * hidden forever, with no way back short of taking drawbridge off the device.
      *
      * **Deliberately restricted to what the policy names explicitly**: the
-     * allowed browsers and the exempt packages, minus anything still blocked by
-     * name. The tempting general rule — unhide whatever would no longer be
+     * allowed browsers and the exempt packages. The tempting general rule — unhide whatever would no longer be
      * removed — cannot be written safely, because [isBrowser] asks the package
      * manager which apps answer an `https://` intent and a hidden app answers
      * nothing. Unhiding a browser to find out whether it is one would hide it
@@ -164,6 +163,19 @@ class AppBlocker(context: Context) {
      * The cost of that restriction: a *preinstalled* app that stops being in
      * `blocked_packages` is not restored automatically. Removing drawbridge
      * still restores everything.
+     *
+     * **There is no subtraction of `blocked_packages`, and there was.** That is
+     * the bug the owner found on 2026-08-13: switching *Allow YouTube* on left a
+     * hidden YouTube hidden through a lock, an unlock and a reboot. An option
+     * exempts a package **without** taking it off the blocked list — that is the
+     * shape of every option this policy has, WhatsApp included — so subtracting
+     * the blocked list removed precisely what the option had just allowed. The
+     * restore could only ever have worked for Chrome, which is allowed and
+     * happens not to be blocked by name.
+     *
+     * `isProtected` is the authority everywhere else: [evaluate] consults it
+     * *before* the blocked-list branch, so exempt already beats blocked. This has
+     * to agree with it or the two disagree about the same package.
      *
      * **Public, and called outside a sweep on purpose.** Until 2026-08-13 this
      * ran only from [sweep], which the configuration screen skips while the
@@ -175,9 +187,7 @@ class AppBlocker(context: Context) {
     fun restoreNowAllowed() {
         if (!dpm.isDeviceOwnerApp(appContext.packageName)) return
         val policy = DrawbridgeApplication.policy(appContext).policy.value
-        val wanted = (policy.browserPackages + policy.exemptPackages) - policy.blockedPackages.toSet()
-
-        for (packageName in wanted) {
+        for (packageName in restorable(policy)) {
             runCatching {
                 if (dpm.isApplicationHidden(admin, packageName)) {
                     dpm.setApplicationHidden(admin, packageName, false)
@@ -302,6 +312,18 @@ class AppBlocker(context: Context) {
          */
         internal fun actsNow(isBrowser: Boolean, isLocked: Boolean): Boolean =
             isBrowser || isLocked
+
+        /**
+         * The packages a restore may bring back: what the policy names as an
+         * allowed browser or as exempt.
+         *
+         * A pure function of the policy so the rule can be checked without a
+         * device, which is how the missing case would have been caught: a package
+         * that is both blocked by name and exempted by an option **must** be
+         * restorable, because exempt beats blocked everywhere else.
+         */
+        internal fun restorable(policy: Policy): List<String> =
+            (policy.browserPackages + policy.exemptPackages).distinct()
 
         /**
          * Packages that must survive no matter what the policy says.
