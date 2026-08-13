@@ -760,6 +760,27 @@ lets the parent close it without keeping the key — deliberately making the
 configuration permanent is a legitimate thing to want, and the second dialog is
 there so it cannot happen by accident.
 
+## Both apps must read the same document, not merely the same shape of one
+
+**herald and drawbridge poll the policy independently**, each with its own store,
+its own cache and its own version. That is deliberate — herald ships standalone,
+with no drawbridge behind it, and has to work anyway.
+
+The cost is that they can disagree, and on 2026-08-13 they did. herald read
+`PolicyConfig`'s default URL, which is `main`'s, while drawbridge read whichever
+channel it was built for. A dev phone therefore ran herald against the alpha's
+policy and drawbridge against dev's: one app unblocking what the other still
+blocked, with nothing on the device to say so. It was found because herald
+reported policy 50 on a phone whose drawbridge was on 49.
+
+Both now take the same `drawbridgePolicyUrl` build property and fall back to
+`main` when it is absent, so a released build is unchanged by construction.
+
+**The general rule worth keeping:** anything that decides *which* document an app
+obeys has to be set for both apps or neither. Anything that decides what to do
+*with* that document can differ, and does — herald acts on the browser fields,
+drawbridge on the package ones.
+
 ## herald reads drawbridge's selection, or it enforces a different policy
 
 Both apps fetch the same signed document, and for a long time that was assumed to

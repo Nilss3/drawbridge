@@ -1,7 +1,7 @@
 {
-  "version": 49,
-  "issued_at": "2026-08-13T17:00:00Z",
-  "comment": "Policy 49 unblocks the third-party YouTube front ends that policy 47 had named -- NewPipe, PipePipe, LibreTube, Tubular, ReVanced, SkyTube -- on the owner's decision. They strip the ads, drop the recommendation feed and allow background play, which is most of what this toggle exists to defend against, so blocking them was defending the ad-supported version of the thing. They need googlevideo.com and youtubei.googleapis.com, which stay behind the toggle, so they are inert while YouTube is off and work when it is on. Nothing is named to allow them: they are simply off the blocklist, which is also why the unbounded tail of similar clients needs no decision. The toggle's description now says Restricted Mode is enforced for the YouTube app and the browser, which is what the DNS redirect actually covers, and does not enumerate what else is on the phone. The em dashes are also out of every user-facing description: they are hard to read on a phone and the sentences are better without them, so the lists became parentheses and the asides became their own sentences rather than swapping one mark for another.",
+  "version": 51,
+  "issued_at": "2026-08-13T19:00:00Z",
+  "comment": "Policy 51, DEV CHANNEL ONLY. Points at drawbridge 0.2.8 build 25 and herald 0.1.11, both from v0.2.8-dev.2, which is a pre-release deliberately not flagged latest so main goes on resolving herald 0.1.9 through v0.2.5. Policy content is unchanged from 49; only the two fields that name builds moved. What the builds fix, all found by running the previous one on a phone: herald polled main's policy while drawbridge polled dev's, so one handset ran two apps against two documents; Shorts did not unwind when tapped inside YouTube, because that is a pushState and the Kotlin rewrite only sees navigations; and allowing an app did not bring it back, because the restore subtracted blocked_packages from its own candidates and an option exempts without unlisting.",
   "dns": {
     "upstreams": [
       "94.140.14.15",
@@ -431,51 +431,51 @@
   },
   "app_update": {
     "package_name": "app.drawbridge.dpc",
-    "version_code": 24,
-    "url": "https://dev.drawbridge-project.pages.dev/assets/dpc-8639a0df782ff679.apk",
-    "sha256": "8639a0df782ff67981807ac7d2c6400b354cdf407f89101cc1952d128d290482"
+    "version_code": 25,
+    "url": "https://dev.drawbridge-project.pages.dev/assets/dpc-195b08dba8ac9801.apk",
+    "sha256": "195b08dba8ac980149a545a24da2babf3e65e2490cd5b90034a74611ba17dbec"
   },
   "required_apps": [
     {
       "package_name": "app.drawbridge.herald",
-      "version_code": 10,
-      "url": "https://github.com/Nilss3/drawbridge/releases/download/v0.2.8-dev.1/herald-arm64-v8a-release.apk",
-      "sha256": "1c7b7e85fb03ccf69c28e0ff88a7e57d05f4af60fb16cdb9d6166d0d9b30195d",
+      "version_code": 11,
+      "url": "https://github.com/Nilss3/drawbridge/releases/download/v0.2.8-dev.2/herald-arm64-v8a-release.apk",
+      "sha256": "2f9bfc788b1f6baee2d8162e2d4ae5b6078961d531b1aa866ec398e67d7801f9",
       "abi": "arm64-v8a"
     },
     {
       "package_name": "app.drawbridge.herald",
-      "version_code": 10,
-      "url": "https://github.com/Nilss3/drawbridge/releases/download/v0.2.8-dev.1/herald-armeabi-v7a-release.apk",
-      "sha256": "923a18f444973fedd4b6477206d91c8a9de5b83ddca2d1c3d626193e38d333a8",
+      "version_code": 11,
+      "url": "https://github.com/Nilss3/drawbridge/releases/download/v0.2.8-dev.2/herald-armeabi-v7a-release.apk",
+      "sha256": "78a990c522989fd5460f693400673b139e1d065cb3fd0e8b27fd3f3f3300b1e6",
       "abi": "armeabi-v7a"
     },
     {
       "package_name": "app.drawbridge.herald",
-      "version_code": 10,
-      "url": "https://github.com/Nilss3/drawbridge/releases/download/v0.2.8-dev.1/herald-x86_64-release.apk",
-      "sha256": "c8f9ba03d6d3c0143058de7cfccd7f61d2261b4532edc9fece5af5a5863fa284",
+      "version_code": 11,
+      "url": "https://github.com/Nilss3/drawbridge/releases/download/v0.2.8-dev.2/herald-x86_64-release.apk",
+      "sha256": "decad840aefde39e3c694f42372f1c4ee8f5884f2673a06923974995354caa0a",
       "abi": "x86_64"
     },
     {
       "package_name": "app.drawbridge.heraldmono",
-      "version_code": 10,
-      "url": "https://github.com/Nilss3/drawbridge/releases/download/v0.2.8-dev.1/herald-mono-arm64-v8a-release.apk",
-      "sha256": "26c7dc51cbe5c2b2314fb4e1a4bb34e0b56bda9c0f264ac876e11547ad53ec7e",
+      "version_code": 11,
+      "url": "https://github.com/Nilss3/drawbridge/releases/download/v0.2.8-dev.2/herald-mono-arm64-v8a-release.apk",
+      "sha256": "a153e4036f8fe9ae30bcf0524fc4aa640dab8aa992241e4dd78cd5ae78aa2870",
       "abi": "arm64-v8a"
     },
     {
       "package_name": "app.drawbridge.heraldmono",
-      "version_code": 10,
-      "url": "https://github.com/Nilss3/drawbridge/releases/download/v0.2.8-dev.1/herald-mono-armeabi-v7a-release.apk",
-      "sha256": "a5711598a6338c98c8add90e33d3b8da17069e059461af229274a3bccaf29c57",
+      "version_code": 11,
+      "url": "https://github.com/Nilss3/drawbridge/releases/download/v0.2.8-dev.2/herald-mono-armeabi-v7a-release.apk",
+      "sha256": "16d6eff0c01a876923f5eb4ed9de69a914f01ba4980cc0b7a9136ae1e4a6f207",
       "abi": "armeabi-v7a"
     },
     {
       "package_name": "app.drawbridge.heraldmono",
-      "version_code": 10,
-      "url": "https://github.com/Nilss3/drawbridge/releases/download/v0.2.8-dev.1/herald-mono-x86_64-release.apk",
-      "sha256": "15c248649d39818786c7cddc3684ad5e665db7df7ae27b4466f9f48dced10b64",
+      "version_code": 11,
+      "url": "https://github.com/Nilss3/drawbridge/releases/download/v0.2.8-dev.2/herald-mono-x86_64-release.apk",
+      "sha256": "f692e7d84c691a5393833fa219c18d3097760b2e71b80820272a3ded90f0cf27",
       "abi": "x86_64"
     }
   ],

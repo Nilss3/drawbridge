@@ -370,6 +370,34 @@ Note the no-cache header is a request, not a guarantee: some CDNs deliberately
 ignore request-side no-cache. If a phone still reports the old version inside
 five minutes, wait rather than debug.
 
+### Cutting a release without disturbing the alpha
+
+**The rule that matters: `required_apps` resolves herald through
+`/releases/latest/download/`.** Whichever GitHub release carries the **latest**
+flag is what every phone on `main` installs. So a herald release can change the
+alpha even when drawbridge does not move at all.
+
+A dev-channel release therefore goes:
+
+1. Build herald, then drawbridge. Order matters — see below.
+2. `tools/stage-release.sh`.
+3. `gh release create <tag> --prerelease --latest=false --target dev`, then
+   **upload the assets one at a time** with `gh release upload`. Creating a
+   release with seven assets attached failed mid-upload on 2026-08-13 with a
+   404, and `gh` rolled the whole release back; uploading individually costs one
+   file instead of all of them, and can be retried.
+4. Pin the new APKs in `required_apps` at their **versioned** URLs, never
+   `/latest/`, and re-sign.
+
+`v0.2.5` holds `latest` and should keep it until a herald build is meant to reach
+the alpha. That is the single flag standing between the dev channel and every
+tester's phone.
+
+**Two fields never travel between branches.** `app_update` and `required_apps`
+name builds, and signing does not rewrite them the way it rewrites blocklist
+URLs. Porting policy *content* from `dev` to `main` means copying everything else
+and leaving those two alone.
+
 ## The signing key
 
 Generated once:

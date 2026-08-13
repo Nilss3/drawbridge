@@ -1,10 +1,46 @@
-# Handoff — state as of 2026-08-11
+# Handoff — state as of 2026-08-13
 
 Everything about *how the system works* lives in [README](../README.md),
 [design-decisions](design-decisions.md), [policy](policy.md),
 [provisioning](provisioning.md) and [removal](removal.md). This file covers only
 what those do not: where the project actually stands, what is on the build
 machine, what was and was not verified, and what to do next.
+
+---
+
+## Read this first: two channels, and which is which
+
+| | `main` (the alpha) | `dev` |
+|---|---|---|
+| drawbridge | 0.2.7, build 18 | **0.2.8, build 25** |
+| herald | 0.1.9 | **0.1.11** |
+| policy | **50** | **51** |
+| install page | <https://drawbridge-project.pages.dev/install/usb/> | <https://dev.drawbridge-project.pages.dev/install/usb/> |
+| provisioned devices | the owner's Nothing Phone (A059) | the Moto G15 |
+
+**`main` is deliberately behind, and that is not neglect.** The alpha is what a
+tester installs and what the owner's own daily phone runs. Policy *content* is
+kept in step (policy 50 is policy 49's rules); the *builds* are not, because the
+0.2.8 work is still being found wanting on hardware roughly once a day.
+
+**Three things keep the two apart, and getting any of them wrong breaks the
+alpha:**
+
+1. **`required_apps` resolves through `/releases/latest/download/`.** Whichever
+   GitHub release holds the **latest** flag is what every alpha phone installs.
+   v0.2.5 holds it, which is why herald 0.1.9 is what `main` delivers. The dev
+   releases (`v0.2.8-dev.1`, `v0.2.8-dev.2`) are pre-releases explicitly **not**
+   flagged latest, and dev's policy pins their **versioned** URLs instead. A
+   herald release that took `latest` would change the alpha without drawbridge
+   moving at all.
+2. **`policytool.py sign` rewrites blocklist URLs to the branch it runs on.** So
+   signing on `main` produces `main` URLs and the merge trap cannot be set by
+   hand. `app_update` and `required_apps` are *not* rewritten — they are
+   deliberate values, and they are the two fields that must never travel between
+   branches.
+3. **Both apps read `drawbridgePolicyUrl`** from `gradle.properties`, which only
+   `dev` sets. herald did not until 2026-08-13, and until then a dev phone ran
+   drawbridge against dev's policy and herald against the alpha's.
 
 ---
 
@@ -25,16 +61,17 @@ still broken".
 
 | | |
 |---|---|
-| Repo | https://github.com/Nilss3/drawbridge — public, `main`, 96 commits |
-| Release | **[v0.2.7](https://github.com/Nilss3/drawbridge/releases/tag/v0.2.7) is the first alpha** — DPC-only pre-release. [v0.2.5](https://github.com/Nilss3/drawbridge/releases/tag/v0.2.5) stays **latest** because it is the only release carrying herald's six APKs |
-| Live policy | version **36**, live at `dist/policy.signed.json` on `main` |
-| Apps, published | drawbridge **0.2.7** (versionCode 18) and herald + herald mono `0.1.9`. Play Protect refuses `app.drawbridge.dpc` by name, so it cannot install itself — a cable is the delivery channel |
-| Website | trilingual, generated into `site/`, at <https://drawbridge-project.pages.dev>. Provisions and updates a phone from the browser over WebUSB |
-| Tests | 372 unit tests across four build variants, lint clean |
+| Repo | https://github.com/Nilss3/drawbridge — public, `main` + `dev` |
+| Alpha | **[v0.2.7](https://github.com/Nilss3/drawbridge/releases/tag/v0.2.7)** is what testers install, from `main`. [v0.2.5](https://github.com/Nilss3/drawbridge/releases/tag/v0.2.5) stays **latest** because `required_apps` resolves herald through it |
+| Dev | **v0.2.8-dev.2**: drawbridge build 25, herald 0.1.11, policy 51. Pre-release, not latest |
+| Devices | Two managed phones: the Moto G15 on dev, and the owner's **Nothing Phone A059** on the alpha since 2026-08-13 |
+| Tests | **522** unit tests across four build variants, lint clean |
+| Website | trilingual, generated into `site/`, both channels served from Cloudflare Pages |
 
-The two apps are **no longer in lockstep**, and that is deliberate: herald has
-not changed, and rebuilding it purely to move a version number would alter every
-hash and force a policy re-sign for an identical binary.
+**herald is no longer frozen.** It sat at 0.1.9 from 2026-08-10 to 2026-08-13
+because a rebuild costs six 230 MB APKs and a policy re-sign. Two releases in one
+day ended that, and the cost is real: budget ~2 minutes of build and a 1.3 GB
+upload per herald release.
 
 ## v0.2.7 is the first alpha, and `main` is frozen around it
 
@@ -613,6 +650,38 @@ not a property of the phone. Do not let the option's wording imply otherwise.
 rebuild changes six 230 MB APKs, every hash in `required_apps`, and forces a
 policy re-sign. This change is worth carrying until there is a second reason to
 cut a herald release; it should not be the only one.
+
+### Build 25 and herald 0.1.11: four bugs a phone found in a day
+
+**2026-08-13, v0.2.8-dev.2.** Every one of these was invisible to 522 unit tests
+and obvious within minutes of using the previous build. Worth reading as a set,
+because three of the four are the same mistake: a rule checked against the one
+case that happened to work.
+
+- **herald polled the alpha's policy on a dev phone.** It read `PolicyConfig`'s
+  default while drawbridge read its channel's, so one handset ran two apps
+  against two documents, one unblocking what the other still blocked. The dev
+  channel had this from the day it was built: the plumbing went into the DPC and
+  never into herald.
+- **Allowing an app did not bring it back.** `restoreNowAllowed` subtracted
+  `blocked_packages` from its own candidates, and **an option exempts a package
+  without unlisting it**, which is the shape of *every* option here. So the
+  subtraction removed exactly what the toggle had just allowed. It could only
+  ever have worked for Chrome, which is allowed and happens not to be blocked by
+  name, and Chrome is the case that was checked when it was written.
+- **The restore only ran inside a sweep** the configuration screen skips while
+  unlocked, which is the only state that screen is ever in. So even correct, it
+  would not have run.
+- **Shorts did not unwind when tapped inside YouTube.** The Kotlin rewrite is
+  exact and never fired: GeckoView reports *navigations*, and a tap in the feed
+  is a `history.pushState`. It worked only for a typed URL or a link from another
+  app, which is not how anyone meets a Short. `shorts.js` now watches `location`
+  from inside the page, and is deliberately the only thing in that file.
+
+**The lesson, since it has now cost four bugs in one build:** a rule verified
+against a single example is verified against nothing. Both blocker rules are pure
+functions with tests now — `actsNow` and `restorable` — and the test for
+`restorable` asserts the case that was broken rather than the one that worked.
 
 ### Browsers are removed even when unlocked, and there are now three of them
 
@@ -3000,6 +3069,34 @@ Consequences to state before building it, not after:
 - **The snapshot will catch whatever happened to be there**, including anything
   the parent installed to migrate data and no longer wants. Showing them the list
   before sealing it is probably not optional.
+
+### 11. Update the website — the owner's, not a coding task
+
+**Raised 2026-08-13 and assigned to the owner.** The site still describes the
+project as it was on 2026-08-11 and is now wrong or thin in several places. It is
+listed here because it is real work with a deadline attached to the alpha, not
+because anyone should generate it:
+
+- **The alpha warning is out of date in the good direction.** It says *"tested on
+  exactly one device: a Motorola G15, by the people who built it"*. Two handsets
+  now, on different OEMs and different Android versions.
+- **The three toggles are not mentioned anywhere.** WhatsApp 14+, YouTube 16+ and
+  Telegram 18+ are what a parent chooses between, and the site does not say they
+  exist.
+- **Nor is the disconnect philosophy**, which is the largest feature added since
+  the site was written: always offline, always online, or a curfew.
+- **Nor are the five browsers.** The site still reads as "herald only", which
+  stopped being true in policy 41.
+- **The Private Space step** is in the install pages already, added 2026-08-12.
+  Worth checking it reads well, since it is the step that stopped a real
+  provisioning.
+- **What a blocked site looks like in Chrome**, which is a question the other
+  four browsers create and nothing answers. In herald it is drawbridge's block
+  page; everywhere else it is a DNS error that reads as "the internet is broken".
+
+Remember `site/` is generated: edit `site-src/` and `tools/build-site.py`, run
+`python3 tools/build-site.py`, and commit what it writes. Hand-edited HTML in
+`site/` is overwritten without warning.
 
 ### Standing items, unchanged
 
