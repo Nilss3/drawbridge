@@ -27,9 +27,24 @@ suffix-based, `youtube.com` also covers `m.`, `music.`, `tv.`, `kids.` and
 
 The safe-search redirect in `DnsFilter` still maps `youtube.com` to
 `restrictmoderate.youtube.com`, but the block check runs first, so it is dormant.
-It is left in place deliberately: remove YouTube from `dist/lists/social.txt` and
-restricted mode resumes with no code change — the obvious thing to want for an
-older child.
+It was left in place deliberately, and **policy 43 collected on that**: the
+*Allow YouTube (16+)* option puts the YouTube hosts in `allowed_domains`, allow
+beats block, and the redirect wakes up by itself. Switching YouTube on switches
+Restricted Mode on with it, enforced at the DNS layer where nothing inside the
+app or the site can turn it off. No code was needed in either app.
+
+**Shorts are still not separable**, and the option does not change that: it is a
+surface inside YouTube on the same domains. What *could* hide it is a cosmetic
+filter in herald — which already ships uBlock Origin and a bundled extension of
+its own — and that only helps in herald, not in the YouTube app or in the other
+four browsers.
+
+**YouTube Music is deliberately not part of the option.** Its package stays
+blocked and `music.youtube.com` is a distinct hostname, so it can be separated at
+the entry point — but it streams from `googlevideo.com` and talks to
+`youtubei.googleapis.com`, both shared with YouTube proper. Allowing Music alone
+therefore opens the shared media backend, though not `youtube.com` itself. Worth
+testing on a device before anyone promises it works.
 
 ### Snapchat My AI
 
@@ -127,8 +142,12 @@ rather than a judgement about its content.
 
 - **Minecraft** — see above.
 - **WhatsApp** is blocked, and can be allowed again with the "Allow WhatsApp
-  (14+)" option on drawbridge's configuration screen. It is the one thing on this
-  list a parent can switch back on without editing the policy.
+  (14+)" option on drawbridge's configuration screen.
+- **YouTube** is blocked, and can be allowed again with "Allow YouTube (16+)",
+  which brings Restricted Mode with it. Kids, TV, Creator Studio and Music are
+  not part of it.
+
+  These two are what a parent can switch back on without editing the policy.
 - **Signal** is deliberately left alone, and now explicitly so: it is in
   `exempt_packages` and `signal.org` is in `allowed_domains`, so no upstream
   blocklist can quietly start blocking it.

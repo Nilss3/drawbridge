@@ -1,7 +1,7 @@
 {
-  "version": 42,
-  "issued_at": "2026-08-12T21:00:00Z",
-  "comment": "Policy 42. Vivaldi and Ecosia join Chrome and Firefox Focus on the allowed browser list, so there is a choice rather than a single imposed browser. All four are Chromium or Gecko builds with no proxy of their own; Firefox stays out because it offers a VPN, and Opera and the other proxy browsers are blocked by name in policy 41. herald remains allowed_browser_package, which as of drawbridge 0.2.8 build 23 is finally read: the DPC makes it the persistent handler for web links, so a tapped link opens in herald while the others stay available to whoever launches them. That preference is set by a Device Owner API and cannot be changed in Settings.",
+  "version": 43,
+  "issued_at": "2026-08-12T22:00:00Z",
+  "comment": "Policy 43. An 'Allow YouTube (16+)' option, below WhatsApp. It needs no new code in either app: exempt_packages restores com.google.android.youtube, allowed_domains unblocks the YouTube hosts, and both apps already read the enabled options -- herald through drawbridge's selection provider, which is how the WhatsApp option already reaches the browser. The part worth knowing is what falls out of it: DnsFilter checks the blocklist before the safe-search rewrite, so a YouTube that stops being blocked immediately starts resolving to restrictmoderate.youtube.com. Turning YouTube on therefore turns Restricted Mode on with it, enforced at the DNS layer where nothing inside YouTube can reach it. Kids, TV, Creator Studio and Music stay blocked; Music is a separate question because it shares googlevideo.com.",
   "dns": {
     "upstreams": [
       "94.140.14.15",
@@ -49,7 +49,7 @@
       "url": "https://raw.githubusercontent.com/Nilss3/drawbridge/dev/dist/lists/social.txt",
       "format": "domains",
       "category": "social",
-      "sha256": "7c1a7f1a8c0ddaa1a31f2afdad09960422ecdb7627f02e560effeec302a47975"
+      "sha256": "ab44c4ce6a166c9087b5f1b85673253db42dc8f413b922a3b2ea8df90c93b3a2"
     },
     {
       "id": "ai-companions",
@@ -352,6 +352,34 @@
       "description_i18n": {
         "nl": "WhatsApp brengt privacyrisico's mee, heeft toxische socialemediafuncties en een vervelende chatbot. Signal is op dit toestel altijd toegelaten, al raden we ook daar 14+ en/of ouderlijke begeleiding aan: als groepschat-app draagt het een risico op cyberpesten.",
         "fr": "WhatsApp comporte des risques pour la vie priv\u00e9e, des fonctions de r\u00e9seau social toxiques et un chatbot p\u00e9nible. Signal est toujours autoris\u00e9 sur cet appareil, m\u00eame si nous y recommandons aussi 14+ et/ou un accompagnement parental : en tant qu'application de discussion de groupe, elle comporte un risque de cyberharc\u00e8lement."
+      }
+    },
+    {
+      "id": "youtube",
+      "name": "Allow YouTube",
+      "recommended_age": 16,
+      "description": "YouTube's recommendation feed and Shorts are built to keep you watching, which is why it is blocked by default. Switching this on restores the app and the website \u2014 and turns Google's own Restricted Mode on at the same time, which the phone enforces and nobody can switch off from inside YouTube. YouTube Kids, TV, Creator Studio and Music stay blocked.",
+      "default_enabled": false,
+      "exempt_packages": [
+        "com.google.android.youtube"
+      ],
+      "allowed_domains": [
+        "youtube.com",
+        "youtu.be",
+        "youtube-nocookie.com",
+        "ytimg.com",
+        "yt3.ggpht.com",
+        "googlevideo.com",
+        "youtubei.googleapis.com",
+        "youtube.googleapis.com"
+      ],
+      "name_i18n": {
+        "nl": "YouTube toestaan",
+        "fr": "Autoriser YouTube"
+      },
+      "description_i18n": {
+        "nl": "De aanbevelingsfeed en Shorts van YouTube zijn gemaakt om je te laten doorkijken, en daarom staat YouTube standaard uit. Zet je dit aan, dan komen de app en de website terug \u2014 en gaat meteen Google's eigen Beperkte modus aan, die de telefoon afdwingt en die niemand vanuit YouTube kan uitzetten. YouTube Kids, TV, Creator Studio en Music blijven geblokkeerd.",
+        "fr": "Le fil de recommandations et les Shorts de YouTube sont con\u00e7us pour vous garder devant l'\u00e9cran : c'est pourquoi YouTube est bloqu\u00e9 par d\u00e9faut. En activant ceci, l'application et le site reviennent \u2014 et le mode Restreint de Google s'active en m\u00eame temps, impos\u00e9 par le t\u00e9l\u00e9phone et impossible \u00e0 d\u00e9sactiver depuis YouTube. YouTube Kids, TV, Creator Studio et Music restent bloqu\u00e9s."
       }
     }
   ],

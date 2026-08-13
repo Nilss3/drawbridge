@@ -6,7 +6,13 @@
 #
 # YouTube is blocked outright here. The safe-search rewriting in DnsFilter still
 # maps youtube.com to restrictmoderate.youtube.com, but blocking is checked first,
-# so the redirect only takes effect if YouTube is removed from this list.
+# so the redirect only takes effect if YouTube stops being blocked.
+#
+# As of policy 43 that is a switch rather than an edit: the "Allow YouTube (16+)"
+# option puts these hosts in allowed_domains, allow beats block, and the redirect
+# wakes up on its own. Restricted Mode therefore arrives with YouTube rather than
+# needing anything else -- and it arrives at the DNS layer, where nothing inside
+# the app or the site can reach it.
 
 # YouTube — all of it, including Kids, TV, Music, Studio and embeds.
 # Matching is suffix-based, so youtube.com already covers m., music., tv.,
