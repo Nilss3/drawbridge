@@ -256,6 +256,69 @@ Exercised on all of those paths.
 So: new devices can be provisioned today, on certified hardware, without an
 appeal and without a rename.
 
+### The alpha provisioned a Nothing Phone, 2026-08-12
+
+**The second handset this project has ever managed, and the first that is not the
+G15.** A059, Android 16, provisioned from the alpha install page over WebUSB
+after the owner removed the Private Space and all seven accounts. Reported as
+working as it should.
+
+What that adds beyond "it worked twice": a different OEM, a different Android
+version, a phone in daily use rather than a disposable target, and an install
+page that until now had been exercised by the person who wrote it on the handset
+he wrote it for. The alpha's own warning — *"tested on exactly one device, by the
+people who built it"* — is now one device out of date, in the good direction.
+
+**It also confirms the account finding on the way in.** Seven accounts, none of
+them Google, refused; the same phone accepted the grant once they were gone.
+
+**One observation from it, and it is a fair challenge to a design decision:** the
+VPN, the DNS filter and the clock lock only came on at the *lock*, not at
+install. See the next section.
+
+### Should the filter start before the lock? Raised 2026-08-12, not decided
+
+The owner's observation from the Nothing Phone: the VPN, the DNS filter and the
+clock lock all wait for the lock, and a web filter arguably should not — it is
+protection rather than confiscation, and a phone sitting provisioned-but-unlocked
+is unprotected while looking finished.
+
+**The instinct matches a line this project already drew.** herald's install was
+moved out of the deferral on 2026-08-10 for exactly this reason: *"the deferral
+exists to stop drawbridge taking things away before the parent has asked"*, and
+installing a browser adds rather than takes. A DNS filter is the same shape — it
+removes nothing, and it does not obstruct anything the pre-lock window is for
+(adding the account, setting a screen lock, enabling USB debugging, moving
+bookmarks; none of those touch a blocked domain).
+
+**Two of the three original reasons no longer apply.** Enforcing inside the setup
+wizard bricked a QR provision on 2026-08-07 — and the QR path is retired.
+Enforcing at first launch uninstalled Facebook, pulled 470 MiB and killed USB
+debugging before anyone had agreed — but that was the removals and the
+restrictions, not the filter.
+
+**And a fourth reason disappeared last week without anyone noticing.** Starting
+`DnsFilterService` also starts `PackageWatcher`, which used to mean starting the
+filter dragged app removal along with it. Since removal is gated on the lock,
+that entanglement is gone: the filter can now start early *without* anything
+being taken away. That is what makes this cheap to change rather than a
+re-litigation.
+
+**What argues against, and it is about consent rather than mechanism.** Before
+the lock the parent may not have chosen a profile, so an early filter runs on the
+document's default — the phone would start filtering before anyone said what to
+filter. And the always-on VPN is visible: a key icon, a battery-optimisation
+prompt, a phone that announces it is managed, before the parent pressed the
+button that means "manage it".
+
+**The clock lock should stay where it is** either way. `DISALLOW_CONFIG_DATE_TIME`
+takes something away, and it exists to keep a curfew honest — and the curfew only
+applies once locked.
+
+So the fork is: start the filter at provisioning, or start it when the parent
+first *chooses a policy*, which is an explicit act and answers the consent
+objection. Not built; the owner has not chosen.
+
 ### A second handset, 2026-08-12: a Private Space blocks provisioning, and the alpha installed
 
 **Three findings from the owner's Nothing Phone (A059, Android 16), and the first
