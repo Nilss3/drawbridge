@@ -880,10 +880,32 @@ name. Policy 41 therefore names thirty proxy, Tor, VPN and DNS-changer packages,
 every id checked against the Play Store rather than written from memory, because
 a wrong package id is invisible: the blocker simply never matches it.
 
-Most consumer VPNs on that list were already dead on a locked device, since
-`DISALLOW_CONFIG_VPN` stops a second VPN being configured at all. They are there
-as defence in depth. **The ones that do the work are the apps that proxy inside
-themselves**, which no restriction covers.
+**Consumer VPN apps do not work on a managed device, and that is tested rather
+than reasoned** — the owner tried them on 2026-08-12: they cannot change the VPN,
+because `DISALLOW_CONFIG_VPN` stops a second one being configured and Android
+runs one at a time regardless. So their entries on the blocklist are defence in
+depth, not the mechanism. **The ones that do the work are the apps that proxy
+inside themselves**, which no restriction covers, and those are the reason the
+list exists at all.
+
+### herald is the default, and the default cannot be changed
+
+With five browsers allowed, which one a tapped link opens in stopped being a
+detail. `setDefaultBrowser` makes herald the persistent handler through
+`addPersistentPreferredActivity` — a Device Owner API, so **Settings cannot
+override it**. The others remain installed and open normally when somebody
+launches them; they simply do not inherit links.
+
+That is the shape asked for: herald recommended by default, the alternatives
+available for the sites it cannot render. It is worth being clear that
+"recommended" here means "chosen for you and not changeable", which is stronger
+than the word suggests.
+
+**The package now comes from the policy.** `allowed_browser_package` has been in
+the document since the beginning and nothing read it — the DPC used a
+`BuildConfig` constant with the same value, so editing the document changed
+nothing and said otherwise. It is read now, with the constant as the fallback for
+a device that has not fetched a document yet.
 
 ### Hiding has to be reversible, and now is
 

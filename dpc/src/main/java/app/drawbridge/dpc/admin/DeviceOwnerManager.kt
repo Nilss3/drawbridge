@@ -10,6 +10,7 @@ import android.os.UserManager
 import android.text.format.DateUtils
 import android.util.Log
 import app.drawbridge.dpc.BuildConfig
+import app.drawbridge.dpc.DrawbridgeApplication
 import app.drawbridge.dpc.R
 import app.drawbridge.dpc.security.ParentKey
 
@@ -369,11 +370,28 @@ class DeviceOwnerManager(context: Context) {
     /**
      * Makes herald the persistent handler for web links.
      *
-     * Cosmetic only — enforcement is the DNS filter plus browser allowlisting.
-     * This just stops tapped links from bouncing through a disambiguation dialog
-     * for a browser that is about to be suspended anyway.
+     * **This stopped being cosmetic on 2026-08-12.** It used to be described as
+     * saving a disambiguation dialog for a browser that was about to be
+     * suspended anyway, because herald was the only browser that could exist.
+     * Now that Chrome, Focus, Vivaldi and Ecosia are allowed too, this is the
+     * decision about which of five browsers a tapped link opens in — and
+     * `addPersistentPreferredActivity` is a Device Owner API, so **the choice
+     * cannot be changed from Settings.** The others are still there and still
+     * open normally when someone launches them; they just do not inherit links.
+     *
+     * Enforcement is still the DNS filter plus browser allowlisting. This decides
+     * the default, not what is permitted.
+     *
+     * The package comes from the policy rather than from [BuildConfig], which is
+     * only the fallback for a device that has not read a document yet. The
+     * document has always carried `allowed_browser_package`; until now nothing
+     * read it, so editing it changed nothing.
      */
-    fun setDefaultBrowser(browserPackage: String = BuildConfig.ALLOWED_BROWSER_PACKAGE) {
+    fun setDefaultBrowser(
+        browserPackage: String = DrawbridgeApplication.policy(appContext).policy.value
+            .allowedBrowserPackage
+            .ifBlank { BuildConfig.ALLOWED_BROWSER_PACKAGE },
+    ) {
         if (!isDeviceOwner) return
 
         val activity = resolveBrowserActivity(browserPackage) ?: run {
@@ -389,8 +407,16 @@ class DeviceOwnerManager(context: Context) {
         }
 
         runCatching {
-            dpm.clearPackagePersistentPreferredActivities(admin, browserPackage)
+            // Clear the preference from *every* browser the policy allows, not
+            // only the one being set. A policy that changes the default would
+            // otherwise leave the previous browser holding a persistent
+            // preference that Settings cannot reach either.
+            val allowed = DrawbridgeApplication.policy(appContext).policy.value.browserPackages
+            for (candidate in allowed + browserPackage) {
+                runCatching { dpm.clearPackagePersistentPreferredActivities(admin, candidate) }
+            }
             dpm.addPersistentPreferredActivity(admin, filter, activity)
+            Log.i(TAG, "Web links now open in $browserPackage")
         }.onFailure { Log.e(TAG, "Could not set the default browser", it) }
     }
 

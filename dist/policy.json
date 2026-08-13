@@ -1,7 +1,7 @@
 {
-  "version": 41,
-  "issued_at": "2026-08-12T20:00:00Z",
-  "comment": "Policy 41. Two browsers besides herald, and the proxy apps that make that safe. Chrome and Firefox Focus join allowed_browser_packages: not everyone will accept one browser, and some sites do not render on Gecko at all. The risk that admits is a browser carrying its own proxy -- Opera's 'VPN' is an in-browser proxy over 443, which no DNS rule can see and which DISALLOW_CONFIG_VPN does not touch because it is not an Android VPN. Firefox is deliberately not allowed for that reason. blocked_packages gains 30 proxy, Tor, VPN and DNS-changer packages, every id verified against the Play Store rather than written from memory. Most consumer VPNs were already dead on a locked device, since DISALLOW_CONFIG_VPN stops a second VPN being configured; the ones that matter are the apps that proxy inside themselves. Paired with a build where browsers are removed whether the phone is locked or not.",
+  "version": 42,
+  "issued_at": "2026-08-12T21:00:00Z",
+  "comment": "Policy 42. Vivaldi and Ecosia join Chrome and Firefox Focus on the allowed browser list, so there is a choice rather than a single imposed browser. All four are Chromium or Gecko builds with no proxy of their own; Firefox stays out because it offers a VPN, and Opera and the other proxy browsers are blocked by name in policy 41. herald remains allowed_browser_package, which as of drawbridge 0.2.8 build 23 is finally read: the DPC makes it the persistent handler for web links, so a tapped link opens in herald while the others stay available to whoever launches them. That preference is set by a Device Owner API and cannot be changed in Settings.",
   "dns": {
     "upstreams": [
       "94.140.14.15",
@@ -371,9 +371,9 @@
   },
   "app_update": {
     "package_name": "app.drawbridge.dpc",
-    "version_code": 22,
-    "url": "https://dev.drawbridge-project.pages.dev/assets/dpc-7886017f28d48351.apk",
-    "sha256": "7886017f28d48351d6e2d0f0822b8c872ec02a97c5928b13b829a3e7703ac21a"
+    "version_code": 23,
+    "url": "https://dev.drawbridge-project.pages.dev/assets/dpc-fc6585a79bbf69e0.apk",
+    "sha256": "fc6585a79bbf69e00810e7636f0f2d6314b0b43fb5b8a018029b4bf29847fa0e"
   },
   "required_apps": [
     {
@@ -423,6 +423,8 @@
     "app.drawbridge.herald",
     "app.drawbridge.heraldmono",
     "com.android.chrome",
-    "org.mozilla.focus"
+    "org.mozilla.focus",
+    "com.vivaldi.browser",
+    "com.ecosia.android"
   ]
 }

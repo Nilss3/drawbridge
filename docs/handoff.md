@@ -512,23 +512,44 @@ Chrome would have left every phone that had already hidden it hidden forever.
 generalised: a hidden app answers no intent queries, so asking whether it is a
 browser means unhiding it, which would hide it again fifteen minutes later.
 
-**Three things this does not settle**, and the first is the one to test:
+**Vivaldi and Ecosia were added on the same day**, so the list is herald, herald
+mono, Chrome, Focus, Vivaldi and Ecosia — a choice rather than one imposed
+browser. And **herald is the default link handler**, which is no longer cosmetic
+now that five browsers can coexist: `addPersistentPreferredActivity` is a Device
+Owner API, so a tapped link opens in herald and Settings cannot change that. The
+others still open when launched directly.
 
-- **Whether Chrome's "secure DNS" is actually inert here.** Vivaldi and Ecosia
-  were observed refusing it on a managed device; Chrome was inferred from them
-  and not checked. It is one screen: Settings → Privacy → Use secure DNS. This
-  project's record on assuming Google's carve-outs is four for four wrong.
-- **Whether an unlocked phone gets re-locked at all.** drawbridge never re-locks
-  itself, and locking mints a fresh key to write down — so the design actively
-  discourages closing the window. The browser rule patches the symptom; an idle
-  auto-relock, or a re-lock that does not rotate the key, would address the
-  cause. Raised on 2026-08-12 and not built.
-- **What a blocked site looks like in Chrome.** herald shows the policy's block
-  page; every other browser shows its own DNS error. A custom page would require
-  answering with an address we control and serving it, which produces a
-  certificate error for every `https://` site — teaching a child to click through
-  TLS warnings, which is worse than the plain error. Not buildable without the
-  interception this project refuses.
+While fixing that, a quiet lie came out: `allowed_browser_package` has been in
+the policy document since the beginning and **nothing read it**. The DPC used a
+`BuildConfig` constant that happened to hold the same value, so editing the
+document changed nothing. It is read now, with the constant as the fallback.
+
+**Consumer VPN apps were tested by the owner on 2026-08-12 and do not work**:
+they cannot change the VPN, because `DISALLOW_CONFIG_VPN` stops a second one
+being configured and Android runs one at a time. Their blocklist entries are
+defence in depth rather than the mechanism.
+
+**Three questions this raised, all answered by the owner on 2026-08-12:**
+
+- **Chrome's secure DNS** — accepted as inert here. Note that is the owner's
+  call rather than a hardware test written up in this file, and the reasoning
+  above still holds: one of the three mechanisms stopping browser DoH is
+  Chromium's own, and it is re-decided at every update.
+- **Nothing re-locks the phone** — left alone for now, deliberately. The browser
+  rule covers the case that mattered.
+- **A block page for other browsers** — dropped, because it is not buildable
+  without TLS interception. herald stays the recommended browser instead, which
+  is what the default-handler change above is for.
+
+**Two things this does not settle:**
+
+- **What a blocked site looks like in the other five.** herald shows the
+  policy's block page; every other browser shows its own DNS error. Parents
+  should be told what that looks like, since "the internet is broken" and "this
+  site is blocked" are the same screen in Chrome.
+- **Whether any of the four new browsers has been run on a managed device.**
+  None has. The allowlist is a claim about what they do not carry, checked
+  against their feature lists rather than against a phone.
 
 ### Diagnostics now says why the policy is what it is
 
