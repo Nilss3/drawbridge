@@ -1131,22 +1131,21 @@ def write(path: pathlib.Path, content: str) -> None:
     path.write_text(content, encoding="utf-8")
 
 
-def stage_installer_assets() -> dict:
-    """Copies the DPC and the installer's JS into site/assets/, and pins the APK.
+def check_installer_preconditions() -> dict:
+    """Everything that can refuse to build, before anything is written or deleted.
 
-    Two things force the APK to be served from this site rather than linked from
-    the GitHub release. GitHub's release downloads carry no
-    `Access-Control-Allow-Origin` header, so a browser fetch from the site is
-    blocked outright — measured 2026-08-10, through the redirect to
-    release-assets.githubusercontent.com. And a page that reached out to a third
-    party to fetch what it is about to install would give up the property the
-    rest of this site is built on.
+    **Separate from [stage_installer_assets] because of the order, not the
+    tidiness.** These checks used to live inside the staging step, which
+    [build_all] calls *after* clearing `site/` — so a refusal left the tree with
+    every generated page deleted and nothing to replace them. It happened on
+    2026-08-13, with the staged APK belonging to the dev channel and the policy
+    pinning the alpha's: the check was right, the site was gone, and only git had
+    a copy.
 
-    The hash is checked against `app_update` in the signed policy rather than
-    merely recomputed, because those two are the same claim made in two places:
-    the policy tells provisioned devices which build is current, and this page
-    hands that same build to a phone that has none yet. A build where they
-    disagree is a build where one of them is lying, so it fails here.
+    A tool that destroys its output before deciding whether it may proceed is one
+    interrupted afternoon away from being the problem it exists to prevent.
+
+    Returns what it computed, so the staging step does not read the APK twice.
     """
     import base64
     import hashlib
@@ -1170,8 +1169,37 @@ def stage_installer_assets() -> dict:
             f"  policy pins: {pinned}\n"
             f"  staged APK:  {digest}\n"
             "The installer page would hand phones a build the policy does not know about.\n"
-            "Stage the published APK, or re-sign the policy against this one."
+            "Stage the published APK, or re-sign the policy against this one.\n"
+            "Nothing was changed; site/ is untouched."
         )
+
+    for js in ("adb.js", "installer.js"):
+        source = SITE_SRC / "installer" / js
+        if not source.exists():
+            raise SystemExit(f"Missing {source.relative_to(REPO_ROOT)}; the installer needs it.")
+
+    return {"apk_src": apk_src, "digest": digest}
+
+
+def stage_installer_assets(checked: dict) -> dict:
+    """Copies the DPC and the installer's JS into site/assets/, and pins the APK.
+
+    Two things force the APK to be served from this site rather than linked from
+    the GitHub release. GitHub's release downloads carry no
+    `Access-Control-Allow-Origin` header, so a browser fetch from the site is
+    blocked outright — measured 2026-08-10, through the redirect to
+    release-assets.githubusercontent.com. And a page that reached out to a third
+    party to fetch what it is about to install would give up the property the
+    rest of this site is built on.
+
+    The hash is checked against `app_update` in the signed policy rather than
+    merely recomputed, because those two are the same claim made in two places:
+    the policy tells provisioned devices which build is current, and this page
+    hands that same build to a phone that has none yet. A build where they
+    disagree is a build where one of them is lying, so it fails here.
+    """
+    apk_src = checked["apk_src"]
+    digest = checked["digest"]
 
     assets = SITE_OUT / "assets"
     (assets / "js").mkdir(parents=True, exist_ok=True)
@@ -1200,6 +1228,9 @@ def stage_installer_assets() -> dict:
 
 
 def build_all() -> None:
+    # Before the clear below, never after it: see check_installer_preconditions.
+    checked = check_installer_preconditions()
+
     if SITE_OUT.exists():
         for item in SITE_OUT.iterdir():
             if item.name == "assets":
@@ -1215,7 +1246,7 @@ def build_all() -> None:
     why_fragment = convert_blocklist.build_fragment()
     write(SITE_OUT / "why-blocked" / "index.html", render_why_blocked(why_fragment))
 
-    apk = stage_installer_assets()
+    apk = stage_installer_assets(checked)
 
     for lang in LANGUAGES:
         base = SITE_OUT if lang == "en" else SITE_OUT / lang
