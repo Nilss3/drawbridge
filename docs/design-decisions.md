@@ -921,12 +921,45 @@ would no longer be removed — cannot be written safely, because a hidden app
 answers no intent queries, so asking whether it is a browser requires unhiding
 it, which would hide it again on the next sweep. Every fifteen minutes, forever.
 
-## Nothing is enforced until the phone is locked
+## Nothing is *taken away* until the phone is locked
 
-Locking is not only the moment the screen is sealed. It is the moment drawbridge
-starts doing anything at all. Before it, a provisioned phone has no restrictions,
-no filter, no app removal and no browser download — at provisioning, at first
-launch, and on the daily poll alike. `DeviceOwnerManager.reapplyIfProtected` is
+**The heading used to read "nothing is enforced", and that stopped being true on
+2026-08-12**, in two steps and both deliberate: herald installs at provisioning,
+and the **filter now runs from provisioning too**. What waits for the lock is the
+restrictions and the app removals — the things that take something away.
+
+### The filter does not wait, and the old rule was inconsistent
+
+The owner's observation, from a Nothing Phone that sat provisioned and unfiltered
+until somebody pressed Lock: a web filter is protection rather than confiscation,
+and the deliberate act is *installing drawbridge*.
+
+The argument that settled it is about consistency rather than urgency. If "not
+locked" meant "not filtered", then **unlocking would have to un-filter the phone**
+— it is the same state. It never did. The filter was keyed on `protectedSince`
+and survived an unlock, while the pre-lock window had no filter at all, so the
+same visible state behaved two different ways depending on history nobody could
+see. Starting the filter at provisioning removes the seam instead of documenting
+it.
+
+Three of the four reasons for the old behaviour had expired anyway. The wizard
+failure was the QR path, which is retired. The first-launch failure was about
+removals and restrictions. And starting `DnsFilterService` also starts
+`PackageWatcher`, so the filter used to drag app removal with it — which stopped
+being true when removal became keyed on the lock, days earlier, without anyone
+noticing the consequence.
+
+What is kept: the filter still never starts while the setup wizard is running.
+That guard costs nothing and encodes the one failure that actually happened.
+
+**A phone that should have no web filter belongs in a policy that says so** — a
+profile choice somebody makes, rather than a state reached by leaving a button
+unpressed. Not built; noted as the right shape.
+
+### And the rest still waits
+
+Before the lock, a provisioned phone has no restrictions and no app removal — at
+provisioning, at first launch, and on the daily poll alike. `DeviceOwnerManager.reapplyIfProtected` is
 what every automatic caller goes through, and it is a no-op until then; the lock
 button is the only place the lockdown is applied unconditionally.
 

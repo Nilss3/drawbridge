@@ -1,7 +1,7 @@
 {
-  "version": 43,
-  "issued_at": "2026-08-12T22:00:00Z",
-  "comment": "Policy 43. An 'Allow YouTube (16+)' option, below WhatsApp. It needs no new code in either app: exempt_packages restores com.google.android.youtube, allowed_domains unblocks the YouTube hosts, and both apps already read the enabled options -- herald through drawbridge's selection provider, which is how the WhatsApp option already reaches the browser. The part worth knowing is what falls out of it: DnsFilter checks the blocklist before the safe-search rewrite, so a YouTube that stops being blocked immediately starts resolving to restrictmoderate.youtube.com. Turning YouTube on therefore turns Restricted Mode on with it, enforced at the DNS layer where nothing inside YouTube can reach it. Kids, TV, Creator Studio and Music stay blocked; Music is a separate question because it shares googlevideo.com.",
+  "version": 44,
+  "issued_at": "2026-08-12T23:00:00Z",
+  "comment": "Policy 44, DEV CHANNEL ONLY. app_update points at drawbridge 0.2.8 build 24, which starts the web filter at provisioning rather than at the lock. Policy content is unchanged from 43. The reasoning is in design-decisions: the old rule was inconsistent, because if 'not locked' meant 'not filtered' then unlocking would have to un-filter the phone, and it never did. Must not be merged to main as it stands: app_update names build 24 and a dev URL.",
   "dns": {
     "upstreams": [
       "94.140.14.15",
@@ -399,9 +399,9 @@
   },
   "app_update": {
     "package_name": "app.drawbridge.dpc",
-    "version_code": 23,
-    "url": "https://dev.drawbridge-project.pages.dev/assets/dpc-fc6585a79bbf69e0.apk",
-    "sha256": "fc6585a79bbf69e00810e7636f0f2d6314b0b43fb5b8a018029b4bf29847fa0e"
+    "version_code": 24,
+    "url": "https://dev.drawbridge-project.pages.dev/assets/dpc-8639a0df782ff679.apk",
+    "sha256": "8639a0df782ff67981807ac7d2c6400b354cdf407f89101cc1952d128d290482"
   },
   "required_apps": [
     {

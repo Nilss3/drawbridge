@@ -315,9 +315,22 @@ button that means "manage it".
 takes something away, and it exists to keep a curfew honest — and the curfew only
 applies once locked.
 
-So the fork is: start the filter at provisioning, or start it when the parent
-first *chooses a policy*, which is an explicit act and answers the consent
-objection. Not built; the owner has not chosen.
+**Decided the same day: always filter, from provisioning.** The owner's reasoning
+carried it, and it is about consistency rather than urgency — *if the phone is
+unfiltered before the first lock, then unlocking after a lock should un-filter it
+too, because that is the same state.* It never did. The filter survived an unlock
+while the pre-lock window had none, so one visible state behaved two ways
+depending on history nobody could see. Starting at provisioning removes the seam
+rather than documenting it. The deliberate act is installing drawbridge.
+
+Built in 0.2.8 build 24: `DrawbridgeApplication.startFiltering`, called at
+provisioning and on every process start. The setup-wizard guard is kept — that is
+the one failure that actually happened — and the restrictions, the clock lock and
+the app removals still wait for the lock.
+
+**What should exist and does not**: a policy that says "no web filter", so a phone
+without one is a choice somebody made rather than a state reached by leaving a
+button unpressed. Out of scope for now, and the right shape when it comes.
 
 ### A second handset, 2026-08-12: a Private Space blocks provisioning, and the alpha installed
 

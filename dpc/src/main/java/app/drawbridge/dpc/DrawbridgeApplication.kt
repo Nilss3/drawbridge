@@ -9,6 +9,7 @@ import app.drawbridge.dpc.apps.AppBlocker
 import app.drawbridge.dpc.curfew.CurfewController
 import app.drawbridge.dpc.curfew.CurfewWorker
 import app.drawbridge.dpc.update.UpdateWorker
+import app.drawbridge.dpc.vpn.DnsFilterService
 import app.drawbridge.policy.PolicyConfig
 import app.drawbridge.policy.PolicyManager
 import app.drawbridge.policy.work.PolicyWorker
@@ -31,6 +32,9 @@ class DrawbridgeApplication : Application() {
         // Restrictions can be dropped by an OS upgrade, so re-assert them on every
         // process start rather than only at provisioning time.
         DeviceOwnerManager(this).reapplyIfProtected()
+
+        // The filter, which does *not* wait for the lock. See startFiltering.
+        startFiltering(this)
 
         // Connectivity is recomputed from the clock on every process start too.
         // The alarm is the primary mechanism and this is the backstop: Doze can
@@ -77,14 +81,59 @@ class DrawbridgeApplication : Application() {
             // is removed. Installing what the policy *requires* is additive, and
             // it is the removals that wait for the parent to ask.
             fetchPolicyAndRequiredApps(context)
+
+            // And the filter, from the moment drawbridge owns the phone.
+            startFiltering(context)
+        }
+
+        /**
+         * Brings up the DNS filter, without waiting for the lock.
+         *
+         * **Changed 2026-08-12, on the owner's decision, after a Nothing Phone was
+         * provisioned and sat unfiltered until somebody pressed Lock.** Everything
+         * else still waits; this does not. Three of the four reasons it used to
+         * wait have expired:
+         *
+         *  - applying policy *inside the setup wizard* bricked a QR provision on
+         *    2026-08-07, and the QR path is retired. The `isSetupComplete` guard
+         *    below keeps that lesson anyway, for nothing;
+         *  - applying policy at first launch took Facebook, 470 MiB and USB
+         *    debugging before anyone agreed — but that was the removals and the
+         *    restrictions, not the filter;
+         *  - starting this service also starts [PackageWatcher], so the filter
+         *    used to drag app removal along with it. Removal is keyed on the lock
+         *    now, so that entanglement is gone and this takes nothing away.
+         *
+         * **And the rule it replaces was not consistent.** If "not locked" meant
+         * "not filtered", then unlocking would have to un-filter the phone too —
+         * that is the same state. It never did, and nobody noticed. A filter that
+         * runs from installation onwards has no such seam: the deliberate act is
+         * installing drawbridge.
+         *
+         * A phone that wants no web filter should say so in its *policy*, which
+         * is a choice somebody makes, rather than getting one by leaving a button
+         * unpressed.
+         */
+        fun startFiltering(context: Context) {
+            val owner = DeviceOwnerManager(context)
+            if (!owner.isDeviceOwner) return
+            // The one part of the old deferral worth keeping: never while the
+            // setup wizard is still on screen.
+            if (!ProvisioningLog.isSetupComplete(context)) return
+
+            owner.enableAlwaysOnVpn()
+            // Returns a consent intent only when drawbridge is not Device Owner,
+            // which the check above has already excluded.
+            DnsFilterService.requestStart(context)
         }
 
         /**
          * Fetches the current policy and installs whatever it requires.
          *
          * Called at provisioning and again when the parent locks the phone. It
-         * only ever *adds*: the restrictions, the filter and the app removals are
-         * [DeviceOwnerManager]'s, and they still wait for the lock.
+         * only ever *adds*: the restrictions and the app removals are
+         * [DeviceOwnerManager]'s and [AppBlocker]'s, and those still wait for the
+         * lock. The filter no longer does — see [startFiltering].
          */
         fun fetchPolicyAndRequiredApps(context: Context) {
             ProvisioningLog.record(context, "fetchPolicyAndRequiredApps: policy refresh + required apps")
