@@ -479,6 +479,44 @@ phone is locked, in all three languages.
 Covered by `AppBlockerLockGateTest`, including the specific case that was broken:
 locked, then unlocked, with `protectedSince` still set.
 
+### Shorts become ordinary videos in herald, and tier 1 turned out to be a no-op
+
+**Built 2026-08-12, in herald, and not yet shipped** — see the release note at the
+end of this section, which is the part that matters for planning.
+
+`Shorts.redirected` rewrites `youtube.com/shorts/<id>` to
+`youtube.com/watch?v=<id>`, and the bare `/shorts` feed entry point to the site
+root. A Short and a normal video are the same video; what differs is the player
+around it, a vertical feed that advances by itself. So the clip somebody sends
+you still opens and still plays, in a player that ends and stops, and the feed
+cannot be opened on purpose.
+
+It sits in `HeraldRequestInterceptor` next to `SafeSearch.enforced`, which is the
+same shape of rule — a URL that should have been another URL — so it is plain
+JVM code with eleven tests and no Robolectric.
+
+**The policy-pattern version was asked for and cannot work**, which is worth
+recording so nobody tries it again. `browser.blocked_url_patterns` exists,
+`ContentFilter` compiles it, and `isUrlBlocked` consults it — but only after
+returning **false** the moment an allowed domain matches. Allowing YouTube is
+exactly what puts `youtube.com` in `allowed_domains`, so a `/shorts/` pattern
+would never be reached in the one state where it would matter. And a blocked URL
+is checked before any rewrite, so even if it fired it would pre-empt this and
+turn a shared link into a wall. Both intents are rewrites now.
+
+**What it does not reach, and this was decided rather than overlooked**: the
+YouTube app, which the same option restores, and the four other browsers the
+policy allows. Shorts are untouched in all of them. The owner's call on
+2026-08-12 was that the app stays allowed — people pay for YouTube and want the
+ad-free experience they are paying for — so this is a reason to prefer herald,
+not a property of the phone. Do not let the option's wording imply otherwise.
+
+**It ships with the next herald release, which is not cheap.** herald is still
+0.1.9 / versionCode 9 and has deliberately not been rebuilt since, because every
+rebuild changes six 230 MB APKs, every hash in `required_apps`, and forces a
+policy re-sign. This change is worth carrying until there is a second reason to
+cut a herald release; it should not be the only one.
+
 ### Browsers are removed even when unlocked, and there are now three of them
 
 **2026-08-12, reversing part of the rule set two days earlier — deliberately, and

@@ -47,6 +47,15 @@ class HeraldRequestInterceptor(private val context: Context) : RequestIntercepto
             // somebody searching, and redirecting one would replace a frame's
             // content with a page nobody asked for.
             if (isSubframeRequest) return null
+
+            // Shorts first, because it changes the path and SafeSearch only ever
+            // looks at a query string — the two cannot both want the same URL.
+            // A Short becomes the same video in the ordinary player, and the
+            // Shorts feed itself becomes the site root. See [Shorts].
+            Shorts.redirected(uri)?.let {
+                return RequestInterceptor.InterceptionResponse.Url(it)
+            }
+
             return SafeSearch.enforced(uri)
                 ?.let { RequestInterceptor.InterceptionResponse.Url(it) }
         }
