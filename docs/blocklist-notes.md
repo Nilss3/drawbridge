@@ -146,8 +146,13 @@ rather than a judgement about its content.
 - **YouTube** is blocked, and can be allowed again with "Allow YouTube (16+)",
   which brings Restricted Mode with it. Kids, TV, Creator Studio and Music are
   not part of it.
+- **Telegram** is blocked, and can be allowed again with "Allow Telegram (18+)".
+  The option exempts the three official clients — the Play build, the build from
+  telegram.org, and Telegram X. **Plus Messenger (`org.telegram.plus`) stays
+  blocked either way**, because allowing Telegram is not a decision to allow an
+  unofficial fork of it.
 
-  These two are what a parent can switch back on without editing the policy.
+  These three are what a parent can switch back on without editing the policy.
 - **Signal** is deliberately left alone, and now explicitly so: it is in
   `exempt_packages` and `signal.org` is in `allowed_domains`, so no upstream
   blocklist can quietly start blocking it.
@@ -163,6 +168,7 @@ a package that is not on Play can still be sideloaded:
 | `com.AgainstGravity.RecRoom` | Rec Room's Play listing does not resolve from here; the ID is the one its store URL uses. Worth re-checking if Rec Room ever appears on the device. |
 | `com.vkontakte.android` | VK, delisted from Play in the EU. The package is still valid for a sideloaded build. |
 | `ai.nomi.twa` | Nomi's original TWA build, since delisted. Its replacement, `nomi.ai.friend.chat`, is blocked alongside it. |
+| `org.telegram.messenger.web` | The build Telegram distributes from telegram.org, which is why it is not on Play. Blocking only the Play package left an official Telegram one download away. Added 2026-08-13. |
 
 **Two entries this table used to claim were unlisted now resolve**, checked
 2026-08-03: `com.epicgames.fortnite` is back on Play following the Epic v.

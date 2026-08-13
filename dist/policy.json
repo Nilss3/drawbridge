@@ -1,7 +1,7 @@
 {
-  "version": 44,
-  "issued_at": "2026-08-12T23:00:00Z",
-  "comment": "Policy 44, DEV CHANNEL ONLY. app_update points at drawbridge 0.2.8 build 24, which starts the web filter at provisioning rather than at the lock. Policy content is unchanged from 43. The reasoning is in design-decisions: the old rule was inconsistent, because if 'not locked' meant 'not filtered' then unlocking would have to un-filter the phone, and it never did. Must not be merged to main as it stands: app_update names build 24 and a dev URL.",
+  "version": 45,
+  "issued_at": "2026-08-13T09:00:00Z",
+  "comment": "Policy 45. An 'Allow Telegram (18+)' option, below YouTube, which completes the set of toggles: WhatsApp 14+, YouTube 16+, Telegram 18+. Verifying the package ids turned up two holes that are closed here regardless of the toggle: org.telegram.messenger.web, which is the build Telegram distributes from its own site and is therefore not on Play but is entirely sideloadable, and org.telegram.plus, an unofficial fork that is on Play. Blocking Telegram while either of those installed cleanly was a gap. The option exempts the three official clients and unblocks telegram.org, telegram.me and t.me; the fork stays blocked whether Telegram is allowed or not, since allowing Telegram is not a decision to allow a modified client.",
   "dns": {
     "upstreams": [
       "94.140.14.15",
@@ -296,6 +296,8 @@
     "org.joinmastodon.android",
     "org.outline.android.client",
     "org.telegram.messenger",
+    "org.telegram.messenger.web",
+    "org.telegram.plus",
     "org.thunderdog.challegram",
     "org.torproject.android",
     "org.torproject.torbrowser",
@@ -380,6 +382,31 @@
       "description_i18n": {
         "nl": "De aanbevelingsfeed en Shorts van YouTube zijn gemaakt om je te laten doorkijken, en daarom staat YouTube standaard uit. Zet je dit aan, dan komen de app en de website terug \u2014 en gaat meteen Google's eigen Beperkte modus aan, die de telefoon afdwingt en die niemand vanuit YouTube kan uitzetten. YouTube Kids, TV, Creator Studio en Music blijven geblokkeerd.",
         "fr": "Le fil de recommandations et les Shorts de YouTube sont con\u00e7us pour vous garder devant l'\u00e9cran : c'est pourquoi YouTube est bloqu\u00e9 par d\u00e9faut. En activant ceci, l'application et le site reviennent \u2014 et le mode Restreint de Google s'active en m\u00eame temps, impos\u00e9 par le t\u00e9l\u00e9phone et impossible \u00e0 d\u00e9sactiver depuis YouTube. YouTube Kids, TV, Creator Studio et Music restent bloqu\u00e9s."
+      }
+    },
+    {
+      "id": "telegram",
+      "name": "Allow Telegram",
+      "recommended_age": 18,
+      "description": "Telegram is a good messenger wrapped around a bad one. Private chats are fine \u2014 but public channels are searchable, effectively unmoderated, and are where adult material, extremist recruitment and pirated files live on this platform. There is no setting that removes them, and ordinary chats are not end-to-end encrypted unless you start a Secret Chat every time. Signal is always allowed on this device and does the messaging part better.",
+      "default_enabled": false,
+      "exempt_packages": [
+        "org.telegram.messenger",
+        "org.telegram.messenger.web",
+        "org.thunderdog.challegram"
+      ],
+      "allowed_domains": [
+        "telegram.org",
+        "telegram.me",
+        "t.me"
+      ],
+      "name_i18n": {
+        "nl": "Telegram toestaan",
+        "fr": "Autoriser Telegram"
+      },
+      "description_i18n": {
+        "nl": "Telegram is een goede berichtenapp om een slechte heen. Priv\u00e9chats zijn prima \u2014 maar publieke kanalen zijn doorzoekbaar, in de praktijk ongemodereerd, en het is daar dat pornografie, extremistische ronselarij en illegale bestanden op dit platform zitten. Er is geen instelling die ze weghaalt, en gewone chats zijn niet end-to-end versleuteld tenzij je telkens een Geheime chat begint. Signal mag altijd op dit toestel en doet het berichtendeel beter.",
+        "fr": "Telegram est une bonne messagerie envelopp\u00e9e dans une mauvaise. Les conversations priv\u00e9es ne posent pas de probl\u00e8me \u2014 mais les canaux publics sont consultables, dans les faits non mod\u00e9r\u00e9s, et c'est l\u00e0 que se trouvent la pornographie, le recrutement extr\u00e9miste et les fichiers pirat\u00e9s sur cette plateforme. Aucun r\u00e9glage ne les enl\u00e8ve, et les conversations ordinaires ne sont pas chiffr\u00e9es de bout en bout sauf \u00e0 ouvrir une conversation secr\u00e8te \u00e0 chaque fois. Signal est toujours autoris\u00e9 sur cet appareil et fait mieux la partie messagerie."
       }
     }
   ],
