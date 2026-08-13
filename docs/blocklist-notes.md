@@ -39,30 +39,31 @@ filter in herald — which already ships uBlock Origin and a bundled extension o
 its own — and that only helps in herald, not in the YouTube app or in the other
 four browsers.
 
-**YouTube Music is not part of the option because it is not blocked at all**, as
-of policy 47. It is a music service rather than social media, so its package left
-`blocked_packages` and `music.youtube.com` is in `allowed_domains` permanently,
-carving itself out of the social list's `youtube.com` entry.
+**YouTube Music is part of the option, and the attempt to separate it is worth
+recording.** Policy 47 unblocked Music outright, on the reasoning that a music
+service is not social media — which is true, and turned out not to be the
+question.
 
-**What that costs, stated plainly.** Music streams from `googlevideo.com` and
-calls `youtubei.googleapis.com`, both shared with YouTube proper, so both had to
-become permanently allowed. **The YouTube video CDN is therefore open whether the
-YouTube option is on or not.** `youtube.com` itself stays blocked, so neither the
-site nor the app is reachable with the option off — but anything able to
-construct a `googlevideo.com` URL can stream.
+**Separating Music from YouTube is not separable.** Music streams from
+`googlevideo.com` and calls `youtubei.googleapis.com`, both shared with YouTube
+proper, so unblocking Music meant leaving the **YouTube video CDN permanently
+open**. `youtube.com` would still have been blocked, so neither the site nor the
+app was reachable — but anything able to construct a `googlevideo.com` URL could
+stream, and third-party front ends do exactly that: NewPipe, LibreTube, Tubular,
+ReVanced and SkyTube talk to the API and the CDN and never touch `youtube.com`.
+Those five can be named. The tail behind them cannot.
 
-That is not hypothetical, which is why **NewPipe, LibreTube, Tubular, ReVanced
-and SkyTube are now blocked by name**: they are YouTube front ends that talk to
-the API and the CDN directly and never touch `youtube.com`. None is on the Play
-Store, which is precisely why they had to be named rather than left to a rule.
-The long tail of such clients cannot be enumerated, and that is the residual hole
-this trade buys.
+Reverted in policy 48, one policy later, by the owner's decision: an exception
+that costs an always-open CDN plus a list nobody can finish is not an exception.
+Music is blocked again and comes back with the toggle, so *Allow YouTube (16+)*
+now restores all six apps — YouTube, Kids, TV, Creator Studio, YouTube TV and
+Music.
 
-**Untested:** whether Music still plays. `youtubei.googleapis.com` is
-DNS-redirected to `restrictmoderate.youtube.com`, and now that the host is
-allowed rather than blocked, that redirect applies to Music's API traffic too.
-It may simply mean Restricted Mode covers Music, which is arguably what you want;
-it may break it. One device answers this.
+**The five front ends stay blocked either way**, and the reason is not the same
+one. With the toggle *off* they cannot reach the CDN anyway. With it *on* they
+would give unrestricted YouTube while the policy promises Restricted Mode, which
+is the more interesting failure: the toggle's whole claim is that Restricted Mode
+comes with it, and a client that bypasses the front end bypasses that too.
 
 ### Snapchat My AI
 
