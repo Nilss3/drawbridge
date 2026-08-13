@@ -81,8 +81,8 @@ Three differences from `main`, and nothing else:
    character-for-character `PolicyConfig.DEFAULT_POLICY_URL`, verified, so
    merging this into `main` changes no behaviour there.
 
-**`dev` is on drawbridge 0.2.8 build 20 and policy 39**; `main` on 0.2.7 (18)
-and policy 37. Built 2026-08-12 — the first builds this channel has ever carried,
+**`dev` is on drawbridge 0.2.8 build 24, herald 0.1.10 and policy 46**; `main` on
+0.2.7 (18), herald 0.1.9 and policy 37. Built 2026-08-12 — the first builds this channel has ever carried,
 and the point at which the plumbing stopped being theoretical. Build 19 lasted
 one round: the owner read the screen and found two things it said that were not
 true, which is exactly what a dev channel is for.
@@ -114,6 +114,27 @@ being true the moment the lockdown exemption came out; the default policy's own
 words are rewritten in three languages; and the lock confirmation now describes
 what locking actually does — removes apps, so migrate bookmarks first, and
 applies the disconnect philosophy.
+
+**herald 0.1.10 is released, and the alpha did not move — 2026-08-13.** The
+first herald build since 0.1.9, carrying only the Shorts rewrite: 102 lines
+across two files, `Shorts.kt` and a hook in `HeraldRequestInterceptor`.
+
+**How it reaches dev without touching main is worth understanding, because it is
+not obvious.** `required_apps` on `main` points at
+`/releases/latest/download/herald-*.apk`, so whichever release holds the `latest`
+flag is what every alpha phone installs. The new release, **v0.2.8-dev.1**, is
+marked pre-release and explicitly **not latest** — v0.2.5 keeps that flag — and
+dev's policy 46 pins the new APKs at their **versioned** URLs instead. So main
+resolves herald 0.1.9 exactly as before and dev names 0.1.10 explicitly. A
+herald release that took `latest` would have changed the alpha without drawbridge
+moving at all.
+
+**A tag that does not describe what it released.** Checking the change surface
+turned up that `v0.2.5` points at a commit from 01:05 on 2026-08-10, while the
+release assets were uploaded at 11:45 — after the safe-search work landed. So the
+published herald 0.1.9 contains code that is not in the tree at its own tag, and
+cannot be reproduced from it. Worth fixing the habit rather than the tag: tag the
+commit the artefacts were built from.
 
 **A list's URL follows the branch it is signed on, as of 2026-08-12.** The
 channel gave the *document* a staging path, but the lists it names are separate
