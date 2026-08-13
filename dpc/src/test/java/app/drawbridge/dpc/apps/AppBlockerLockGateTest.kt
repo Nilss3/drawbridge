@@ -46,8 +46,21 @@ class AppBlockerLockGateTest {
 
     @Test
     fun `removes nothing while the phone is unlocked`() {
+        // A non-browser, which is the half of the rule that still holds while
+        // unlocked. Browsers are removed in either state as of 2026-08-12; see
+        // AppBlockerRuleTest for that table.
         assertEquals(
             "an unlocked phone must keep what is installed on it, so data can be moved off",
+            AppBlocker.Action.NONE,
+            blocker.evaluate("com.example.anything"),
+        )
+    }
+
+    @Test
+    fun `removes nothing before the first lock, whatever the package is`() {
+        // protectedSince is zero here: the phone has never been locked, so the
+        // migration window is open and even a browser is left alone.
+        assertEquals(
             AppBlocker.Action.NONE,
             blocker.evaluate("com.example.anything"),
         )

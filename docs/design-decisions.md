@@ -832,6 +832,73 @@ appears when drawbridge is *not* device owner. If the parent declines it, the
 phone is deliberately **not** locked — sealing the screen would turn "locked
 means filtered" into a promise they could no longer check.
 
+## A browser is not one more blocked app
+
+**Decided 2026-08-12, and it is the one exception to the rule below.** Browsers
+are removed whether the phone is locked or not. Everything else waits for the
+lock.
+
+The filter is DNS-only. That is a deliberate trade — no TLS interception, no
+certificate on a child's phone — and its price is that anything which tunnels
+over 443 to a host the blocklists do not name walks straight past it. Several
+browsers now ship exactly that under the name *VPN*: Opera's is an in-browser
+proxy, not an Android `VpnService`, so `DISALLOW_CONFIG_VPN` does not touch it and
+being second in line behind drawbridge's tunnel does not either.
+
+So an unapproved browser surviving an unlock is not one more app the parent
+chose to keep. It is the filter switched off, on a phone that still says it is
+protected. That asymmetry is why the two rules differ: **migrating data does not
+require a browser**, so keeping the unlock window open for everything else costs
+nothing here.
+
+### What is allowed, and why Firefox is not
+
+`allowed_browser_packages` names herald, herald mono, **Chrome** and **Firefox
+Focus**. One browser was never going to be enough — some sites do not render on
+Gecko at all, which is the reason a Chromium engine is on the list rather than a
+preference about it.
+
+Firefox is deliberately absent: it offers a VPN. Focus does not. Chrome has no
+extensions on Android and no proxy of its own.
+
+**"Secure DNS" is a smaller problem than it looks, and not for the reason it is
+usually given.** Three separate things stop browser-level DoH here, and only two
+of them are ours: the `encrypted-dns` blocklist, so those hostnames do not
+resolve; `DnsFilterService.ENCRYPTED_DNS_BLACKHOLE`, twelve well-known resolver
+IPs routed into the tunnel and dropped; and Chromium's own choice to disable DoH
+when it detects enterprise management. That last one is a heuristic inside code
+this project does not control, re-decided at every browser update — so *"secure
+DNS does not work on a managed device"* should be read as "not today, on the
+browsers we checked, for the endpoints we know".
+
+### The class is wider than browsers, and the perimeter knows it
+
+`AppBlocker.isBrowser` asks the package manager which apps answer an `https://`
+VIEW intent. An app that proxies without declaring one — Orbot, Psiphon in
+browser-only mode, Outline — is not a browser by that test and is caught only by
+name. Policy 41 therefore names thirty proxy, Tor, VPN and DNS-changer packages,
+every id checked against the Play Store rather than written from memory, because
+a wrong package id is invisible: the blocker simply never matches it.
+
+Most consumer VPNs on that list were already dead on a locked device, since
+`DISALLOW_CONFIG_VPN` stops a second VPN being configured at all. They are there
+as defence in depth. **The ones that do the work are the apps that proxy inside
+themselves**, which no restriction covers.
+
+### Hiding has to be reversible, and now is
+
+A preinstalled browser cannot be uninstalled, so it is hidden instead — and until
+2026-08-12 nothing ever unhid it except complete removal. Adding Chrome to the
+allowed list would have left every phone that had already hidden it hidden
+forever. `AppBlocker.restoreNowAllowed` now brings back what the policy names
+explicitly: the allowed browsers and the exempt packages, minus anything still
+blocked.
+
+It is restricted to those lists on purpose. The general rule — unhide whatever
+would no longer be removed — cannot be written safely, because a hidden app
+answers no intent queries, so asking whether it is a browser requires unhiding
+it, which would hide it again on the next sweep. Every fifteen minutes, forever.
+
 ## Nothing is enforced until the phone is locked
 
 Locking is not only the moment the screen is sealed. It is the moment drawbridge

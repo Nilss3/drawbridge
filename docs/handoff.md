@@ -479,6 +479,57 @@ phone is locked, in all three languages.
 Covered by `AppBlockerLockGateTest`, including the specific case that was broken:
 locked, then unlocked, with `protectedSince` still set.
 
+### Browsers are removed even when unlocked, and there are now three of them
+
+**2026-08-12, reversing part of the rule set two days earlier — deliberately, and
+only part.** App removal follows the lock; **browsers do not**. They go whether
+the phone is locked or not.
+
+The reason is that a browser is not one more blocked app. The filter is DNS-only,
+so anything tunnelling over 443 to an unnamed host is invisible to it, and
+several browsers ship that as a feature: Opera's "VPN" is an in-browser proxy
+rather than an Android `VpnService`, so `DISALLOW_CONFIG_VPN` never sees it. A
+browser surviving an unlock is the filter switched off on a phone that still
+claims to be protected. Migrating data does not need a browser, so the unlock
+window survives intact for everything else.
+
+**Chrome and Firefox Focus are now allowed**, alongside herald and herald mono.
+One browser was never going to be enough, and some sites do not render on Gecko
+at all. Firefox is out because it offers a VPN; Focus does not, and Chrome has
+neither extensions nor a proxy on Android.
+
+**Policy 41 also names thirty proxy, Tor, VPN and DNS-changer packages**, each id
+verified against the Play Store — four in the first draft were wrong and were
+dropped rather than guessed at, because a wrong package id is invisible. Note
+most consumer VPNs there were already dead on a locked device, since
+`DISALLOW_CONFIG_VPN` stops a second VPN being configured at all. The ones that
+matter are the apps that proxy inside themselves.
+
+**Hidden apps can now come back.** A preinstalled browser is hidden rather than
+uninstalled, and nothing reversed that except complete removal — so allowing
+Chrome would have left every phone that had already hidden it hidden forever.
+`restoreNowAllowed` unhides what the policy names explicitly. It cannot be
+generalised: a hidden app answers no intent queries, so asking whether it is a
+browser means unhiding it, which would hide it again fifteen minutes later.
+
+**Three things this does not settle**, and the first is the one to test:
+
+- **Whether Chrome's "secure DNS" is actually inert here.** Vivaldi and Ecosia
+  were observed refusing it on a managed device; Chrome was inferred from them
+  and not checked. It is one screen: Settings → Privacy → Use secure DNS. This
+  project's record on assuming Google's carve-outs is four for four wrong.
+- **Whether an unlocked phone gets re-locked at all.** drawbridge never re-locks
+  itself, and locking mints a fresh key to write down — so the design actively
+  discourages closing the window. The browser rule patches the symptom; an idle
+  auto-relock, or a re-lock that does not rotate the key, would address the
+  cause. Raised on 2026-08-12 and not built.
+- **What a blocked site looks like in Chrome.** herald shows the policy's block
+  page; every other browser shows its own DNS error. A custom page would require
+  answering with an address we control and serving it, which produces a
+  certificate error for every `https://` site — teaching a child to click through
+  TLS warnings, which is worse than the plain error. Not buildable without the
+  interception this project refuses.
+
 ### Diagnostics now says why the policy is what it is
 
 **2026-08-12.** Policy 37 was published and the phone reported 36 in both apps.

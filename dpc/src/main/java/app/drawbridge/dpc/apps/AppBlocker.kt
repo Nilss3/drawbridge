@@ -69,19 +69,43 @@ class AppBlocker(context: Context) {
      * full sweep the moment the key is committed.
      */
     fun evaluate(packageName: String): Action {
-        if (!parentKey.isLocked) return Action.NONE
+        // Nothing at all before the first lock. That window is what lets a parent
+        // move bookmarks and data across, and it is the only reason drawbridge
+        // does not require a factory reset.
+        if (parentKey.protectedSince == 0L) return Action.NONE
 
         val policy = DrawbridgeApplication.policy(appContext).policy.value
 
         if (isProtected(packageName, policy)) return Action.NONE
 
+        val browser = isBrowser(packageName)
         val reason = when {
             packageName in policy.blockedPackages -> "on the blocked package list"
-            isBrowser(packageName) ->
+            browser ->
                 "is a browser, and policy allows only ${policy.browserPackages.joinToString()}"
             notAllowed(packageName, policy) -> "not on this profile's allowed list"
             else -> return Action.NONE
         }
+
+        // **Browsers go whether the phone is locked or not. Everything else waits
+        // for the lock.**
+        //
+        // The filter is DNS-only, so an unapproved browser is not one more
+        // blocked app — it is a way around the filter itself. Several ship a
+        // built-in "VPN" that is really an in-browser proxy over 443, which no
+        // DNS rule can see and which `DISALLOW_CONFIG_VPN` does not touch because
+        // it is not an Android VPN at all. A browser that survives an unlock
+        // survives as an unfiltered internet.
+        //
+        // Everything else keeps the rule set on 2026-08-12: an unlocked
+        // drawbridge is a parent working on the phone, and an unlock that still
+        // deleted what you installed is not a window. Migrating data does not
+        // require a browser, so the two rules do not collide.
+        //
+        // This does not close the *class*. An app that proxies without declaring
+        // a browser intent filter is not a browser by [isBrowser]'s test and is
+        // caught only by name, through `blocked_packages`.
+        if (!actsNow(isBrowser = browser, isLocked = parentKey.isLocked)) return Action.NONE
 
         Log.i(TAG, "Removing $packageName: $reason")
         return remove(packageName)
@@ -113,9 +137,47 @@ class AppBlocker(context: Context) {
      */
     fun sweep(): Map<String, Action> {
         val installed = packageManager.getInstalledApplications(0)
-        return installed
+        val actions = installed
             .associate { it.packageName to evaluate(it.packageName) }
             .filterValues { it != Action.NONE }
+        restoreNowAllowed()
+        return actions
+    }
+
+    /**
+     * Brings back an app the policy has started allowing.
+     *
+     * Hiding is how a *preinstalled* app is removed — Chrome and the OEM's own
+     * browser cannot be uninstalled — and until now nothing ever reversed it
+     * except [unhideAll] during complete removal. So a policy that added Chrome
+     * to `allowed_browser_packages` left every phone that had already hidden it
+     * hidden forever, with no way back short of taking drawbridge off the device.
+     *
+     * **Deliberately restricted to what the policy names explicitly**: the
+     * allowed browsers and the exempt packages, minus anything still blocked by
+     * name. The tempting general rule — unhide whatever would no longer be
+     * removed — cannot be written safely, because [isBrowser] asks the package
+     * manager which apps answer an `https://` intent and a hidden app answers
+     * nothing. Unhiding a browser to find out whether it is one would hide it
+     * again on the next sweep, every fifteen minutes, forever.
+     *
+     * The cost of that restriction: a *preinstalled* app that stops being in
+     * `blocked_packages` is not restored automatically. Removing drawbridge
+     * still restores everything.
+     */
+    private fun restoreNowAllowed() {
+        if (!dpm.isDeviceOwnerApp(appContext.packageName)) return
+        val policy = DrawbridgeApplication.policy(appContext).policy.value
+        val wanted = (policy.browserPackages + policy.exemptPackages) - policy.blockedPackages.toSet()
+
+        for (packageName in wanted) {
+            runCatching {
+                if (dpm.isApplicationHidden(admin, packageName)) {
+                    dpm.setApplicationHidden(admin, packageName, false)
+                    Log.i(TAG, "Unhid $packageName: the policy allows it again")
+                }
+            }.onFailure { Log.w(TAG, "Could not unhide $packageName", it) }
+        }
     }
 
     /**
@@ -216,6 +278,23 @@ class AppBlocker(context: Context) {
 
     companion object {
         private const val TAG = "AppBlocker"
+
+        /**
+         * Whether a package that policy disallows may be removed *now*, given
+         * what it is and what state the phone is in.
+         *
+         * Expressed against plain values rather than against the policy singleton
+         * and a live `PackageManager`, so every branch is reachable from a unit
+         * test — the same reasoning as [app.drawbridge.dpc.vpn.dns.DnsFilter.decide].
+         * This is the rule that decides whether an unlocked phone can be talked
+         * around, so it should not be checkable only by holding one.
+         *
+         * Callers apply it *after* deciding the package is disallowed at all, and
+         * after the pre-lock window has been checked: this answers "now or at the
+         * lock", not "at all".
+         */
+        internal fun actsNow(isBrowser: Boolean, isLocked: Boolean): Boolean =
+            isBrowser || isLocked
 
         /**
          * Packages that must survive no matter what the policy says.
