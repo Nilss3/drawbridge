@@ -30,9 +30,6 @@
     <string name="options_none_available">Cette politique ne propose rien à activer.</string>
     <string name="options_footnote">La politique s\'inspire des bonnes pratiques du minimalisme numérique et constitue un bon choix pour tout le monde, adultes compris. Les âges sont une recommandation de pédiatres, de psychologues et de neurologues.</string>
     <string name="option_change_failed">Cette option ne figure plus dans la politique.</string>
-    <string name="option_disable_confirm_title">Désactiver %1$s ?</string>
-    <string name="option_disable_confirm_message">Les applications que cette option autorisait sont retirées immédiatement. La réactiver plus tard ne les réinstalle pas.</string>
-    <string name="option_disable_confirm_yes">Désactiver</string>
 
 
     <string name="action_lock">Verrouiller drawbridge</string>

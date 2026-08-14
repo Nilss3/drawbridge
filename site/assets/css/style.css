@@ -58,10 +58,14 @@ img { max-width: 100%; display: block; }
 a { color: var(--slate-dark); text-decoration-color: var(--line); text-underline-offset: 3px; }
 a:hover { text-decoration-color: currentColor; }
 
-h1, h2, h3 { line-height: 1.2; letter-spacing: -0.01em; color: var(--ink); }
+h1, h2, h3, h4 { line-height: 1.2; letter-spacing: -0.01em; color: var(--ink); }
 h1 { font-size: clamp(2rem, 5vw, 2.9rem); margin: 0 0 0.5rem; }
 h2 { font-size: 1.6rem; margin: 2.4rem 0 0.9rem; }
 h3 { font-size: 1.15rem; margin: 1.8rem 0 0.5rem; }
+/* Fourth level exists only on the Q&A page, where "how do I switch it off"
+   has three answers under it. Sized close to body text on purpose: it is a
+   label for the paragraph below it, not another section. */
+h4 { font-size: 1rem; margin: 1.4rem 0 0.4rem; color: var(--ink-soft); }
 
 p { margin: 0 0 1rem; }
 .lede { font-size: 1.15rem; color: var(--ink-soft); }
@@ -101,6 +105,28 @@ p { margin: 0 0 1rem; }
   border-radius: 999px;
   padding: 0.3rem 0.8rem;
   margin-bottom: 1rem;
+}
+
+/* The people this is for, in their own words: five one-liners between the hero
+   art and the explanation. A grid rather than a column, because five stacked
+   cards would push the paragraph that explains the project off the screen. */
+.voices-lead { margin-bottom: 0.6rem; font-weight: 600; }
+.voices {
+  list-style: none;
+  margin: 0 0 1.6rem;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 0.8rem;
+}
+.voices li {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--slate);
+  border-radius: var(--radius);
+  padding: 0.85rem 1rem;
+  font-style: italic;
+  color: var(--ink-soft);
 }
 
 /* buttons */

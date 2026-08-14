@@ -303,8 +303,40 @@ Two consequences worth knowing:
   herald's strips are always the dark toolbar colour, drawbridge's always follow
   day/night. `windowLightStatusBar` and `windowLightNavigationBar` are set
   explicitly rather than inherited.
-- **Fullscreen video needs no special case.** The insets go to zero while the
-  bars are hidden, so the padding collapses on its own.
+- **Fullscreen video needed one special case after all, and the camera hole is
+  why.** A hidden bar reports no inset, so that half of the padding does collapse
+  on its own. A **display cutout is not a bar**: it is a hole in the panel, it is
+  still there when everything is hidden, and its inset is reported the whole
+  time. `enterImmersiveMode` compounds it rather than helping — it sets
+  `FLAG_LAYOUT_NO_LIMITS` and cutout mode `SHORT_EDGES`, stretching the window
+  underneath the hole on purpose. So a fullscreen video on a phone with a
+  punch-hole camera kept a strip of toolbar colour across the top of the screen,
+  which is the one place a video is meant to be.
+
+  herald asks for the cutout only while the status bar is showing. The cutout is
+  in that list to keep the *toolbar* clear of the hole — in landscape it sits
+  beside the toolbar rather than inside the status bar, so the bar's own inset
+  does not cover it — and once the bars are hidden there is no toolbar to keep
+  clear. Keyed on bar visibility rather than on a fullscreen flag of herald's
+  own, so the padding follows the window it is being computed for instead of
+  what the browser believes about itself.
+
+  **A phone found it, but an emulator could have.** The insets work was verified
+  on the API 36 emulator in both orientations, and an emulator has no cutout by
+  default — so the inset the bug turns on was zero every time anybody looked. It
+  will grow one on request, which is worth knowing before the next change to this
+  code:
+
+  ```bash
+  adb shell cmd overlay enable com.android.internal.display.cutout.emulation.hole
+  ```
+
+  That is a punch-hole camera, the shape the bug was reported on; `corner`,
+  `double`, `tall` and `waterfall` are the other four. The display then reports
+  `cutout DisplayCutout{insets=Rect(0, 136 - 0, 0)}` and the white strip appears
+  exactly as described. Disable it again the same way. `InsetsExtTest` covers the
+  same state without a device: insets carrying a cutout with the bars hidden,
+  asserting the padding is nothing at all.
 
 ## herald's chrome is four colours, and some of them belong to Mozilla
 
@@ -1049,8 +1081,20 @@ The configuration screen follows from this rather than needing its own rule: it
 only exists while the phone is unlocked, so choosing a policy or ticking an
 option records the choice and removes nothing. It now says so — the toast reads
 "applied, anything it removes goes when you lock the phone" instead of counting
-zero removals. (The confirmation dialog in front of policy selection still
-describes the old behaviour and wants rewording rather than deleting.)
+zero removals.
+
+**The confirmation in front of switching an *option* off is gone**, deleted
+rather than reworded, because rewording left it with nothing to say. It warned
+that the option's apps went straight away and that switching back on would not
+return them; removal follows the lock, so the first half describes something
+this screen cannot do, and `restoreNowAllowed` unhides what the policy names, so
+the second half is wrong in the other direction. A dialog whose whole content
+has become untrue is not a safeguard, and a parent who reads it and believes it
+is worse off than one who never saw it. Both directions of an option now apply
+as the switch moves, and the toast says where the change lands. (The dialog in
+front of *policy* selection carries the same two stale sentences and is still
+there: swapping a profile changes the resolver and every blocklist with it, so
+it has something to confirm and wants rewording rather than deleting.)
 
 One wrinkle worth knowing. `lockDevice` triggers the policy fetch and the
 required-app install *before* it mints the key, because everything needing the

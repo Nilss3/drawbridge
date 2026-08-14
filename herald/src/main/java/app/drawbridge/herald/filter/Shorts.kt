@@ -31,9 +31,11 @@ package app.drawbridge.herald.filter
  * navigations, and YouTube is a single-page app: tapping a Short in the feed is
  * a `history.pushState`, so nothing arrives here at all. Found on the reference
  * phone on 2026-08-13, where this looked simply broken. That case is covered by
- * `assets/extensions/blocklist/shorts.js`, a content script that watches
+ * `assets/extensions/blocklist/shorts.js`, a content script that polls
  * `location` — the two halves are deliberately separate, because this one is
- * exact and that one runs inside the page.
+ * exact and that one runs inside the page. Read that file's header before
+ * changing it: the obvious implementation cannot work from a content script,
+ * and shipped in 0.1.11 doing nothing at all.
  *
  * Deliberately built on raw string handling rather than `android.net.Uri`, for
  * the same two reasons as [app.drawbridge.herald.search.SafeSearch]: it keeps

@@ -163,6 +163,52 @@ def pin_local_lists(document: dict) -> None:
         source["sha256"] = digest
 
 
+def check_options_mirror_lists(document: dict) -> list[str]:
+    """An option that unblocks a whole category has to name every domain in it.
+
+    Options only ever widen: `withOptions` merges `allowed_domains` into the
+    policy and allow beats block. So a domain that is in a category's list but
+    missing from the option meant to restore that category is one the switch
+    silently fails to bring back, and nothing anywhere would say so — the
+    parent turns streaming on, and one service in fifty stays dark.
+
+    The rule is narrow on purpose: it only fires where an option's `id` matches
+    the `category` of a list this repo hosts, which is the case where the two
+    are meant to be the same set. YouTube is not caught by it and should not be
+    — those domains live inside the social list, mixed in with everything else.
+    """
+    by_category: dict[str, list[str]] = {}
+    for source in document.get("blocklists", []):
+        path = local_list_path(source.get("url", ""))
+        category = source.get("category")
+        if path is None or not category:
+            continue
+        local = REPO_ROOT / path
+        if not local.exists():
+            continue
+        entries = [
+            line.strip()
+            for line in local.read_text(encoding="utf-8").splitlines()
+            if line.strip() and not line.strip().startswith("#")
+        ]
+        by_category.setdefault(category, []).extend(entries)
+
+    problems = []
+    for option in document.get("options", []):
+        wanted = by_category.get(option.get("id"))
+        if not wanted:
+            continue
+        missing = [d for d in wanted if d not in set(option.get("allowed_domains", []))]
+        if missing:
+            problems.append(
+                f"option {option['id']!r} does not allow "
+                f"{len(missing)} domain(s) its own list blocks: "
+                + ", ".join(missing[:5])
+                + (" ..." if len(missing) > 5 else "")
+            )
+    return problems
+
+
 def check_urls_resolve(document: dict, *, published: bool = False) -> list[str]:
     """Fetch every URL the policy names and report the ones that do not resolve.
 
@@ -247,6 +293,11 @@ def cmd_sign(args: argparse.Namespace) -> None:
 
     rewrite_local_list_urls(document)
     pin_local_lists(document)
+
+    mismatches = check_options_mirror_lists(document)
+    if mismatches:
+        sys.exit("Refusing to sign:\n  " + "\n  ".join(mismatches))
+
     if not args.skip_url_check:
         failures = check_urls_resolve(document)
         if failures:

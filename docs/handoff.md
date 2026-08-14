@@ -14,7 +14,7 @@ machine, what was and was not verified, and what to do next.
 |---|---|---|
 | drawbridge | 0.2.7, build 18 | **0.2.8, build 25** |
 | herald | 0.1.9 | **0.1.11** |
-| policy | **50** | **51** |
+| policy | **50** | **52** |
 | install page | <https://drawbridge-project.pages.dev/install/usb/> | <https://dev.drawbridge-project.pages.dev/install/usb/> |
 | provisioned devices | the owner's Nothing Phone (A059) | the Moto G15 |
 
@@ -118,6 +118,20 @@ Three differences from `main`, and nothing else:
    character-for-character `PolicyConfig.DEFAULT_POLICY_URL`, verified, so
    merging this into `main` changes no behaviour there.
 
+**And from 2026-08-14 the dev site describes the beta rather than the build, on
+purpose.** The Q&A page was rewritten from the owner's Dutch document and now
+documents the state drawbridge is meant to reach at public beta: a long-form
+video streaming option, the browser choice (herald, herald mono only, or no
+browser at all), and the app-install lock behind "only certain apps". The app
+catches up step by step, and **the first step landed the same day**: policy 52
+adds the `streaming` option, so of the three the page promises, one is real and
+two are not. Browser choice and the install lock are still only on the website.
+
+So a gap between that page and a dev handset is the expected state, not a bug to
+go and fix, and this is another reason the two sites must not converge: `main`
+still describes what a tester's phone actually does. Read the page as the target
+and this file as the position.
+
 **`dev` is on drawbridge 0.2.8 build 24, herald 0.1.10 and policy 46**; `main` on
 0.2.7 (18), herald 0.1.9 and policy 37. Built 2026-08-12 — the first builds this channel has ever carried,
 and the point at which the plumbing stopped being theoretical. Build 19 lasted
@@ -196,6 +210,44 @@ turns out good becomes the release, with no renumbering.
 **A phone takes one channel or the other.** Same package name — Device Owner
 binds to it — so installing dev on a phone replaces the alpha there. The Moto is
 the dev phone; anything a tester holds stays on `main`.
+
+### Policy 52: streaming is blocked by default, and one switch brings it back
+
+**2026-08-14, signed and unpushed.** The first category added since the policy
+took its current shape, and the first option that stands in front of a list
+rather than a handful of package names: `dist/lists/streaming.txt` with 103
+domains across about fifty services, 70 app ids added to `blocked_packages`, and
+an `Allow long-form video streaming` option whose `allowed_domains` mirror the
+list exactly. It exists because the Q&A page already promised it. See
+[policy](policy.md#an-option-can-cover-a-whole-category) for the shape.
+
+**The mirror is the part that can go wrong quietly.** Allow beats block *per
+domain*, and there is no "unblock this category" instruction, so a service added
+to the list and not to the option is one the switch fails to restore while
+reporting success. `policytool.py sign` now refuses to sign when the two
+disagree and names the missing domains; it was tested by removing two and
+watching it refuse.
+
+**Every package id was checked rather than guessed**, which the project has paid
+for before: a Play Store listing was fetched per id and the page title had to be
+the service it claimed to be. That caught more than expected. `com.blim` is a
+dead service — Blim TV was dissolved in 2023 and folded into ViX, and its domain
+no longer resolves, so it was left out despite being on the requested list.
+Showmax's old `com.showmax.app` is superseded by `com.showmax.showmax.google`.
+Four listings answer 404 from outside their market **whatever `gl` says**, so a
+404 is not proof of a wrong id for a region-locked app; those were confirmed
+against APKMirror with the developer name matching.
+
+**Four broadcasters were a judgement call, not a lookup.** ITV, TV4 and the
+Norwegian and Danish TV 2 serve news and streaming from one registrable domain,
+and DNS cannot see a path. Both the streaming host and the parent are listed, in
+their own section at the foot of the file, so whoever disagrees deletes lines
+instead of unpicking the list. It is the one part of this that will annoy
+somebody.
+
+**PeerTube cannot really be blocked this way and the list says so.** It is
+federated across thousands of instances on their own domains; what is listed is
+the project's own hosts and the official app. The app id is the half that works.
 
 ### Why a branch beat a second page
 
@@ -304,12 +356,13 @@ Exercised on all of those paths.
 
 - **QR provisioning is still closed on certified hardware.** The wizard has no
   shell. Nothing here touches that.
-- **drawbridge still cannot update itself.** Self-update is a `PackageInstaller`
-  session, not an adb install, and that global does not govern it. 0.2.5's manual
+- **drawbridge still cannot update itself unaided.** Self-update is a
+  `PackageInstaller` session, not an adb install, and that global does not govern
+  it. 0.2.5's manual
   [UpdateActivity](../dpc/src/main/java/app/drawbridge/dpc/ui/UpdateActivity.kt)
-  is still the route, and it still asks the parent to pause Play Protect.
-- **QR provisioning is still closed on certified hardware.** The wizard has no
-  shell. Nothing here touches that.
+  is still the route, and it still asks the parent to pause Play Protect —
+  **which the owner did on the Moto G15 on 2026-08-13, and the update installed.**
+  See [0.2.5: drawbridge stops updating itself](#025-drawbridge-stops-updating-itself-and-says-why).
 
 So: new devices can be provisioned today, on certified hardware, without an
 appeal and without a rename.
@@ -675,13 +728,51 @@ case that happened to work.
 - **Shorts did not unwind when tapped inside YouTube.** The Kotlin rewrite is
   exact and never fired: GeckoView reports *navigations*, and a tap in the feed
   is a `history.pushState`. It worked only for a typed URL or a link from another
-  app, which is not how anyone meets a Short. `shorts.js` now watches `location`
-  from inside the page, and is deliberately the only thing in that file.
+  app, which is not how anyone meets a Short. `shorts.js` was added to watch
+  `location` from inside the page — **and that fix did not work either. See
+  below.**
 
 **The lesson, since it has now cost four bugs in one build:** a rule verified
 against a single example is verified against nothing. Both blocker rules are pure
 functions with tests now — `actsNow` and `restorable` — and the test for
 `restorable` asserts the case that was broken rather than the one that worked.
+
+### The Shorts fix shipped twice before it worked, 2026-08-14
+
+**The owner reported it a third time: tapping a Short inside YouTube still left
+`/shorts` in the address bar and still opened the infinite feed.** 0.1.11's
+`shorts.js` hooked `history.pushState` and reacted when YouTube called it. It
+never fired once, and could not have.
+
+**A content script runs in an isolated world with Xray vision.** Assigning to
+`history.pushState` from one replaces it *for the content script only*; the page
+goes on calling the original. MDN says so plainly, and it is the first thing its
+page on content scripts explains. So the wrapper sat in herald for a release,
+waiting for a call that by construction never arrived, and the only line in that
+file that ever ran was the one-off pass at `document_start` — the case the Kotlin
+side already covered. **The build did nothing new whatsoever.**
+
+`shorts.js` now polls `location.href` every 250ms while the tab is visible, and
+rewrites when it moves. `location` is the document's own state rather than a page
+object, so the isolated world sees every change to it, `pushState` included. The
+alternative was `window.eval` or `exportFunction` to reach the page's real
+`history`, which means running our code in YouTube's world under YouTube's CSP,
+for a rewrite that has to keep working.
+
+**Verified on a device this time, twice over**, on the API 36 emulator with
+drawbridge as Device Owner and the YouTube option on: tapping the Shorts tab in
+the bottom bar landed on `m.youtube.com/watch?v=6J_3xJVXUx8`, and tapping a Short
+in a search-results shelf landed on `/watch?v=6kS…`, both in the ordinary player
+with a recommendation list under it and no vertical feed. Two independent in-app
+routes rather than one, because this file's own lesson is that one example is no
+example.
+
+**Nothing catches this class of bug in the test suite.** The rewrite arithmetic is
+tested in `ShortsTest`, and it was never the arithmetic that was wrong — both
+times the correct string was computed by code that never ran. The only check that
+would have failed is one that runs the extension in a page, which nothing here
+does. Treat any future change to `shorts.js` as unverified until a phone or an
+emulator has opened a Short.
 
 ### Browsers are removed even when unlocked, and there are now three of them
 
@@ -1306,6 +1397,20 @@ problem. What replaced the self-install:
   that arrives after the caller is gone. Without somewhere to put that answer the
   screen could only ever say "started", and a refusal and a success look
   identical from there. One slot, overwritten, read by the screen.
+
+**And the whole flow has now been walked on a phone — 2026-08-13.** The owner
+updated drawbridge on the Moto G15 using the built-in path exactly as written:
+press the button, pause Play Protect, install. It worked. Until then this route
+was a design that had been reasoned about rather than one anybody had completed
+end to end on hardware, and the difference matters, because every other Play
+Protect finding in this file arrived by surprise.
+
+What that does and does not settle. It does **not** lift the refusal: pausing
+Play Protect was still necessary, so the verdict on the package stands and the
+five rounds above are not reopened. What it settles is that the fallback the
+project chose actually delivers a new build to a deployed phone, with no cable,
+by a parent following on-screen instructions. Read alongside the adb path, which
+needs a computer, this is the route for a phone already in someone's hands.
 
 **The update is reachable from the lock screen**, which is the part worth not
 undoing. A locked phone is the normal state, and unlocking to reach a

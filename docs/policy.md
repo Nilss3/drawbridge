@@ -210,13 +210,50 @@ or not.
 | `allowed_packages` | Added to the allowed set, but **only** when the running profile is already in allowlist mode. An option cannot switch allowlisting on. |
 | `allowed_domains` | Must resolve while the option is on. Wins over blocklists, as allow rules always do. |
 
-Switching an option **on** applies immediately — nothing is downloaded, and
-nothing can get stricter. Switching one **off** is asked about first, because
-taking an app back means uninstalling it, and switching the option on again does
-not reinstall it.
+Switching an option **on or off** applies immediately, in both directions.
+Turning one off used to ask first, on the grounds that it uninstalled the apps
+the option had allowed; removal follows the lock now and the configuration
+screen only exists while the phone is unlocked, so there was nothing left for
+the dialog to warn about and it was deleted. The toast says where the change
+lands.
 
 A stored option id the policy no longer offers is dropped, so a relaxation cannot
 outlive the option that justified it.
+
+### An option can cover a whole category
+
+`streaming` is the first option that stands in front of a **list** rather than a
+handful of names: `dist/lists/streaming.txt` holds the domains of around fifty
+subscription video services, `blocked_packages` holds seventy of their app ids,
+and one switch restores all of it.
+
+The shape has a trap the smaller options do not. `allowed_domains` has to repeat
+every domain in the list, because allow beats block per domain and there is no
+"unblock this category" instruction — so a domain added to the list and not to
+the option is a service the switch silently fails to bring back, on a screen
+that reports success. **`policytool.py sign` refuses to sign when the two
+disagree**, naming the domains that are missing. That check is the only thing
+standing between an edit and a switch that half works.
+
+Two decisions inside the category are worth keeping straight:
+
+- **YouTube is not in it.** It stays in `social.txt` under its own option,
+  because a recommendation feed and a Short are not the same thing as a film
+  somebody sat down to watch, and a parent should be able to allow one without
+  the other.
+- **Four broadcasters bring their newsroom with them.** ITV, TV4 and both TV 2s
+  publish news on the same registrable domain as their streaming service, and
+  DNS cannot see a path. Blocking only the streaming host leaves the service
+  reachable at the parent; blocking the parent takes the news site too. Both are
+  listed, in their own section at the end of the file, so the decision can be
+  reversed by deleting lines rather than by unpicking the list.
+
+The package ids in a category this size are the fragile part: a wrong one is
+invisible, since nothing looks for an app that does not exist. Every id was
+checked against its Play Store listing, and the four whose listings are
+region-locked were confirmed against APKMirror with the developer name matching.
+Blim TV was on the requested list and is not in the policy: it was dissolved in
+2023 and folded into ViX, and its domain stopped resolving with it.
 
 ### Search engines are a filtering decision
 

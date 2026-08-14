@@ -40,9 +40,10 @@
     <string name="options_footnote">The policy is inspired by best practices in digital minimalism and is a good choice for anyone, including adults. The ages are a recommendation by pediatricians, psychologists and neurologists.</string>
     <string name="option_recommended_age" translatable="false">%1$d+</string>
     <string name="option_change_failed">That option is no longer in the policy.</string>
-    <string name="option_disable_confirm_title">Turn off %1$s?</string>
-    <string name="option_disable_confirm_message">Apps this option allowed are removed straight away. Switching it back on later does not reinstall them.</string>
-    <string name="option_disable_confirm_yes">Turn off</string>
+    <!-- There was a "Turn off %1$s?" confirmation here. It warned that the
+         option's apps went straight away and did not come back, and both
+         halves had stopped being true: removal follows the lock, and switching
+         an option on unhides again. Toggling an option now just applies. -->
 
 
     <string name="action_lock">Lock drawbridge</string>

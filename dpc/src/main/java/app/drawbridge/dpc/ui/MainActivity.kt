@@ -12,7 +12,6 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.Button
-import android.widget.CompoundButton
 import android.widget.LinearLayout
 import android.widget.RadioButton
 import android.widget.ScrollView
@@ -446,11 +445,10 @@ class MainActivity : AppCompatActivity() {
             row.bindOptionalText(R.id.optionDescription, option.displayDescription(language))
 
             val switch = row.findViewById<MaterialSwitch>(R.id.optionSwitch)
-            val listener = CompoundButton.OnCheckedChangeListener { _, checked ->
-                onOptionToggled(option, switch, checked)
-            }
+            // Checked before the listener is attached, so rendering the stored
+            // selection does not read as the parent having just toggled it.
             switch.isChecked = option.id in enabled
-            switch.setOnCheckedChangeListener(listener)
+            switch.setOnCheckedChangeListener { _, checked -> applyOption(option, checked) }
             optionContainer.addView(row)
         }
     }
@@ -593,37 +591,16 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
-     * Switching an option on only ever widens what is allowed, so it applies
-     * straight away. Switching one off takes something back, and taking an app
-     * back means uninstalling it — so that direction asks first.
+     * Both directions apply as soon as the switch moves.
+     *
+     * Switching one off used to ask first, because it used to uninstall the
+     * apps the option allowed the moment it was answered. Removal follows the
+     * lock now and this screen only exists while the phone is unlocked, so the
+     * dialog was warning about something that no longer happens — and its
+     * second sentence, that switching back on does not bring the apps back, had
+     * stopped being true as well: [restoreNewlyAllowed] unhides what the policy
+     * names again. The toast says where the change actually lands.
      */
-    private fun onOptionToggled(option: PolicyOption, view: CompoundButton, checked: Boolean) {
-        if (checked) {
-            applyOption(option, true)
-            return
-        }
-
-        // Putting the switch back has to go through restore(), not through
-        // isChecked: assigning it fires this listener again, and cancelling
-        // "turn it off" would then be read as switching it on.
-        val restore = { view.setCheckedWithoutFiring(true) { c -> onOptionToggled(option, view, c) } }
-
-        AlertDialog.Builder(this)
-            .setTitle(
-                getString(
-                    R.string.option_disable_confirm_title,
-                    option.displayName(Languages.current()),
-                ),
-            )
-            .setMessage(R.string.option_disable_confirm_message)
-            .setPositiveButton(R.string.option_disable_confirm_yes) { _, _ ->
-                applyOption(option, false)
-            }
-            .setNegativeButton(android.R.string.cancel) { _, _ -> restore() }
-            .setOnCancelListener { restore() }
-            .show()
-    }
-
     private fun applyOption(option: PolicyOption, enabled: Boolean) {
         lifecycleScope.launch {
             if (!policy.setOptionEnabled(option.id, enabled)) {
@@ -646,15 +623,6 @@ class MainActivity : AppCompatActivity() {
             toast(applied(option.displayName(Languages.current()), removed, mayRemove = !enabled))
             renderOptions()
         }
-    }
-
-    private fun CompoundButton.setCheckedWithoutFiring(
-        checked: Boolean,
-        listener: (Boolean) -> Unit,
-    ) {
-        setOnCheckedChangeListener(null)
-        isChecked = checked
-        setOnCheckedChangeListener { _, value -> listener(value) }
     }
 
     /**

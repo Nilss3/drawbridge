@@ -128,8 +128,23 @@ run its own encrypted DNS.
 
 ## Getting started
 
-Requirements: JDK 21 (the Gradle daemon picks it up automatically via
-`gradle/gradle-daemon-jvm.properties`), and the Android SDK with platform 36.
+Requirements: JDK 21, and the Android SDK with platform 36.
+
+`gradle/gradle-daemon-jvm.properties` pins the daemon to 21, and Gradle finds a
+21 only if one is **discoverable** — installed under
+`/Library/Java/JavaVirtualMachines`, named by `JAVA_HOME`, or listed in
+`org.gradle.java.installations.paths`. Homebrew's `openjdk@21` satisfies none of
+those on its own, because it is keg-only, so `brew install openjdk@21` needs the
+symlink brew prints after it:
+
+```bash
+sudo ln -sfn /opt/homebrew/opt/openjdk@21/libexec/openjdk.jdk /Library/Java/JavaVirtualMachines/openjdk-21.jdk
+```
+
+Without it the build fails with *"No defined toolchain download url for MAC_OS on
+aarch64"*, which names neither Java nor the version it wanted. A running daemon
+hides this for as long as it lives, so the failure tends to arrive days after the
+cause.
 
 ```bash
 ./gradlew :herald:assembleDebug :dpc:assembleDebug

@@ -30,9 +30,6 @@
     <string name="options_none_available">Dit beleid biedt niets om aan te zetten.</string>
     <string name="options_footnote">Het beleid is geïnspireerd op de beste praktijken uit het digitale minimalisme en is een goede keuze voor iedereen, ook voor volwassenen. De leeftijden zijn een aanbeveling van kinderartsen, psychologen en neurologen.</string>
     <string name="option_change_failed">Die optie staat niet meer in het beleid.</string>
-    <string name="option_disable_confirm_title">%1$s uitzetten?</string>
-    <string name="option_disable_confirm_message">Apps die deze optie toeliet worden meteen verwijderd. Later weer aanzetten installeert ze niet opnieuw.</string>
-    <string name="option_disable_confirm_yes">Uitzetten</string>
 
 
     <string name="action_lock">drawbridge vergrendelen</string>
