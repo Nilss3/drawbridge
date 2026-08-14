@@ -213,11 +213,15 @@ class AppBlocker(context: Context) {
             return Action.FAILED
         }
 
-        return if (isSystemPackage(packageName)) {
-            hide(packageName)
-        } else {
-            uninstall(packageName)
-        }
+        val system = isSystemPackage(packageName)
+        // Which branch a package took is the first question worth asking when one
+        // of them survives a lock, and until 2026-08-14 the log did not say. The
+        // owner found com.google.android.youtube still there after the option was
+        // switched off while com.google.android.apps.youtube.music had gone, and
+        // nothing on the device could distinguish "hide refused" from "uninstall
+        // removed the update and left the factory build".
+        Log.i(TAG, "Removing $packageName by ${if (system) "hiding" else "uninstalling"} it")
+        return if (system) hide(packageName) else uninstall(packageName)
     }
 
     /**
@@ -247,9 +251,20 @@ class AppBlocker(context: Context) {
         hide(packageName)
     }
 
+    /**
+     * `setApplicationHidden` reports refusal by **returning false**, not by
+     * throwing, and a silent false is indistinguishable on the device from a
+     * package that was never considered. That is how a package can sit through a
+     * lock looking exempt when it was in fact refused.
+     */
     private fun hide(packageName: String): Action = try {
         val hidden = dpm.setApplicationHidden(admin, packageName, true)
-        if (hidden) Action.SUSPENDED else Action.FAILED
+        if (hidden) {
+            Action.SUSPENDED
+        } else {
+            Log.w(TAG, "The platform refused to hide $packageName; it stays on the phone")
+            Action.FAILED
+        }
     } catch (e: Exception) {
         Log.e(TAG, "Could not hide $packageName", e)
         Action.FAILED

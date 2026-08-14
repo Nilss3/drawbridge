@@ -22,8 +22,8 @@
     <string name="policy_applying_title">Application de la politique</string>
     <string name="policy_applying_message">Téléchargement des listes de blocage et vérification des applications installées…</string>
     <string name="policy_apply_failed">Cette politique ne figure plus dans le document.</string>
-    <string name="change_applied_at_lock">%1$s appliqué. Ce qui doit être retiré partira au verrouillage du téléphone.</string>
-    <string name="change_applied_plain">%1$s appliqué.</string>
+    <string name="change_applied_at_lock">%1$s appliqué après le verrouillage.</string>
+    <string name="settings_take_effect_at_lock">Le filtre web fonctionne déjà et reste actif, quoi que vous choisissiez ici. Tout le reste de cet écran ne prend effet qu\'au verrouillage de drawbridge.</string>
 
     <string name="options_heading">Options</string>
     <string name="options_explanation">Autorisez les services suivants à vos propres risques.</string>
@@ -46,7 +46,7 @@
     <string name="lock_needs_filter">Le filtre de contenu doit fonctionner avant que le téléphone puisse être verrouillé.</string>
 
     <string name="lock_reveal_title">Notez ceci maintenant</string>
-    <string name="lock_reveal_explanation">Cette clé déverrouille ces réglages. Elle n\'est stockée nulle part où vous pourriez la relire, et une nouvelle est créée à chaque verrouillage — donc celle-ci, sur papier, est tout ce qui existe.\n\nSi vous préférez ne pas pouvoir changer d\'avis, c\'est un choix légitime. Fermez sans garder la clé et ces réglages ne pourront plus jamais être modifiés — le téléphone peut toutefois toujours être réinitialisé, ce qui supprime drawbridge et tout le reste.</string>
+    <string name="lock_reveal_explanation">Cette clé déverrouille ces réglages. Elle n\'est stockée nulle part où vous pourriez la relire, et une nouvelle est créée à chaque verrouillage — donc celle-ci, sur papier, est tout ce qui existe.\n\nSi vous préférez ne pas pouvoir changer d\'avis, c\'est un choix légitime : touchez Terminé sans noter la clé, et ces réglages ne pourront plus jamais être modifiés — le téléphone peut toutefois toujours être réinitialisé, ce qui supprime drawbridge et tout le reste.</string>
     <string name="update_title">Mettre drawbridge à jour</string>
     <string name="update_notice">Une version plus récente de drawbridge est disponible.</string>
     <string name="update_action">Mettre à jour</string>
@@ -72,9 +72,6 @@
     <string name="lock_reveal_subject">clé drawbridge</string>
     <string name="lock_reveal_body">Clé drawbridge : %1$s\n\nConservez-la en lieu sûr et hors ligne. Elle déverrouille les réglages drawbridge sur le téléphone.</string>
     <string name="lock_reveal_finish">Terminé</string>
-    <string name="lock_reveal_discard_title">Fermer sans la clé ?</string>
-    <string name="lock_reveal_discard_message">Les réglages de ce téléphone resteront exactement tels quels, et plus personne ne pourra les modifier — vous non plus.\n\nLe téléphone n\'est pas bloqué : une réinitialisation d\'usine fonctionne toujours, depuis les réglages ou depuis le mode recovery, et emporte drawbridge avec elle. Elle efface aussi tout le reste de l\'appareil.</string>
-    <string name="lock_reveal_discard_yes">Fermer quand même</string>
 
     <string name="lock_challenge_title">drawbridge est verrouillé</string>
     <string name="lock_challenge_explanation">Tapez la clé reçue au moment du verrouillage. Les tirets et les majuscules n\'ont pas d\'importance.</string>

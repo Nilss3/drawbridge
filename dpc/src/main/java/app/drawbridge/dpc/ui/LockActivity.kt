@@ -32,13 +32,21 @@ import kotlinx.coroutines.launch
  * **Reveal** happens once, when the parent locks the device: the key is
  * generated here and shown here, and this is the only time it exists in a form
  * anyone can read. Deciding to keep no copy of it is allowed — it is a
- * legitimate way to make the configuration permanent on purpose — but it is not
- * allowed to happen by accident, which is what the checkbox and the second
- * dialog are for.
+ * legitimate way to make the configuration permanent on purpose — but it is
+ * only ever reached by pressing **Done**, which is the button that says it
+ * seals, behind a checkbox that says the key was written down.
  *
- * Nothing is stored until one of those two says so. The device is sealed by
- * [sealWithKey] and by nothing else, so a reveal that is walked away from leaves
- * the phone as it was.
+ * Nothing is stored until Done says so. The device is sealed by [sealWithKey]
+ * and by nothing else, so a reveal that is walked away from leaves the phone as
+ * it was.
+ *
+ * **Back leaves, and that is all it does.** It used to open a dialog whose
+ * confirming button called [sealWithKey], so the way out of a screen saying
+ * "write this down" was an offer to lock the phone forever with the key you had
+ * just declined to keep — while the same screen promised, in
+ * `lock_reveal_not_sealed_yet`, that leaving early forgets the key and locks
+ * nothing. Two claims, one screen, and the destructive one was on the button
+ * every Android user presses to go back.
  *
  * **Challenge** is every time after that: the key, typed back, opens the
  * configuration screen. There is no attempt limit. A six-digit PIN needed one; a
@@ -121,11 +129,24 @@ class LockActivity : AppCompatActivity() {
             this,
             object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {
-                    // Backing out of the challenge closes drawbridge rather than
-                    // returning to whatever was under it — which, when this
-                    // screen was reached from the configuration, would be the
-                    // configuration.
-                    if (revealing) confirmLeavingWithoutKey() else finishAffinity()
+                    // Leaving the reveal is just leaving: the key was never
+                    // committed, so the phone stays filtered, unlocked and
+                    // configurable, and locking again mints a new one.
+                    //
+                    // The configuration screen has to be started rather than
+                    // returned to, because it finishes itself on the way here so
+                    // that a sealed phone cannot have it waiting in the back
+                    // stack. Without this, back from the reveal lands on the
+                    // launcher — which is not what back means.
+                    //
+                    // Backing out of the *challenge* closes drawbridge rather
+                    // than returning to whatever was under it.
+                    if (revealing) {
+                        startActivity(Intent(this@LockActivity, MainActivity::class.java))
+                        finish()
+                    } else {
+                        finishAffinity()
+                    }
                 }
             },
         )
@@ -300,15 +321,6 @@ class LockActivity : AppCompatActivity() {
         // is only non-zero once commit() above has run.
         CurfewController(this).apply()
         finish()
-    }
-
-    private fun confirmLeavingWithoutKey() {
-        AlertDialog.Builder(this)
-            .setTitle(R.string.lock_reveal_discard_title)
-            .setMessage(R.string.lock_reveal_discard_message)
-            .setPositiveButton(R.string.lock_reveal_discard_yes) { _, _ -> sealWithKey() }
-            .setNegativeButton(android.R.string.cancel, null)
-            .show()
     }
 
     private fun attemptUnlock() {

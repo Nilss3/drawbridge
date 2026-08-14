@@ -79,9 +79,26 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="24dp"
-            android:paddingBottom="28dp"
+            android:paddingBottom="20dp"
             android:text="@string/welcome_subtitle"
             android:textAppearance="?attr/textAppearanceBodyMedium" />
+
+        <!--
+            The one thing a parent has to know before reading anything below it,
+            and the thing this screen used to leave them to infer: the filter is
+            already running, and none of the settings under here are. Placed
+            above every control it describes rather than repeated beside each
+            one, because it is a rule about the screen and not about any one
+            switch.
+        -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="24dp"
+            android:paddingBottom="28dp"
+            android:text="@string/settings_take_effect_at_lock"
+            android:textAppearance="?attr/textAppearanceBodyMedium"
+            android:textColor="?attr/colorPrimary" />
 
         <!--
             Above the policy on purpose. The policy says what the web may

@@ -22,8 +22,8 @@
     <string name="policy_applying_title">Beleid toepassen</string>
     <string name="policy_applying_message">Bloklijsten downloaden en geïnstalleerde apps nakijken…</string>
     <string name="policy_apply_failed">Dat beleid staat niet meer in het document.</string>
-    <string name="change_applied_at_lock">%1$s toegepast. Wat hierdoor verdwijnt, gaat weg zodra je de telefoon vergrendelt.</string>
-    <string name="change_applied_plain">%1$s toegepast.</string>
+    <string name="change_applied_at_lock">%1$s toegepast na vergrendeling.</string>
+    <string name="settings_take_effect_at_lock">De webfilter draait al en blijft aan, wat je hier ook kiest. Al de rest op dit scherm gaat pas van kracht wanneer je drawbridge vergrendelt.</string>
 
     <string name="options_heading">Opties</string>
     <string name="options_explanation">Sta de volgende diensten toe op eigen risico.</string>
@@ -46,7 +46,7 @@
     <string name="lock_needs_filter">De inhoudsfilter moet draaien voor de telefoon vergrendeld kan worden.</string>
 
     <string name="lock_reveal_title">Schrijf dit nu op</string>
-    <string name="lock_reveal_explanation">Deze sleutel ontgrendelt deze instellingen. Hij wordt nergens bewaard waar je hem nog kunt lezen, en bij elke vergrendeling wordt een nieuwe gemaakt — dus deze, op papier, is alles wat er is.\n\nAls je liever niet meer van gedacht kunt veranderen, is dat een echte keuze. Sluit dit zonder de sleutel te bewaren en deze instellingen kunnen nooit meer gewijzigd worden — al kan de telefoon nog altijd teruggezet worden naar fabrieksinstellingen, wat drawbridge en al de rest erop wist.</string>
+    <string name="lock_reveal_explanation">Deze sleutel ontgrendelt deze instellingen. Hij wordt nergens bewaard waar je hem nog kunt lezen, en bij elke vergrendeling wordt een nieuwe gemaakt — dus deze, op papier, is alles wat er is.\n\nAls je liever niet meer van gedacht kunt veranderen, is dat een echte keuze: tik op Klaar zonder de sleutel op te schrijven, en deze instellingen kunnen nooit meer gewijzigd worden — al kan de telefoon nog altijd teruggezet worden naar fabrieksinstellingen, wat drawbridge en al de rest erop wist.</string>
     <string name="update_title">drawbridge bijwerken</string>
     <string name="update_notice">Er is een nieuwere versie van drawbridge beschikbaar.</string>
     <string name="update_action">Bijwerken</string>
@@ -72,9 +72,6 @@
     <string name="lock_reveal_subject">drawbridge-sleutel</string>
     <string name="lock_reveal_body">drawbridge-sleutel: %1$s\n\nBewaar dit ergens veilig en offline. Hiermee ontgrendel je de drawbridge-instellingen op de telefoon.</string>
     <string name="lock_reveal_finish">Klaar</string>
-    <string name="lock_reveal_discard_title">Sluiten zonder de sleutel?</string>
-    <string name="lock_reveal_discard_message">De instellingen op deze telefoon blijven precies zoals ze zijn, en niemand zal ze nog kunnen wijzigen — jij ook niet.\n\nDe telefoon zit niet vast: een fabrieksreset werkt nog altijd, via de instellingen of via recovery, en neemt drawbridge mee. Die wist ook al de rest op het toestel.</string>
-    <string name="lock_reveal_discard_yes">Toch sluiten</string>
 
     <string name="lock_challenge_title">drawbridge is vergrendeld</string>
     <string name="lock_challenge_explanation">Typ de sleutel die je kreeg toen deze telefoon vergrendeld werd. Streepjes en hoofdletters maken niet uit.</string>

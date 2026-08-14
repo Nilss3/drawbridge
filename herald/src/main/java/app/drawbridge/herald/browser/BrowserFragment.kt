@@ -205,7 +205,10 @@ class BrowserFragment :
                     contextMenuUseCases = components.useCases.contextMenuUseCases,
                     snackBarParentView = view,
                     downloadsLocation = components.downloads.location,
-                ).filterNot { !Edition.hasTabs && it.id in TAB_OPENING_CANDIDATES },
+                ).filterNot {
+                    it.id == PRIVATE_TAB_CANDIDATE ||
+                        (!Edition.hasTabs && it.id in TAB_OPENING_CANDIDATES)
+                },
                 engineView = engineView,
                 useCases = components.useCases.contextMenuUseCases,
                 tabId = sessionId,
@@ -448,9 +451,29 @@ class BrowserFragment :
          */
         private val TAB_OPENING_CANDIDATES = setOf(
             "mozac.feature.contextmenu.open_in_new_tab",
-            "mozac.feature.contextmenu.open_in_private_tab",
             "mozac.feature.contextmenu.open_image_in_new_tab",
         )
+
+        /**
+         * Private tabs are gone from both editions, and this entry was the only
+         * way to make one: the menu's *New tab* and every incoming intent open
+         * ordinary tabs.
+         *
+         * The reason is that herald had no way to show which tabs were private.
+         * The tray lists them in one grid with the same card and the same
+         * counter, so a private tab and an ordinary one were indistinguishable
+         * once opened — and a browser that cannot show the difference should not
+         * offer it. On a filtered phone the word also promises more than it can
+         * deliver: nothing about a private tab hides where the phone has been
+         * from the DNS filter or from whoever holds the key.
+         *
+         * The tray is deliberately *not* filtered to non-private tabs to match.
+         * A phone updating from an older build can be carrying private tabs
+         * already, and hiding them would leave tabs that exist, hold a session
+         * and cannot be reached or closed. Showing them as ordinary tabs lets
+         * them be closed, and no new ones can appear.
+         */
+        private const val PRIVATE_TAB_CANDIDATE = "mozac.feature.contextmenu.open_in_private_tab"
 
         fun create(sessionId: String? = null): BrowserFragment = BrowserFragment().apply {
             arguments = Bundle().apply { putString(ARG_SESSION_ID, sessionId) }

@@ -12,9 +12,9 @@ machine, what was and was not verified, and what to do next.
 
 | | `main` (the alpha) | `dev` |
 |---|---|---|
-| drawbridge | 0.2.7, build 18 | **0.2.8, build 26** |
-| herald | 0.1.9 | **0.1.12** |
-| policy | **50** | **53** |
+| drawbridge | 0.2.7, build 18 | **0.2.8, build 27** |
+| herald | 0.1.9 | **0.1.13** |
+| policy | **50** | **54** |
 | install page | <https://drawbridge-project.pages.dev/install/usb/> | <https://dev.drawbridge-project.pages.dev/install/usb/> |
 | provisioned devices | the owner's Nothing Phone (A059) | the Moto G15 |
 
@@ -29,7 +29,7 @@ alpha:**
 1. **`required_apps` resolves through `/releases/latest/download/`.** Whichever
    GitHub release holds the **latest** flag is what every alpha phone installs.
    v0.2.5 holds it, which is why herald 0.1.9 is what `main` delivers. The dev
-   releases (`v0.2.8-dev.1`, `v0.2.8-dev.2`, `v0.2.8-dev.3`) are pre-releases explicitly **not**
+   releases (`v0.2.8-dev.1` through `v0.2.8-dev.4`) are pre-releases explicitly **not**
    flagged latest, and dev's policy pins their **versioned** URLs instead. A
    herald release that took `latest` would change the alpha without drawbridge
    moving at all.
@@ -63,7 +63,7 @@ still broken".
 |---|---|
 | Repo | https://github.com/Nilss3/drawbridge — public, `main` + `dev` |
 | Alpha | **[v0.2.7](https://github.com/Nilss3/drawbridge/releases/tag/v0.2.7)** is what testers install, from `main`. [v0.2.5](https://github.com/Nilss3/drawbridge/releases/tag/v0.2.5) stays **latest** because `required_apps` resolves herald through it |
-| Dev | **v0.2.8-dev.3**: drawbridge build 26, herald 0.1.12, policy 53. Pre-release, not latest |
+| Dev | **v0.2.8-dev.4**: drawbridge build 27, herald 0.1.13, policy 54. Pre-release, not latest |
 | Devices | Two managed phones: the Moto G15 on dev, and the owner's **Nothing Phone A059** on the alpha since 2026-08-13 |
 | Tests | **522** unit tests across four build variants, lint clean |
 | Website | trilingual, generated into `site/`, both channels served from Cloudflare Pages |
@@ -248,6 +248,60 @@ somebody.
 **PeerTube cannot really be blocked this way and the list says so.** It is
 federated across thousands of instances on their own domains; what is listed is
 the project's own hosts and the official app. The app id is the half that works.
+
+### Build 27: back stopped offering to lock the phone forever
+
+**2026-08-14, v0.2.8-dev.4, and the first of these is the worst thing found in
+this file for a while.**
+
+**Back on the key screen offered to seal the device permanently.** The reveal
+shows the key and says, in `lock_reveal_not_sealed_yet`, that leaving before Done
+forgets it and locks nothing. Pressing back opened a dialog whose confirming
+button, *Close anyway*, called `sealWithKey` — commit the key, apply the
+restrictions, sweep. So the way out of a screen telling a parent to write
+something down was an offer to lock the phone forever with the thing they had
+just declined to keep, and the screen contradicted itself about which was true.
+Back now leaves, and the deliberate forever-lock is reached the way the Q&A
+already described it: press Done without writing the key down.
+
+The fix needed two passes, and the second is the interesting one. Stopping the
+seal was one line; back then landed on the **launcher**, because `MainActivity`
+finishes itself on the way into the reveal so that a sealed phone cannot have the
+configuration waiting in its back stack. Back therefore starts it again
+explicitly. Watched on the emulator: back returns to the configuration screen and
+`parent_key.xml` holds no hash, so nothing was sealed.
+
+**herald has no private tabs.** The long-press menu offered *Open in private tab*
+and the tabs tray then showed it in the same grid, with the same card and the
+same counter, as every other tab — nothing distinguished it once opened. That
+entry was the only way to make one, so removing it removes the feature; the
+menu's *New tab* and every incoming intent open ordinary tabs. The tray is
+deliberately **not** filtered to non-private tabs, because a phone updating from
+an older build can already be carrying one and hiding it would leave a tab that
+exists, holds a session and cannot be reached or closed.
+
+**Every control on the configuration screen now says "applied after lock"**, and
+a line above all of them says the web filter is already running and stays on
+whatever is chosen there. Choosing a disconnect philosophy used to say nothing at
+all, on the reasoning that the radio moving was feedback enough — which is true
+about the radio and wrong about the phone: a tick that moves says the app heard
+you, not that anything changed.
+
+**And the YouTube regression is open, with the instrumentation to close it.** The
+owner reported that switching *Allow YouTube* off and locking left
+`com.google.android.youtube` on the Moto while `com.google.android.apps.youtube.music`
+went, both preinstalled. It does not reproduce on the emulator: both hide, and
+the log now proves which branch each took. Three causes remain possible and build
+27 tells them apart — no `Removing …` line means `evaluate` declined, *The
+platform refused to hide …* means `setApplicationHidden` returned false, and
+*Unhid …* means something restored it afterwards. `hide` used to return `FAILED`
+without logging, which is why nothing on the device could say.
+
+One real bug fell out of looking: `PackageRemovalReceiver` treated
+`STATUS_SUCCESS` as *gone*. Uninstalling an app that shipped with the phone and
+was later updated removes the **update** and leaves the factory build installed,
+and the session reports success either way. It now checks whether the package is
+still there and re-evaluates, which hides it on the second pass.
 
 ### Why a branch beat a second page
 
@@ -1411,6 +1465,18 @@ five rounds above are not reopened. What it settles is that the fallback the
 project chose actually delivers a new build to a deployed phone, with no cable,
 by a parent following on-screen instructions. Read alongside the adb path, which
 needs a computer, this is the route for a phone already in someone's hands.
+
+**Twice now, on consecutive releases.** Build 26 reached the Moto the same way on
+2026-08-14, hours after v0.2.8-dev.3 was published, and the owner reported the
+phone working. So this is the normal way a dev build travels rather than a thing
+that happened once.
+
+**And the two things in it were watched working on that phone the same day.**
+Disney+ was refused with the streaming option off and came back when it was
+switched on, so the category and its switch are confirmed on hardware rather than
+only in the document. Shorts unwind there too, which is the first time that fix
+has been seen working anywhere except the emulator — and the third build to
+attempt it.
 
 **The update is reachable from the lock screen**, which is the part worth not
 undoing. A locked phone is the normal state, and unlocking to reach a

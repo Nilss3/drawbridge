@@ -31,8 +31,8 @@
     <!-- Removal follows the lock, and this screen only exists while the phone is
          unlocked, so a change made here takes apps away at the next lock rather
          than now. Saying "0 apps removed" was the alternative. -->
-    <string name="change_applied_at_lock">%1$s applied. Anything it removes goes when you lock the phone.</string>
-    <string name="change_applied_plain">%1$s applied.</string>
+    <string name="change_applied_at_lock">%1$s applied after lock.</string>
+    <string name="settings_take_effect_at_lock">The web filter is already running and stays on whatever you choose here. Everything else on this screen takes effect when you lock drawbridge.</string>
 
     <string name="options_heading">Options</string>
     <string name="options_explanation">Allow the following services at own peril.</string>
@@ -71,7 +71,7 @@
     <string name="lock_needs_filter">The content filter has to be running before the phone can be locked.</string>
 
     <string name="lock_reveal_title">Write this down now</string>
-    <string name="lock_reveal_explanation">This key unlocks these settings. It is not stored anywhere you can read it again, and a new one is made every time you lock — so this one, on paper, is all there is.\n\nIf you would rather not be able to change your mind, that is a real choice. Close this without keeping the key and these settings can never be changed again — though the phone can still be factory reset, which removes drawbridge and everything else on it.</string>
+    <string name="lock_reveal_explanation">This key unlocks these settings. It is not stored anywhere you can read it again, and a new one is made every time you lock — so this one, on paper, is all there is.\n\nIf you would rather not be able to change your mind, that is a real choice: tap Done without writing the key down, and these settings can never be changed again — though the phone can still be factory reset, which removes drawbridge and everything else on it.</string>
     <string name="update_title">Update drawbridge</string>
     <string name="update_notice">A newer version of drawbridge is available.</string>
     <string name="update_action">Update</string>
@@ -97,9 +97,6 @@
     <string name="lock_reveal_subject">drawbridge key</string>
     <string name="lock_reveal_body">drawbridge key: %1$s\n\nKeep this somewhere safe and offline. It unlocks the drawbridge settings on the phone.</string>
     <string name="lock_reveal_finish">Done</string>
-    <string name="lock_reveal_discard_title">Close without the key?</string>
-    <string name="lock_reveal_discard_message">The settings on this phone will stay exactly as they are, and nobody will be able to change them again — including you.\n\nThe phone is not stuck: a factory reset still works, from Settings or from recovery, and takes drawbridge with it. It also erases everything else on the device.</string>
-    <string name="lock_reveal_discard_yes">Close anyway</string>
 
     <string name="lock_challenge_title">drawbridge is locked</string>
     <string name="lock_challenge_explanation">Type the key you were given when this phone was locked. Dashes and capitals do not matter.</string>

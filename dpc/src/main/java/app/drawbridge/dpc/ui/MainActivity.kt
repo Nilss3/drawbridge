@@ -336,17 +336,23 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
-     * No toast. The radio moving is the feedback, and the schedule appearing
-     * under the curfew is the rest of it — while "applied" would have been two
-     * kinds of wrong at once: the choice is not applied until the phone is
-     * locked, and saying so on every tap is noise on a screen a parent is still
-     * reading through.
+     * It says the same sentence every other control on this screen says, and it
+     * used to say nothing at all.
+     *
+     * The old reasoning was that the radio moving is feedback enough, and that
+     * "applied" would be a lie because the choice waits for the lock. The first
+     * half was right about the radio and wrong about what a parent needs from
+     * it: a tick that moves says the app heard you, not that the phone has
+     * changed. The second half is answered by saying *when* rather than by
+     * saying nothing.
      */
     private fun selectDisconnect(mode: DisconnectSettings.Mode) {
         if (mode == disconnect.mode) return
         disconnect.mode = mode
         renderDisconnect()
         applyDisconnect()
+        DisconnectChoice.entries.firstOrNull { it.mode == mode }
+            ?.let { toast(applied(getString(it.title))) }
     }
 
     /**
@@ -582,7 +588,7 @@ class MainActivity : AppCompatActivity() {
 
             progress.dismiss()
             if (selected) {
-                toast(applied(choice.displayName(Languages.current()), removed, mayRemove = true))
+                toast(applied(choice.displayName(Languages.current())))
             } else {
                 toast(getString(R.string.policy_apply_failed))
             }
@@ -620,7 +626,7 @@ class MainActivity : AppCompatActivity() {
             // hidden, which is the half that used to need a reboot.
             if (enabled) restoreNewlyAllowed()
             val removed = if (enabled) 0 else sweep()
-            toast(applied(option.displayName(Languages.current()), removed, mayRemove = !enabled))
+            toast(applied(option.displayName(Languages.current())))
             renderOptions()
         }
     }
@@ -663,20 +669,22 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
-     * What to tell the parent after a change.
+     * What to tell the parent after a change: one sentence, for every control on
+     * this screen.
      *
-     * Three cases rather than one, because removal follows the lock and this
-     * screen only exists while the phone is unlocked. [mayRemove] is the caller's
-     * knowledge of whether the change is the kind that takes apps away at all —
-     * switching an option *on* never does, so promising a removal at the next
-     * lock would be a lie in the other direction.
+     * It used to be three, distinguishing what went now from what waited. That
+     * distinction is not one a parent has to hold: nothing here lands until the
+     * phone is locked, which is what the owner watched on the reference phone on
+     * 2026-08-14 with the streaming option and Disney+. So the screen says the
+     * one thing that is true of all of it, and
+     * [R.string.settings_take_effect_at_lock] above the controls says why.
+     *
+     * The removal count is gone with them. It could only ever have read zero
+     * from here — [sweep] declines while unlocked, and unlocked is the only
+     * state this screen exists in.
      */
-    private fun applied(name: String, removed: Int, mayRemove: Boolean): String = when {
-        removed > 0 ->
-            resources.getQuantityString(R.plurals.change_applied, removed, name, removed)
-        mayRemove -> getString(R.string.change_applied_at_lock, name)
-        else -> getString(R.string.change_applied_plain, name)
-    }
+    private fun applied(name: String): String =
+        getString(R.string.change_applied_at_lock, name)
 
     private fun refreshPolicy() {
         lifecycleScope.launch {
