@@ -12,9 +12,9 @@ machine, what was and was not verified, and what to do next.
 
 | | `main` (the alpha) | `dev` |
 |---|---|---|
-| drawbridge | 0.2.7, build 18 | **0.2.8, build 25** |
-| herald | 0.1.9 | **0.1.11** |
-| policy | **50** | **52** |
+| drawbridge | 0.2.7, build 18 | **0.2.8, build 26** |
+| herald | 0.1.9 | **0.1.12** |
+| policy | **50** | **53** |
 | install page | <https://drawbridge-project.pages.dev/install/usb/> | <https://dev.drawbridge-project.pages.dev/install/usb/> |
 | provisioned devices | the owner's Nothing Phone (A059) | the Moto G15 |
 
@@ -29,7 +29,7 @@ alpha:**
 1. **`required_apps` resolves through `/releases/latest/download/`.** Whichever
    GitHub release holds the **latest** flag is what every alpha phone installs.
    v0.2.5 holds it, which is why herald 0.1.9 is what `main` delivers. The dev
-   releases (`v0.2.8-dev.1`, `v0.2.8-dev.2`) are pre-releases explicitly **not**
+   releases (`v0.2.8-dev.1`, `v0.2.8-dev.2`, `v0.2.8-dev.3`) are pre-releases explicitly **not**
    flagged latest, and dev's policy pins their **versioned** URLs instead. A
    herald release that took `latest` would change the alpha without drawbridge
    moving at all.
@@ -63,7 +63,7 @@ still broken".
 |---|---|
 | Repo | https://github.com/Nilss3/drawbridge — public, `main` + `dev` |
 | Alpha | **[v0.2.7](https://github.com/Nilss3/drawbridge/releases/tag/v0.2.7)** is what testers install, from `main`. [v0.2.5](https://github.com/Nilss3/drawbridge/releases/tag/v0.2.5) stays **latest** because `required_apps` resolves herald through it |
-| Dev | **v0.2.8-dev.2**: drawbridge build 25, herald 0.1.11, policy 51. Pre-release, not latest |
+| Dev | **v0.2.8-dev.3**: drawbridge build 26, herald 0.1.12, policy 53. Pre-release, not latest |
 | Devices | Two managed phones: the Moto G15 on dev, and the owner's **Nothing Phone A059** on the alpha since 2026-08-13 |
 | Tests | **522** unit tests across four build variants, lint clean |
 | Website | trilingual, generated into `site/`, both channels served from Cloudflare Pages |
@@ -213,7 +213,7 @@ the dev phone; anything a tester holds stays on `main`.
 
 ### Policy 52: streaming is blocked by default, and one switch brings it back
 
-**2026-08-14, signed and unpushed.** The first category added since the policy
+**2026-08-14, shipped in v0.2.8-dev.3.** The first category added since the policy
 took its current shape, and the first option that stands in front of a list
 rather than a handful of package names: `dist/lists/streaming.txt` with 103
 domains across about fifty services, 70 app ids added to `blocked_packages`, and
