@@ -4,7 +4,7 @@ import android.app.admin.DevicePolicyManager
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
+import android.content.pm.PackageManager
 import android.os.Build
 import android.os.UserManager
 import android.text.format.DateUtils
@@ -12,6 +12,7 @@ import android.util.Log
 import app.drawbridge.dpc.BuildConfig
 import app.drawbridge.dpc.DrawbridgeApplication
 import app.drawbridge.dpc.R
+import app.drawbridge.dpc.apps.BrowserSettings
 import app.drawbridge.dpc.security.ParentKey
 
 /**
@@ -70,7 +71,7 @@ class DeviceOwnerManager(context: Context) {
         applyUserRestrictions()
         applyClockLock()
         enableAlwaysOnVpn(vpnPackage)
-        setDefaultBrowser()
+        releaseDefaultBrowser()
         updateLockScreenInfo()
     }
 
@@ -368,74 +369,45 @@ class DeviceOwnerManager(context: Context) {
     }
 
     /**
-     * Makes herald the persistent handler for web links.
+     * Makes sure drawbridge is not holding the web-link default, so Android's
+     * own default-app machinery decides it.
      *
-     * **This stopped being cosmetic on 2026-08-12.** It used to be described as
-     * saving a disambiguation dialog for a browser that was about to be
-     * suspended anyway, because herald was the only browser that could exist.
-     * Now that Chrome, Focus, Vivaldi and Ecosia are allowed too, this is the
-     * decision about which of five browsers a tapped link opens in — and
-     * `addPersistentPreferredActivity` is a Device Owner API, so **the choice
-     * cannot be changed from Settings.** The others are still there and still
-     * open normally when someone launches them; they just do not inherit links.
+     * **drawbridge used to pin herald here, and stopped on 2026-08-15.** The
+     * intention was only ever "herald is the recommendation" — but the sole
+     * Device Owner API for a default handler,
+     * `addPersistentPreferredActivity`, is documented to keep its activity as
+     * the default *"even if the intent preferences are reset"*. It is built to
+     * be un-overridable, which is the right tool for a kiosk and the wrong one
+     * for a recommendation: a parent who preferred Chrome for links could not
+     * say so anywhere on the phone.
      *
-     * Enforcement is still the DNS filter plus browser allowlisting. This decides
-     * the default, not what is permitted.
+     * Working around that meant drawbridge growing its own default-browser
+     * picker, which is a second answer to a question Android already asks well.
+     * So it does not pin, and the platform behaves normally: the first tapped
+     * link brings up the chooser with every allowed browser in it, *always*
+     * makes one the default, and Settings → Default apps changes it later.
      *
-     * The package comes from the policy rather than from [BuildConfig], which is
-     * only the fallback for a device that has not read a document yet. The
-     * document has always carried `allowed_browser_package`; until now nothing
-     * read it, so editing it changed nothing.
+     * This still runs on every policy application, because a phone updating from
+     * a build that *did* pin is carrying a preference nothing else will ever
+     * clear. Clearing it is cheap and idempotent; leaving it would strand those
+     * devices on a default they could not change, which is the whole complaint.
      */
-    fun setDefaultBrowser(
-        browserPackage: String = DrawbridgeApplication.policy(appContext).policy.value
-            .allowedBrowserPackage
-            .ifBlank { BuildConfig.ALLOWED_BROWSER_PACKAGE },
-    ) {
+    fun releaseDefaultBrowser() {
         if (!isDeviceOwner) return
 
-        val activity = resolveBrowserActivity(browserPackage) ?: run {
-            Log.w(TAG, "Browser $browserPackage is not installed; not setting a default handler")
-            return
-        }
-
-        val filter = IntentFilter(Intent.ACTION_VIEW).apply {
-            addCategory(Intent.CATEGORY_DEFAULT)
-            addCategory(Intent.CATEGORY_BROWSABLE)
-            addDataScheme("http")
-            addDataScheme("https")
-        }
-
-        runCatching {
-            // Clear the preference from *every* browser the policy allows, not
-            // only the one being set. A policy that changes the default would
-            // otherwise leave the previous browser holding a persistent
-            // preference that Settings cannot reach either.
-            val allowed = DrawbridgeApplication.policy(appContext).policy.value.browserPackages
-            for (candidate in allowed + browserPackage) {
-                runCatching { dpm.clearPackagePersistentPreferredActivities(admin, candidate) }
-            }
-            dpm.addPersistentPreferredActivity(admin, filter, activity)
-            Log.i(TAG, "Web links now open in $browserPackage")
-        }.onFailure { Log.e(TAG, "Could not set the default browser", it) }
+        val policy = DrawbridgeApplication.policy(appContext).policy.value
+        (policy.browserPackages + BuildConfig.ALLOWED_BROWSER_PACKAGE)
+            .distinct()
+            .forEach { clearDefaultBrowser(it) }
     }
 
+    /** Drops drawbridge's claim on web links for one package. */
     fun clearDefaultBrowser(browserPackage: String = BuildConfig.ALLOWED_BROWSER_PACKAGE) {
         if (!isDeviceOwner) return
         runCatching { dpm.clearPackagePersistentPreferredActivities(admin, browserPackage) }
             .onFailure { Log.e(TAG, "Could not clear the default browser", it) }
     }
 
-    private fun resolveBrowserActivity(browserPackage: String): ComponentName? {
-        val probe = Intent(Intent.ACTION_VIEW, android.net.Uri.parse("https://example.com")).apply {
-            addCategory(Intent.CATEGORY_BROWSABLE)
-        }
-        val match = appContext.packageManager
-            .queryIntentActivities(probe, 0)
-            .firstOrNull { it.activityInfo.packageName == browserPackage }
-            ?: return null
-        return ComponentName(match.activityInfo.packageName, match.activityInfo.name)
-    }
 
     /**
      * The sanctioned removal path: lifts every restriction and gives up Device

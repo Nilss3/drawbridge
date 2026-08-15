@@ -84,28 +84,45 @@
             android:textAppearance="?attr/textAppearanceBodyMedium" />
 
         <!--
-            The one thing a parent has to know before reading anything below it,
-            and the thing this screen used to leave them to infer: the filter is
-            already running, and none of the settings under here are. Placed
-            above every control it describes rather than repeated beside each
-            one, because it is a rule about the screen and not about any one
-            switch.
+            **The policy comes first, as of 2026-08-15, and the sentence under it
+            is why.** It used to sit below the disconnect philosophy, on the
+            reasoning that whether the phone reaches the web at all is the larger
+            question — true, and it left the line about the filter stranded at the
+            top describing controls three sections away.
+
+            The policy is also the one thing on this screen that acts
+            immediately. Putting it first lets the sentence beneath it say two
+            things in the right order: this part is already running, everything
+            below waits for the lock. Read top to bottom it now explains itself.
+        -->
+        <TextView
+            style="@style/TextAppearance.Drawbridge.SectionHeading"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/policy_heading" />
+
+        <LinearLayout
+            android:id="@+id/policyContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="24dp" />
+
+        <!--
+            Directly under the policy it describes. It used to be at the very top
+            and had to name every section it covered; now it points at what is
+            just above it and what is just below, and needs no list.
         -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="24dp"
+            android:paddingTop="8dp"
             android:paddingBottom="28dp"
             android:text="@string/settings_take_effect_at_lock"
             android:textAppearance="?attr/textAppearanceBodyMedium"
             android:textColor="?attr/colorPrimary" />
 
-        <!--
-            Above the policy on purpose. The policy says what the web may
-            contain; this says whether the phone reaches the web at all, which is
-            the larger question and the one a parent has usually already decided
-            before they open this screen.
-        -->
         <TextView
             style="@style/TextAppearance.Drawbridge.SectionHeading"
             android:layout_width="match_parent"
@@ -163,14 +180,20 @@
                 android:layout_height="wrap_content" />
         </LinearLayout>
 
+        <!--
+            Between the disconnect philosophy and the options on purpose. It is
+            the same shape of question as the philosophy above it — how much of a
+            thing this phone has, answered once — and it lands at the lock like
+            the options below it.
+        -->
         <TextView
             style="@style/TextAppearance.Drawbridge.SectionHeading"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/policy_heading" />
+            android:text="@string/browser_heading" />
 
         <LinearLayout
-            android:id="@+id/policyContainer"
+            android:id="@+id/browserContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="28dp"

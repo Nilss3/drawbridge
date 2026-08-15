@@ -23,16 +23,26 @@ import mozilla.components.browser.state.state.searchEngines
  * browser on the phone and an engine that cannot be forced is a hole straight
  * through everything else the policy does.
  *
- * Three ways that holds, in descending order of strength:
+ * Two ways that holds, in descending order of strength:
  *
  *  - **Google, Bing and DuckDuckGo** publish a safe hostname, and drawbridge
  *    rewrites DNS to it (see `DnsFilter`). Nothing typed in the browser can undo
  *    that. [SafeSearch] adds their parameters as well, for the standalone herald
  *    that has no filter behind it.
- *  - **Ecosia** honours `safesearch=2`, which [SafeSearch] puts back on every
- *    load rather than only on searches started from the search bar.
  *  - **Kagi** filters explicit results when logged out and offers no setting to
  *    stop it; changing that needs a paid account to sign into.
+ *
+ * **There was a third way, and Ecosia was the only engine resting on it — which
+ * is why it went on 2026-08-15.** Ecosia honours `safesearch=2`, and
+ * [SafeSearch] put that parameter back on every load, so inside herald it was
+ * genuinely forced. But herald is not the only browser the policy allows:
+ * Chrome, Firefox Focus and Vivaldi are on the phone too, and in any of them
+ * ecosia.org is unfiltered search with nothing to rewrite it. *Safe in the
+ * browser that enforces it* is not a property of the phone. The two ways above
+ * survive that test precisely because they do not depend on which browser is
+ * being used — a DNS rewrite reaches every one of them, and Kagi needs no help
+ * at all. `ecosia.org` is on `dist/lists/search.txt` as of policy 55, so the
+ * engine is no longer reachable by typing its name either.
  *
  * **Three engines were removed on 2026-08-10 rather than shipped unforced.**
  * Brave Search can only be forced with a `safesearch` cookie — the vendor's own
@@ -49,9 +59,9 @@ import mozilla.components.browser.state.state.searchEngines
 object SearchEngineCatalogue {
 
     /**
-     * Engines herald can add itself, for the ones Mozilla's catalogue either does
-     * not ship (Kagi) or only shows in some locales (Ecosia). Bundled engines are
-     * preferred when the locale already has them.
+     * Engines herald can add itself, for the ones Mozilla's catalogue does not
+     * ship — Kagi. Bundled engines are preferred when the locale already has
+     * them.
      *
      * The safe-search parameters are here as well as in [SafeSearch]. They are
      * not redundant: this is what the *first* request carries, and [SafeSearch]
@@ -65,11 +75,6 @@ object SearchEngineCatalogue {
             "https://www.google.com/search?q={searchTerms}&safe=active",
         ),
         Addable("herald-bing", "Bing", "https://www.bing.com/search?q={searchTerms}&adlt=strict"),
-        Addable(
-            "herald-ecosia",
-            "Ecosia",
-            "https://www.ecosia.org/search?q={searchTerms}&safesearch=2",
-        ),
         // Nothing to add: logged out, Kagi filters and offers no way not to.
         Addable("herald-kagi", "Kagi", "https://kagi.com/search?q={searchTerms}"),
     )

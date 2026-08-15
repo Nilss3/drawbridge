@@ -37,7 +37,21 @@ class AppBlocker(context: Context) {
     private val admin = DrawbridgeDeviceAdminReceiver.componentName(appContext)
     private val parentKey = ParentKey(appContext)
 
-    enum class Action { NONE, UNINSTALLED, SUSPENDED, FAILED }
+    /**
+     * What was done to a package, which is not the same question as whether it
+     * worked.
+     *
+     * [HIDDEN] and [SUSPENDED] used to be one value, named `SUSPENDED` and
+     * meaning *hidden* — harmless while hiding was the only mechanism, and
+     * actively misleading from the moment there were two. The log line these end
+     * up in exists to tell a phone's branches apart, so the two mechanisms have
+     * to be distinguishable in it. [FAILED] means the package is still on the
+     * phone and still openable, which is the state [standings] reports.
+     */
+    enum class Action { NONE, UNINSTALLED, HIDDEN, SUSPENDED, FAILED }
+
+    /** What became of a package the policy disallows. See [standings]. */
+    enum class Standing { GONE, HIDDEN, SUSPENDED, PRESENT }
 
     /**
      * Applies policy to a single package, e.g. one that has just been installed.
@@ -75,40 +89,70 @@ class AppBlocker(context: Context) {
         if (parentKey.protectedSince == 0L) return Action.NONE
 
         val policy = DrawbridgeApplication.policy(appContext).policy.value
+        val allowedBrowsers = allowedBrowsers(policy)
 
-        if (isProtected(packageName, policy)) return Action.NONE
+        if (isProtected(packageName, policy, allowedBrowsers)) return Action.NONE
 
         val browser = isBrowser(packageName)
-        val reason = when {
-            packageName in policy.blockedPackages -> "on the blocked package list"
-            browser ->
-                "is a browser, and policy allows only ${policy.browserPackages.joinToString()}"
-            notAllowed(packageName, policy) -> "not on this profile's allowed list"
-            else -> return Action.NONE
-        }
+        val reason = reasonToRemove(packageName, policy, browser) ?: return Action.NONE
 
-        // **Browsers go whether the phone is locked or not. Everything else waits
-        // for the lock.**
+        // **Only what a control on the configuration screen could still change
+        // waits for the lock.** Everything else goes as soon as it is seen. See
+        // [deferred] for which is which and why; the short version is that a
+        // browser the *policy* never sanctioned is a way around a DNS-only
+        // filter and goes in either state, while one the *parent* narrowed away
+        // with the browser chooser is a reversible preference and waits.
         //
-        // The filter is DNS-only, so an unapproved browser is not one more
-        // blocked app — it is a way around the filter itself. Several ship a
-        // built-in "VPN" that is really an in-browser proxy over 443, which no
-        // DNS rule can see and which `DISALLOW_CONFIG_VPN` does not touch because
-        // it is not an Android VPN at all. A browser that survives an unlock
-        // survives as an unfiltered internet.
-        //
-        // Everything else keeps the rule set on 2026-08-12: an unlocked
-        // drawbridge is a parent working on the phone, and an unlock that still
-        // deleted what you installed is not a window. Migrating data does not
-        // require a browser, so the two rules do not collide.
-        //
-        // This does not close the *class*. An app that proxies without declaring
-        // a browser intent filter is not a browser by [isBrowser]'s test and is
-        // caught only by name, through `blocked_packages`.
-        if (!actsNow(isBrowser = browser, isLocked = parentKey.isLocked)) return Action.NONE
+        // The window before the *first* lock is untouched, and is checked above:
+        // it is what lets a parent move their data across, and it is the reason
+        // drawbridge does not need a factory reset.
+        if (!actsNow(deferred(packageName, policy, allowedBrowsers), parentKey.isLocked)) {
+            return Action.NONE
+        }
 
         Log.i(TAG, "Removing $packageName: $reason")
         return remove(packageName)
+    }
+
+    /**
+     * Why policy will not have this package, or null if policy is content with
+     * it. The reason is a log line, so it reads as one.
+     */
+    private fun reasonToRemove(
+        packageName: String,
+        policy: Policy,
+        browser: Boolean,
+        allowedBrowsers: Set<String> = allowedBrowsers(policy),
+    ): String? =
+        when {
+            isProtected(packageName, policy, allowedBrowsers) -> null
+            packageName in policy.blockedPackages -> "on the blocked package list"
+            // The *effective* set rather than the policy's, so the log line says
+            // what this phone actually allows — "allows only nothing" is the
+            // honest reading of the no-browser choice, and was worth not hiding.
+            browser ->
+                "is a browser, and this phone allows only " +
+                    allowedBrowsers.joinToString().ifEmpty { "no browser at all" }
+            notAllowed(packageName, policy) -> "not on this profile's allowed list"
+            else -> null
+        }
+
+    /**
+     * The same question [evaluate] asks, without doing anything about it.
+     *
+     * Exists for [PackageRemovalReceiver], which learns that an uninstall was
+     * refused and has to decide whether to fall back to hiding — and must not
+     * call [evaluate] to find out, because for a user-installed app that would
+     * issue a second uninstall, be refused again, and come straight back here.
+     * A separate copy of the rule in the receiver was the other option, and the
+     * split-brain rules this project has already paid for say not to.
+     *
+     * Deliberately not gated on the lock: the caller is reacting to a removal
+     * that was already decided on and started, not starting a new one.
+     */
+    fun disallows(packageName: String): Boolean {
+        val policy = DrawbridgeApplication.policy(appContext).policy.value
+        return reasonToRemove(packageName, policy, isBrowser(packageName)) != null
     }
 
     /**
@@ -142,6 +186,62 @@ class AppBlocker(context: Context) {
             .filterValues { it != Action.NONE }
         restoreNowAllowed()
         return actions
+    }
+
+    /**
+     * What actually became of every package the policy disallows — read off the
+     * phone, not remembered from when it was done.
+     *
+     * **This is the line that was missing on 2026-08-14.** The owner reported
+     * that the YouTube app was still on the phone after the option was switched
+     * off and the phone locked, and nothing on the device could say whether the
+     * rule had declined it, the platform had refused it, or something had put it
+     * back. That took a build with new logging, an adb cable and an evening.
+     * [Standing.PRESENT] answers it at a glance and needs neither.
+     *
+     * **Live rather than a record of the last sweep**, which matters because the
+     * only screen this can be read from is the configuration screen, and that
+     * screen only exists while the phone is unlocked. A stored sweep result
+     * would be overwritten with "nothing to do" by the first sweep after the
+     * unlock — [evaluate] declines everything in that state — and would report
+     * the emptiness rather than the phone. Unlocking does not un-hide or
+     * un-suspend anything, so reading the state directly stays true in both.
+     *
+     * Its one blind spot is an app installed *during* an unlock, which reads as
+     * [Standing.PRESENT] and is not a failure: it goes at the next lock.
+     * Allowlist mode is deliberately not covered — it would list every ordinary
+     * app on the phone and bury the handful of lines worth reading.
+     */
+    fun standings(): Map<String, Standing> {
+        val policy = DrawbridgeApplication.policy(appContext).policy.value
+
+        // Hidden packages are absent from an ordinary query and present in this
+        // one, which is the whole distinction between GONE and HIDDEN below.
+        val known = packageManager
+            .getInstalledApplications(PackageManager.MATCH_UNINSTALLED_PACKAGES)
+            .mapTo(mutableSetOf()) { it.packageName }
+        val visible = packageManager
+            .getInstalledApplications(0)
+            .mapTo(mutableSetOf()) { it.packageName }
+
+        // Browsers are included because a browser that survives removal is not
+        // one more app left behind: the filter is DNS-only, so it is the filter
+        // switched off on a phone still claiming to be protected.
+        val candidates = (policy.blockedPackages + browsersOnDevice())
+            .distinct()
+            .filterNot { isProtected(it, policy, allowedBrowsers(policy)) }
+
+        return candidates.associateWith { packageName ->
+            when {
+                packageName !in known -> Standing.GONE
+                // Absent from the visible list is either hidden or uninstalled
+                // with its data kept, and only the first is drawbridge's doing.
+                packageName !in visible ->
+                    if (isHidden(packageName)) Standing.HIDDEN else Standing.GONE
+                isSuspended(packageName) -> Standing.SUSPENDED
+                else -> Standing.PRESENT
+            }
+        }.toSortedMap()
     }
 
     /**
@@ -187,14 +287,57 @@ class AppBlocker(context: Context) {
     fun restoreNowAllowed() {
         if (!dpm.isDeviceOwnerApp(appContext.packageName)) return
         val policy = DrawbridgeApplication.policy(appContext).policy.value
-        for (packageName in restorable(policy)) {
-            runCatching {
-                if (dpm.isApplicationHidden(admin, packageName)) {
-                    dpm.setApplicationHidden(admin, packageName, false)
-                    Log.i(TAG, "Unhid $packageName: the policy allows it again")
-                }
-            }.onFailure { Log.w(TAG, "Could not unhide $packageName", it) }
-        }
+        for (packageName in restorable(policy, allowedBrowsers(policy))) restore(packageName)
+    }
+
+    /**
+     * Undoes both rungs of [hideOrSuspend], and does not let either failure take
+     * the other down with it.
+     *
+     * **A restore has to cover every mechanism removal has**, or switching an
+     * option back on brings back the apps that happened to hide and leaves the
+     * ones that had to be suspended sitting in the launcher refusing to open —
+     * which is the same bug as the one this fallback exists to fix, pointed the
+     * other way. That half is the one that can strand a phone, so it is the half
+     * worth being careful about.
+     *
+     * The two halves are caught separately on purpose. They were one `runCatching`
+     * over both reads and both writes, which meant a package the *first* read
+     * threw on — a name the policy carries that this phone has never had, say —
+     * never reached the second and stayed suspended with nothing left to
+     * un-suspend it.
+     */
+    private fun restore(packageName: String) {
+        // **Ask nothing about a package this phone has never had.** The policy
+        // names every browser and every exempt package it knows of, and a given
+        // handset carries a handful of them, so most names reaching here are for
+        // apps that were never installed — and both state reads answer badly for
+        // those. `isApplicationHidden` returns **true**, because "hidden" and
+        // "not installed for this user" are the same bit underneath, so the
+        // restore would report *Unhid com.ecosia.android* on a phone that has
+        // never had it. `isPackageSuspended` throws, and the platform logs a
+        // stack trace at error level on its way out — once per absent package,
+        // per sweep, every fifteen minutes.
+        //
+        // Watched on the API 36 emulator, 2026-08-15: four such lines and four
+        // stack traces in a single lock sweep. Nothing was broken by it, which is
+        // the problem — a log that cries wolf about apps it never had is the log
+        // somebody has to read when a phone really does misbehave.
+        if (!isKnown(packageName)) return
+
+        runCatching {
+            if (isHidden(packageName)) {
+                dpm.setApplicationHidden(admin, packageName, false)
+                Log.i(TAG, "Unhid $packageName: the policy allows it again")
+            }
+        }.onFailure { Log.w(TAG, "Could not unhide $packageName", it) }
+
+        runCatching {
+            if (isSuspended(packageName)) {
+                dpm.setPackagesSuspended(admin, arrayOf(packageName), false)
+                Log.i(TAG, "Unsuspended $packageName: the policy allows it again")
+            }
+        }.onFailure { Log.w(TAG, "Could not unsuspend $packageName", it) }
     }
 
     /**
@@ -206,6 +349,15 @@ class AppBlocker(context: Context) {
      * instead, which is what actually makes the DNS-only architecture safe: with
      * every other browser gone, no app is left that can run its own encrypted
      * DNS and route around the filter.
+     *
+     * **Every branch out of here ends at [hideOrSuspend], and that is the point
+     * of the 2026-08-14 work.** The bug reported as "YouTube will not hide" was
+     * one rung of one branch giving up quietly; the same shape sat in the other
+     * branch, where an uninstall the platform refused was logged and forgotten
+     * by [PackageRemovalReceiver]. A package this method returns anything but
+     * [Action.FAILED] for is a package that cannot be opened, whichever route it
+     * took, and a [Action.FAILED] is visible on the phone rather than only in a
+     * log nobody reads — see [standings].
      */
     fun remove(packageName: String): Action {
         if (!dpm.isDeviceOwnerApp(appContext.packageName)) {
@@ -221,7 +373,7 @@ class AppBlocker(context: Context) {
         // nothing on the device could distinguish "hide refused" from "uninstall
         // removed the update and left the factory build".
         Log.i(TAG, "Removing $packageName by ${if (system) "hiding" else "uninstalling"} it")
-        return if (system) hide(packageName) else uninstall(packageName)
+        return if (system) hideOrSuspend(packageName) else uninstall(packageName)
     }
 
     /**
@@ -246,51 +398,178 @@ class AppBlocker(context: Context) {
         Action.UNINSTALLED
     } catch (e: Exception) {
         Log.e(TAG, "Could not uninstall $packageName", e)
-        // Uninstall fails on packages that turn out to be system apps after all;
-        // hiding is the fallback that always works for a Device Owner.
-        hide(packageName)
+        // Uninstall fails on packages that turn out to be system apps after all.
+        //
+        // This catch only covers a session that could not be *started*. The
+        // session's own verdict arrives later, at [PackageRemovalReceiver],
+        // which drops through to the same ladder — that is the other half of
+        // this fallback and it was missing until 2026-08-15.
+        hideOrSuspend(packageName)
     }
 
     /**
-     * `setApplicationHidden` reports refusal by **returning false**, not by
-     * throwing, and a silent false is indistinguishable on the device from a
-     * package that was never considered. That is how a package can sit through a
-     * lock looking exempt when it was in fact refused.
+     * Makes [packageName] unopenable without uninstalling it: hide, and failing
+     * that suspend.
+     *
+     * **Two mechanisms rather than one, because the platform exempts packages
+     * from each of them separately.** `setApplicationHidden` is refused for
+     * `com.google.android.youtube` on the owner's Moto G15 — it returns false,
+     * every time, while `com.google.android.apps.youtube.music` beside it
+     * succeeds — and `setPackagesSuspended` works on exactly that package, which
+     * was checked by hand on that handset before this was written. Nothing in
+     * this app decided that and no policy edit changes it: the two packages are
+     * named identically by the document and take an identical path to here.
+     *
+     * A suspended app stays in the launcher and says it is unavailable when
+     * tapped, where a hidden one disappears. Worse cosmetically, and the same in
+     * the way that matters. Hiding stays the first rung deliberately (decided
+     * 2026-08-15): suspending everything would make one phone consistent with
+     * itself at the cost of putting a row of dead icons on every managed phone,
+     * which also advertises the blocklist to whoever is holding it.
+     *
+     * **The return value is not the answer; the state is.** Both calls report
+     * refusal by their return rather than by throwing, and this class has now
+     * been wrong twice about trusting what a platform call said it did. So each
+     * rung is *checked* — `isApplicationHidden`, `isPackageSuspended` — and a
+     * call that claims success over a package that did not move drops through to
+     * the next rung anyway. The wrong guess is cheap in that direction: a hidden
+     * app that gets suspended as well is still hidden, and [restore] undoes both.
+     *
+     * Public because [PackageRemovalReceiver] needs the same ladder when an
+     * uninstall comes back refused. Whatever this does has to be undone by
+     * [restoreNowAllowed] and [unhideAll], or an option switched back on leaves
+     * a dead icon behind.
      */
-    private fun hide(packageName: String): Action = try {
-        val hidden = dpm.setApplicationHidden(admin, packageName, true)
-        if (hidden) {
-            Action.SUSPENDED
-        } else {
-            Log.w(TAG, "The platform refused to hide $packageName; it stays on the phone")
-            Action.FAILED
-        }
-    } catch (e: Exception) {
-        Log.e(TAG, "Could not hide $packageName", e)
-        Action.FAILED
+    fun hideOrSuspend(packageName: String): Action {
+        val accepted = runCatching { dpm.setApplicationHidden(admin, packageName, true) }
+            .onFailure { Log.e(TAG, "Could not hide $packageName", it) }
+            .getOrDefault(false)
+
+        if (accepted && isHidden(packageName)) return Action.HIDDEN
+
+        Log.w(
+            TAG,
+            if (accepted) {
+                "$packageName reports itself visible after a hide the platform accepted; " +
+                    "suspending it instead"
+            } else {
+                "The platform refused to hide $packageName; suspending it instead"
+            },
+        )
+        return suspend(packageName)
     }
 
-    /** Makes a previously hidden package usable again. Part of removal. */
+    /** The last rung. Reached only when hiding was refused or did not take. */
+    private fun suspend(packageName: String): Action {
+        val refused = runCatching { dpm.setPackagesSuspended(admin, arrayOf(packageName), true) }
+            .onFailure { Log.e(TAG, "Could not suspend $packageName", it) }
+            .getOrNull()
+
+        return if (refused != null && refused.isEmpty() && isSuspended(packageName)) {
+            Log.i(TAG, "Suspended $packageName; it stays installed but cannot be opened")
+            Action.SUSPENDED
+        } else {
+            // The end of the ladder, and the one outcome a parent has to be able
+            // to see: policy says this app is not allowed and the phone is still
+            // going to open it. It is reported on the configuration screen's
+            // diagnostics rather than left here, because a log line on a locked
+            // phone with no adb is not a channel to anyone.
+            Log.w(TAG, "$packageName can be neither hidden nor suspended; it stays usable")
+            Action.FAILED
+        }
+    }
+
+    /**
+     * The two state reads the ladder checks itself against.
+     *
+     * Both are ordinary public SDK, and both take the admin component — the
+     * comment that used to sit in [restore] claiming there was no
+     * `isPackageSuspended` for a Device Owner was simply wrong, and it cost this
+     * class a blind unconditional write where a read would do.
+     */
+    private fun isHidden(packageName: String): Boolean =
+        runCatching { dpm.isApplicationHidden(admin, packageName) }.getOrDefault(false)
+
+    private fun isSuspended(packageName: String): Boolean =
+        runCatching { dpm.isPackageSuspended(admin, packageName) }.getOrDefault(false)
+
+    /**
+     * Whether the device carries this package at all, hidden or not.
+     *
+     * `MATCH_UNINSTALLED_PACKAGES` is the flag that separates the two cases that
+     * matter here: a hidden package is found with it and absent without it,
+     * while a package that was never installed is absent either way. Everything
+     * that reads package state has to make that distinction first — see
+     * [restore] for what happens when it does not.
+     */
+    private fun isKnown(packageName: String): Boolean = runCatching {
+        packageManager.getApplicationInfo(packageName, PackageManager.MATCH_UNINSTALLED_PACKAGES)
+    }.isSuccess
+
+    /**
+     * Gives every package on the phone back: unhidden and unsuspended. Part of
+     * removal.
+     *
+     * **`MATCH_UNINSTALLED_PACKAGES` is load-bearing.** A hidden package is
+     * absent from an ordinary `getInstalledApplications`, so without that flag
+     * this would enumerate exactly the apps that need nothing doing to them and
+     * miss every one it is here for.
+     *
+     * The un-suspend is one batched call rather than one per package: this runs
+     * while a parent waits on the removal screen, `setPackagesSuspended` takes an
+     * array and reports refusals by returning them rather than by throwing, and
+     * a few hundred package names is nowhere near a binder transaction limit. If
+     * the batch throws all the same, every package is retried singly — this is
+     * the path that has to leave nothing behind on a device drawbridge no longer
+     * manages, and there is no third chance after it.
+     */
     fun unhideAll() {
         if (!dpm.isDeviceOwnerApp(appContext.packageName)) return
-        packageManager.getInstalledApplications(PackageManager.MATCH_UNINSTALLED_PACKAGES)
-            .forEach { info ->
-                runCatching {
-                    if (dpm.isApplicationHidden(admin, info.packageName)) {
-                        dpm.setApplicationHidden(admin, info.packageName, false)
-                    }
+        val installed = packageManager
+            .getInstalledApplications(PackageManager.MATCH_UNINSTALLED_PACKAGES)
+            .map { it.packageName }
+
+        installed.forEach { packageName ->
+            runCatching {
+                if (dpm.isApplicationHidden(admin, packageName)) {
+                    dpm.setApplicationHidden(admin, packageName, false)
+                }
+            }.onFailure { Log.w(TAG, "Could not unhide $packageName on removal", it) }
+        }
+
+        runCatching { dpm.setPackagesSuspended(admin, installed.toTypedArray(), false) }
+            .onFailure {
+                Log.w(TAG, "Batched un-suspend failed; retrying one at a time", it)
+                installed.forEach { packageName ->
+                    runCatching { dpm.setPackagesSuspended(admin, arrayOf(packageName), false) }
+                        .onFailure { e ->
+                            Log.w(TAG, "Could not unsuspend $packageName on removal", e)
+                        }
                 }
             }
     }
 
     /** True if [packageName] registers an activity that can open `https://` links. */
-    fun isBrowser(packageName: String): Boolean {
+    fun isBrowser(packageName: String): Boolean = packageName in browsersOnDevice()
+
+    /**
+     * Every package on the phone that can open an `https://` link.
+     *
+     * One query answers this for the whole device, which is why [standings] asks
+     * it once rather than asking [isBrowser] per installed package — that would
+     * be one binder round trip per app on the phone to answer a question the
+     * platform answers in full the first time.
+     *
+     * Hidden packages answer no intent queries and are absent here, which is the
+     * same property that stops [restorable] being generalised.
+     */
+    private fun browsersOnDevice(): Set<String> {
         val probe = Intent(Intent.ACTION_VIEW, Uri.parse("https://example.com")).apply {
             addCategory(Intent.CATEGORY_BROWSABLE)
         }
         return packageManager
             .queryIntentActivities(probe, PackageManager.MATCH_ALL)
-            .any { it.activityInfo.packageName == packageName }
+            .mapTo(mutableSetOf()) { it.activityInfo.packageName }
     }
 
     private fun isSystemPackage(packageName: String): Boolean = try {
@@ -300,13 +579,33 @@ class AppBlocker(context: Context) {
         false
     }
 
-    private fun isProtected(packageName: String, policy: Policy): Boolean =
+    /**
+     * The browsers this phone may keep: what the policy sanctions, narrowed by
+     * what the parent chose. See [BrowserSettings.allowedBrowsers].
+     */
+    private fun allowedBrowsers(policy: Policy): Set<String> =
+        BrowserSettings.allowedBrowsers(policy, BrowserSettings(appContext).choice)
+
+    private fun isProtected(
+        packageName: String,
+        policy: Policy,
+        allowedBrowsers: Set<String>,
+    ): Boolean =
         packageName == appContext.packageName ||
-            packageName in policy.browserPackages ||
-            packageName == BuildConfig.ALLOWED_BROWSER_PACKAGE ||
+            packageName in allowedBrowsers ||
+            // **The build's own browser, and only while every browser is
+            // allowed.** This line is the fallback for a phone that has not read
+            // a document yet, where `browserPackages` is whatever the model
+            // defaults to. It used to be unconditional, which would now mean
+            // herald surviving *no browser at all* — the one choice whose entire
+            // content is that it does not.
+            (packageName == BuildConfig.ALLOWED_BROWSER_PACKAGE && isEveryBrowserAllowed()) ||
             packageName in policy.exemptPackages ||
             packageName in NEVER_TOUCH ||
             NEVER_TOUCH_PREFIXES.any { packageName.startsWith(it) }
+
+    private fun isEveryBrowserAllowed(): Boolean =
+        BrowserSettings(appContext).choice == BrowserSettings.Choice.ALL
 
     companion object {
         private const val TAG = "AppBlocker"
@@ -325,8 +624,79 @@ class AppBlocker(context: Context) {
          * after the pre-lock window has been checked: this answers "now or at the
          * lock", not "at all".
          */
-        internal fun actsNow(isBrowser: Boolean, isLocked: Boolean): Boolean =
-            isBrowser || isLocked
+        internal fun actsNow(isDeferred: Boolean, isLocked: Boolean): Boolean =
+            !isDeferred || isLocked
+
+        /**
+         * Whether this package's fate is still an open question a control on the
+         * configuration screen could answer — in which case it waits for the
+         * lock, and otherwise it goes now.
+         *
+         * Two things defer, and they are the same kind of thing:
+         *
+         *  - **What an option covers** — WhatsApp, Telegram, YouTube, the
+         *    streaming catalogue. See [optionGoverned].
+         *  - **A browser the policy sanctions that the browser choice has
+         *    narrowed away** — Chrome under *only herald mono*, everything under
+         *    *no browser*. The parent picked that from a chooser and can unpick
+         *    it, and the website has promised since before it was built that the
+         *    choice lands at the lock.
+         *
+         * **A browser the policy never sanctioned is not deferred**, and that
+         * distinction is the whole reason this is not simply "browsers wait
+         * too". Opera is a way around a DNS-only filter — it ships an in-browser
+         * proxy over 443 that no DNS rule sees and `DISALLOW_CONFIG_VPN` does
+         * not touch — so it goes whether the phone is locked or not. Chrome under
+         * *only herald mono* is a preference, and a reversible one.
+         *
+         * Everything else — the policy's own blocklist — goes now. Installing
+         * drawbridge is the decision that social media is not on this phone, and
+         * there is no second question to wait for.
+         */
+        internal fun deferred(
+            packageName: String,
+            policy: Policy,
+            allowedBrowsers: Set<String>,
+        ): Boolean =
+            packageName in optionGoverned(policy) ||
+                (packageName in policy.browserPackages && packageName !in allowedBrowsers)
+
+        /**
+         * Every package whose fate a switch on the configuration screen can
+         * change — the union of what each option exempts or allows, whether that
+         * option is on or off.
+         *
+         * **This is the line the 2026-08-15 change draws**, and the two sides of
+         * it are different kinds of decision:
+         *
+         *  - **The policy's list** — social media, gambling, AI companions, the
+         *    proxy and VPN apps — is what somebody installs drawbridge *for*.
+         *    There is no second question to ask about it, so it goes as soon as
+         *    it is seen, and an unlock does not hand it back. Before this, an
+         *    unlocked phone quietly re-accumulated exactly what it was installed
+         *    to remove.
+         *  - **What an option covers** — WhatsApp, Telegram, YouTube, the
+         *    streaming catalogue — is a question the parent answers with a
+         *    switch, and they may not have answered it yet. Removing those while
+         *    unlocked would take an app away from somebody halfway through
+         *    deciding to allow it, and for a user-installed app an uninstall is
+         *    permanent: [restoreNowAllowed] can unhide a preinstalled app when
+         *    the option comes on, but nothing reinstalls one that was
+         *    uninstalled.
+         *
+         * Read from the options rather than from the *enabled* ones on purpose.
+         * An option that is **on** never reaches here at all — its packages are
+         * in `exempt_packages`, so [isProtected] has already declined them — so
+         * this set is only ever consulted for options that are off, which are
+         * precisely the ones a parent might still switch on.
+         *
+         * A pure function of the policy, like [actsNow] and [restorable], because
+         * this project has now paid four times for a rule that could only be
+         * checked by holding a phone.
+         */
+        internal fun optionGoverned(policy: Policy): Set<String> =
+            policy.options
+                .flatMapTo(mutableSetOf()) { it.exemptPackages + it.allowedPackages }
 
         /**
          * The packages a restore may bring back: what the policy names as an
@@ -337,8 +707,8 @@ class AppBlocker(context: Context) {
          * that is both blocked by name and exempted by an option **must** be
          * restorable, because exempt beats blocked everywhere else.
          */
-        internal fun restorable(policy: Policy): List<String> =
-            (policy.browserPackages + policy.exemptPackages).distinct()
+        internal fun restorable(policy: Policy, allowedBrowsers: Set<String>): List<String> =
+            (allowedBrowsers + policy.exemptPackages).distinct()
 
         /**
          * Packages that must survive no matter what the policy says.

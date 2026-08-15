@@ -24,10 +24,27 @@ class SafeSearchTest {
         assertTrue(
             SafeSearch.enforced("https://duckduckgo.com/?q=cats")!!.contains("kp=1"),
         )
-        assertTrue(
-            SafeSearch.enforced("https://www.ecosia.org/search?q=cats")!!
-                .contains("safesearch=2"),
-        )
+    }
+
+    /**
+     * **Ecosia is not rewritten any more, and that is the point rather than an
+     * omission** — 2026-08-15.
+     *
+     * Its `safesearch=2` was honoured and this file did put it back, so inside
+     * herald the engine really was forced. It was dropped because that is all it
+     * ever was: the policy allows Chrome, Firefox Focus and Vivaldi as well, and
+     * in any of those ecosia.org was unfiltered search that nothing could
+     * rewrite. The engine is out of `browser.search_engines`, the app is out of
+     * `allowed_browser_packages`, and `ecosia.org` is on the search blocklist as
+     * of policy 55.
+     *
+     * Asserted rather than merely deleted because the deletion is the behaviour
+     * change, and a rule quietly coming back would look like a fix.
+     */
+    @Test
+    fun `no longer touches Ecosia, which is blocked rather than forced`() {
+        assertNull(SafeSearch.enforced("https://www.ecosia.org/search?q=cats"))
+        assertNull(SafeSearch.enforced("https://www.ecosia.org/search?q=cats&safesearch=0"))
     }
 
     /**
@@ -38,16 +55,16 @@ class SafeSearchTest {
     @Test
     fun `leaves a url that already carries the parameter alone`() {
         assertNull(SafeSearch.enforced("https://www.google.com/search?q=cats&safe=active"))
-        assertNull(SafeSearch.enforced("https://www.ecosia.org/search?q=cats&safesearch=2"))
+        assertNull(SafeSearch.enforced("https://www.bing.com/search?q=cats&adlt=strict"))
         assertNull(SafeSearch.enforced(SafeSearch.enforced("https://duckduckgo.com/?q=cats")!!))
     }
 
     /** The address-bar case this exists for: the parameter removed by hand. */
     @Test
     fun `overrides a parameter that has been turned off`() {
-        val fixed = SafeSearch.enforced("https://www.ecosia.org/search?q=cats&safesearch=0")!!
-        assertTrue(fixed.contains("safesearch=2"))
-        assertTrue("the disabled value must not survive", !fixed.contains("safesearch=0"))
+        val fixed = SafeSearch.enforced("https://www.bing.com/search?q=cats&adlt=off")!!
+        assertTrue(fixed.contains("adlt=strict"))
+        assertTrue("the disabled value must not survive", !fixed.contains("adlt=off"))
     }
 
     @Test
@@ -60,7 +77,7 @@ class SafeSearchTest {
     @Test
     fun `ignores anything that is not a search`() {
         assertNull(SafeSearch.enforced("https://www.google.com/"))
-        assertNull(SafeSearch.enforced("https://www.ecosia.org/"))
+        assertNull(SafeSearch.enforced("https://www.bing.com/"))
         assertNull(SafeSearch.enforced("https://en.wikipedia.org/wiki/Cat?q=cats"))
         assertNull(SafeSearch.enforced("not a url at all"))
     }
@@ -115,7 +132,7 @@ class SafeSearchTest {
     /** A search term is arbitrary text, and it has to survive untouched. */
     @Test
     fun `does not re-encode the query`() {
-        val fixed = SafeSearch.enforced("https://www.ecosia.org/search?q=caf%C3%A9+d%27hiver")!!
+        val fixed = SafeSearch.enforced("https://www.bing.com/search?q=caf%C3%A9+d%27hiver")!!
         assertTrue(fixed.contains("q=caf%C3%A9+d%27hiver"))
     }
 

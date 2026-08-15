@@ -264,9 +264,22 @@ covers — its safe-search setting is a cookie the user controls, not something
 this system can enforce.
 
 That is why the default is DuckDuckGo and why the shipped list is **Google, Bing,
-DuckDuckGo, Ecosia and Kagi**. Narrowing `search_engines` to the first three is
-the strict setting; adding an engine to that list is a decision to trust its own
+DuckDuckGo and Kagi**. Narrowing `search_engines` to the first three is the
+strict setting; adding an engine to that list is a decision to trust its own
 safe search.
+
+**Ecosia was dropped on 2026-08-15, and its reason is the one worth
+generalising.** Nothing was wrong with the engine: it honours `safesearch=2`,
+and herald's `SafeSearch` put that parameter back on every load, so inside
+herald it was genuinely forced. It was dropped because that is *all* it was.
+herald is not the only browser the policy allows — Chrome, Firefox Focus and
+Vivaldi are on the phone too — and in any of them ecosia.org was unfiltered
+search with nothing to rewrite it. **An engine is only as forced as its weakest
+browser**, which is why the rule above is about a safe *hostname* rather than a
+safe parameter: a DNS rewrite reaches every browser on the device, and a URL
+parameter reaches the one browser that writes it. `ecosia.org` is on the search
+list, `com.ecosia.android` left `allowed_browser_packages` and is blocked by
+name like every other browser that is not allowed.
 
 **Brave Search, Qwant and Startpage were dropped on 2026-08-10**, having been
 shipped until then. Brave can only be forced with a `safesearch` cookie, and the

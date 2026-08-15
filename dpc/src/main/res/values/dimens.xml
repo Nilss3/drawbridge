@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- A browser's launcher icon beside its choice. Large enough to recognise
+         at a glance — which is the entire job it does there — and small enough
+         that four of them do not become the card. -->
+    <dimen name="browser_icon">28dp</dimen>
+</resources>

@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    One browser choice: a name, an info button holding the paragraph, and — in
+    place of a description — the icons of the browsers it allows.
+
+    **The icons are the description**, which is the whole idea. "All the allowed
+    browsers" is a sentence somebody has to parse and then take on trust; a row
+    of the actual launcher icons of the actual browsers on this phone is the same
+    statement, checkable at a glance, and it stays true when the policy's list
+    changes without anybody rewriting a string. The *no browser* choice gets a
+    prohibition sign in the same row, so the three read as one series.
+
+    Long text still exists and still says what each choice costs — the
+    no-browser warning about signing in especially — and it lives behind the ⓘ
+    like the policy's and the options' do.
+-->
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="12dp"
+    android:checkable="true"
+    app:cardElevation="0dp"
+    app:checkedIcon="@null"
+    app:strokeWidth="1dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="16dp"
+        android:paddingTop="12dp"
+        android:paddingEnd="4dp"
+        android:paddingBottom="12dp">
+
+        <!-- The card is what is tapped; this only reports which one is chosen. -->
+        <RadioButton
+            android:id="@+id/browserSelected"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:clickable="false"
+            android:focusable="false" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/browserName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="?attr/textAppearanceTitleMedium" />
+
+            <!-- Filled from code with one ImageView per allowed browser that is
+                 actually on this phone. -->
+            <LinearLayout
+                android:id="@+id/browserIcons"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingTop="8dp" />
+        </LinearLayout>
+
+        <ImageButton
+            android:id="@+id/browserInfo"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:scaleType="center"
+            android:src="@drawable/ic_info" />
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

@@ -1,4 +1,4 @@
-# Handoff — state as of 2026-08-13
+# Handoff — state as of 2026-08-16
 
 Everything about *how the system works* lives in [README](../README.md),
 [design-decisions](design-decisions.md), [policy](policy.md),
@@ -8,13 +8,470 @@ machine, what was and was not verified, and what to do next.
 
 ---
 
+## Start here: the YouTube app the phone will not hide
+
+**Diagnosed, fixed, released as build 28, and still unconfirmed on the handset
+that found it.** Everything below happened on an emulator and in tests; the Moto
+has not seen any of it. See *What to do on the Moto* at the end of this section.
+
+**What is certain.** On the owner's Moto G15, switching *Allow YouTube* off and
+locking leaves the app on the phone.
+`setApplicationHidden(com.google.android.youtube, true)` **returns false** there,
+while `com.google.android.apps.youtube.music` takes the identical branch and
+succeeds. Both are plain system apps under `/product/app`, both are named the
+same way by the policy, and the emulator hides both — so this is the platform
+refusing one package on one handset, not a rule this app got wrong. Logged on
+2026-08-14 at 20:14:52 with build 27, and corroborated by `hidden=false` for
+YouTube and `hidden=true` for Music after the lock.
+
+The platform gives no reason. `setApplicationHiddenSettingAsUser` returns false
+and logs nothing, so there is no line to find. What the phone does show, offered
+as a lead rather than a cause: YouTube's `firstInstallTime` and `lastUpdateTime`
+for user 0 are both **2026-08-13 21:56**, its enabled state is explicitly set
+(`enabled=1`) and its `lastDisabledCaller` is `com.google.android.partnersetup`,
+while Music sits at `enabled=0` from 12 August. Something in Motorola's preload
+machinery reinstalled it mid-testing. **drawbridge's own removal path has not
+changed** — `git log` on `hide`, `remove` and `isSystemPackage` shows nothing but
+build 27's logging — so if this used to work, what changed was on the phone.
+
+**Suspension was checked against the refusing package on that phone by hand** —
+`pm suspend com.google.android.youtube` succeeded where hiding failed, and was
+undone immediately. That is what the fallback below is built on.
+
+### What was built on 2026-08-15, and it is no longer only about YouTube
+
+**The fix stopped being a YouTube fallback and became one ladder every removal
+ends at.** Chasing the refused hide turned up the same shape of bug in three
+other places, all of them silent, and the point of the day's work is that a
+package policy disallows is now unopenable *whichever* branch it takes:
+
+- **`remove` → `hideOrSuspend`, and every route reaches it.** Hide first; if the
+  platform refuses, suspend. Both rungs are **checked against the phone's state
+  afterwards** rather than believed: `setApplicationHidden` returning true and
+  the app still being visible drops through to suspension anyway. This class had
+  already been wrong twice about trusting what a platform call said it did.
+- **A refused *uninstall* was logged and forgotten.** The mirror image of the
+  YouTube bug, sitting in `PackageRemovalReceiver`: a user-installed app the
+  platform would not uninstall stayed fully usable on a locked phone, for good,
+  with a `Log.e` on a device that has no adb as the only witness. It now drops
+  through to the same ladder. It calls `hideOrSuspend` and **not** `evaluate`,
+  which would issue a second uninstall, be refused, and come straight back —
+  every failure an endless retry.
+- **An OEM reinstalling a blocked app got a free pass.** `PackageWatcher` skipped
+  `EXTRA_REPLACING` broadcasts on the reasoning that an update is something
+  already evaluated — true, and it assumes the evaluation *stuck*. It is exactly
+  what the Moto's YouTube looks like in `dumpsys`: reinstalled mid-testing by
+  `com.google.android.partnersetup`. Updates are evaluated now.
+- **Diagnostics says what became of the blocklist**, per package: `gone`,
+  `hidden`, `suspended`, `present`. `still usable` is the line that answers in
+  one glance the question that cost 2026-08-14 an evening, a new build and a
+  cable. Read live off the phone rather than recorded from the last sweep,
+  because this screen only opens while unlocked and a stored result would be
+  overwritten with "nothing to do" by the first sweep after the unlock.
+- **`Action.SUSPENDED` used to mean *hidden*.** Harmless with one mechanism,
+  actively misleading with two — build 27 added that logging precisely to tell
+  branches apart. It is `HIDDEN` and `SUSPENDED` now.
+
+**Decided 2026-08-15, closing the open question:** hiding stays the first rung
+and suspension is the fallback, rather than suspending everything. Suspending
+everything would make one phone consistent with itself, at the price of a row of
+dead icons on every managed phone and a launcher that advertises the blocklist.
+
+**One thing the emulator caught that no test could.** `isApplicationHidden`
+returns **true** for a package that was never installed — "hidden" and "not
+installed for this user" are the same bit underneath — and `isPackageSuspended`
+*throws* for one, with the platform logging a stack trace at error level on the
+way out. The restore walks every package the policy names, and a handset carries
+a handful of them, so a single lock sweep produced four false *Unhid
+com.ecosia.android* lines and four stack traces for apps that phone has never
+had. Nothing was broken by it, which is the problem: the log that cries wolf is
+the log somebody has to read when a phone really does misbehave. Both reads are
+now gated on the package existing at all.
+
+### What is verified, and what is not
+
+**Verified on the API 36 emulator, 2026-08-15**, with drawbridge as Device Owner
+against policy 54: locking uninstalled both disallowed browsers and reported
+`Lock sweep removed 2 packages`; switching *Allow YouTube* on unhid
+`com.google.android.youtube` and `com.google.android.apps.youtube.music` and
+nothing else, and both were visible in `pm list packages` afterwards where they
+had been hidden before; Diagnostics moved from `2 hidden, 2 present` to all
+clear; and no stack traces or false restore lines in any of it.
+
+**The refusal itself cannot be reproduced there** — the emulator hides both
+YouTube packages happily, which is what made this a hardware bug in the first
+place. `AppBlockerLadderTest` covers it instead, using Robolectric's
+`failSetApplicationHiddenFor` to make the platform refuse exactly the package the
+Moto refuses, with YouTube Music beside it succeeding — the pair rather than one
+example, because this file's own lesson is that a rule checked against one
+example is checked against nothing.
+
+### What to do on the Moto, in order
+
+**Build 28 is cut and published to the dev site** — 0.2.8 build 28, policy 58,
+`dpc-31614a0297d8e8e1.apk`. herald is unchanged at 0.1.13. Everything below needs
+a handset and nothing below has been done.
+
+1. **Update the Moto and prove the fallback.** A debug APK cannot install over a
+   release-signed build and the DPC cannot be uninstalled, so this is
+   `tools/provision-adb.sh --update` through the Play Protect verifier window.
+   Then: *Allow YouTube* off, lock, and check that YouTube is suspended rather
+   than sitting there usable. **Diagnostics answers it without a cable** — under
+   `blocklist state`, `still usable` naming YouTube is the failure and
+   `suspended` is the fix working.
+2. **Then check that suspended apps come back.** This is the half that can
+   strand a phone. Switch *Allow YouTube* back on and confirm the app opens
+   again, then run removal from the overflow menu and confirm nothing is left
+   suspended on a phone drawbridge no longer manages. Both halves were watched on
+   the emulator, but only ever on packages that *hid* — the un-suspend path has
+   never run on hardware, because nothing on an emulator gets itself suspended.
+3. **Then the browser policy's own missing half: herald coming back.** Choose *no
+   browser*, lock, then choose *the allowed browsers* and lock again. herald is
+   user-installed, so it is uninstalled rather than hidden and has to be
+   downloaded afresh by `required_apps`; the emulator could not show this because
+   its own filter blocks the fetch. Watch that it does not loop — the installer
+   skips a browser the current choice excludes, and without that guard the phone
+   would remove and re-download herald forever.
+
+---
+
+## The browser chooser exists now, three years of website copy later
+
+**2026-08-15.** The website has described this since before it was built — *"by
+default drawbridge allows a limited list of browsers… you can also choose to use
+herald mono only… finally, you can choose to have no browser at all"* — and the
+handoff has carried "browser choice is still only on the website" as an open gap
+since the dev site was written. It is built.
+
+Three cards, the same shape as the disconnect philosophy, **with the browser
+icons as the description**, and a prohibition sign for *no browser*. "All the
+allowed browsers" is a claim to take on trust; five icons somebody recognises is
+the same claim, checkable at a glance. The long text — including the warning that
+apps signing in through a browser cannot, on a phone without one — is behind
+the ⓘ.
+
+**The icons are the policy's list, not the phone's**, which was the correction on
+the way through: the first version drew only installed apps, so the same choice
+looked different on two phones and looked smaller than it is on one whose
+browsers had just been removed. Each icon now resolves installed-icon → bundled
+copy → globe, that last rung being for a browser a future policy names that this
+build has never heard of. Chrome, Focus and Vivaldi logos are bundled from
+Wikimedia Commons and herald's two from `site/assets/img/`; about 15 KB in all,
+with provenance recorded beside the map.
+
+Device-local like the disconnect philosophy, and it can only ever *narrow* what
+the signed document sanctions. See
+[design-decisions](design-decisions.md#the-browser-choice-narrows-the-policy-and-can-only-narrow-it).
+
+**Watched working on the API 36 emulator, both directions:**
+
+- choosing *herald mono only* while unlocked removed nothing — the deferral —
+  and moved the link handler to herald mono straight away;
+- locking then hid Chrome, uninstalled herald and kept herald mono, logging
+  *"is a browser, and this phone allows only app.drawbridge.heraldmono"*;
+- unlocking and choosing *the allowed browsers* unhid Chrome immediately.
+
+herald does not come back on that emulator because it is user-installed and
+therefore uninstalled rather than hidden, and reinstalling it needs a network the
+emulator's own filter is blocking. **That path is the one still unverified**, and
+it is worth watching on the Moto: choose *no browser*, lock, then choose the
+allowed browsers, lock again, and herald should download and reappear.
+
+### drawbridge stopped deciding the default browser
+
+The first build pinned herald as the web-link handler and grew a picker to let a
+parent change it. Both are gone, and the reason is worth keeping: the only Device
+Owner API for a default handler keeps its activity *"even if the intent
+preferences are reset"*. It is built to be un-overridable — right for a kiosk,
+wrong for a recommendation — so "herald is the default" and "you can change it
+the normal way" could not both be true. Android's own chooser and
+Settings → Default apps do the job, and `releaseDefaultBrowser` clears any claim
+on every policy application so phones updating from the pinning build are freed.
+
+herald is therefore not pre-selected; it is one entry in the chooser. Under
+*herald mono only* and *no browser* that is moot, there being nothing to choose
+between.
+
+**One older bug surfaced and was then made moot.** `resolveBrowserActivity` used
+a plain query, and a persistent preferred activity makes the platform answer that
+filter with the preferred activity alone — so it could only ever resolve the
+browser that was already the default, and changing it failed silently. It had
+been that way since it was written, never exercised because herald was the only
+answer anything asked for. Deleted with the pinning. The shape is the familiar
+one for this file: correct code that could not work, behind a call nobody had
+reason to make.
+
+---
+
+## The configuration screen got shorter, and removal got narrower
+
+**2026-08-15, and the second half is a behaviour change rather than a tidy-up.**
+
+### The paragraphs moved behind ⓘ — the policy's and the options', not all of them
+
+Every policy card and every option row carried an explanatory paragraph, and
+they were good paragraphs — the policy's own words, translated with the
+document. They were also about 1,600 characters on screen at once, above the
+Lock button. **It took eight swipes to reach that button; it now takes three**,
+with the policy, all four options and the button on one screen.
+
+Nothing was cut. The name and the "who this is for" line stay on the card, and
+the paragraph is one tap away. An option with nothing to say gets no button
+rather than an empty dialog.
+
+**The three disconnect philosophies keep their text on the card**, which was a
+correction on the way through: they moved behind ⓘ first, and the owner's call
+was that they should not have. They cost almost nothing — one short line each
+rather than a paragraph — and unlike a policy or an option the name alone does
+not carry the meaning. *Curfew for the internet* does not say the clock gets
+locked; *always blissfully offline* does not say calls and SMS still work. That
+is the sentence somebody needs in front of them while choosing, not one tap
+away. They have their own `item_disconnect.xml` now rather than borrowing the
+policy card's layout, because the two have genuinely diverged.
+
+### Three symbols, and the third was a proposal
+
+A lotus for *always blissfully offline*, a crescent for *curfew*, and — where
+there was nothing obvious — a **robot whose body is a plug** for *sadly always
+online*. Three earlier candidates went: a sun pairs neatly with the crescent but
+reads as *daytime*, which is the curfew's subject rather than this one's; an
+open drawbridge was the thematic answer and sits too close to the app's own icon
+at 24dp; and a globe, which shipped for one round and said "the whole internet,
+all the time" without saying anything about how that feels — which is what the
+option's own name, *sadly* always online, is getting at.
+
+**The robot and the plug are one shape rather than two.** A head, a cord and a
+plug is three small elements at 24dp and reads as clutter; merged, it is a face
+on two prongs, which says *only works while plugged in* in one glance. It is
+deliberately not the Android droid silhouette — that is Google's mark — but a
+rounded box with an aerial.
+
+**The lotus took three attempts and the first two failed identically**, which is
+worth recording because the diagnosis was not obvious: both drew the outer
+shapes as broad blades sweeping outward and *downward* from a stem, which is
+exactly what foliage looks like, so both read as a sprout. A lotus is a fan of
+narrow petals, each pointed, all the same length, all radiating from one point
+and all tipped *upward*. It is now one petal drawn once and rotated five times
+about the base, so the symmetry is exact rather than eyeballed.
+
+They sit on the title's line rather than beside the card. Centred against the
+whole text block, the symbol landed level with the *description* instead, which
+is the difference between "the lotus one" and "a lotus somewhere over there".
+
+**The one thing to be careful with is the policy card**, which is itself
+tappable and selects a policy. The ⓘ takes its own click, so the touch never
+reaches the card — watched on the emulator by tapping the info button on the
+*unselected* Curfew card and confirming its radio stayed empty.
+
+### The age is a shield now, and it is drawn rather than borrowed
+
+"Allow Telegram  18+" became a filled shield with the age in it, banded
+**yellow (14+) → orange (16+) → purple-pink (18+)**, with *various ages* taking
+the same orange as 16+. A number in running text is something to read; a coloured
+shield is something to recognise, which is what somebody scanning four options is
+doing.
+
+**There is no red band, and its absence is the finding.** The middle band was red
+for a round, and red against purple-pink was two dark warm shields that looked
+alike at exactly the distance these get looked at. Moving the middle to orange
+opened the gap between all three. *Various ages* shares that orange rather than
+having its own: what separates it from a 14+ is the glyph — an exclamation mark
+against a number — not the hue. The shields keep the `+`, because "18" alone
+reads as *at* that age and the point is that it is a floor.
+
+**The label colour is per band, and yellow is the reason.** A yellow dark enough
+for white text is a mustard, which is not what anyone means by yellow, so that
+shield takes near-black text and the other three take white — which is what
+every rating system with a yellow does. Contrast was measured rather than
+eyeballed: 9.9:1 for near-black on yellow, and 4.6:1 to 7.4:1 for white on the
+others. In dark mode the fills lighten and the labels flip to near-black, except
+the yellow, which is already bright and is deliberately identical in both themes.
+
+**The policy card carries one too, as of policy 57.** Its age used to live inside
+the subtitle as "(+14)", spelled three different ways across the translations —
+the one number somebody compares policies by, buried mid-sentence. `Profile`
+gained `recommended_age`, the parenthesis came out of all three subtitles, and
+both card types now go through one binder.
+
+**They are not PEGI, Kijkwijzer or the Parental Advisory label, deliberately.**
+Those are licensed marks and they mean *those bodies graded this content* —
+none of them has been near WhatsApp or Telegram on anyone's behalf, and the
+footnote under these very options says the ages come from pediatricians,
+psychologists and neurologists. A borrowed badge would have contradicted it
+without a word being written. The shield is a shield because this app is named
+after a castle gate.
+
+**The streaming shield reads "various ages"** — an exclamation mark on an orange
+shield, with the words in its content description. That wording was itself a
+correction: it said *parental advisory* first, which is a registered mark and a
+recognisable look. "Various ages" says the true thing — one switch covers fifty
+services and a service carries children's films and adult drama through the same
+app — and cannot be mistaken for anyone's label. It takes its own step between the yellow
+and the red, because "various" is neither a 14 nor an adult rating; what really
+marks it out is the glyph.
+
+Policy 56 adds `various_ages` to a policy option to carry it; the field is
+optional and defaults to false, so a build reading the document without it is
+unaffected. `PolicyOptionTest` asserts it parses under the document's own
+spelling, because a mismatched `@SerialName` would leave it false on every phone
+and the shield would simply never appear — the same silent shape as the Shorts
+rewrite that shipped twice without running.
+
+### The policy moved to the top, and one sentence stopped needing a list
+
+The screen ran Language → Welcome → *the filter sentence* → Disconnect → Policy →
+Options. The sentence was stranded: it sat at the very top describing controls
+three sections away, so it had to name every one of them.
+
+**Policy is first now, with that sentence directly beneath it.** The old ordering
+put the disconnect philosophy above the policy on the reasoning that whether the
+phone reaches the web at all is the larger question — true, and beside the point
+once the sentence has to live somewhere. The policy is also the one thing on this
+screen that acts immediately, which is what lets the sentence say two things in
+the right order and in half the words:
+
+> The web filter is already running, and apps this policy does not allow are
+> removed as soon as they appear. The other options below only take effect after
+> the lock.
+
+Read top to bottom, the screen now explains itself: the part that is already
+working, then everything that waits.
+
+### Removal narrowed: only what a switch could change waits for the lock
+
+The rule was "everything except browsers waits for the lock". It is now:
+
+| | Removed while unlocked? |
+|---|---|
+| Browsers | **Yes** — a way around a DNS-only filter, not one more app |
+| What an **option** covers — WhatsApp, Telegram, YouTube, streaming | **No.** Waits for the lock |
+| Everything else the policy blocks | **Yes**, as of today |
+
+**Why.** The old rule meant an unlocked phone slowly refilled with exactly the
+apps drawbridge was installed to remove. Somebody installs this *because* they
+want social media off the phone; there is no second question there. What is
+still an open question is what an option covers — the phone arrives with every
+option off, and taking an app away from a parent halfway through deciding to
+allow it is the taunt the unlock window exists to prevent. That asymmetry is
+real rather than theoretical: `restoreNowAllowed` can unhide a *preinstalled*
+app when its option comes on, but nothing reinstalls one that was uninstalled.
+
+**The window before the first lock is untouched.** It is a separate gate and it
+is what lets a parent move bookmarks and data across — the reason drawbridge
+needs no factory reset. Nothing is removed before the first lock, browsers
+included. This was the fork worth being explicit about: "immediately after
+installing" would have meant taking a parent's own Instagram before they had
+exported anything, which is the complaint that produced the lock gate in the
+first place on 2026-08-12.
+
+**Watched on the emulator, both halves, on an unlocked phone that had been
+locked once:**
+
+- installing a package on `blocked_packages` that no option covers →
+  `Removing …: on the blocked package list` and gone within seconds;
+- installing one an option covers, with the option off → no log line at all, and
+  the app still there.
+
+The screen stopped claiming otherwise: the line above the controls now says the
+filter is running *and* the policy's apps go as they appear, while the options
+and the disconnect setting land at the lock. A policy change toasts "applied"
+rather than "applied after lock", because by then it has.
+
+---
+
+## Policy 55: Ecosia is out, and the rule it broke is worth keeping
+
+**2026-08-15.** Nothing was wrong with the engine. Ecosia honours `safesearch=2`,
+and herald's `SafeSearch` put that parameter back on every load, so **inside
+herald it really was forced**. It is gone because that is all it ever was.
+
+**herald is not the only browser on the phone.** Chrome, Firefox Focus and
+Vivaldi are allowed too, and in any of them ecosia.org was ordinary unfiltered
+search with nothing to rewrite it — no safe hostname exists to point DNS at, so
+the filter could not reach it and the parameter reached only the browser that
+writes it. A parent choosing Chrome got an unfiltered search engine on a phone
+that says it filters search.
+
+**The general rule, which is the part to keep:** an engine is only as forced as
+its *weakest* browser. Google, Bing and DuckDuckGo survive that test because a
+DNS rewrite reaches every browser on the device; Kagi survives it because it
+filters logged-out with nothing to turn off. A URL parameter is not in that
+class, and Ecosia was the only engine that rested on one.
+
+It went the way Brave, Startpage and Qwant went on 2026-08-10, in one policy:
+
+- out of `browser.search_engines` and out of herald's `SearchEngineCatalogue`;
+- **`ecosia.org` added to `dist/lists/search.txt`** — dropping an engine from the
+  browser never made it unreachable, which is the whole reason that list exists.
+  This also stops the Ecosia app, which talks to `api.ecosia.org`;
+- **`com.ecosia.android` out of `allowed_browser_packages` and into
+  `blocked_packages`**, so it is removed like every other browser that is not
+  allowed. Removing it from the allowed list alone would have done it — the
+  blocker takes any browser the policy does not name — but naming it matches how
+  Opera, Aloha, UC and Tor are handled;
+- the `SafeSearch` rule deleted rather than left to sit. A rewrite rule for a
+  domain the same policy blocks can never fire, and this project has already
+  shipped one release whose entire content was a rule that never ran.
+
+**One thing was found on the way, and it is older than this change.**
+`Policy.searchEngines` — the compiled-in default, used when a document omits the
+field — still named Brave Search, Qwant and Startpage nine days after they were
+dropped, plus Ecosia. That default is not inert: `SearchEngineCatalogue.apply`
+*hides* every engine the list does not name, so on a phone falling back to it a
+locale bundling one of those four would have kept it, unforced. It now matches
+the shipped list. Both earlier removals updated every list but this one.
+
+**Not verified on a handset.** The policy is signed and sits in `dist/` on this
+branch; no phone has polled it. What to watch for when one does: Ecosia gone
+from herald's engine list, ecosia.org showing the block page, and the Ecosia app
+removed at the next lock.
+
+---
+
+## "Calls and SMS only" now says what it excludes
+
+**2026-08-15, and it is a wording fix with one open question behind it.** The
+offline mode's copy said the phone can still *call and text (no RCS)*. The RCS
+half was right — RCS is SIP and HTTP over the ordinary data connection, so a
+lockdown that drops every non-DNS packet stops it registering at all, and
+Messages reports it unavailable.
+
+**MMS was the gap.** It is IP as well, over a dedicated APN, which sounds like an
+exemption and is not: the only carve-out `setAlwaysOnVpnPackage` accepts is a
+list of package names. So **picture messages and group messages do not go
+through either** — and since MMS is exactly what RCS falls back to for those,
+both halves go rather than one degrading into the other. "Text" was doing a lot
+of work in a sentence read by someone whose phone does not distinguish the three.
+
+Now stated in all three languages on the website, in
+`disconnect_offline_description` on the configuration screen where the mode is
+actually chosen, and reasoned out in
+[design-decisions](design-decisions.md#what-survives-it-calls-and-sms-and-that-is-the-whole-list).
+The owner's note, which belongs with it: MMS is being sunset market by market as
+RCS replaces it, so this is a shrinking loss rather than a growing one.
+
+**The open question, and it is one photo long.** The MMS claim is reasoning from
+the mechanism, not something a handset has been asked — Android's DPC
+documentation names no telephony carve-out from lockdown, but that is an absence
+of evidence. An emulator has no carrier to test it with. **Send a photo message
+from the Moto during a curfew.** If it goes through, the copy above is wrong in
+the generous direction and should be corrected again.
+
+The same paragraph carries a second unverified claim, in the other direction:
+Wi-Fi calling is reported to bypass Android VPNs rather than ride inside them, so
+a phone with poor coverage may still be able to call over Wi-Fi while offline.
+That would support the promise rather than undermine it, and it is worth knowing
+which way it goes on real hardware.
+
+---
+
 ## Read this first: two channels, and which is which
 
 | | `main` (the alpha) | `dev` |
 |---|---|---|
-| drawbridge | 0.2.7, build 18 | **0.2.8, build 27** |
+| drawbridge | 0.2.7, build 18 | **0.2.8, build 28** |
 | herald | 0.1.9 | **0.1.13** |
-| policy | **50** | **54** |
+| policy | **50** | **58** |
 | install page | <https://drawbridge-project.pages.dev/install/usb/> | <https://dev.drawbridge-project.pages.dev/install/usb/> |
 | provisioned devices | the owner's Nothing Phone (A059) | the Moto G15 |
 
@@ -63,9 +520,9 @@ still broken".
 |---|---|
 | Repo | https://github.com/Nilss3/drawbridge — public, `main` + `dev` |
 | Alpha | **[v0.2.7](https://github.com/Nilss3/drawbridge/releases/tag/v0.2.7)** is what testers install, from `main`. [v0.2.5](https://github.com/Nilss3/drawbridge/releases/tag/v0.2.5) stays **latest** because `required_apps` resolves herald through it |
-| Dev | **v0.2.8-dev.4**: drawbridge build 27, herald 0.1.13, policy 54. Pre-release, not latest |
+| Dev | **drawbridge build 28, herald 0.1.13, policy 58**, served from the dev site. herald is unchanged since v0.2.8-dev.4, whose versioned URLs `required_apps` still names |
 | Devices | Two managed phones: the Moto G15 on dev, and the owner's **Nothing Phone A059** on the alpha since 2026-08-13 |
-| Tests | **522** unit tests across four build variants, lint clean |
+| Tests | **574** unit tests across four build variants, lint clean |
 | Website | trilingual, generated into `site/`, both channels served from Cloudflare Pages |
 
 **herald is no longer frozen.** It sat at 0.1.9 from 2026-08-10 to 2026-08-13
@@ -124,8 +581,10 @@ documents the state drawbridge is meant to reach at public beta: a long-form
 video streaming option, the browser choice (herald, herald mono only, or no
 browser at all), and the app-install lock behind "only certain apps". The app
 catches up step by step, and **the first step landed the same day**: policy 52
-adds the `streaming` option, so of the three the page promises, one is real and
-two are not. Browser choice and the install lock are still only on the website.
+adds the `streaming` option. **Two of the three are now real** — the browser
+chooser was built on 2026-08-15, see the section at the top of this file — and
+the app-install lock behind "only certain apps" is the one still only on the
+website.
 
 So a gap between that page and a dev handset is the expected state, not a bug to
 go and fix, and this is another reason the two sites must not converge: `main`
@@ -287,7 +746,9 @@ all, on the reasoning that the radio moving was feedback enough — which is tru
 about the radio and wrong about the phone: a tick that moves says the app heard
 you, not that anything changed.
 
-**And the YouTube regression is open, with the instrumentation to close it.** The
+**And the YouTube regression is open, with the instrumentation to close it.**
+*(Diagnosed the next day and fixed on 2026-08-15 — see the section at the top of
+this file. The instrumentation below is what found it.)* The
 owner reported that switching *Allow YouTube* off and locking left
 `com.google.android.youtube` on the Moto while `com.google.android.apps.youtube.music`
 went, both preinstalled. It does not reproduce on the emulator: both hide, and
@@ -3005,9 +3466,11 @@ is worth remembering for anything else of this shape.
   [SafeSearch.kt](../herald/src/main/java/app/drawbridge/herald/search/SafeSearch.kt)
   says to change the two together, and nobody has. Small, and exactly the drift
   this project keeps finding.
-- **Ecosia rests entirely on a parameter herald puts back**, with no DNS rewrite
-  behind it, so an in-page second search may not be enforced. Untested since
-  2026-08-10 and still the one-page test described in that file.
+- ~~**Ecosia rests entirely on a parameter herald puts back**, with no DNS
+  rewrite behind it, so an in-page second search may not be enforced.~~
+  **Closed on 2026-08-15 by dropping the engine** — see the Ecosia section at the
+  top of this file. The in-page gap was the smaller half of it: the parameter
+  reached only herald, and the policy allows three other browsers.
 - **The tail is not closeable.** Anyone can run a SearXNG instance in five
   minutes. See [blocklist-notes](blocklist-notes.md) for what was left out and
   why — public instances, AI search, archive sites, the translate proxy.

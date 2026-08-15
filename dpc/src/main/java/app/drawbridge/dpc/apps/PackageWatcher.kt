@@ -43,10 +43,22 @@ class PackageWatcher(context: Context) {
     private val receiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             if (intent.action != Intent.ACTION_PACKAGE_ADDED) return
-            // A replace is an update of something already present, which was
-            // already evaluated when it was first installed.
-            if (intent.getBooleanExtra(Intent.EXTRA_REPLACING, false)) return
 
+            // **Updates are evaluated too, and used to be skipped.** The reason
+            // for skipping them was that a replace is an update of something
+            // already present, which was evaluated when it was first installed —
+            // true, and it assumes the evaluation *stuck*. That is the assumption
+            // this class keeps being wrong about. An OEM preload service that
+            // reinstalls a blocked app hands it back with its hidden flag
+            // cleared, and this is the broadcast that says so; skipping it left
+            // the app usable until the fifteen-minute sweep noticed. It is what
+            // the Moto's YouTube looks like in `dumpsys`: reinstalled mid-testing
+            // by com.google.android.partnersetup, first install and last update
+            // the same minute.
+            //
+            // Evaluating an update costs a policy read and one intent query, and
+            // is idempotent for the overwhelmingly common case of an app policy
+            // has no opinion about.
             val packageName = intent.data?.schemeSpecificPart ?: return
             scope.launch {
                 val action = blocker.evaluate(packageName)

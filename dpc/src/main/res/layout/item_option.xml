@@ -1,39 +1,75 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-    One boolean option: a switch, its name with the recommended age beside it,
-    and a line saying what switching it on lets through.
+    One boolean option: its name, the age shield, an info button holding the
+    paragraph that says what switching it on lets through, and the switch.
+
+    The four shipped options carried about 1,400 characters of description
+    between them, all of it on screen at once and all of it above the Lock
+    button. See item_policy.xml for the reasoning; both moved on 2026-08-15.
+
+    The age moved the same day, from "Allow Telegram  18+" trailing the name to
+    the shield. A number in running text is something to read; a filled shield in
+    a colour band is something to recognise, which is what a parent scanning four
+    options actually does. See colors.xml for why it is drawn here rather than
+    borrowed.
 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="8dp"
+    android:layout_marginBottom="4dp"
+    android:gravity="center_vertical"
     android:orientation="horizontal"
-    android:paddingVertical="8dp">
+    android:paddingVertical="4dp">
 
-    <LinearLayout
+    <TextView
+        android:id="@+id/optionName"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
         android:layout_weight="1"
-        android:orientation="vertical">
+        android:textAppearance="?attr/textAppearanceTitleSmall" />
 
-        <TextView
-            android:id="@+id/optionName"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textAppearance="?attr/textAppearanceTitleSmall" />
+    <!-- Hidden entirely when the policy names neither an age nor `various_ages`,
+         rather than showing an empty shield. -->
+    <!-- 32dp rather than 30: "18+" is three characters, and the shield tapers,
+         so the glyph has less room than the box suggests. -->
+    <FrameLayout
+        android:id="@+id/optionRating"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_marginStart="8dp">
 
-        <TextView
-            android:id="@+id/optionDescription"
+        <ImageView
+            android:id="@+id/optionRatingShield"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingTop="2dp"
-            android:textAppearance="?attr/textAppearanceBodySmall" />
-    </LinearLayout>
+            android:layout_height="match_parent"
+            android:importantForAccessibility="no"
+            android:src="@drawable/ic_rating_shield" />
+
+        <!-- The shield's own contentDescription carries the meaning, so this is
+             decorative: a screen reader saying "18" after "recommended from age
+             18" is noise. -->
+        <TextView
+            android:id="@+id/optionRatingText"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:importantForAccessibility="no"
+            android:paddingBottom="3dp"
+            android:textColor="@color/rating_label"
+            android:textSize="10sp"
+            android:textStyle="bold" />
+    </FrameLayout>
+
+    <ImageButton
+        android:id="@+id/optionInfo"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:scaleType="center"
+        android:src="@drawable/ic_info" />
 
     <com.google.android.material.materialswitch.MaterialSwitch
         android:id="@+id/optionSwitch"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical" />
+        android:layout_height="wrap_content" />
 </LinearLayout>

@@ -2,16 +2,21 @@ package app.drawbridge.dpc.ui
 
 import android.app.TimePickerDialog
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Typeface
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.os.PowerManager
 import android.provider.Settings
 import android.text.format.DateFormat
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.Button
+import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.RadioButton
 import android.widget.ScrollView
@@ -20,6 +25,7 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import androidx.lifecycle.lifecycleScope
 import app.drawbridge.dpc.BuildConfig
@@ -28,6 +34,7 @@ import app.drawbridge.dpc.R
 import app.drawbridge.dpc.admin.DeviceOwnerManager
 import app.drawbridge.dpc.admin.ProvisioningLog
 import app.drawbridge.dpc.apps.AppBlocker
+import app.drawbridge.dpc.apps.BrowserSettings
 import app.drawbridge.dpc.curfew.CurfewController
 import app.drawbridge.dpc.curfew.DisconnectSettings
 import app.drawbridge.dpc.policy.SelectionProvider
@@ -67,12 +74,14 @@ class MainActivity : AppCompatActivity() {
     private val policy by lazy { DrawbridgeApplication.policy(this) }
 
     private val disconnect by lazy { DisconnectSettings(this) }
+    private val browsers by lazy { BrowserSettings(this) }
 
     private lateinit var updateNotice: View
     private lateinit var disconnectContainer: LinearLayout
     private lateinit var curfewSchedule: LinearLayout
     private lateinit var curfewWeekdayButton: Button
     private lateinit var curfewWeekendButton: Button
+    private lateinit var browserContainer: LinearLayout
     private lateinit var policyContainer: LinearLayout
     private lateinit var optionContainer: LinearLayout
     private lateinit var optionsExplanation: TextView
@@ -117,6 +126,7 @@ class MainActivity : AppCompatActivity() {
         curfewSchedule = findViewById(R.id.curfewSchedule)
         curfewWeekdayButton = findViewById(R.id.curfewWeekdayButton)
         curfewWeekendButton = findViewById(R.id.curfewWeekendButton)
+        browserContainer = findViewById(R.id.browserContainer)
         policyContainer = findViewById(R.id.policyContainer)
         optionContainer = findViewById(R.id.optionContainer)
         optionsExplanation = findViewById(R.id.optionsExplanation)
@@ -243,8 +253,157 @@ class MainActivity : AppCompatActivity() {
                 }
 
             renderDisconnect()
+            renderBrowsers()
             renderPolicies()
             renderOptions()
+        }
+    }
+
+    // --- Browser choice ------------------------------------------------------
+
+    /**
+     * How much browser this phone has: every sanctioned one, herald mono alone,
+     * or none.
+     *
+     * Device-local like the disconnect philosophy and for the same reason — the
+     * signed document says which browsers are *safe*, this says how many of the
+     * safe ones a household wants — so the words are string resources rather
+     * than the document's.
+     *
+     * **The description is the browser icons themselves**, drawn from the
+     * launcher icons of the browsers actually on this phone. "All the allowed
+     * browsers" is a claim to take on trust; four icons somebody recognises is
+     * the same claim, checkable, and it stays true when the policy's list changes
+     * without anyone rewriting a string.
+     */
+    private fun renderBrowsers() {
+        browserContainer.removeAllViews()
+        val current = browsers.choice
+        val policyDocument = policy.policy.value
+        val inflater = LayoutInflater.from(this)
+
+        for (choice in BrowserChoice.entries) {
+            val card = inflater.inflate(R.layout.item_browser, browserContainer, false)
+                as MaterialCardView
+            card.findViewById<TextView>(R.id.browserName).setText(choice.title)
+            card.bindInfo(
+                R.id.browserInfo,
+                title = getString(choice.title),
+                body = getString(choice.description),
+            )
+            card.bindBrowserIcons(
+                BrowserSettings.allowedBrowsers(policyDocument, choice.choice),
+            )
+            card.findViewById<RadioButton>(R.id.browserSelected).isChecked =
+                choice.choice == current
+            card.isChecked = choice.choice == current
+            card.setOnClickListener { selectBrowsers(choice.choice) }
+            browserContainer.addView(card)
+        }
+
+    }
+
+    /**
+     * One icon per browser the *policy* allows under this choice, or the
+     * prohibition sign when it allows none.
+     *
+     * **Every allowed browser, not merely the installed ones**, which is the
+     * distinction that matters and the one this got wrong first. The row answers
+     * "what does this choice allow" — a question about the policy — and a phone
+     * that happens not to have Vivaldi on it does not make Vivaldi any less
+     * allowed. Showing only what is installed made the answer depend on the
+     * device, so the same choice looked different on two phones and looked
+     * *smaller* than it is on a phone that had just had browsers removed by the
+     * choice above it.
+     *
+     * The pictures are static for the same reason — see [iconOf].
+     */
+    private fun View.bindBrowserIcons(packages: Set<String>) {
+        val row = findViewById<LinearLayout>(R.id.browserIcons)
+        row.removeAllViews()
+        row.contentDescription = getString(R.string.browser_icons_description)
+
+        if (packages.isEmpty()) {
+            row.addView(
+                browserIcon(ContextCompat.getDrawable(this@MainActivity, R.drawable.ic_no_browser)),
+            )
+            return
+        }
+        packages.sorted().forEach { row.addView(browserIcon(iconOf(it))) }
+    }
+
+    /**
+     * A browser's icon: a bundled picture, or a globe for one this build has
+     * never heard of.
+     *
+     * **Deliberately not the installed app's own launcher icon**, which is what
+     * this did first and is a worse idea for the reason the whole row exists.
+     * These illustrate the *policy's* list — they are pictures of products, not
+     * a report on the device — and reading them off the phone made the same
+     * choice look different on two handsets, themed icons and OEM restyling
+     * included. A phone is also perfectly capable of not having the app at all,
+     * which is the ordinary case for Vivaldi and Focus.
+     *
+     * Being a little out of date if a vendor rebrands is the whole cost, and it
+     * is a cost worth paying for a row that looks the same everywhere.
+     */
+    private fun iconOf(packageName: String): Drawable? =
+        ContextCompat.getDrawable(this, BUNDLED_BROWSER_ICONS[packageName] ?: FALLBACK_ICON)
+
+    private fun browserIcon(drawable: Drawable?): ImageView =
+        ImageView(this).apply {
+            setImageDrawable(drawable)
+            importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
+            val size = resources.getDimensionPixelSize(R.dimen.browser_icon)
+            layoutParams = LinearLayout.LayoutParams(size, size).apply { marginEnd = size / 4 }
+        }
+
+    /**
+     * Records the choice and reports where it lands.
+     *
+     * Nothing is removed here even though this screen can only be open while
+     * unlocked: a browser the *chooser* narrows away is a reversible preference,
+     * so it waits for the lock exactly as an option's apps do. See
+     * [AppBlocker.deferred].
+     *
+     * The default handler is applied straight away regardless, because it takes
+     * nothing away — it only decides which of the browsers already on the phone
+     * inherits a tapped link.
+     */
+    private fun selectBrowsers(choice: BrowserSettings.Choice) {
+        browsers.choice = choice
+        lifecycleScope.launch {
+            withContext(Dispatchers.IO) { restoreNewlyAllowed() }
+            toast(applied(getString(BrowserChoice.of(choice).title)))
+            renderBrowsers()
+        }
+    }
+
+    private enum class BrowserChoice(
+        val choice: BrowserSettings.Choice,
+        val title: Int,
+        val description: Int,
+    ) {
+        ALL(
+            BrowserSettings.Choice.ALL,
+            R.string.browser_all_name,
+            R.string.browser_all_description,
+        ),
+        MONO(
+            BrowserSettings.Choice.MONO_ONLY,
+            R.string.browser_mono_name,
+            R.string.browser_mono_description,
+        ),
+        NONE(
+            BrowserSettings.Choice.NONE,
+            R.string.browser_none_name,
+            R.string.browser_none_description,
+        ),
+        ;
+
+        companion object {
+            fun of(choice: BrowserSettings.Choice): BrowserChoice =
+                entries.first { it.choice == choice }
         }
     }
 
@@ -266,14 +425,18 @@ class MainActivity : AppCompatActivity() {
         val inflater = LayoutInflater.from(this)
 
         for (choice in DisconnectChoice.entries) {
-            val card = inflater.inflate(R.layout.item_policy, disconnectContainer, false)
+            val card = inflater.inflate(R.layout.item_disconnect, disconnectContainer, false)
                 as MaterialCardView
-            card.findViewById<TextView>(R.id.policyName).setText(choice.title)
-            // No subtitle: the policies use it for "who this is for", and these
-            // three are for everyone.
-            card.findViewById<TextView>(R.id.policySubtitle).visibility = View.GONE
-            card.findViewById<TextView>(R.id.policyDescription).setText(choice.description)
-            card.findViewById<RadioButton>(R.id.policySelected).isChecked = choice.mode == current
+            card.findViewById<TextView>(R.id.disconnectName).setText(choice.title)
+            // **These three keep their explanation on the card**, unlike the
+            // policy and the options. One short line each rather than a
+            // paragraph, and the name alone does not carry the meaning: "curfew
+            // for the internet" does not say the clock gets locked, and
+            // "blissfully offline" does not say calls and SMS still work.
+            card.findViewById<TextView>(R.id.disconnectDescription).setText(choice.description)
+            card.findViewById<ImageView>(R.id.disconnectSymbol).setImageResource(choice.symbol)
+            card.findViewById<RadioButton>(R.id.disconnectSelected).isChecked =
+                choice.mode == current
             card.isChecked = choice.mode == current
             card.setOnClickListener { selectDisconnect(choice.mode) }
             disconnectContainer.addView(card)
@@ -368,21 +531,25 @@ class MainActivity : AppCompatActivity() {
         val mode: DisconnectSettings.Mode,
         val title: Int,
         val description: Int,
+        val symbol: Int,
     ) {
         OFFLINE(
             DisconnectSettings.Mode.OFFLINE,
             R.string.disconnect_offline_name,
             R.string.disconnect_offline_description,
+            R.drawable.ic_disconnect_lotus,
         ),
         ONLINE(
             DisconnectSettings.Mode.ONLINE,
             R.string.disconnect_online_name,
             R.string.disconnect_online_description,
+            R.drawable.ic_disconnect_robot,
         ),
         CURFEW(
             DisconnectSettings.Mode.CURFEW,
             R.string.disconnect_curfew_name,
             R.string.disconnect_curfew_description,
+            R.drawable.ic_disconnect_moon,
         ),
     }
 
@@ -417,7 +584,20 @@ class MainActivity : AppCompatActivity() {
             // string resource, so they carry their translations with them.
             card.findViewById<TextView>(R.id.policyName).text = choice.displayName(language)
             card.bindOptionalText(R.id.policySubtitle, choice.displaySubtitle(language))
-            card.bindOptionalText(R.id.policyDescription, choice.displayDescription(language))
+            // The same shield the options carry. It used to be "(+14)" inside the
+            // subtitle sentence, spelled three different ways across the
+            // translations, which is the one number somebody compares profiles by.
+            card.bindRating(
+                R.id.policyRating,
+                R.id.policyRatingShield,
+                R.id.policyRatingText,
+                age = choice.recommendedAge,
+            )
+            card.bindInfo(
+                R.id.policyInfo,
+                title = choice.displayName(language),
+                body = choice.displayDescription(language),
+            )
             card.findViewById<RadioButton>(R.id.policySelected).isChecked = choice.id == selected
             card.isChecked = choice.id == selected
 
@@ -447,8 +627,19 @@ class MainActivity : AppCompatActivity() {
         for (option in options) {
             val row = inflater.inflate(R.layout.item_option, optionContainer, false)
 
-            row.findViewById<TextView>(R.id.optionName).text = label(option)
-            row.bindOptionalText(R.id.optionDescription, option.displayDescription(language))
+            row.findViewById<TextView>(R.id.optionName).text = option.displayName(language)
+            row.bindRating(
+                R.id.optionRating,
+                R.id.optionRatingShield,
+                R.id.optionRatingText,
+                age = option.recommendedAge,
+                variousAges = option.variousAges,
+            )
+            row.bindInfo(
+                R.id.optionInfo,
+                title = option.displayName(language),
+                body = option.displayDescription(language),
+            )
 
             val switch = row.findViewById<MaterialSwitch>(R.id.optionSwitch)
             // Checked before the listener is attached, so rendering the stored
@@ -459,11 +650,68 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    /** "Allow WhatsApp  14+" — the age sits with the name, not in the body text. */
-    private fun label(option: PolicyOption): String {
-        val name = option.displayName(Languages.current())
-        val age = option.recommendedAge ?: return name
-        return "$name  ${getString(R.string.option_recommended_age, age)}"
+    /**
+     * The shield beside an option: its recommended age, or an advisory mark for
+     * an option that has no single age.
+     *
+     * **It used to be "Allow Telegram  18+", trailing the name in running
+     * text.** A number in a sentence is something to read; a filled shield in a
+     * colour band is something to recognise, which is what somebody scanning
+     * four options is actually doing. Same information, one glance instead of
+     * one reading.
+     *
+     * **Drawn rather than borrowed, and that is a claim as much as a design
+     * choice** — see colors.xml. PEGI, Kijkwijzer and the Parental Advisory
+     * label are licensed marks that mean *those* bodies graded *this* content,
+     * and none of them has been near WhatsApp or Telegram on anyone's behalf.
+     * The footnote under these options already says where the ages come from,
+     * and a borrowed badge would contradict it without a word being written.
+     *
+     * The bands are advice, so they are deliberately coarse: under 16, 16 and
+     * 17, and 18 or over. An option carrying neither an age nor an advisory gets
+     * no shield rather than an empty one.
+     */
+    private fun View.bindRating(
+        containerId: Int,
+        shieldId: Int,
+        textId: Int,
+        age: Int?,
+        variousAges: Boolean = false,
+    ) {
+        val shield = findViewById<View>(containerId)
+
+        // Fill and label together, because they are not independent: the yellow
+        // band is the one that cannot carry white text.
+        val (fill, label) = when {
+            age != null && age >= 18 -> R.color.rating_high to R.color.rating_label
+            age != null && age >= 16 -> R.color.rating_mid to R.color.rating_label
+            age != null -> R.color.rating_low to R.color.rating_label_dark
+            // The same orange as 16+, on purpose: these two are told apart by
+            // the glyph rather than the hue, and "various" is neither a 14 nor
+            // an adult rating.
+            variousAges -> R.color.rating_mid to R.color.rating_label
+            else -> {
+                shield.visibility = View.GONE
+                return
+            }
+        }
+
+        shield.visibility = View.VISIBLE
+        findViewById<ImageView>(shieldId)
+            .setColorFilter(ContextCompat.getColor(this@MainActivity, fill))
+        // "18+" rather than "18": the number alone reads as *at* that age, and
+        // the whole point is that it is a floor. An exclamation mark where there
+        // is no single age to print — the shield says "look at this one" and the
+        // content description spells out what it means.
+        findViewById<TextView>(textId).apply {
+            text = if (age != null) getString(R.string.option_age_shield, age) else "!"
+            setTextColor(ContextCompat.getColor(this@MainActivity, label))
+        }
+        shield.contentDescription = if (age != null) {
+            getString(R.string.option_recommended_age_description, age)
+        } else {
+            getString(R.string.option_various_ages_description)
+        }
     }
 
     private fun placeholder(textId: Int): TextView =
@@ -476,6 +724,37 @@ class MainActivity : AppCompatActivity() {
         findViewById<TextView>(id).apply {
             this.text = text
             visibility = if (text.isBlank()) View.GONE else View.VISIBLE
+        }
+    }
+
+    /**
+     * Puts a policy's or an option's paragraph behind the ⓘ next to it.
+     *
+     * **The words are not cut, only moved** — they are the signed document's own
+     * explanation of what a choice does, they are translated with it, and a
+     * parent deciding between two policies needs them. What they were not worth
+     * is being on screen all at once: four options and a policy carried around
+     * 1,600 characters between them, above the Lock button, every time the screen
+     * opened.
+     *
+     * An option with nothing to say gets no button rather than an empty dialog,
+     * which is the same rule [bindOptionalText] applies to a missing subtitle.
+     */
+    private fun View.bindInfo(id: Int, title: String, body: String) {
+        findViewById<ImageButton>(id).apply {
+            if (body.isBlank()) {
+                visibility = View.GONE
+                return
+            }
+            visibility = View.VISIBLE
+            contentDescription = getString(R.string.info_button_description, title)
+            setOnClickListener {
+                AlertDialog.Builder(this@MainActivity)
+                    .setTitle(title)
+                    .setMessage(body)
+                    .setPositiveButton(android.R.string.ok, null)
+                    .show()
+            }
         }
     }
 
@@ -582,13 +861,19 @@ class MainActivity : AppCompatActivity() {
             // the app sweep below runs against the policy that is actually in
             // force rather than the one being replaced.
             val selected = policy.selectProfile(choice.id)
-            if (selected) restoreNewlyAllowed()
-            val removed = if (selected) sweep() else 0
-            if (selected) SelectionProvider.notifyChanged(this@MainActivity)
+            if (selected) {
+                restoreNewlyAllowed()
+                // Real work again since 2026-08-15: the policy's own list acts
+                // whether the phone is locked or not, and this screen is the one
+                // place a parent changes that list.
+                Log.i(TAG, "Policy ${choice.id} applied; ${sweep()} packages removed")
+                SelectionProvider.notifyChanged(this@MainActivity)
+            }
 
             progress.dismiss()
             if (selected) {
-                toast(applied(choice.displayName(Languages.current())))
+                // Not "after lock": the removals this just did have happened.
+                toast(getString(R.string.change_applied, choice.displayName(Languages.current())))
             } else {
                 toast(getString(R.string.policy_apply_failed))
             }
@@ -620,40 +905,49 @@ class MainActivity : AppCompatActivity() {
             SelectionProvider.notifyChanged(this@MainActivity)
 
             // No blocklist changes with an option, so there is nothing to
-            // download and nothing to wait for — but an option turned *off*
-            // leaves an app on the device that policy no longer allows.
-            // An option switched *on* can un-block a package that is currently
-            // hidden, which is the half that used to need a reboot.
+            // download and nothing to wait for. An option switched *on* can
+            // un-block a package that is currently hidden, which is the half
+            // that used to need a reboot.
+            //
+            // An option switched *off* still takes nothing away here, and that
+            // is deliberate rather than left over: what an option covers is the
+            // one category that still waits for the lock, precisely because the
+            // parent may be mid-decision and an uninstall cannot be undone. The
+            // sweep runs anyway as reconciliation — it is what removes anything
+            // else that has drifted onto the phone — and the toast says where
+            // this particular change lands.
             if (enabled) restoreNewlyAllowed()
-            val removed = if (enabled) 0 else sweep()
+            Log.i(TAG, "Option ${option.id} set to $enabled; ${sweep()} packages removed")
             toast(applied(option.displayName(Languages.current())))
             renderOptions()
         }
     }
 
     /**
-     * Removes what the current selection no longer allows — which, from this
-     * screen, is now always nothing.
+     * Removes what the current selection no longer allows.
      *
-     * The configuration screen only exists while the phone is unlocked: before
-     * the first lock, or after the parent has spent their key. Removal is keyed
-     * on the lock, so a sweep started here declines every package and the honest
-     * thing to tell the parent is that their change lands when they lock.
+     * **The `isLocked` gate here is gone, as of 2026-08-15, and that is the
+     * point of the change rather than an oversight.** This screen only exists
+     * while the phone is unlocked, so a sweep from here used to decline every
+     * package by construction — which is why the count it returns had stopped
+     * meaning anything. Now the policy's own list acts in either state, so a
+     * sweep started here really does remove things, and the count is real again.
      *
-     * **The gate here used to be `protectedSince != 0`, and that was the bug.**
+     * What it still will not touch is anything an option covers: those wait for
+     * the lock, so switching *Allow WhatsApp* off on an unlocked phone changes
+     * the setting and takes nothing away until the parent locks. That is the
+     * distinction [R.string.settings_take_effect_at_lock] describes above the
+     * controls, and the reason the toast still speaks of the lock.
+     *
+     * **The gate before that one was `protectedSince != 0`, and it was a bug.**
      * It reads as "has ever been locked" and stays true forever afterwards, so
-     * unlocking never reopened the window it was supposed to protect. The draft
-     * behaviour it was written for — comparing two policies without having apps
-     * uninstalled by the act of looking — is now what happens at every unlock,
-     * not just before the first lock.
-     *
-     * The call is kept rather than deleted because it is the truthful place for
-     * the count to come from if the gate ever moves again.
+     * unlocking never reopened the window it was supposed to protect.
      */
-    private suspend fun sweep(): Int {
-        if (!parentKey.isLocked) return 0
-        return withContext(Dispatchers.IO) { AppBlocker(this@MainActivity).sweep().size }
-    }
+    private suspend fun sweep(): Int =
+        withContext(Dispatchers.IO) {
+            AppBlocker(this@MainActivity).sweep()
+                .count { it.value != AppBlocker.Action.FAILED }
+        }
 
     /**
      * Brings back anything the change just started allowing.
@@ -701,4 +995,39 @@ class MainActivity : AppCompatActivity() {
 
     private fun toast(message: String) =
         Toast.makeText(this, message, Toast.LENGTH_LONG).show()
+
+    private companion object {
+        const val TAG = "MainActivity"
+
+        /**
+         * A picture for each browser the policy allows.
+         *
+         * **Third-party marks, used to identify the products they belong to**,
+         * which is what a browser picker does and is a different thing from the
+         * rating shields — those are drawn here precisely *because* borrowing
+         * PEGI's mark would have claimed PEGI graded something. Naming Chrome
+         * with Chrome's icon claims only that this is Chrome, which is true.
+         *
+         * Provenance, since this is a public repository:
+         *
+         *  - `browser_chrome` — *Google Chrome icon (February 2022)*, Wikimedia
+         *    Commons. Google Chrome and its logo are trademarks of Google LLC.
+         *  - `browser_focus` — *Firefox Focus 2021 Icon*, Wikimedia Commons,
+         *    CC BY. Firefox Focus and its logo are trademarks of the Mozilla
+         *    Foundation.
+         *  - `browser_vivaldi` — *Vivaldi web browser logo*, Wikimedia Commons,
+         *    CC BY 4.0, attributed to Vivaldi Technologies.
+         *  - `browser_herald`, `browser_herald_mono` — this project's own,
+         *    downscaled from `site/assets/img/`.
+         */
+        val BUNDLED_BROWSER_ICONS = mapOf(
+            "app.drawbridge.herald" to R.drawable.browser_herald,
+            BrowserSettings.MONO_PACKAGE to R.drawable.browser_herald_mono,
+            "com.android.chrome" to R.drawable.browser_chrome,
+            "org.mozilla.focus" to R.drawable.browser_focus,
+            "com.vivaldi.browser" to R.drawable.browser_vivaldi,
+        )
+
+        val FALLBACK_ICON = R.drawable.ic_browser_generic
+    }
 }

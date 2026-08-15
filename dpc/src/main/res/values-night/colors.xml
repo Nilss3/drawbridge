@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    The age shield in dark mode, and the only colours that need a night
+    qualifier at all.
+
+    Everything else in this app reaches its dark values through themes.xml, which
+    picks a `*_night` colour per role. The shield cannot: a drawable tint is
+    applied from code against a plain `@color/`, with no theme attribute in
+    between, so the override has to live in a night-qualified file.
+
+    The fills lighten and the label flips to near-black, which is the same
+    inversion the primary button makes — a saturated fill that reads on cream
+    goes muddy on near-black, and white text on it stops being legible.
+
+    **`rating_low` and `rating_label_dark` are deliberately absent**, so they
+    inherit the light values. The yellow shield already carries dark text and is
+    already bright; lightening it further would only wash it out, and it is the
+    one band that looks the same in both themes.
+-->
+<resources>
+    <color name="rating_mid">#e9a06b</color>
+    <color name="rating_high">#e79ac8</color>
+    <color name="rating_label">#201914</color>
+</resources>

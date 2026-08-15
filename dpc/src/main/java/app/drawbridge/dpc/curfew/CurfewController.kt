@@ -27,6 +27,20 @@ import java.time.ZoneId
  * unaffected, and GPS and FM radio are receive-only — which is exactly the
  * "calls and SMS only" the offline mode promises.
  *
+ * **And "calls and SMS" is the literal list, which the screen used to leave
+ * implied.** The rule is about IP traffic from an app UID, so what survives is
+ * what never enters Android's IP stack: circuit-switched and VoLTE calls, and
+ * SMS on the signalling channel. **RCS and MMS do not survive**, and both are
+ * easy to read as "texting" — RCS is SIP and HTTP over the ordinary data
+ * connection, and MMS is IP over a dedicated APN, which sounds like an exemption
+ * and is not, since the only carve-out `setAlwaysOnVpnPackage` accepts is a list
+ * of package names. Picture messages and group messages are MMS rather than SMS,
+ * so they are the visible casualty, and RCS falling back to MMS means both
+ * halves go rather than one degrading into the other.
+ *
+ * The MMS half is reasoning rather than observation — no handset has been asked,
+ * and an emulator has no carrier to ask. See docs/design-decisions.md.
+ *
  * **Nothing is exempt, including drawbridge.** An earlier version of this kept
  * the DPC's own package out of the lockdown so it could still poll, on the
  * reasoning that a phone with no internet cannot hear about the policy that

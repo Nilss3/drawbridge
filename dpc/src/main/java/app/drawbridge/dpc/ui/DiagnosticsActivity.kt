@@ -18,6 +18,7 @@ import app.drawbridge.dpc.DrawbridgeApplication
 import app.drawbridge.dpc.R
 import app.drawbridge.dpc.admin.DeviceOwnerManager
 import app.drawbridge.dpc.admin.ProvisioningLog
+import app.drawbridge.dpc.apps.AppBlocker
 import app.drawbridge.dpc.curfew.DisconnectSettings
 import app.drawbridge.dpc.vpn.DnsFilterService
 import java.time.LocalDateTime
@@ -130,6 +131,30 @@ class DiagnosticsActivity : AppCompatActivity() {
             appendLine("next boundary:     ${disconnect.nextChangeAfter(now) ?: "(none)"}")
             appendLine("blocked packages:  ${policy.blockedPackages.size}")
             appendLine("browsers allowed:  ${policy.browserPackages.joinToString()}")
+
+            // What became of the blocklist on *this* phone, which no other line
+            // here or anywhere else on the device could say. On 2026-08-14 the
+            // owner reported the YouTube app still installed after its option was
+            // switched off and the phone locked, and answering "did the rule
+            // decline it, did the platform refuse it, or did something put it
+            // back" took a new build, a cable and an evening. `still usable`
+            // names it in one line.
+            //
+            // One caveat belongs with it: this screen only opens while the phone
+            // is unlocked, and an app installed during an unlock is legitimately
+            // still usable until the next lock. A *blocked* app listed here after
+            // a lock is the failure.
+            val standings = AppBlocker(this@DiagnosticsActivity).standings()
+            val counts = AppBlocker.Standing.entries.associateWith { standing ->
+                standings.values.count { it == standing }
+            }
+            appendLine(
+                "blocklist state:   " +
+                    counts.entries.joinToString { "${it.value} ${it.key.name.lowercase()}" },
+            )
+            val usable = standings.filterValues { it == AppBlocker.Standing.PRESENT }.keys
+            appendLine("still usable:      ${if (usable.isEmpty()) "(none)" else usable.size}")
+            usable.forEach { appendLine("  $it") }
             appendLine()
             appendLine("restrictions in force:")
             val restrictions = deviceOwner.activeRestrictions()

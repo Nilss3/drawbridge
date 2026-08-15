@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    One disconnect philosophy: a symbol, the name, and the line that says what it
+    does to the phone.
+
+    **These three keep their text on the card**, where the policy and the options
+    moved theirs behind an ⓘ on 2026-08-15. They are one short line each rather
+    than a paragraph, so they cost almost nothing in height — and unlike a policy
+    or an option, the name alone does not carry the meaning: "curfew for the
+    internet" does not say the clock gets locked, and "blissfully offline" does
+    not say calls and SMS still work. That is exactly the sentence somebody needs
+    before choosing.
+
+    Until then these reused item_policy.xml. They have their own layout now
+    because the two have diverged: no ⓘ here, a symbol instead, and a
+    description that stays.
+-->
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="12dp"
+    android:checkable="true"
+    app:cardElevation="0dp"
+    app:checkedIcon="@null"
+    app:strokeWidth="1dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="16dp">
+
+        <!-- The card is what is tapped; this only reports which one is chosen,
+             so it takes no touches of its own. -->
+        <RadioButton
+            android:id="@+id/disconnectSelected"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:clickable="false"
+            android:focusable="false" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <!-- The symbol sits on the title's line rather than beside the card,
+                 which is the difference between "the lotus one" and "a lotus
+                 somewhere over there". Centring it against the whole text block
+                 put it level with the description instead. -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <!-- Decorative: the name beside it says the same thing in words. -->
+                <ImageView
+                    android:id="@+id/disconnectSymbol"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_marginEnd="10dp"
+                    android:importantForAccessibility="no" />
+
+                <TextView
+                    android:id="@+id/disconnectName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?attr/textAppearanceTitleMedium" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/disconnectDescription"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="4dp"
+                android:textAppearance="?attr/textAppearanceBodySmall" />
+        </LinearLayout>
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

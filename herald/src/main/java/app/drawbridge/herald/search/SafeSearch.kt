@@ -23,16 +23,18 @@ package app.drawbridge.herald.search
  * produce a top-level navigation, so there is nothing to intercept. The first
  * load is enforced; an in-page search after it may not be.
  *
- * On a managed phone that reduces to **Ecosia alone**. Google, Bing and
- * DuckDuckGo are rewritten at the DNS layer, so an in-page search resolves to
- * the safe host like every other request, and Kagi needs no parameter at all.
- * Ecosia is the one engine here whose filtering rests entirely on a parameter
- * this file puts on.
+ * **On a managed phone that now reduces to nothing at all**, which is the point
+ * of the 2026-08-15 change. Google, Bing and DuckDuckGo are rewritten at the DNS
+ * layer, so an in-page search resolves to the safe host like every other
+ * request, and Kagi needs no parameter. Ecosia was the one engine whose
+ * filtering rested entirely on a parameter this file put on — and its rule is
+ * gone, because a rule that only works in one of the four browsers the policy
+ * allows was never protecting the phone. See [SearchEngineCatalogue].
  *
- * **Standalone herald is the wider case.** With no drawbridge behind it there is
- * no DNS rewrite, so all four parameter-carrying engines depend on the first
- * load — and only the first. Worth knowing before recommending the browser on
- * its own.
+ * **Standalone herald is the wider case, and the only one these rules still
+ * serve.** With no drawbridge behind it there is no DNS rewrite, so the three
+ * parameter-carrying engines depend on the first load — and only the first.
+ * Worth knowing before recommending the browser on its own.
  *
  * Untested either way as of 2026-08-10. The test is one page: search, then
  * search again from the engine's own box, and look at whether the address bar
@@ -43,8 +45,9 @@ package app.drawbridge.herald.search
  * filters rewrites the Cookie header and needs TLS interception, which this
  * project will not do. Startpage searches by POST on purpose, so there is no
  * parameter to set. Qwant documents one that reference implementations note is
- * not actually heeded. None of the three could be made honest, so none of them
- * are offered; see [SearchEngineCatalogue].
+ * not actually heeded. Ecosia followed them on 2026-08-15 for a different
+ * reason: its parameter *is* honoured, and forcing it here reached only herald.
+ * None of the four is offered; see [SearchEngineCatalogue].
  *
  * **Kagi carries no rule and is still safe**: logged out it filters explicit
  * results with no setting to turn that off, and turning it off needs a paid
@@ -64,7 +67,6 @@ object SafeSearch {
         Rule(::isGoogleSearchHost, mapOf("safe" to "active")),
         Rule(hostSuffix("bing.com"), mapOf("adlt" to "strict")),
         Rule(hostSuffix("duckduckgo.com"), mapOf("kp" to "1")),
-        Rule(hostSuffix("ecosia.org"), mapOf("safesearch" to "2")),
     )
 
     private data class Rule(val matches: (String) -> Boolean, val params: Map<String, String>)

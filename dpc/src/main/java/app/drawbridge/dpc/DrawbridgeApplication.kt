@@ -168,8 +168,16 @@ class DrawbridgeApplication : Application() {
             val appContext = context.applicationContext
             lockScope.launch {
                 runCatching { AppBlocker(appContext).sweep() }
-                    .onSuccess { removed ->
-                        Log.i(TAG, "Lock sweep removed ${removed.size} packages: ${removed.keys}")
+                    .onSuccess { actions ->
+                        // Counted apart, because they used to be counted
+                        // together and a sweep that failed on every package
+                        // reported the same number as one that removed them all.
+                        val failed = actions.filterValues { it == AppBlocker.Action.FAILED }.keys
+                        val handled = actions.keys - failed
+                        Log.i(TAG, "Lock sweep removed ${handled.size} packages: $handled")
+                        if (failed.isNotEmpty()) {
+                            Log.w(TAG, "Lock sweep could not remove ${failed.size}: $failed")
+                        }
                     }
                     .onFailure { Log.e(TAG, "Lock sweep failed", it) }
             }

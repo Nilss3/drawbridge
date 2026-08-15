@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Sadly always online: a robot whose body is a plug.
+
+    Two drafts preceded it. A globe said "the whole internet, all the time" and
+    said nothing about how that feels, which is what the option's own name —
+    *sadly* always online — is getting at. A sun would have paired with the
+    crescent and reads as daytime, which is the curfew's subject rather than
+    this one's.
+
+    **The head is a plug rather than the robot holding one**, because a head and
+    a separate plug joined by a cord is three small shapes at 24dp and reads as
+    clutter. Merging them leaves two prongs and a face, which is legible at that
+    size and says the thing in one glance: something that only works while it is
+    plugged in.
+
+    Deliberately not the Android robot. That silhouette is Google's mark, and
+    this one is a rounded box with an aerial — no antennae-and-dome head, no
+    droid body.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24"
+    android:tint="?attr/colorPrimary">
+
+    <!-- Aerial. -->
+    <path
+        android:fillColor="@android:color/white"
+        android:pathData="M11.3,3.6h1.4v3.2h-1.4z" />
+    <path
+        android:fillColor="@android:color/white"
+        android:pathData="M10.85,2.7a1.15,1.15 0 1,0 2.3,0a1.15,1.15 0 1,0 -2.3,0z" />
+
+    <!-- Head, with the eyes cut out of it rather than drawn over it. -->
+    <path
+        android:fillColor="@android:color/white"
+        android:fillType="evenOdd"
+        android:pathData="M7.5,6.6h9a2.5,2.5 0 0,1 2.5,2.5v4a2.5,2.5 0 0,1 -2.5,2.5h-9a2.5,2.5 0 0,1 -2.5,-2.5v-4a2.5,2.5 0 0,1 2.5,-2.5zM8.25,11.1a1.35,1.35 0 1,0 2.7,0a1.35,1.35 0 1,0 -2.7,0zM13.05,11.1a1.35,1.35 0 1,0 2.7,0a1.35,1.35 0 1,0 -2.7,0z" />
+
+    <!-- The prongs it stands on. -->
+    <path
+        android:fillColor="@android:color/white"
+        android:pathData="M9.0,15.6h1.7v3.7a0.85,0.85 0 0,1 -1.7,0z" />
+    <path
+        android:fillColor="@android:color/white"
+        android:pathData="M13.3,15.6h1.7v3.7a0.85,0.85 0 0,1 -1.7,0z" />
+</vector>

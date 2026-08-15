@@ -6,6 +6,7 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.util.Log
 import app.drawbridge.dpc.DrawbridgeApplication
+import app.drawbridge.dpc.apps.BrowserSettings
 import app.drawbridge.policy.model.AppUpdate
 import app.drawbridge.policy.net.Downloader
 import kotlinx.coroutines.Dispatchers
@@ -80,11 +81,28 @@ class AppInstaller(context: Context) {
      * left with no way to browse at all.
      */
     suspend fun installMissingRequiredApps(): Map<String, Result> = withContext(Dispatchers.IO) {
-        DrawbridgeApplication.policy(appContext).policy.value.requiredApps
+        val policy = DrawbridgeApplication.policy(appContext).policy.value
+        val allowedBrowsers =
+            BrowserSettings.allowedBrowsers(policy, BrowserSettings(appContext).choice)
+
+        policy.requiredApps
             .filter { it.matchesThisDevice() }
             // The per-ABI splits of one app all declare the same package name,
             // and only the device's own ABI survives the filter above.
             .distinctBy { it.packageName }
+            // **A browser the browser choice has narrowed away is not installed,
+            // and without this the phone would loop.** `required_apps` names
+            // herald, and herald is user-installed, so *no browser* uninstalls
+            // it at the lock — and then the next poll finds it missing and
+            // fetches 230 MB to put it back, for the lock after that to remove
+            // again. The choice has to be honoured at both ends or at neither.
+            //
+            // It also saves the download outright for a parent who picks *no
+            // browser* before their first lock, which is the point at which
+            // required apps are normally fetched.
+            .filterNot {
+                it.packageName in policy.browserPackages && it.packageName !in allowedBrowsers
+            }
             .filter { it.versionCode > versionCodeOf(it.packageName) }
             .associate { required ->
                 Log.i(TAG, "Installing required app ${required.packageName}")

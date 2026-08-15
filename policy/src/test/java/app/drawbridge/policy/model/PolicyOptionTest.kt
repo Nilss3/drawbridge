@@ -1,6 +1,8 @@
 package app.drawbridge.policy.model
 
+import kotlinx.serialization.json.Json
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -114,5 +116,48 @@ class PolicyOptionTest {
         val policy = base.copy(exemptPackages = listOf("com.whatsapp"))
 
         assertEquals(listOf("com.whatsapp"), policy.withOptions(setOf("whatsapp")).exemptPackages)
+    }
+
+    /**
+     * The shield an option shows comes from these two fields, and **the names in
+     * the document are the part that can fail silently.**
+     *
+     * A `@SerialName` that does not match the signed policy leaves the field at
+     * its default, which for `various_ages` is false — so the streaming option
+     * would simply show no shield, on every phone, looking exactly like a
+     * deliberate choice. That is the same shape as the Shorts rewrite that
+     * shipped twice while never running: correct code behind a name nothing ever
+     * matched. Parsing the document's own spelling is the only check that
+     * catches it.
+     */
+    @Test
+    fun `the shield fields are read under the names the signed document uses`() {
+        val json = """
+            {
+              "id": "streaming",
+              "name": "Allow long-form video streaming",
+              "various_ages": true
+            }
+        """.trimIndent()
+
+        val option = Json { ignoreUnknownKeys = true }.decodeFromString<PolicyOption>(json)
+
+        assertTrue("various_ages did not reach the model", option.variousAges)
+        assertNull("streaming carries no single age, which is the whole point", option.recommendedAge)
+    }
+
+    @Test
+    fun `an option with an age is not marked various, and one with neither is neither`() {
+        val json = Json { ignoreUnknownKeys = true }
+
+        val aged = json.decodeFromString<PolicyOption>(
+            """{"id":"telegram","name":"Allow Telegram","recommended_age":18}""",
+        )
+        assertEquals(18, aged.recommendedAge)
+        assertFalse("absent means false, so the shield shows the age", aged.variousAges)
+
+        val plain = json.decodeFromString<PolicyOption>("""{"id":"x","name":"X"}""")
+        assertNull(plain.recommendedAge)
+        assertFalse("neither field set means no shield at all", plain.variousAges)
     }
 }

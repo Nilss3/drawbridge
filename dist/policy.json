@@ -1,7 +1,7 @@
 {
-  "version": 54,
-  "issued_at": "2026-08-14T18:00:00Z",
-  "comment": "Policy 54, DEV CHANNEL ONLY. Points at drawbridge 0.2.8 build 27 and herald 0.1.13, both from v0.2.8-dev.4, a pre-release deliberately not flagged latest so main goes on resolving herald 0.1.9 through v0.2.5. Policy content is unchanged from 53, including the streaming category; only the two fields that name builds moved. What the builds fix: back on the key screen offered to seal the phone permanently with the key the parent had just declined to keep, and now simply returns to the configuration; herald no longer offers private tabs, which its tab tray could not distinguish from ordinary ones; every control on the configuration screen says \"applied after lock\" and a line above them says the web filter is already running. Build 27 also carries the logging needed to diagnose a reported case where the YouTube app survived a lock while YouTube Music did not.",
+  "version": 58,
+  "issued_at": "2026-08-16T00:00:00Z",
+  "comment": "Policy 58, DEV CHANNEL ONLY. Points at drawbridge 0.2.8 build 28; herald is unchanged at 0.1.13 from v0.2.8-dev.4, so required_apps still names those versioned URLs and the alpha goes on resolving herald 0.1.9 through v0.2.5. Policy content is 57's: Ecosia gone from the allowed browsers and blocked by name and by domain (55), `various_ages` on the streaming option (56), `recommended_age` on the default profile (57). What build 28 fixes: an app the platform refuses to hide is suspended instead and an uninstall it refuses falls through to the same ladder, so a blocked app cannot quietly survive a lock; the policy's own blocklist is enforced whether the phone is locked or not, leaving only the options and the browser choice waiting for the lock; and the configuration screen gains a browser policy chooser, age shields, and explanations behind info buttons.",
   "dns": {
     "upstreams": [
       "94.140.14.15",
@@ -70,7 +70,7 @@
       "url": "https://raw.githubusercontent.com/Nilss3/drawbridge/dev/dist/lists/search.txt",
       "format": "domains",
       "category": "search",
-      "sha256": "d1097eccb517005714c01538c71b67d2ba3bd5a4acf1461d5d7edb4af8d09c4a"
+      "sha256": "831c4fa3ef8968df11aa00a993109cb33a4ce16de09be7d66754a92629ccd700"
     },
     {
       "id": "streaming",
@@ -171,6 +171,7 @@
     "com.ea.game.simcitymobile_row",
     "com.ea.games.simsfreeplay_row",
     "com.ea.gp.fifamobile",
+    "com.ecosia.android",
     "com.elevenbitstudios.twommobile",
     "com.epicgames.fortnite",
     "com.epicgames.portal",
@@ -391,20 +392,21 @@
     {
       "id": "default",
       "name": "Default policy",
-      "subtitle": "Keeps out the toxic internet (+14)",
-      "description": "Access refused to adult sites, gambling, ads, algorithmic social media, harmful games and AI companions, as well as search engines other than Google, DuckDuckGo, Bing, Ecosia and Kagi. The rest of the internet is cautiously welcome.",
+      "subtitle": "Keeps out the toxic internet",
+      "description": "Access refused to adult sites, gambling, ads, algorithmic social media, harmful games and AI companions, as well as search engines other than Google, DuckDuckGo, Bing and Kagi. The rest of the internet is cautiously welcome.",
       "name_i18n": {
         "nl": "Standaardbeleid",
         "fr": "Politique par d\u00e9faut"
       },
       "subtitle_i18n": {
-        "nl": "Houdt het toxische internet buiten (+14)",
-        "fr": "Tient l'internet toxique \u00e0 distance (+14)"
+        "nl": "Houdt het toxische internet buiten",
+        "fr": "Tient l'internet toxique \u00e0 distance"
       },
       "description_i18n": {
-        "nl": "Toegang geweigerd tot pornosites, gokken, advertenties, algoritmische sociale media, schadelijke games en AI-gezelschapsapps, en ook tot andere zoekmachines dan Google, DuckDuckGo, Bing, Ecosia en Kagi. De rest van het internet is voorzichtig welkom.",
-        "fr": "Acc\u00e8s refus\u00e9 aux sites pornographiques, aux jeux d'argent, \u00e0 la publicit\u00e9, aux r\u00e9seaux sociaux algorithmiques, aux jeux nocifs et aux compagnons IA, ainsi qu'aux moteurs de recherche autres que Google, DuckDuckGo, Bing, Ecosia et Kagi. Le reste d'internet est prudemment le bienvenu."
-      }
+        "nl": "Toegang geweigerd tot pornosites, gokken, advertenties, algoritmische sociale media, schadelijke games en AI-gezelschapsapps, en ook tot andere zoekmachines dan Google, DuckDuckGo, Bing en Kagi. De rest van het internet is voorzichtig welkom.",
+        "fr": "Acc\u00e8s refus\u00e9 aux sites pornographiques, aux jeux d'argent, \u00e0 la publicit\u00e9, aux r\u00e9seaux sociaux algorithmiques, aux jeux nocifs et aux compagnons IA, ainsi qu'aux moteurs de recherche autres que Google, DuckDuckGo, Bing et Kagi. Le reste d'internet est prudemment le bienvenu."
+      },
+      "recommended_age": 14
     }
   ],
   "default_profile": "default",
@@ -680,7 +682,8 @@
       "description_i18n": {
         "nl": "Netflix, Prime Video, Disney+, HBO Max en een vijftigtal andere abonnementsdiensten voor video staan standaard uit, want een avond verdwijnt daarin even makkelijk als in een feed. Zet je dit aan, dan komen ze allemaal tegelijk terug, de apps en de websites. YouTube hoort hier niet bij: dat heeft zijn eigen optie, want een aanbevelingsfeed is iets anders dan een film waar je voor bent gaan zitten.",
         "fr": "Netflix, Prime Video, Disney+, HBO Max et une cinquantaine d'autres services vid\u00e9o par abonnement sont bloqu\u00e9s par d\u00e9faut, car une soir\u00e9e y dispara\u00eet aussi facilement que dans un fil d'actualit\u00e9. En activant ceci, ils reviennent tous d'un coup, les applications comme les sites. YouTube n'en fait pas partie : il a sa propre option, car un fil de recommandations n'est pas la m\u00eame chose qu'un film devant lequel on s'est install\u00e9."
-      }
+      },
+      "various_ages": true
     }
   ],
   "browser": {
@@ -689,7 +692,6 @@
       "DuckDuckGo",
       "Google",
       "Bing",
-      "Ecosia",
       "Kagi"
     ],
     "blocked_page_title": "Drawbridge opened",
@@ -699,9 +701,9 @@
   },
   "app_update": {
     "package_name": "app.drawbridge.dpc",
-    "version_code": 27,
-    "url": "https://dev.drawbridge-project.pages.dev/assets/dpc-ba1c3eb5f6a7f677.apk",
-    "sha256": "ba1c3eb5f6a7f6776e31e8f8fa14602ea3c57bd9d4a565b1b8f3dc80e2c840af"
+    "version_code": 28,
+    "url": "https://dev.drawbridge-project.pages.dev/assets/dpc-31614a0297d8e8e1.apk",
+    "sha256": "31614a0297d8e8e1d4862c59a249ed864708326b8ba88260c253a42af7c15be8"
   },
   "required_apps": [
     {
@@ -752,7 +754,6 @@
     "app.drawbridge.heraldmono",
     "com.android.chrome",
     "org.mozilla.focus",
-    "com.vivaldi.browser",
-    "com.ecosia.android"
+    "com.vivaldi.browser"
   ]
 }

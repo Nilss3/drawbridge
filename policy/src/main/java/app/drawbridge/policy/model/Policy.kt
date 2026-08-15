@@ -249,6 +249,28 @@ data class PolicyOption(
     @SerialName("recommended_age")
     val recommendedAge: Int? = null,
 
+    /**
+     * Marks an option that carries no single age because its content is not
+     * sorted by one. The screen shows *various ages* on its shield instead of a
+     * number.
+     *
+     * The streaming catalogue is the case it exists for: one switch covers fifty
+     * services, and a service carries children's films and adult drama through
+     * the same app. Any number printed on that would be a number somebody made
+     * up.
+     *
+     * **The wording is deliberate and was changed on the way in.** The first
+     * draft said *parental advisory*, which is a phrase the RIAA has a
+     * registered mark on and a look people recognise; borrowing either the
+     * words or the black-label styling invites a confusion nobody here wants,
+     * and "various ages" says the true thing more plainly anyway.
+     *
+     * Ignored when [recommendedAge] is set, since an age is the more specific
+     * statement of the two.
+     */
+    @SerialName("various_ages")
+    val variousAges: Boolean = false,
+
     /** Whether this is on before anyone has been asked. */
     @SerialName("default_enabled")
     val defaultEnabled: Boolean = false,
@@ -311,6 +333,18 @@ data class Profile(
 
     /** The paragraph under both, spelling out what the profile actually does. */
     val description: String = "",
+
+    /**
+     * The age this profile is usually reckoned suitable from, shown on a shield
+     * beside its name — the same shield an option carries, for the same reason.
+     *
+     * It used to be written into [subtitle] as "(+14)", in three languages, which
+     * meant the one number a parent compares profiles by was buried in the middle
+     * of a sentence and spelled differently in each of them. Advice rather than
+     * enforcement, exactly as [PolicyOption.recommendedAge] is.
+     */
+    @SerialName("recommended_age")
+    val recommendedAge: Int? = null,
 
     /**
      * Translations of [name], keyed by two-letter language code.
@@ -444,17 +478,23 @@ data class BrowserPolicy(
      * engine's hostname at the DNS layer, and only Google, Bing and DuckDuckGo
      * publish a hostname to rewrite to. The rest serve image results from their
      * own CDN, which no domain blocklist covers, which is why Yandex and Baidu
-     * are absent rather than merely unselected.
+     * are absent rather than merely unselected. Kagi is here because it filters
+     * when logged out and offers nothing to turn that off.
+     *
+     * **This default had gone stale, and it fails in the dangerous direction.**
+     * It still named Brave Search, Qwant and Startpage — dropped on 2026-08-10
+     * for safe search that cannot be forced — and Ecosia, dropped on 2026-08-15
+     * because its parameter only ever worked inside herald. `SearchEngineCatalogue`
+     * *hides* every engine this list does not name, so a stale name here is not
+     * inert: on a phone whose policy omits the field, a locale that bundles one
+     * of those four would have kept it, unforced. The four were removed from
+     * every other list at the time and this one was missed both times.
      */
     @SerialName("search_engines")
     val searchEngines: List<String> = listOf(
         "DuckDuckGo",
         "Google",
         "Bing",
-        "Brave Search",
-        "Qwant",
-        "Ecosia",
-        "Startpage",
         "Kagi",
     ),
 

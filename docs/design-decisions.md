@@ -98,6 +98,46 @@ expressible thing is exempting particular apps, which is not the same request an
 would leak on every transport rather than one. Asked for on 2026-08-12 and not
 built, because it cannot be.
 
+### What survives it: calls and SMS, and that is the whole list
+
+The lockdown is a rule about IP traffic leaving an app, so **what survives is
+what never enters Android's IP stack at all.**
+
+- **Voice calls survive.** Circuit-switched calls never touch it, and VoLTE runs
+  in the modem's IMS stack on its own bearer rather than as an app socket.
+- **SMS survives**, for the same reason: it rides the signalling channel, or IMS
+  when the carrier does SMS-over-IMS. Either way the Android networking stack
+  never sees it, so neither does the tunnel.
+- **RCS does not.** It is SIP and HTTP over the ordinary data connection, from an
+  ordinary app UID — nothing about it is carrier signalling. With no route out it
+  cannot even register, so the phone reports RCS as unavailable and Google
+  Messages falls back to SMS or MMS.
+- **MMS does not either**, and this is the one that surprises people. MMS goes
+  over a dedicated APN, which sounds like an exemption and is not: it is still IP
+  through the Android stack from an app UID, and the only exemption
+  `setAlwaysOnVpnPackage` accepts is a list of package names. So picture messages
+  and **group messages** — which are MMS, not SMS — do not go through.
+
+The last one is worth saying out loud because it compounds: the RCS fallback for
+exactly those messages *is* MMS, so both halves are gone rather than one
+degrading into the other. It is a smaller loss than it looks — MMS is being sunset
+in market after market as RCS replaces it — but a parent should hear it before
+choosing the mode rather than discover it from a photo that never arrives.
+
+**Verified and not.** The first two are mechanism, not observation, and match
+what every always-on VPN does. The MMS claim is reasoning from the same
+mechanism: Android's DPC documentation names no telephony carve-out from
+lockdown, and the package allowlist is the only documented bypass — but **it has
+not been tried on a handset**, and the emulator has no carrier to try it with.
+One photo sent during a curfew settles it.
+
+**One thing may survive that arguably should not: Wi-Fi calling.** VoWiFi builds
+its own IPsec tunnel to the carrier's ePDG, and it is reported to bypass Android
+VPNs rather than ride inside them. If that holds here, a phone with poor cell
+coverage can still make calls over Wi-Fi while offline — which supports the
+promise on screen rather than undermining it, since the promise is about the
+internet rather than about the telephone. Also unverified.
+
 ### The radios stay on, and the reason is asymmetry
 
 **Raised and rejected on 2026-08-12.** The suggestion was to switch Wi-Fi and
@@ -393,10 +433,10 @@ choice is theirs and the policy stops overriding it.
 ## The policy names the engines; the user picks among them
 
 `browser.search_engines` decides which engines exist, and herald hides everything
-else — including whatever the phone's locale brought in. Engines Mozilla does not
-bundle (Brave, Startpage, Kagi) or bundles only for some locales (Ecosia, Qwant)
-are added by herald as custom engines with their own URL templates, so the list
-does not change when the phone travels.
+else — including whatever the phone's locale brought in. An engine Mozilla does
+not bundle — Kagi is the only one left on the list — is added by herald as a
+custom engine with its own URL template, so the list does not change when the
+phone travels.
 
 There is deliberately no in-app "add a search engine" button. It would be a way
 to reach an unfiltered engine from inside the browser, which is the same reason
@@ -1077,11 +1117,149 @@ moment the key is committed, which is what makes the window close properly rathe
 than fifteen minutes later — and it cannot be left to the watcher, whose own
 startup sweep runs from `lockDevice`, on a phone that is not locked yet.
 
-The configuration screen follows from this rather than needing its own rule: it
-only exists while the phone is unlocked, so choosing a policy or ticking an
-option records the choice and removes nothing. It now says so — the toast reads
-"applied, anything it removes goes when you lock the phone" instead of counting
-zero removals.
+## The browser choice narrows the policy, and can only narrow it
+
+**Built 2026-08-15, having been promised on the website first.** Three choices:
+every browser the policy sanctions, herald mono alone, or none at all.
+
+**Device-local, like the disconnect philosophy and for the same reason.** The
+signed document says which browsers are *safe* — the ones carrying no in-browser
+proxy and no secure DNS of their own — and this says how many of the safe ones a
+household wants. A document signed by this project's key cannot know that
+somebody is struggling with browsing itself.
+
+`BrowserSettings.allowedBrowsers` **intersects** with the document rather than
+naming packages outright, so the two compose instead of competing: if a policy
+ever stopped sanctioning herald mono, *only herald mono* would allow nothing
+rather than quietly out-ranking the document. Narrowing is the only direction
+available.
+
+### The icons are the description, and they are the policy's list rather than the phone's
+
+Each choice shows the icons of the browsers it allows. That is not decoration
+standing in for a sentence — it *is* the sentence, and a better one: "all the
+allowed browsers" is a claim to take on trust, five icons somebody recognises is
+the same claim, checkable at a glance.
+
+**They come from the policy's list, not from what happens to be installed**,
+which was the first version and was wrong. The row answers *what does this choice
+allow* — a question about the document — and a phone without Vivaldi on it does
+not make Vivaldi any less allowed. Reading only installed apps made the same
+choice look different on two phones, and look *smaller* than it is on a phone
+whose browsers the choice above had just removed.
+
+So each icon resolves in descending order of how true it is: the installed app's
+own launcher icon, then a bundled copy, then a globe. The third rung matters
+because the map is keyed by package name while the allowed list is a signed
+document that changes without an app update — a browser added tomorrow gets the
+globe rather than leaving a hole in a row whose whole job is being complete.
+
+**On the bundled third-party marks.** They identify the products they belong to,
+which is what any browser picker does, and it is a different act from the rating
+shields — those are drawn in-house precisely *because* borrowing PEGI's mark
+would have asserted that PEGI graded something. Naming Chrome with Chrome's icon
+asserts only that this is Chrome. Provenance is recorded beside the map in
+`MainActivity`: Chrome, Firefox Focus and Vivaldi logos from Wikimedia Commons,
+CC BY where the file carries a licence, each a trademark of its owner; herald's
+two are this project's own, downscaled from `site/assets/img/`. Five files,
+about 15 KB in total.
+
+### It waits for the lock, and a browser the policy never allowed does not
+
+The rule is not "browsers wait too". A browser the **policy** never sanctioned —
+Opera, with its in-browser proxy over 443 — is a hole in a DNS-only filter and
+goes whether the phone is locked or not. A browser the **parent** narrowed away
+with this chooser is a reversible preference, and it lands at the lock like an
+option's apps do, for the same reason: they may be mid-decision, and for a
+user-installed browser an uninstall is permanent.
+
+Coming back works the way it does for options. A preinstalled browser is
+*hidden*, so widening the choice unhides it — immediately, since restoring only
+ever adds. herald is user-installed and therefore *uninstalled*, so it comes back
+the way it arrived: `required_apps` fetches it at the next lock.
+
+**That last part needed a guard, and without it the phone would loop.**
+`required_apps` names herald; *no browser* uninstalls it at the lock; the next
+poll finds it missing and pulls 230 MB to put it back, for the following lock to
+remove again. `AppInstaller.installMissingRequiredApps` now skips a required app
+that is a browser the current choice excludes. The choice has to be honoured at
+both ends or at neither.
+
+### drawbridge does not decide the default browser at all
+
+The first build of this pinned herald as the web-link handler with
+`addPersistentPreferredActivity`, and grew its own default-browser picker to let
+a parent change it. Both are gone.
+
+**The API is the wrong tool for a recommendation.** It is documented to keep its
+activity as the default *"even if the intent preferences are reset"* — built to
+be un-overridable, which is right for a kiosk and wrong here. The intention was
+only ever "herald is what we suggest"; what it produced was a phone whose link
+handler could not be changed from Settings, and then a second question-asking
+control inside drawbridge to work around drawbridge.
+
+So the platform behaves normally: the first tapped link brings up Android's own
+chooser with every allowed browser in it, *always* makes one the default, and
+Settings → Default apps changes it later. `releaseDefaultBrowser` runs on every
+policy application and clears any claim — which matters for phones updating from
+a build that pinned, since nothing else would ever release it.
+
+**The cost, stated plainly:** herald is not pre-selected. It is one entry in the
+chooser rather than the answer. Under *herald mono only* and *no browser* this
+is moot, because there is nothing to choose between.
+
+**One bug found and fixed on the way, then made moot.** `resolveBrowserActivity`
+used a plain `queryIntentActivities`, and a persistent preferred activity makes
+the platform answer that filter with the preferred activity alone — so the
+method could only ever resolve the browser that was *already* the default, and
+changing it failed silently with "Browser … is not installed" in the log. It had
+been that way since it was written and was never exercised, because herald was
+the only answer anything asked for. The method is deleted along with the pinning;
+the shape of the mistake is the part worth keeping.
+
+### Narrowed on 2026-08-15: only what a switch could change waits
+
+**The rule above said "everything except browsers waits for the lock", and that
+was too much.** Its reasoning — an unlock is a window, and a window that deletes
+what you put in it is not a window — is right about the things a parent is still
+deciding on. It is wrong about the rest, and the cost showed as a phone that
+slowly refilled, during every unlock, with precisely the apps drawbridge had been
+installed to remove. Somebody installs this *because* they want social media off
+the phone. There is no second question there to leave open.
+
+So removal now splits three ways rather than two:
+
+| | Removed while unlocked? |
+|---|---|
+| Browsers | **Yes** — a browser is a way around a DNS-only filter, not one more app |
+| Anything an **option** covers — WhatsApp, Telegram, YouTube, the streaming catalogue | **No.** Waits for the lock |
+| Everything else the policy blocks | **Yes**, as of 2026-08-15 |
+
+**Why an option is the line, and not, say, "user-installed".** An option is a
+question the parent answers with a switch, and they may not have answered it
+yet — the phone arrives with every option off. Taking an app away from somebody
+halfway through deciding to allow it is the same taunt the window exists to
+prevent, and it is worse than it sounds because it is not symmetrical:
+`restoreNowAllowed` can unhide a *preinstalled* app when the option comes on, but
+nothing reinstalls one that was uninstalled. The policy's own list carries no
+such question, so it needs no such grace.
+
+`AppBlocker.optionGoverned` reads the packages from **every** option rather than
+the enabled ones, which looks wrong and is not: an option that is *on* never
+reaches the rule, because its packages are exempt and `isProtected` declines them
+first. The set is only ever consulted for options that are off — the ones a
+parent might still switch on.
+
+**The window before the first lock is untouched.** That is a separate gate, and
+it is what lets a parent move bookmarks and data across; it is the reason
+drawbridge does not need a factory reset. Nothing is removed before the first
+lock, browsers included.
+
+The configuration screen no longer follows from the rule for free. It only exists
+while the phone is unlocked, so it used to be able to say one thing about
+everything on it — that changes land at the lock. Now a policy change removes
+apps as it is made and an option change does not, so the line above the controls
+says which is which, and the two toasts differ.
 
 **The confirmation in front of switching an *option* off is gone**, deleted
 rather than reworded, because rewording left it with nothing to say. It warned
