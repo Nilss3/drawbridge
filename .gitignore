@@ -19,3 +19,4 @@ dist/release/*.apk
 
 # Debug APKs staged by tools/stage-release.sh; never published.
 dist/debug/
+tools/.app-ratings-cache.json

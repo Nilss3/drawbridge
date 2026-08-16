@@ -8,8 +8,13 @@ It exists because of the finding in
 [handoff](handoff.md#policy-59-the-ai-companion-category-was-open-on-the-play-store-side):
 policy 59 added twenty-two AI companion apps by hand, and the category grows
 weekly. A curated list is a filter for a phone whose app store is wide open, and
-the list will always trail. The fix has to be a *rule*, with the list carrying
-only what the rule misses.
+the list will always trail.
+
+**Read the measurement under *Curated lists stay* before believing the headline.**
+The rule catches about a third of the apps a Play search turns up in this
+category, not most of them — publishers self-rate, and a great many apps named
+*AI Girlfriend* are rated PEGI 3. The curated list is not replaced by any of
+this; it is fed faster and triaged better.
 
 ---
 
@@ -231,6 +236,41 @@ same failure as the pre-2026-08-15 log nobody could read.
 Chatbots are **blocked by default and restorable by one option**, in the shape
 the streaming option already has.
 
+**The option is a named list, and the rating rule contributes nothing to it.**
+Measured 2026-08-16, in Belgium:
+
+| App | Rating | Category |
+|---|---|---|
+| Copilot `com.microsoft.copilot` | PEGI 3 | PRODUCTIVITY |
+| Meta AI `com.facebook.stella` | PEGI 3 | PRODUCTIVITY |
+| Pi `ai.inflection.pi` | PEGI 3 | LIFESTYLE |
+| ChatGPT `com.openai.chatgpt` | Parental guidance | PRODUCTIVITY |
+| Claude `com.anthropic.claude` | Parental guidance | PRODUCTIVITY |
+| Gemini `com.google.android.apps.bard` | Parental guidance | PRODUCTIVITY |
+| Perplexity `ai.perplexity.app.android` | Parental guidance | PRODUCTIVITY |
+| DeepSeek `com.deepseek.chat` | Parental guidance | PRODUCTIVITY |
+| Le Chat `ai.mistral.chat` | Parental guidance | PRODUCTIVITY |
+| Grok `ai.x.grok` | **PEGI 18** | PRODUCTIVITY |
+| Character.AI `ai.character.app` | **PEGI 18** | ENTERTAINMENT |
+| Chai `com.Beauchamp.Messenger.external` | **PEGI 18** | ENTERTAINMENT |
+
+Nine of the twelve are PEGI 3 or *Parental guidance*, so **branch 7 lets every
+mainstream chatbot through** and each has to be named on `blocked_packages` for
+the default to be "blocked". The category is no help either: nine are
+`PRODUCTIVITY`, filed with Outlook and Google Drive. Only the three that are
+really companions — Grok, Character.AI, Chai — are caught by the rating.
+
+That settles what the toggle is for. It is not a convenience on top of a rule
+that already blocks these; it *is* the rule for this category, and the rating
+gate is irrelevant to it.
+
+**Three ids could not be confirmed and are deliberately not in the table above** —
+Poe, Talkie and Genspark were guessed and all three 404. Talkie in particular is a
+large companion app and its id needs finding before the list is written. This is
+the discovery problem in miniature, and the reason the `tools/` script comes
+first: a lookup answers *tell me about this id*, and what is actually missing is
+*what is this app called*.
+
 - `dist/lists/chatbots.txt` — the domains, blocked in the DNS filter and
   therefore in every browser including herald.
 - `blocked_packages` — the app ids.
@@ -243,11 +283,16 @@ the streaming option already has.
 is deliberately absent from both `allowed_domains` and `exempt_packages`, so the
 toggle cannot restore it.
 
-**That creates a signing constraint worth stating before it bites.** The mirror
-check compares a list against its option, so Grok's domains cannot sit in
-`chatbots.txt` — the check would demand they be restorable, which is the one
-thing they must not be. Grok's domains go in a separate list with no option
-behind it; `ai-companions.txt` already has that shape.
+**Grok's domains go in `ai-companions.txt`, not `chatbots.txt`**, and that is a
+constraint rather than a preference. The mirror check compares a list against its
+option, so a domain in `chatbots.txt` must be restorable by the toggle — which is
+the one thing Grok's must not be. `ai-companions.txt` already has the right shape:
+no option behind it, nothing to mirror. It is also where Grok belongs on the
+merits (owner's call, 2026-08-16).
+
+Measured 2026-08-16: **Grok is PEGI 18**, so branch 7 blocks it without the list
+being consulted at all. The blocklist entry stays anyway — it is what keeps the
+answer true if a future policy widens `allowed_ratings`.
 
 Blocked in the web filter *as well as* by package is the point, and the reason is
 the one policy 55 established for Ecosia: an app id stops the app, and only a
@@ -294,9 +339,38 @@ naming by hand:
 | CRUSH: AI Romance × Otome | `xyz.passion.crushai` | Parental guidance |
 | zeta: AI Chat, Story, Play | `com.scatterlab.messenger` | Parental guidance |
 
-The list stops growing weekly, which is the whole gain: a new companion app now
-has to be mis-rated PEGI 3 *and* filed outside Entertainment-adjacent categories
-to get through, and most are not.
+**That claim was written before the rule was run against the long tail, and the
+long tail corrected it.** `tools/app-ratings.py search "ai girlfriend" "ai
+companion chat"` returned 35 candidate ids that are not on the blocklist, and the
+rule's verdict on them was **12 keep, 10 neutral, 13 remove** — 37%, against the
+68% the twenty-two apps above suggested.
+
+The difference is a selection effect worth naming: policy 59's twenty-two are
+apps the owner *found on a phone*, which skews to the prominent and monetised
+ones, and those rate themselves higher. The long tail does not. **Ashley:
+American Ai Girlfriend** and **HerStory: AI Girlfriend** are PEGI 3. **AI
+Girlfriend – Idolchat**, **Sammi: AI Girlfriend** and **Vexy – AI Girlfriend
+Chat** are *Parental guidance*, so they fall through to branch 8 and survive on
+any phone without the install lock.
+
+**So the list does not stop growing, and this spec should not promise that it
+will.** What the rule does is dispatch a third of the arrivals without a human
+looking, and rank the rest. That is worth having and it is not the same claim.
+
+The half that actually attacks *"this cannot be kept up with"* turns out to be
+**search, not rating**. Two query terms surfaced 35 unlisted candidates in a few
+seconds, one of them (`AIKO: AI Girlfriend 3D Game`) caught only by the
+`GAME_SIMULATION` category rule. The workflow the tooling supports is therefore
+curation *accelerated*, not curation *replaced*:
+
+1. `search` harvests candidate ids for a set of terms;
+2. the rule triages them — the `remove` verdicts need no thought;
+3. a human reads the survivors and accepts or rejects, under policy 59's standing
+   rule that the listing title must be the app it claims to be;
+4. what is accepted joins `blocked_packages`.
+
+Which also means the `search` command is not a convenience wrapped around the
+real feature. It is closer to being the feature.
 
 **Allowlist.** New, and needed because of branch 7: Strava, Audible, Spotify,
 Netflix, Zoom, eBay and RTBF Auvio are *Parental guidance*, so they fall through
@@ -311,12 +385,6 @@ remove one, and it cannot override `isProtected`.
 
 ## What is not decided
 
-- **Where the chatbot toggle's app ids come from.** ChatGPT, Claude, Gemini and
-  Copilot are general-purpose tools rather than companions, and their ratings have
-  not been checked. If they are PEGI 3 they pass branch 7 anyway and the toggle is
-  only about whether the household wants them; if they are *Parental guidance*
-  they fall through to branch 8 and the toggle is doing real work. **Measure
-  before writing the option.**
 - **The games threshold has one soft edge.** `GAME_*` blocks the lot, including
   the ones a small child might legitimately have. That is the owner's call as of
   2026-08-16 — no toggle, block them — and it is recorded here as a decision
