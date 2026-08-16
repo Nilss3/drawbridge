@@ -1365,21 +1365,50 @@ only brings back what the *policy* names.
 Nothing is lost by the limit. This setting exists because of the Play Store, and
 a preinstalled app was on the phone when the parent locked it.
 
-### Two layers, because only one of them is certain
+### There is no prevention layer, and the platform is the reason
 
-**Prevention** is `DISALLOW_INSTALL_APPS` in `DeviceOwnerManager.restrictionsFor`,
-keyed on the lock exactly as `DISALLOW_DEBUGGING_FEATURES` is — installing
-something is the main thing a parent unlocks the phone *to do* — and additionally
-on the household's own switch, since it is the only restriction here that is off
-by default.
+It shipped with one for exactly one build. `DISALLOW_INSTALL_APPS` in
+`DeviceOwnerManager.restrictionsFor`, keyed on the lock like
+`DISALLOW_DEBUGGING_FEATURES`, was to stop a new app arriving at all — with the
+closed set behind it, deliberately built to give the promised semantics whatever
+the restriction turned out to do.
 
-**Enforcement** is the closed set, and it gives the promised semantics whatever
-the restriction turns out to do. Whether the platform lets Play Store *updates*
-through `DISALLOW_INSTALL_APPS` has not been checked on a handset; Google's EMM
-API keeps update behaviour in a separate field, which points the right way, but
-that is AMAPI's wording rather than a promise about the AOSP restriction on a
-sideloaded DPC. Building the second layer independently of the answer is what
-lets the feature ship before a phone can be got hold of.
+**It turned out to block Play Store updates as well, and that killed it.**
+Measured on the owner's Moto G15 on 2026-08-16: with the restriction in force, an
+attempt to update Bitwarden was refused, Play's install activity opening and
+closing again in 57 milliseconds. The restriction is checked in
+`PackageInstaller.createSession`, and an update is an ordinary session there — the
+platform draws no distinction at that point between a new package and a
+replacement. **No AOSP user restriction expresses *no new apps, updates fine*.**
+
+Blocking updates is worse than the prevention was good, which is what made this a
+same-day fix rather than a parameter to tune: it freezes security patches for
+every app on the phone, and the app that surfaced it was a password manager.
+
+So the closed set carries the feature alone. A Play install succeeds, then
+`PackageWatcher` uninstalls anything outside the snapshot within seconds, with the
+fifteen-minute sweep as the backstop. What is lost is only the difference between
+*refused* and *removed a moment later*.
+
+**`DISALLOW_INSTALL_UNKNOWN_SOURCES` was considered and declined.** The snapshot
+catches a sideloaded package exactly as it catches a Play install, so it would
+change *when* rather than *whether* — and adding a second restriction on an
+untested assumption, immediately after the neighbouring one behaved differently
+from the assumption made about it, is the mistake this section exists to record.
+
+The gap that leaves, stated rather than closed: Android requires a matching
+signature to *update* an installed app, but nothing stops uninstalling one and
+sideloading a differently-signed build under the same package name, which the
+snapshot allows because the name is in the set. That is an adversary with an
+APK-patching toolchain rather than a child.
+
+**The retirement mattered as much as the removal.** `applyUserRestrictions`
+computes what to *clear* from `MANAGED_RESTRICTIONS`, so dropping an entry from
+that list stops it being set on new devices and never takes it off one that
+already carries it. The restriction moved to `RETIRED_RESTRICTIONS` instead —
+the same mechanism that un-did `DISALLOW_FACTORY_RESET` — or every phone that
+locked once under build 29 would have been left unable to update anything, for
+good, with nothing on the device able to reach it.
 
 ### drawbridge's own installs are the half that can strand a phone
 
@@ -1396,13 +1425,11 @@ browser for good:
    the lock re-takes the snapshot from the packages actually on the phone, does
    not find herald, and writes the name straight back out. `closeTheInstalledSet`
    unions the installed packages with whatever drawbridge has in flight.
-3. **The restriction stands down for the length of the install.** A Device Owner
-   is expected to be exempt from `DISALLOW_INSTALL_APPS`; that is unverified, and
-   the thing depending on it is a browser that cannot otherwise come back. So it
-   is lifted rather than trusted, and put back by the install's own result
-   broadcast — not by a `finally`, because `commit` returns long before the
-   package lands. Every existing re-assert path (process start, boot, lock,
-   unlock) is the backstop if that broadcast is lost.
+3. ~~**The restriction stands down for the length of the install.**~~ Gone with
+   the restriction itself, one build later. It existed because a Device Owner was
+   only *expected* to be exempt from `DISALLOW_INSTALL_APPS`, and the thing
+   depending on that was a browser that could not otherwise come back. The
+   in-flight set it was built on survives, because point 2 above needs it.
 
 Belt and braces on top of all three: herald is an *allowed browser*, so
 `isProtected` declines it before the install-lock branch is reached at all. The

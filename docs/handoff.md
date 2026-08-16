@@ -236,8 +236,9 @@ because what it got wrong is more useful than what it got right.
   wrong snapshot is invisible from every other angle — a phone that evicts the
   parent's new app and one that lets a stranger's stay look identical from the
   outside.
-- **548 → 588 tests**: twenty new cases, which is forty because dpc's suite runs
-  in both its variants. Lint warnings unchanged, count for count.
+- **548 → 584 tests**: eighteen new cases, which is thirty-six because dpc's
+  suite runs in both its variants. Build 29 added twenty; build 30 took two back
+  out with the restriction they covered. Lint warnings unchanged, count for count.
 
   **That is a different baseline from the 574 this file has been claiming**, and
   the 574 does not reproduce: `./gradlew clean test` on the commit before this
@@ -303,27 +304,107 @@ browser and no way back short of the key — so it is over-defended on purpose:
 Only the first is specific to browsers. The other three are what make the rule
 right for **any** required app, including ones no policy names yet.
 
-### What needs the Moto
+### The Moto answered, and layer 1 is gone — 2026-08-16, build 30
 
-**Shipped as build 29, policy 60, `dpc-0f45a23a895fb552.apk`**, on the dev site.
-herald did not move, so its `required_apps` pins are untouched and the only thing
-a phone will fetch is drawbridge itself.
+**Build 29 shipped both layers. Build 30 removes one of them, on evidence from
+the handset the same evening.** The open question below — *does
+`DISALLOW_INSTALL_APPS` let a Play Store update through* — is answered: **no.**
 
-Nothing here has been on a handset. The emulator shows the mechanism but neither
-of the two questions worth asking, because both are about the platform:
+The owner switched the install lock on, locked, and tried to update **Bitwarden**
+from the Play Store. It was refused. The platform's own log carries the whole
+thing:
 
-1. **Does `DISALLOW_INSTALL_APPS` let a Play Store update through?** Switch the
-   install lock on, lock, then force an update of an installed app. If it does,
-   both layers agree and the restriction is carrying real weight. If it does not,
-   the promise is still kept — the app updates whenever the restriction is off,
-   and layer 2 was never going to stop it — but `install_lock_description` would
-   need to say so, and that is a correction rather than a nicety.
-2. **Does herald come back on a locked phone?** *No browser*, lock, unlock, *the
+```
+17:23:19  Changing user restriction no_install_apps to: true   caller: app.drawbridge.dpc
+17:24:58  com.android.vending/…MultiInstallActivity  START … finish 57 ms  app-request
+17:25:27  Changing user restriction no_install_apps to: false  caller: app.drawbridge.dpc
+```
+
+The update attempt sits squarely inside the window where the restriction was on,
+and Play's install activity opened and closed again in 57 milliseconds.
+
+**The cause is structural rather than a flag being wrong.** The restriction is
+checked in `PackageInstaller.createSession`, and a Play Store update is an
+ordinary session — the platform draws no distinction there between a new package
+and a replacement. So **no AOSP user restriction can express *no new apps,
+updates fine***, and this one could not deliver the promise at any setting.
+
+**It is a worse failure than it first sounds**, which is why it was fixed the
+same evening rather than tuned: blocking updates freezes security patches for
+every app on the phone, and the app that surfaced it was a password manager.
+
+#### What build 30 does
+
+- **`DISALLOW_INSTALL_APPS` moves to `RETIRED_RESTRICTIONS`**, not merely out of
+  `MANAGED_RESTRICTIONS`. That distinction is the whole fix: `applyUserRestrictions`
+  computes what to *clear* from the managed list, so an entry only dropped from
+  it stops being set on new devices and is never taken off one that already has
+  it. Any phone that locked once under build 29 would have been left unable to
+  update anything, permanently, with nothing on the device able to reach it. It
+  is now cleared on every apply — every process start on a locked phone.
+- **The closed set carries the install lock alone**, which is what the
+  specification's own contingency said it would have to. Behaviour: a Play
+  install succeeds, `PackageWatcher` sees `ACTION_PACKAGE_ADDED` and uninstalls
+  anything outside the snapshot within seconds; the fifteen-minute sweep is the
+  backstop. Updates are untouched by construction — an update never adds a
+  package name that was not already there.
+- **The restriction-lifting machinery around drawbridge's own installs is gone
+  with it.** `DeviceOwnerManager.allowOwnInstalls` / `ownInstallFinished` existed
+  only to work around the restriction. What survives is
+  `InstallLockSettings.beginOwnInstall` / `endOwnInstall`, because the in-flight
+  set has a second job that outlives layer 1: `closeTheInstalledSet` counts a
+  still-downloading package as present, so a lock landing mid-download cannot
+  evict herald.
+- **`DISALLOW_INSTALL_UNKNOWN_SOURCES` was considered and declined**, on the
+  owner's call. The snapshot catches a sideloaded package exactly as it catches a
+  Play install, so the restriction would change *when* rather than *whether* —
+  and adding a second restriction on an untested assumption, immediately after
+  the neighbouring one behaved differently than assumed, is the mistake this
+  section is about.
+
+#### What the log also proved, on the way past
+
+**The snapshot half works on hardware.** Both locks recorded it correctly:
+
+```
+17:19:37  AppBlocker: Install lock: sealed the phone with 294 packages on it
+17:19:38  DrawbridgeApplication: Lock sweep removed 0 packages: []
+17:23:19  AppBlocker: Install lock: sealed the phone with 294 packages on it
+17:23:20  DrawbridgeApplication: Lock sweep removed 0 packages: []
+```
+
+**And the enforcement half still has not run**, which is the irony worth
+recording: both sweeps removed nothing because layer 1 was preventing anything
+from ever reaching layer 2. Removing layer 1 is what will finally exercise it.
+
+#### One gap, recorded rather than closed
+
+Android requires a matching signature to *update* an installed app, but nothing
+stops uninstalling one and sideloading a differently-signed build under the same
+package name — the snapshot allows it, because the name is in the set. That is an
+adversary with an APK-patching toolchain rather than a child, and it is outside
+drawbridge's threat model. `DISALLOW_INSTALL_UNKNOWN_SOURCES` would close it if
+that ever changes.
+
+### What still needs the Moto
+
+**Build 30 is `dpc-ad41902ebeeeeef8.apk`, policy 61.** herald did not move, so its
+`required_apps` pins are untouched and the only thing a phone fetches is
+drawbridge itself.
+
+1. **Confirm updates work again.** Install the lock, lock, update any app from
+   the Play Store. This is the regression that build 30 exists for, and it is one
+   tap.
+2. **Watch the closed set actually remove something** — the half that has never
+   run. With the install lock on and the phone locked, install anything from the
+   Play Store and watch it disappear within seconds. Diagnostics shows the set
+   size; a package that stays put is the failure.
+3. **Does herald come back on a locked phone?** *No browser*, lock, unlock, *the
    allowed browsers*, lock again — with the install lock **on**. This exercises
-   all four defences above at once, and it is the failure that strands a phone
-   rather than merely annoying it. Diagnostics answers it without a cable:
-   `installed set` should grow, and herald should neither appear under `still
-   usable` nor vanish after arriving.
+   the three surviving herald defences at once, and it is the failure that
+   strands a phone rather than merely annoying it. `installed set` should grow,
+   and herald should neither appear under `still usable` nor vanish after
+   arriving.
 
 Item 3 in *What to do on the Moto* at the top of this file is the same herald
 test **without** the install lock, and it is still unrun. Do that one first: a
@@ -763,9 +844,9 @@ which way it goes on real hardware.
 
 | | `main` (the alpha) | `dev` |
 |---|---|---|
-| drawbridge | 0.2.7, build 18 | **0.2.8, build 29** |
+| drawbridge | 0.2.7, build 18 | **0.2.8, build 30** |
 | herald | 0.1.9 | **0.1.13** |
-| policy | **50** | **60** |
+| policy | **50** | **61** |
 | install page | <https://drawbridge-project.pages.dev/install/usb/> | <https://dev.drawbridge-project.pages.dev/install/usb/> |
 | provisioned devices | the owner's Nothing Phone (A059) | the Moto G15 |
 
@@ -814,9 +895,9 @@ still broken".
 |---|---|
 | Repo | https://github.com/Nilss3/drawbridge — public, `main` + `dev` |
 | Alpha | **[v0.2.7](https://github.com/Nilss3/drawbridge/releases/tag/v0.2.7)** is what testers install, from `main`. [v0.2.5](https://github.com/Nilss3/drawbridge/releases/tag/v0.2.5) stays **latest** because `required_apps` resolves herald through it |
-| Dev | **drawbridge build 29, herald 0.1.13, policy 60**, served from the dev site. herald is unchanged since v0.2.8-dev.4, whose versioned URLs `required_apps` still names |
+| Dev | **drawbridge build 30, herald 0.1.13, policy 61**, served from the dev site. herald is unchanged since v0.2.8-dev.4, whose versioned URLs `required_apps` still names |
 | Devices | Two managed phones: the Moto G15 on dev, and the owner's **Nothing Phone A059** on the alpha since 2026-08-13 |
-| Tests | **588** unit tests across eight variant suites, lint clean. Counted after a `clean`; see the install-lock section for why the old 574 was wrong |
+| Tests | **584** unit tests across eight variant suites, lint clean. Counted after a `clean`; see the install-lock section for why the old 574 was wrong |
 | Website | trilingual, generated into `site/`, both channels served from Cloudflare Pages |
 
 **herald is no longer frozen.** It sat at 0.1.9 from 2026-08-10 to 2026-08-13

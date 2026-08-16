@@ -7,7 +7,8 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 /**
- * Covers the two restrictions whose membership is conditional.
+ * Covers the one restriction whose membership is conditional, and one that is
+ * retired.
  *
  * USB debugging is the project's only working delivery channel — Play Protect
  * refuses to install the DPC, so a cable is the way a fix reaches a phone — and
@@ -17,29 +18,20 @@ import org.junit.Test
  * every deployed handset, and left off while locked hands the removal route to
  * whoever is holding the phone.
  *
- * [UserManager.DISALLOW_INSTALL_APPS] joined it on 2026-08-16 and takes a third
- * condition, the household's own install-lock switch, because it is the only
- * restriction here that is off by default. Its failure modes are the same shape:
- * applied to a phone whose parent never asked for it, a school's app cannot be
- * installed without the key; withheld from one that did ask, the Play Store is
- * wide open on a locked phone and the closed set is left carrying the promise
- * alone.
+ * [UserManager.DISALLOW_INSTALL_APPS] was briefly a second conditional entry and
+ * lasted one build. It is retired now, and the second half of this file is about
+ * making sure it stays that way on phones that already carry it.
  */
 class DeviceOwnerRestrictionsTest {
 
-    /** Both defaults are the ordinary release-build, lock-only-what-was-asked-for case. */
-    private fun restrictions(
-        isLocked: Boolean,
-        retainAdbAccess: Boolean = false,
-        installLock: Boolean = false,
-    ) = DeviceOwnerManager.restrictionsFor(isLocked, retainAdbAccess, installLock)
+    private fun restrictions(isLocked: Boolean, retainAdbAccess: Boolean = false) =
+        DeviceOwnerManager.restrictionsFor(isLocked, retainAdbAccess)
 
     @Test
     fun `locked release build takes usb debugging away`() {
         val restrictions = DeviceOwnerManager.restrictionsFor(
             isLocked = true,
             retainAdbAccess = false,
-            installLock = false,
         )
         assertTrue(
             "a locked phone must not be reachable over adb",
@@ -52,7 +44,6 @@ class DeviceOwnerRestrictionsTest {
         val restrictions = DeviceOwnerManager.restrictionsFor(
             isLocked = false,
             retainAdbAccess = false,
-            installLock = false,
         )
         assertFalse(
             "the parent holds the key, so the cable is theirs",
@@ -65,7 +56,6 @@ class DeviceOwnerRestrictionsTest {
         val restrictions = DeviceOwnerManager.restrictionsFor(
             isLocked = true,
             retainAdbAccess = true,
-            installLock = false,
         )
         assertFalse(
             "RETAIN_ADB_ACCESS is what makes a locked debug build testable",
@@ -86,7 +76,6 @@ class DeviceOwnerRestrictionsTest {
             val restrictions = DeviceOwnerManager.restrictionsFor(
                 isLocked = locked,
                 retainAdbAccess = false,
-                installLock = false,
             )
             assertFalse(
                 "adding an online account stays possible, locked or not",
@@ -145,7 +134,7 @@ class DeviceOwnerRestrictionsTest {
      */
     @Test
     fun `every conditional restriction is one applyUserRestrictions can clear`() {
-        val everything = restrictions(isLocked = true, installLock = true)
+        val everything = restrictions(isLocked = true)
         val nothing = restrictions(isLocked = false)
 
         assertTrue(
@@ -154,85 +143,69 @@ class DeviceOwnerRestrictionsTest {
         )
     }
 
-    // --- The install lock ----------------------------------------------------
+    // --- The install restriction, which is retired ---------------------------
 
     /**
-     * The default, and the state every phone before 2026-08-16 was in. A parent
-     * who has not asked for this must be able to install a bank app on a locked
-     * phone exactly as before.
+     * **Measured on the owner's Moto G15 on 2026-08-16, one build after it was
+     * added.** [UserManager.DISALLOW_INSTALL_APPS] was the install lock's
+     * prevention layer, and the open question written down beside it was whether
+     * the platform lets Play Store *updates* through. It does not — an attempt to
+     * update Bitwarden was refused while the restriction was in force, because it
+     * is checked in `PackageInstaller.createSession` and an update is an ordinary
+     * session there.
+     *
+     * So no setting of this restriction can express *no new apps, updates fine*,
+     * and blocking updates is worse than the feature is good: it freezes security
+     * patches for every app on the phone. The install lock is carried entirely by
+     * the closed set in `AppBlocker` now.
      */
     @Test
-    fun `a locked phone whose parent did not ask for it can still install apps`() {
-        assertFalse(
-            "off by default: it changes what the phone is, not what it filters",
-            restrictions(isLocked = true, installLock = false)
-                .contains(UserManager.DISALLOW_INSTALL_APPS),
-        )
-    }
-
-    @Test
-    fun `a locked phone whose parent asked for it cannot`() {
-        assertTrue(
-            restrictions(isLocked = true, installLock = true)
-                .contains(UserManager.DISALLOW_INSTALL_APPS),
-        )
-    }
-
-    /**
-     * **Keyed on the lock, not on protection**, exactly as USB debugging is, and
-     * for a plainer reason: installing something is the main thing a parent
-     * unlocks the phone *to do*. A restriction that survived unlocking would
-     * make the one documented way to add an app — unlock, install, lock again —
-     * impossible, which would leave the key opening a phone that still refuses.
-     */
-    @Test
-    fun `unlocking lets the parent install, which is what they unlocked for`() {
-        assertFalse(
-            restrictions(isLocked = false, installLock = true)
-                .contains(UserManager.DISALLOW_INSTALL_APPS),
-        )
-    }
-
-    /**
-     * The two conditional entries are independent. Switching the install lock on
-     * must not quietly hand back the cable, and a debug build keeping adb must
-     * not quietly open installs.
-     */
-    @Test
-    fun `the install lock and the debugging rule do not move each other`() {
-        val withLock = restrictions(isLocked = true, installLock = true)
-        assertTrue(
-            "the install lock says nothing about adb",
-            withLock.contains(UserManager.DISALLOW_DEBUGGING_FEATURES),
-        )
-
-        val debugBuild = restrictions(isLocked = true, retainAdbAccess = true, installLock = true)
-        assertTrue(
-            "and retaining adb says nothing about installs",
-            debugBuild.contains(UserManager.DISALLOW_INSTALL_APPS),
-        )
-        assertFalse(debugBuild.contains(UserManager.DISALLOW_DEBUGGING_FEATURES))
-    }
-
-    /**
-     * The whole conditional surface, stated once: exactly two entries move, and
-     * nothing else does in any combination. This is the assertion that catches a
-     * future third restriction being wired to the wrong condition.
-     */
-    @Test
-    fun `only the two conditional restrictions ever move`() {
-        val all = listOf(true, false).flatMap { locked ->
-            listOf(true, false).flatMap { adb ->
-                listOf(true, false).map { lock -> restrictions(locked, adb, lock) }
+    fun `the install restriction is never applied, in any state`() {
+        for (locked in listOf(true, false)) {
+            for (adb in listOf(true, false)) {
+                assertFalse(
+                    "a locked phone must still be able to update what is on it",
+                    restrictions(locked, adb).contains(UserManager.DISALLOW_INSTALL_APPS),
+                )
             }
+        }
+    }
+
+    /**
+     * **Retiring it is not the same as dropping it, and this is the assertion
+     * that says so.** [DeviceOwnerManager.applyUserRestrictions] computes what to
+     * clear from [DeviceOwnerManager.MANAGED_RESTRICTIONS], so a restriction
+     * merely removed from that list stops being *set* on new devices and is never
+     * taken off one that already carries it. Any phone that locked once under
+     * build 29 would have been left unable to update anything, permanently, with
+     * nothing on the device able to reach it.
+     */
+    @Test
+    fun `the install restriction is cleared on sight from phones that carry it`() {
+        assertTrue(
+            "build 29 set it; every later build has to actively take it back off",
+            DeviceOwnerManager.RETIRED_RESTRICTIONS.contains(UserManager.DISALLOW_INSTALL_APPS),
+        )
+        assertFalse(
+            "and it must not be in both lists, or it would be set and cleared each apply",
+            DeviceOwnerManager.MANAGED_RESTRICTIONS.contains(UserManager.DISALLOW_INSTALL_APPS),
+        )
+    }
+
+    /**
+     * The whole conditional surface, stated once: exactly one entry moves, and
+     * nothing else does in any combination. This is the assertion that catches a
+     * future restriction being wired to the wrong condition.
+     */
+    @Test
+    fun `only the debugging restriction ever moves`() {
+        val all = listOf(true, false).flatMap { locked ->
+            listOf(true, false).map { adb -> restrictions(locked, adb) }
         }
         val fixed = all.map { it.toSet() }.reduce { a, b -> a intersect b }
 
         assertEquals(
-            setOf(
-                UserManager.DISALLOW_DEBUGGING_FEATURES,
-                UserManager.DISALLOW_INSTALL_APPS,
-            ),
+            setOf(UserManager.DISALLOW_DEBUGGING_FEATURES),
             DeviceOwnerManager.MANAGED_RESTRICTIONS.toSet() - fixed,
         )
     }

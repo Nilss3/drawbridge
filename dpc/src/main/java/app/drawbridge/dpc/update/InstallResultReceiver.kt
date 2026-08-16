@@ -6,7 +6,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageInstaller
 import android.util.Log
-import app.drawbridge.dpc.admin.DeviceOwnerManager
 import app.drawbridge.dpc.apps.InstallLockSettings
 
 /** Reports the outcome of a silent install started by [AppInstaller]. */
@@ -27,18 +26,17 @@ class InstallResultReceiver : BroadcastReceiver() {
             message = intent.getStringExtra(PackageInstaller.EXTRA_STATUS_MESSAGE),
         )
 
-        // Closes the window AppInstaller opened in the install restriction —
-        // whatever the verdict, and *before* the branches below, because a
-        // failure has to put the phone back exactly as much as a success does.
+        // Clears the in-flight mark AppInstaller set — whatever the verdict, and
+        // before the branches below, because a failed install stops being in
+        // flight exactly as much as a successful one does.
         // STATUS_PENDING_USER_ACTION is terminal for our purposes too: a Device
-        // Owner that is being asked to confirm an install is no longer going to
-        // complete one silently.
+        // Owner being asked to confirm an install is no longer going to complete
+        // one silently.
         //
         // Deliberately not a `finally` back in AppInstaller: `commit` returns
-        // long before the package lands, so restoring the restriction there
-        // would re-block the session it was lifted for. See
-        // DeviceOwnerManager.allowOwnInstalls.
-        DeviceOwnerManager(context).ownInstallFinished(packageName)
+        // long before the package lands, so clearing it there would reopen the
+        // window that stops a mid-download lock evicting this package.
+        InstallLockSettings.endOwnInstall(packageName)
 
         when (status) {
             PackageInstaller.STATUS_SUCCESS -> {
