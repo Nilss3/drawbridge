@@ -135,6 +135,58 @@ a handset and nothing below has been done.
 
 ---
 
+## Policy 59: the AI companion category was open on the Play Store side
+
+**2026-08-16, found by the owner on the reference phone.** Cycle AI, Rosytalk,
+Star Girl and Trend AI all installed and ran on a locked handset. Twenty-two
+verified package ids added, plus six web fronts.
+
+**The diagnosis matters more than the additions.** This category had been carried
+almost entirely by `ai-companions.txt` — sixty domains, three packages' worth of
+ids beside them — and a domain list cannot hold it. These apps talk to their own
+backends over their own hostnames, and nobody reaches them by typing a domain:
+they are found by name in the Play Store and installed with one tap. The web
+front is the part a parent never sees.
+
+Every id was fetched from its Play listing and the title had to be the app it
+claimed to be. **`com.saylo.app` was dropped for failing exactly that test** — it
+resolves, but to a different app of the same name; the real one is
+`com.xverse.aistory`. That is the failure mode the rule exists for, and it would
+have removed somebody's unrelated app. Two domains were dropped as well:
+`fantasia.ai` did not respond and `cycleai.com` served a generic "Home", and both
+names are ordinary enough to belong to anything.
+
+### And the owner's real question: this cannot be kept up with
+
+**It cannot, and the list should stop being the plan.** New companion apps appear
+weekly, each with a fresh package id, and a signed document updated by hand will
+always trail them. Three answers exist, in ascending order of how completely they
+settle it, and **two of the three are already built or half-built**:
+
+1. **Keep curating.** What this section is. Useful, cheap, and permanently
+   behind — worth doing for the big names because it costs a policy re-sign and
+   nothing else, but it is a rearguard action.
+2. **`DISALLOW_INSTALL_APPS` at the lock.** A Device Owner restriction, one line
+   in `DeviceOwnerManager.restrictionsFor`, and **drawbridge does not currently
+   set it** — a locked phone can install anything the Play Store offers. With it,
+   the blocklist only has to cover what is already on the device at lock time,
+   and the category stops growing underneath it. The cost is real and is the
+   reason it wants a decision rather than a commit: no new apps at all without
+   unlocking, which is a different phone from the one the alpha describes.
+3. **Allowlist mode.** `Policy.allowedPackages` exists, `AppBlocker.notAllowed`
+   already implements it, and the website has promised it since the Q&A page was
+   written: *the app-install lock behind "only certain apps"*. It is the last of
+   the three beta promises still unbuilt. Name what may be installed and the
+   question "what is the newest AI companion app called" stops being asked at
+   all.
+
+**The honest summary for whoever picks this up:** the blocklist is a filter for a
+phone whose app store is wide open, and the fix is upstream of the list. 2 is a
+restriction that already has a home in the code; 3 is a feature the policy model
+is already shaped for. Until one of them lands, expect to be adding names.
+
+---
+
 ## The browser chooser exists now, three years of website copy later
 
 **2026-08-15.** The website has described this since before it was built — *"by
@@ -471,7 +523,7 @@ which way it goes on real hardware.
 |---|---|---|
 | drawbridge | 0.2.7, build 18 | **0.2.8, build 28** |
 | herald | 0.1.9 | **0.1.13** |
-| policy | **50** | **58** |
+| policy | **50** | **59** |
 | install page | <https://drawbridge-project.pages.dev/install/usb/> | <https://dev.drawbridge-project.pages.dev/install/usb/> |
 | provisioned devices | the owner's Nothing Phone (A059) | the Moto G15 |
 
@@ -520,7 +572,7 @@ still broken".
 |---|---|
 | Repo | https://github.com/Nilss3/drawbridge — public, `main` + `dev` |
 | Alpha | **[v0.2.7](https://github.com/Nilss3/drawbridge/releases/tag/v0.2.7)** is what testers install, from `main`. [v0.2.5](https://github.com/Nilss3/drawbridge/releases/tag/v0.2.5) stays **latest** because `required_apps` resolves herald through it |
-| Dev | **drawbridge build 28, herald 0.1.13, policy 58**, served from the dev site. herald is unchanged since v0.2.8-dev.4, whose versioned URLs `required_apps` still names |
+| Dev | **drawbridge build 28, herald 0.1.13, policy 59**, served from the dev site. herald is unchanged since v0.2.8-dev.4, whose versioned URLs `required_apps` still names |
 | Devices | Two managed phones: the Moto G15 on dev, and the owner's **Nothing Phone A059** on the alpha since 2026-08-13 |
 | Tests | **574** unit tests across four build variants, lint clean |
 | Website | trilingual, generated into `site/`, both channels served from Cloudflare Pages |

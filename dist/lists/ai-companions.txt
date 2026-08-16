@@ -86,3 +86,23 @@ x.ai
 evaapp.ai
 simsimi.com
 igirl.ai
+
+# ---------------------------------------------------------------------------
+# Added 2026-08-16, after the owner found the Play Store side of this category
+# wide open: Cycle AI, Rosytalk, StarGirl and Trend AI were all installable on
+# a locked phone. The package ids are the substance of that fix and live in
+# `blocked_packages`; these are the handful of matching web fronts.
+#
+# **Only domains whose page said what they were.** `fantasia.ai` did not
+# respond and `cycleai.com` served a generic "Home", and both names are ordinary
+# enough to belong to something else entirely — the same trap that put anima.ai
+# on this list once and then took it off again. Their apps are blocked by id,
+# which is the half that was actually missing.
+rosytalk.eu
+sayloai.com
+dopple.ai
+evaapp.ai
+kindroid.org
+# Behind Cloudflare, so the page could not be read; the name is distinctive
+# enough and the app id com.hiwaifu.app is confirmed.
+hiwaifu.com
