@@ -160,6 +160,14 @@ names are ordinary enough to belong to anything.
 
 ### And the owner's real question: this cannot be kept up with
 
+**Answered on 2026-08-16 and specified in
+[app-ratings](app-ratings.md).** The short version: use Play's own PEGI rating
+and category instead of only a list of names. Measured on the twenty-two apps
+below plus 48 apps a real phone needs — useful apps are never PEGI 7 or above
+(banking 8/8 PEGI 3, tools 8/8, transport 3/3), while 15 of these 22 are PEGI 12
+or higher. Games have to go by *category* rather than rating, because Candy Crush
+and FIFA Mobile are PEGI 3 while Minecraft is PEGI 7. Not built.
+
 **It cannot, and the list should stop being the plan.** New companion apps appear
 weekly, each with a fresh package id, and a signed document updated by hand will
 always trail them. Three answers exist, in ascending order of how completely they
