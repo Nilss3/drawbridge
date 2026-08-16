@@ -185,6 +185,97 @@ phone whose app store is wide open, and the fix is upstream of the list. 2 is a
 restriction that already has a home in the code; 3 is a feature the policy model
 is already shaped for. Until one of them lands, expect to be adding names.
 
+**The owner's call on 2026-08-16: build number 2**, in the shape the
+documentation already promises — *no new app installs after locking, and updates
+of the apps already there still come through*. How to build it is below.
+
+---
+
+## Next: the install lock, and how to build it
+
+**Promised on the website, not built, and specified here so the next session can
+start.** The phone closes at the lock: nothing new can be installed, and
+everything already on it goes on updating.
+
+**That sentence is the specification, and Android expresses it exactly.** A
+package arriving as `ACTION_PACKAGE_ADDED` carries `EXTRA_REPLACING`: false for a
+package the phone did not have, true for an update of one it did. New app versus
+update is not a heuristic here — it is a boolean the platform hands over.
+
+### Two layers, and only the second is certain
+
+**Layer 1, prevention: `DISALLOW_INSTALL_APPS`.** One entry in
+`DeviceOwnerManager.restrictionsFor`, which is where the whole restriction set is
+decided and the only place it should be touched. **Key it on the lock rather than
+on protection**, exactly as `DISALLOW_DEBUGGING_FEATURES` is: installing apps is
+the main thing a parent unlocks to do, and `applyUserRestrictions` already clears
+whatever the current state leaves out, so the entry comes off at unlock for free.
+
+**Whether it lets updates through is the open question, and it decides how much
+layer 2 has to carry.** Google's own EMM documentation calls the equivalent field
+*"whether user installation of apps is disabled"* and keeps update behaviour in a
+separate field (`appAutoUpdatePolicy`), which points the right way — but that is
+AMAPI's wording, not a promise about the AOSP restriction on a sideloaded DPC.
+**Two things to try on the Moto, in this order:**
+
+1. Set the restriction, lock, then force a Play Store update of an installed app.
+   If it updates, prevention and the promise are compatible.
+2. Then check drawbridge's *own* installs still work, because they are the ones
+   that must not break: `required_apps` fetching herald after a browser-policy
+   change from *no browser* back to *the allowed browsers*, and `UpdateActivity`
+   installing a new drawbridge. Both go through `PackageInstaller` as Device
+   Owner rather than through the user, so both *should* be exempt — and if
+   either is not, this layer cannot ship as it stands and layer 2 carries it
+   alone.
+
+**Layer 2, enforcement: the closed set.** This is the part that gives the
+promised semantics whatever the restriction turns out to do, and most of it
+exists.
+
+- **The snapshot.** At the lock, record the packages installed at that moment.
+  `LockActivity.sealWithKey` is the place — it is already where the full sweep
+  runs, and already after `ParentKey.commit`. Store it device-locally beside the
+  other household settings, the shape `BrowserSettings` and `DisconnectSettings`
+  use. Re-taken at every lock, which is what makes the unlock window the way to
+  add an app: unlock, install, lock again, and it is in the set.
+- **The rule.** `AppBlocker.reasonToRemove` gains one branch: with the install
+  lock on and the phone locked, a package that is not in the snapshot is not
+  allowed. It joins the existing ladder untouched — uninstall for user apps,
+  `hideOrSuspend` for the rest — and `deferred` should return true for it, so it
+  waits for the lock like everything else a switch governs.
+- **Updates need no special case at all**, and this is the neat part. An update
+  never adds a package name that was not already there, so it is in the snapshot
+  by construction and the rule never fires on it. `PackageWatcher` already
+  evaluates `EXTRA_REPLACING` broadcasts as of 2026-08-15, and it can go on doing
+  so: the snapshot answers the question, not the flag.
+- **drawbridge's own installs must join the set.** `AppInstaller.install` should
+  add the package to the snapshot when it succeeds, or herald would be removed
+  moments after drawbridge fetched it — the same loop the browser policy already
+  had to be guarded against. One line, and it is honest: drawbridge putting an
+  app on the phone is the parent's decision arriving by proxy.
+
+### The switch, and what it must say
+
+A device-local setting like the browser policy, defaulting **off**, because it
+changes what the phone is rather than what it filters. The wording has to carry
+the cost, which is not obvious until it bites: **an app you have not installed
+yet, you cannot install** — no new bank app, no new train ticket app, no app a
+school asks for in March — without unlocking with the key. That is the whole
+point of it and the whole objection to it, and a parent should meet the sentence
+before the situation.
+
+### What to watch for
+
+- **The sweep is the backstop, not the receiver.** `PackageWatcher`'s receiver
+  only fires while the filter service is alive, so an app installed during a
+  restart is caught by the fifteen-minute sweep instead. The snapshot makes that
+  work; a design relying on `EXTRA_REPLACING` alone would miss it.
+- **Do not key it on `protectedSince`.** That reads as *has ever been locked* and
+  stays true forever, which is the bug that cost 2026-08-12. The lock is the
+  signal.
+- **The pre-first-lock window is untouched**, as ever. Nothing is enforced before
+  the parent locks, and that is when they install what the phone should have.
+
 ---
 
 ## The browser chooser exists now, three years of website copy later
@@ -635,8 +726,9 @@ browser at all), and the app-install lock behind "only certain apps". The app
 catches up step by step, and **the first step landed the same day**: policy 52
 adds the `streaming` option. **Two of the three are now real** — the browser
 chooser was built on 2026-08-15, see the section at the top of this file — and
-the app-install lock behind "only certain apps" is the one still only on the
-website.
+the app-install lock is the one still only on the website — though it is no
+longer only an idea: the build plan is written up under *Next: the install lock*
+at the top of this file, on the owner's call of 2026-08-16.
 
 So a gap between that page and a dev handset is the expected state, not a bug to
 go and fix, and this is another reason the two sites must not converge: `main`
