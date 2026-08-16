@@ -36,6 +36,11 @@
     <string name="browser_none_description">Le téléphone n\'a aucun navigateur.\n\nConnectez-vous partout avant de choisir ceci. Certaines applications renvoient vers un navigateur pour se connecter, et sur un téléphone qui n\'en a pas, c\'est impossible. Ce qui n\'est pas déjà connecté le reste, sans recours autre que déverrouiller drawbridge.</string>
     <string name="browser_icons_description">Les navigateurs que ce choix autorise</string>
 
+    <string name="install_lock_heading">Installation d\'applications</string>
+    <string name="install_lock_name">Uniquement les applications déjà présentes</string>
+    <string name="install_lock_description">Après le verrouillage, aucune nouvelle application ne peut être installée. Celles qui se trouvent sur le téléphone à ce moment-là continuent de se mettre à jour normalement.</string>
+    <string name="install_lock_info">Le téléphone se ferme au verrouillage. Tout ce qui s\'y trouve continue de fonctionner et de se mettre à jour, et le Play Store met toujours ces applications à jour — mais une application qui n\'est pas déjà là ne peut plus être ajoutée.\n\nC\'est tout l\'intérêt de cette option et c\'est aussi toute l\'objection qu\'on peut lui faire : pas de nouvelle application bancaire, pas d\'application de billets de train, pas d\'application demandée par l\'école en mars, sans déverrouiller drawbridge avec la clé au préalable. Déverrouillez, installez ce qu\'il faut, puis verrouillez à nouveau — ce qui est sur le téléphone à cet instant est ce qu\'il conserve.\n\nherald et tout ce que la politique exige par ailleurs font exception. drawbridge les installe lui-même, depuis la politique signée que vous avez choisie, que le téléphone soit verrouillé ou non.\n\nLaissez ceci désactivé en cas de doute. Bloquer une application reste possible plus tard ; un téléphone sur lequel personne ne peut rien installer est un téléphone pour lequel on devra venir vous trouver.</string>
+
     <string name="options_heading">Options</string>
     <string name="options_explanation">Autorisez les services suivants à vos propres risques.</string>
     <string name="options_none_available">Cette politique ne propose rien à activer.</string>

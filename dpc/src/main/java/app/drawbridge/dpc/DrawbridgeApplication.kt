@@ -163,11 +163,22 @@ class DrawbridgeApplication : Application() {
          * for the same reason USB debugging is applied there: until the key is
          * committed there is no lock, and an abandoned reveal must leave the
          * phone as it was.
+         *
+         * **It closes the install lock's set first, and the order is the whole
+         * feature.** That set is what a locked phone measures new apps against,
+         * and the sweep below is what enforces it — so a sweep that ran against
+         * the *previous* lock's snapshot would remove exactly the app the parent
+         * unlocked the phone to install. Unlock, install, lock again: the middle
+         * step only works because this line comes before the next one. See
+         * [AppBlocker.closeTheInstalledSet].
          */
         fun sweepOnLock(context: Context) {
             val appContext = context.applicationContext
             lockScope.launch {
-                runCatching { AppBlocker(appContext).sweep() }
+                val blocker = AppBlocker(appContext)
+                runCatching { blocker.closeTheInstalledSet() }
+                    .onFailure { Log.e(TAG, "Could not record the installed set", it) }
+                runCatching { blocker.sweep() }
                     .onSuccess { actions ->
                         // Counted apart, because they used to be counted
                         // together and a sweep that failed on every package

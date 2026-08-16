@@ -200,6 +200,61 @@
             android:orientation="vertical"
             android:paddingHorizontal="24dp" />
 
+        <!--
+            The third "how much of a thing does this phone have" question, after
+            the disconnect philosophy and the browser policy and before the
+            per-service switches. Not inflated from a list like those two: there
+            is exactly one of it, and it comes from the device rather than from
+            the signed document.
+
+            **It keeps its explanation on the card**, like the three disconnect
+            philosophies and unlike the policy and the options. The name alone
+            does not carry the meaning — "only the apps already on this phone"
+            does not say that updates still arrive, which is the half that makes
+            it livable — and the ⓘ carries what it costs, which is a paragraph.
+        -->
+        <TextView
+            style="@style/TextAppearance.Drawbridge.SectionHeading"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/install_lock_heading" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingHorizontal="24dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/install_lock_name"
+                android:textAppearance="?attr/textAppearanceTitleSmall" />
+
+            <ImageButton
+                android:id="@+id/installLockInfo"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:scaleType="center"
+                android:src="@drawable/ic_info" />
+
+            <com.google.android.material.materialswitch.MaterialSwitch
+                android:id="@+id/installLockSwitch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="24dp"
+            android:layout_marginBottom="28dp"
+            android:text="@string/install_lock_description"
+            android:textAppearance="?attr/textAppearanceBodySmall" />
+
         <TextView
             style="@style/TextAppearance.Drawbridge.SectionHeading"
             android:layout_width="match_parent"

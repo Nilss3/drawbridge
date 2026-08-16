@@ -1304,6 +1304,124 @@ It still requires Device Owner — these are silent `PackageInstaller` sessions 
 and an unrequested run still waits for an unmetered network, because 235 MiB per
 browser on somebody's mobile data is its own kind of surprise.
 
+## The install lock is a closed set, not a date and not a flag
+
+**Built 2026-08-16, and it is the answer to a problem the blocklist cannot
+solve.** Policy 59 added twenty-two AI companion apps by hand, every id fetched
+from its Play listing and checked; the category had been carried almost entirely
+by a domain list, and a domain list cannot hold it — nobody reaches these by
+typing a hostname, they are found by name in the Play Store and installed with
+one tap. New ones appear weekly with fresh package ids. A signed document updated
+by hand will always trail them.
+
+So the fix is upstream of the list: **after the lock, this phone installs nothing
+new, and the apps already on it go on updating.**
+
+### Why a set, and why that makes updates free
+
+That sentence has three plausible encodings and only one of them works.
+
+- **A date.** "Anything installed after the lock." It reads well and it is wrong
+  the first time an app updates: `lastUpdateTime` moves, and the phone removes an
+  app nobody installed. It is also exactly the trap the Moto's YouTube laid on
+  2026-08-14, where `firstInstallTime` had been rewritten by an OEM preload
+  service.
+- **`EXTRA_REPLACING`.** The platform hands over a boolean saying *new package*
+  or *update of one already here*, which is genuinely the question. It is
+  unavailable to the half of the enforcement that matters most: the
+  fifteen-minute sweep has no broadcast to read a flag from, and the receiver
+  only fires while the filter service is alive, so an app installed during a
+  restart would never be seen.
+- **A set** — the packages the phone carried at the last lock. This is what
+  drawbridge does, and updates then need **no special case at all**: an update
+  never adds a package name that was not already there, so it is in the set by
+  construction and the rule cannot fire on it. Nothing in the app reads
+  `EXTRA_REPLACING`, compares versions, or looks at a timestamp.
+
+`PackageWatcher` still evaluates replacing broadcasts, as it has since
+2026-08-15, and it can go on doing so. The set answers the question, not the flag.
+
+### An absent snapshot is not an empty one
+
+`InstallLockSettings.snapshot` is **nullable**, and that is load-bearing rather
+than fastidious. An empty set means *this phone carries nothing*, which would
+make every package on the device a newcomer and hand the blocker a rule that
+takes the phone apart. A snapshot that has never been taken has to answer "I
+cannot say". This is the same shape of mistake as keying enforcement on
+`protectedSince`, which reads as *is protected* and means *has ever been locked*
+— the bug that cost 2026-08-12.
+
+### It is limited to user-installed apps, like allowlist mode
+
+This is the second rule in `AppBlocker` that removes what is *not* named rather
+than what is, and that shape is the one that can take a phone apart. A snapshot
+is the worse of the two: it is generated rather than written, so nobody ever
+reads it, and it cannot know about a package that does not exist yet. An Android
+version upgrade legitimately adds system apps — a snapshot taken on 15 has never
+heard of what 16 ships — and hiding those would be an OTA quietly subtracting
+from the phone, with nothing able to restore them because `restoreNowAllowed`
+only brings back what the *policy* names.
+
+Nothing is lost by the limit. This setting exists because of the Play Store, and
+a preinstalled app was on the phone when the parent locked it.
+
+### Two layers, because only one of them is certain
+
+**Prevention** is `DISALLOW_INSTALL_APPS` in `DeviceOwnerManager.restrictionsFor`,
+keyed on the lock exactly as `DISALLOW_DEBUGGING_FEATURES` is — installing
+something is the main thing a parent unlocks the phone *to do* — and additionally
+on the household's own switch, since it is the only restriction here that is off
+by default.
+
+**Enforcement** is the closed set, and it gives the promised semantics whatever
+the restriction turns out to do. Whether the platform lets Play Store *updates*
+through `DISALLOW_INSTALL_APPS` has not been checked on a handset; Google's EMM
+API keeps update behaviour in a separate field, which points the right way, but
+that is AMAPI's wording rather than a promise about the AOSP restriction on a
+sideloaded DPC. Building the second layer independently of the answer is what
+lets the feature ship before a phone can be got hold of.
+
+### drawbridge's own installs are the half that can strand a phone
+
+`required_apps` names herald. herald is user-installed, so a browser-policy change
+*uninstalls* it rather than hiding it, and the next poll fetches 230 MB to put it
+back. Three separate things had to be right or the phone would loop, or lose its
+browser for good:
+
+1. **It joins the set before the session is committed**, not on success —
+   `ACTION_PACKAGE_ADDED` can beat the install-result broadcast, and
+   `PackageWatcher` would evaluate a package that was not yet in the set.
+2. **A package still downloading counts as present.** herald takes minutes, and
+   *choose the allowed browsers, then lock* puts the lock in the middle of that:
+   the lock re-takes the snapshot from the packages actually on the phone, does
+   not find herald, and writes the name straight back out. `closeTheInstalledSet`
+   unions the installed packages with whatever drawbridge has in flight.
+3. **The restriction stands down for the length of the install.** A Device Owner
+   is expected to be exempt from `DISALLOW_INSTALL_APPS`; that is unverified, and
+   the thing depending on it is a browser that cannot otherwise come back. So it
+   is lifted rather than trusted, and put back by the install's own result
+   broadcast — not by a `finally`, because `commit` returns long before the
+   package lands. Every existing re-assert path (process start, boot, lock,
+   unlock) is the backstop if that broadcast is lost.
+
+Belt and braces on top of all three: herald is an *allowed browser*, so
+`isProtected` declines it before the install-lock branch is reached at all. The
+machinery above is what makes the rule right for **any** required app, including
+ones no policy names yet.
+
+### The switch defaults off, and the wording carries the cost
+
+Unlike the four policy options, this changes what the phone *is* rather than what
+it filters, so nobody should get it by leaving a button unpressed. The cost is
+not obvious until it bites and a parent should meet the sentence before the
+situation: **an app you have not installed yet, you cannot install** — no new
+bank app, no train ticket app, no app a school asks for in March — without
+unlocking with the key.
+
+Which is also the whole way in, and it is the one drawbridge already uses for
+everything else: unlock, install, lock again. The lock re-takes the snapshot, so
+whatever is on the phone at that moment is what it keeps.
+
 ## drawbridge does not prevent a factory reset
 
 An earlier version set `DISALLOW_FACTORY_RESET`. Its documentation says it stops

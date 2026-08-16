@@ -19,6 +19,7 @@ import app.drawbridge.dpc.R
 import app.drawbridge.dpc.admin.DeviceOwnerManager
 import app.drawbridge.dpc.admin.ProvisioningLog
 import app.drawbridge.dpc.apps.AppBlocker
+import app.drawbridge.dpc.apps.InstallLockSettings
 import app.drawbridge.dpc.curfew.DisconnectSettings
 import app.drawbridge.dpc.vpn.DnsFilterService
 import java.time.LocalDateTime
@@ -131,6 +132,21 @@ class DiagnosticsActivity : AppCompatActivity() {
             appendLine("next boundary:     ${disconnect.nextChangeAfter(now) ?: "(none)"}")
             appendLine("blocked packages:  ${policy.blockedPackages.size}")
             appendLine("browsers allowed:  ${policy.browserPackages.joinToString()}")
+
+            // The install lock, and specifically its snapshot, because a wrong
+            // one is invisible from every other angle. A phone that removes an
+            // app the parent installed during an unlock and a phone that lets a
+            // new one stay look identical from the outside; the size of the set
+            // and when it was taken are what tell them apart. "(never taken)"
+            // with the lock on is the failure — the rule is inert, and no line
+            // above says so.
+            val installLock = InstallLockSettings(this@DiagnosticsActivity)
+            appendLine("install lock:      ${installLock.isEnabled}")
+            appendLine(
+                "installed set:     " +
+                    (installLock.snapshot?.let { "${it.size} packages" } ?: "(never taken)"),
+            )
+            appendLine("set taken:         ${timestamp(installLock.snapshotTakenAt)}")
 
             // What became of the blocklist on *this* phone, which no other line
             // here or anywhere else on the device could say. On 2026-08-14 the

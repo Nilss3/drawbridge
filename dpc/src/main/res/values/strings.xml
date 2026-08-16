@@ -49,6 +49,15 @@
     <string name="browser_none_description">The phone has no browser of any kind.\n\nBefore choosing this, sign in everywhere you need to. Some apps hand you to a browser to log in, and on a phone without one they cannot. Anything not already signed in stays signed out, and there is no way around it short of unlocking drawbridge.</string>
     <string name="browser_icons_description">The browsers this choice allows</string>
 
+    <!-- The app-install lock. Promised on the website before it was built, and
+         off by default because it changes what the phone is rather than what it
+         filters. The wording has to carry the cost: an app you have not
+         installed yet, you cannot install. -->
+    <string name="install_lock_heading">App installs</string>
+    <string name="install_lock_name">Only the apps already on this phone</string>
+    <string name="install_lock_description">After the lock, no new app can be installed. The apps that are on the phone at that moment go on updating as normal.</string>
+    <string name="install_lock_info">The phone closes at the lock. Everything on it keeps working and keeps updating, and the Play Store still updates those apps — but an app that is not already here cannot be added.\n\nThat is the point of it and it is also the whole objection to it: no new bank app, no train ticket app, no app a school asks for in March, unless you unlock drawbridge with the key first. Unlock, install what is needed, and lock again — whatever is on the phone at that moment is what it keeps.\n\nherald and anything else the policy requires are the exception. drawbridge installs those itself, from the signed policy you chose, and they arrive whether the phone is locked or not.\n\nLeave this off if you are not sure. A blocked app can always be blocked later; an app nobody can install is a phone somebody has to come to you about.</string>
+
     <string name="options_heading">Options</string>
     <string name="options_explanation">Allow the following services at own peril.</string>
     <string name="options_none_available">This policy offers nothing to switch on.</string>

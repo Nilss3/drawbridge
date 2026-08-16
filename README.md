@@ -107,6 +107,15 @@ that cannot be uninstalled are hidden instead. This is what makes DNS-only
 filtering sound: with no other browser on the device, nothing is left that can
 run its own encrypted DNS.
 
+**And optionally, the phone closes at the lock.** A blocklist is a filter for a
+phone whose app store is wide open, and new apps in a category appear faster than
+a signed document can name them. So there is a switch — **off by default** — that
+records the packages the phone carries at the lock and allows nothing outside
+them afterwards. Updates need no exception: an update never adds a package name
+that was not already there. Adding an app means unlocking, installing it, and
+locking again, which re-takes the set. See
+[the install lock](docs/design-decisions.md#the-install-lock-is-a-closed-set-not-a-date-and-not-a-flag).
+
 ### Known gaps
 
 - **Connections to hardcoded IPs with no DNS lookup** bypass a DNS-level filter.

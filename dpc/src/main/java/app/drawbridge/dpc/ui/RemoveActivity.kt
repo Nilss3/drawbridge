@@ -10,6 +10,7 @@ import app.drawbridge.dpc.DrawbridgeApplication
 import app.drawbridge.dpc.R
 import app.drawbridge.dpc.admin.DeviceOwnerManager
 import app.drawbridge.dpc.apps.AppBlocker
+import app.drawbridge.dpc.apps.InstallLockSettings
 import app.drawbridge.dpc.security.ParentKey
 import app.drawbridge.dpc.vpn.DnsFilterService
 
@@ -68,6 +69,12 @@ class RemoveActivity : AppCompatActivity() {
 
         DrawbridgeApplication.policy(this).clear()
         parentKey.clear()
+        // The restriction itself came off with clearUserRestrictions above; this
+        // is the closed set behind it. A list of the packages a phone happened to
+        // carry means nothing once nothing enforces it, and leaving it would have
+        // a reinstalled drawbridge measure the device against a set from before
+        // it was removed.
+        InstallLockSettings(this).clear()
 
         val message = when {
             !wasOwner -> getString(R.string.remove_done_not_owner)

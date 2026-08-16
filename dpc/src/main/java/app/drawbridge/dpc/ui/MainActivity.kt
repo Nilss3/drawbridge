@@ -35,6 +35,7 @@ import app.drawbridge.dpc.admin.DeviceOwnerManager
 import app.drawbridge.dpc.admin.ProvisioningLog
 import app.drawbridge.dpc.apps.AppBlocker
 import app.drawbridge.dpc.apps.BrowserSettings
+import app.drawbridge.dpc.apps.InstallLockSettings
 import app.drawbridge.dpc.curfew.CurfewController
 import app.drawbridge.dpc.curfew.DisconnectSettings
 import app.drawbridge.dpc.policy.SelectionProvider
@@ -75,6 +76,7 @@ class MainActivity : AppCompatActivity() {
 
     private val disconnect by lazy { DisconnectSettings(this) }
     private val browsers by lazy { BrowserSettings(this) }
+    private val installLock by lazy { InstallLockSettings(this) }
 
     private lateinit var updateNotice: View
     private lateinit var disconnectContainer: LinearLayout
@@ -82,6 +84,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var curfewWeekdayButton: Button
     private lateinit var curfewWeekendButton: Button
     private lateinit var browserContainer: LinearLayout
+    private lateinit var installLockSwitch: MaterialSwitch
     private lateinit var policyContainer: LinearLayout
     private lateinit var optionContainer: LinearLayout
     private lateinit var optionsExplanation: TextView
@@ -127,6 +130,7 @@ class MainActivity : AppCompatActivity() {
         curfewWeekdayButton = findViewById(R.id.curfewWeekdayButton)
         curfewWeekendButton = findViewById(R.id.curfewWeekendButton)
         browserContainer = findViewById(R.id.browserContainer)
+        installLockSwitch = findViewById(R.id.installLockSwitch)
         policyContainer = findViewById(R.id.policyContainer)
         optionContainer = findViewById(R.id.optionContainer)
         optionsExplanation = findViewById(R.id.optionsExplanation)
@@ -254,8 +258,48 @@ class MainActivity : AppCompatActivity() {
 
             renderDisconnect()
             renderBrowsers()
+            renderInstallLock()
             renderPolicies()
             renderOptions()
+        }
+    }
+
+    // --- The install lock ----------------------------------------------------
+
+    /**
+     * Whether the phone closes at the lock: no new apps after it, and updates of
+     * the apps already there still coming through.
+     *
+     * Device-local like the browser policy and the disconnect philosophy, and
+     * **off by default** unlike either — it changes what the phone *is* rather
+     * than what it filters, so nobody should get it by leaving a button
+     * unpressed. See [InstallLockSettings].
+     *
+     * Nothing happens here beyond recording the choice. The restriction is keyed
+     * on the lock, so it lands when [LockActivity.sealWithKey] re-applies the
+     * restriction set, and the closed set is recorded by the same lock. This
+     * screen only exists while the phone is unlocked, which is the state in which
+     * this setting does nothing at all — and that is the point of it: the unlock
+     * window is where a parent installs what the phone should have.
+     */
+    private fun renderInstallLock() {
+        // The same ⓘ the policy and the options use, bound off the root rather
+        // than off a card: this control is written into the layout instead of
+        // being inflated from the document, so there is no card to hang it on.
+        findViewById<View>(R.id.root).bindInfo(
+            R.id.installLockInfo,
+            title = getString(R.string.install_lock_name),
+            body = getString(R.string.install_lock_info),
+        )
+
+        // Set before the listener is attached, so showing the stored value does
+        // not read as the parent having just toggled it — the same order
+        // renderOptions uses for the policy's own switches.
+        installLockSwitch.setOnCheckedChangeListener(null)
+        installLockSwitch.isChecked = installLock.isEnabled
+        installLockSwitch.setOnCheckedChangeListener { _, checked ->
+            installLock.isEnabled = checked
+            toast(applied(getString(R.string.install_lock_name)))
         }
     }
 

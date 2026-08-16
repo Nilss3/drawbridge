@@ -24,6 +24,10 @@ import app.drawbridge.policy.model.Policy
  *  - in allowlist mode (`allowed_packages` set, typically by a profile), any
  *    *user-installed* app that is not on the list.
  *
+ * And a fourth that comes from the phone rather than the document: with the
+ * install lock on, anything outside the set of packages the phone carried at the
+ * last lock. See [InstallLockSettings].
+ *
  * Browsers are *detected*, not listed: a package-name list of browsers is out of
  * date the moment someone publishes a new one, whereas the intent filter that
  * makes an app able to open `https://` links is what actually matters.
@@ -36,6 +40,7 @@ class AppBlocker(context: Context) {
         appContext.getSystemService(Context.DEVICE_POLICY_SERVICE) as DevicePolicyManager
     private val admin = DrawbridgeDeviceAdminReceiver.componentName(appContext)
     private val parentKey = ParentKey(appContext)
+    private val installLock = InstallLockSettings(appContext)
 
     /**
      * What was done to a package, which is not the same question as whether it
@@ -94,7 +99,8 @@ class AppBlocker(context: Context) {
         if (isProtected(packageName, policy, allowedBrowsers)) return Action.NONE
 
         val browser = isBrowser(packageName)
-        val reason = reasonToRemove(packageName, policy, browser) ?: return Action.NONE
+        val newcomer = outsideTheInstalledSet(packageName)
+        val reason = reasonToRemove(packageName, policy, browser, newcomer) ?: return Action.NONE
 
         // **Only what a control on the configuration screen could still change
         // waits for the lock.** Everything else goes as soon as it is seen. See
@@ -106,7 +112,11 @@ class AppBlocker(context: Context) {
         // The window before the *first* lock is untouched, and is checked above:
         // it is what lets a parent move their data across, and it is the reason
         // drawbridge does not need a factory reset.
-        if (!actsNow(deferred(packageName, policy, allowedBrowsers), parentKey.isLocked)) {
+        if (!actsNow(
+                deferred(packageName, policy, allowedBrowsers, newcomer),
+                parentKey.isLocked,
+            )
+        ) {
             return Action.NONE
         }
 
@@ -122,6 +132,7 @@ class AppBlocker(context: Context) {
         packageName: String,
         policy: Policy,
         browser: Boolean,
+        newcomer: Boolean,
         allowedBrowsers: Set<String> = allowedBrowsers(policy),
     ): String? =
         when {
@@ -134,8 +145,84 @@ class AppBlocker(context: Context) {
                 "is a browser, and this phone allows only " +
                     allowedBrowsers.joinToString().ifEmpty { "no browser at all" }
             notAllowed(packageName, policy) -> "not on this profile's allowed list"
+            // Last of the four, because the other three say *why* an app is
+            // unwelcome and this one only says it is new. A package that is both
+            // on the blocklist and outside the set should log the blocklist.
+            newcomer -> "not among the apps this phone had when it was locked"
             else -> null
         }
+
+    /**
+     * Whether the install lock has anything to say about this package, read off
+     * this phone.
+     *
+     * [InstallLockSettings.outsideTheSet] is where the rule lives; this is the
+     * reads that feed it. Deliberately *not* consulted for the lock state — see
+     * [deferred], which is where "now or at the lock" is decided for every rule
+     * in this class.
+     *
+     * **Limited to user-installed apps, for the same reason [notAllowed] is.**
+     * This is the second rule in the class that removes what is *not* named
+     * rather than what is, and that is the shape that can take a phone apart. A
+     * snapshot is worse than an allowlist here rather than better: it is
+     * generated rather than written, so nobody ever reads it, and it cannot know
+     * about a package that does not exist yet. An Android version upgrade
+     * legitimately adds system apps — a snapshot taken on Android 15 has never
+     * heard of what 16 ships — and hiding those would be an OTA quietly
+     * subtracting from the phone, with `restoreNowAllowed` unable to bring them
+     * back because it only restores what the *policy* names.
+     *
+     * Nothing is lost by it. This setting exists because of the Play Store: the
+     * AI companion apps that produced policy 59 are user installs to a package,
+     * and a preinstalled app was on the phone when the parent locked it. What
+     * stays available for those is `blocked_packages`, which hides rather than
+     * uninstalls and is therefore reversible.
+     */
+    private fun outsideTheInstalledSet(packageName: String): Boolean =
+        !isSystemPackage(packageName) &&
+            InstallLockSettings.outsideTheSet(
+                enabled = installLock.isEnabled,
+                snapshot = installLock.snapshot,
+                packageName = packageName,
+            )
+
+    /**
+     * Closes the set: records what the phone carries, at the moment it becomes
+     * locked.
+     *
+     * **Visible packages only, not `MATCH_UNINSTALLED_PACKAGES`.** The set means
+     * *the apps this phone can open right now*, and the wider query also returns
+     * packages that were uninstalled with their data kept — so using it would
+     * quietly sanction reinstalling anything that had ever been on the device,
+     * including whatever the parent removed on purpose. The narrower query's own
+     * blind spot, a package drawbridge has *hidden*, costs nothing: hiding is
+     * only ever undone by [restoreNowAllowed], which restores exactly the
+     * packages the policy names as allowed or exempt, and [isProtected] declines
+     * those before the install-lock branch is ever reached.
+     *
+     * Called from [app.drawbridge.dpc.DrawbridgeApplication.sweepOnLock], which
+     * runs it before the sweep it is named for. That order is the whole reason
+     * the unlock window works as a way to add an app.
+     *
+     * **Not gated on the switch**, deliberately. Gating it would leave a phone
+     * that locked with the install lock off carrying a snapshot from whenever it
+     * was last on — months of drift, ready to be believed the moment somebody
+     * flips the switch back. Recording it every time costs one package
+     * enumeration on a code path that is about to enumerate them anyway, and it
+     * means the set is never older than the lock.
+     */
+    fun closeTheInstalledSet() {
+        // Plus whatever drawbridge is installing at this moment, which is not on
+        // the phone yet and must not be treated as absent. herald is over 200 MB,
+        // so a parent who chooses *the allowed browsers* and then presses Lock
+        // reaches here while the download is still running — and a set recorded
+        // without it is drawbridge sweeping away the browser it just fetched.
+        // See InstallLockSettings.ownInstallsInFlight.
+        val installed = packageManager.getInstalledApplications(0).map { it.packageName } +
+            InstallLockSettings.ownInstallsInFlight
+        installLock.take(installed)
+        Log.i(TAG, "Install lock: sealed the phone with ${installed.toSet().size} packages on it")
+    }
 
     /**
      * The same question [evaluate] asks, without doing anything about it.
@@ -152,7 +239,12 @@ class AppBlocker(context: Context) {
      */
     fun disallows(packageName: String): Boolean {
         val policy = DrawbridgeApplication.policy(appContext).policy.value
-        return reasonToRemove(packageName, policy, isBrowser(packageName)) != null
+        return reasonToRemove(
+            packageName,
+            policy,
+            isBrowser(packageName),
+            outsideTheInstalledSet(packageName),
+        ) != null
     }
 
     /**
@@ -632,7 +724,7 @@ class AppBlocker(context: Context) {
          * configuration screen could answer — in which case it waits for the
          * lock, and otherwise it goes now.
          *
-         * Two things defer, and they are the same kind of thing:
+         * Three things defer, and they are the same kind of thing:
          *
          *  - **What an option covers** — WhatsApp, Telegram, YouTube, the
          *    streaming catalogue. See [optionGoverned].
@@ -641,6 +733,14 @@ class AppBlocker(context: Context) {
          *    *no browser*. The parent picked that from a chooser and can unpick
          *    it, and the website has promised since before it was built that the
          *    choice lands at the lock.
+         *  - **A package outside the install lock's closed set.** This one is
+         *    not merely a courtesy: the unlock window is the *only* way to add
+         *    an app to a phone that has the install lock on, so an app installed
+         *    during an unlock has to survive until the lock. It then survives
+         *    permanently, because [closeTheInstalledSet] re-takes the snapshot
+         *    at that lock and the app is in it. Acting immediately here would
+         *    uninstall the app a parent had just unlocked the phone to install,
+         *    which is not a stricter phone — it is a phone with no way in at all.
          *
          * **A browser the policy never sanctioned is not deferred**, and that
          * distinction is the whole reason this is not simply "browsers wait
@@ -657,8 +757,10 @@ class AppBlocker(context: Context) {
             packageName: String,
             policy: Policy,
             allowedBrowsers: Set<String>,
+            outsideInstalledSet: Boolean = false,
         ): Boolean =
-            packageName in optionGoverned(policy) ||
+            outsideInstalledSet ||
+                packageName in optionGoverned(policy) ||
                 (packageName in policy.browserPackages && packageName !in allowedBrowsers)
 
         /**

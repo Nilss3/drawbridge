@@ -1,5 +1,5 @@
 {
-  "version": 59,
+  "version": 60,
   "issued_at": "2026-08-16T12:00:00Z",
   "comment": "Policy 59, DEV CHANNEL ONLY. Twenty-two AI companion and roleplay apps added to blocked_packages, and six of their web fronts to the AI companion list. The owner found the Play Store side of this category wide open on a locked phone: Cycle AI, Rosytalk, Star Girl and Trend AI all installed and ran. The domain list had been carrying this category almost alone, and it cannot -- these apps talk to their own backends and a person installs them by name from the Play Store, not by typing a domain. Every id was fetched from its Play listing and the title had to be the app it claimed to be; com.saylo.app was dropped for being a different app of the same name, and two domains were dropped for being unreadable or too generic to attribute. Build and herald pins unchanged from 58.",
   "dns": {
@@ -723,9 +723,9 @@
   },
   "app_update": {
     "package_name": "app.drawbridge.dpc",
-    "version_code": 28,
-    "url": "https://dev.drawbridge-project.pages.dev/assets/dpc-31614a0297d8e8e1.apk",
-    "sha256": "31614a0297d8e8e1d4862c59a249ed864708326b8ba88260c253a42af7c15be8"
+    "version_code": 29,
+    "url": "https://dev.drawbridge-project.pages.dev/assets/dpc-0f45a23a895fb552.apk",
+    "sha256": "0f45a23a895fb552783a7c7df265d4b44194ee441615428e9a71e8816c6a238b"
   },
   "required_apps": [
     {

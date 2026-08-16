@@ -36,6 +36,11 @@
     <string name="browser_none_description">De telefoon heeft geen enkele browser.\n\nLog overal in voor je dit kiest. Sommige apps sturen je naar een browser om aan te melden, en op een telefoon zonder browser lukt dat niet. Wat niet al ingelogd is, blijft uitgelogd, en daar is niets aan te doen zonder drawbridge te ontgrendelen.</string>
     <string name="browser_icons_description">De browsers die deze keuze toelaat</string>
 
+    <string name="install_lock_heading">App-installaties</string>
+    <string name="install_lock_name">Enkel de apps die al op deze telefoon staan</string>
+    <string name="install_lock_description">Na de vergrendeling kan geen enkele nieuwe app geïnstalleerd worden. De apps die op dat moment op de telefoon staan blijven gewoon updaten.</string>
+    <string name="install_lock_info">De telefoon gaat dicht bij de vergrendeling. Alles wat erop staat blijft werken en blijft updaten, en de Play Store werkt die apps ook nog bij — maar een app die er nog niet op staat, kan er niet meer bij.\n\nDat is meteen de bedoeling ervan én het hele bezwaar: geen nieuwe bankapp, geen app voor treintickets, geen app die de school in maart vraagt, tenzij je drawbridge eerst ontgrendelt met de sleutel. Ontgrendelen, installeren wat nodig is, en opnieuw vergrendelen — wat er op dat moment op staat, is wat de telefoon houdt.\n\nherald en alles wat het beleid verder vereist zijn de uitzondering. Die installeert drawbridge zelf, vanuit het ondertekende beleid dat je gekozen hebt, vergrendeld of niet.\n\nLaat dit uit als je twijfelt. Een app blokkeren kan later altijd nog; een telefoon waarop niemand iets kan installeren is een telefoon waarvoor men bij jou moet aankloppen.</string>
+
     <string name="options_heading">Opties</string>
     <string name="options_explanation">Sta de volgende diensten toe op eigen risico.</string>
     <string name="options_none_available">Dit beleid biedt niets om aan te zetten.</string>

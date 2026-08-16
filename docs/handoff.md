@@ -108,9 +108,11 @@ example is checked against nothing.
 
 ### What to do on the Moto, in order
 
-**Build 28 is cut and published to the dev site** — 0.2.8 build 28, policy 58,
-`dpc-31614a0297d8e8e1.apk`. herald is unchanged at 0.1.13. Everything below needs
-a handset and nothing below has been done.
+**Build 29 is cut and published to the dev site** — 0.2.8 build 29, policy 60,
+`dpc-0f45a23a895fb552.apk`. herald is unchanged at 0.1.13. Everything below needs
+a handset and nothing below has been done. It supersedes build 28, which carried
+the same fixes and was never installed on anything; there is no reason to look
+for it.
 
 1. **Update the Moto and prove the fallback.** A debug APK cannot install over a
    release-signed build and the DPC cannot be uninstalled, so this is
@@ -166,43 +168,182 @@ settle it, and **two of the three are already built or half-built**:
 1. **Keep curating.** What this section is. Useful, cheap, and permanently
    behind — worth doing for the big names because it costs a policy re-sign and
    nothing else, but it is a rearguard action.
-2. **`DISALLOW_INSTALL_APPS` at the lock.** A Device Owner restriction, one line
-   in `DeviceOwnerManager.restrictionsFor`, and **drawbridge does not currently
-   set it** — a locked phone can install anything the Play Store offers. With it,
-   the blocklist only has to cover what is already on the device at lock time,
-   and the category stops growing underneath it. The cost is real and is the
-   reason it wants a decision rather than a commit: no new apps at all without
-   unlocking, which is a different phone from the one the alpha describes.
-3. **Allowlist mode.** `Policy.allowedPackages` exists, `AppBlocker.notAllowed`
-   already implements it, and the website has promised it since the Q&A page was
-   written: *the app-install lock behind "only certain apps"*. It is the last of
-   the three beta promises still unbuilt. Name what may be installed and the
-   question "what is the newest AI companion app called" stops being asked at
-   all.
+2. **The install lock.** ~~`DISALLOW_INSTALL_APPS` at the lock, and drawbridge
+   does not currently set it.~~ **Built the same day — see the next section.**
+   With it, the blocklist only has to cover what is already on the device at lock
+   time, and the category stops growing underneath it. The cost is real, which is
+   why it wanted a decision rather than a commit and why the switch defaults off:
+   no new apps at all without unlocking, which is a different phone from the one
+   the alpha describes.
+3. **Allowlist mode.** `Policy.allowedPackages` exists and `AppBlocker.notAllowed`
+   already implements it — naming what *may* be installed rather than what may
+   not. Still unbuilt, and now the only one of the three that is. It is a
+   different promise from 2 and worth keeping distinct: 2 freezes the phone's app
+   list at the lock, 3 would let a parent name a set of apps in advance and have
+   the phone accept those and nothing else. With 2 built, this is a refinement
+   rather than the answer to the question above.
 
 **The honest summary for whoever picks this up:** the blocklist is a filter for a
-phone whose app store is wide open, and the fix is upstream of the list. 2 is a
-restriction that already has a home in the code; 3 is a feature the policy model
-is already shaped for. Until one of them lands, expect to be adding names.
+phone whose app store is wide open, and the fix is upstream of the list. That fix
+is in as of 2026-08-16. Curating the list stays worth doing for the big names —
+it costs a policy re-sign and nothing else, and it is what protects a phone whose
+parent has left the install lock off, which is every phone by default.
 
-**The owner's call on 2026-08-16: build number 2**, in the shape the
+**The owner's call on 2026-08-16 was to build number 2**, in the shape the
 documentation already promises — *no new app installs after locking, and updates
-of the apps already there still come through*. How to build it is below.
+of the apps already there still come through*. That is the next section.
 
 ---
 
-## Next: the install lock, and how to build it
+## The install lock is built, and three of its bugs were found by re-reading
 
-**Promised on the website, not built, and specified here so the next session can
-start.** The phone closes at the lock: nothing new can be installed, and
-everything already on it goes on updating.
+**2026-08-16, the same day it was specified.** The phone closes at the lock:
+nothing new can be installed, and everything already on it goes on updating. It
+is the last of the three beta promises the website has been carrying, and the
+third to land in two days.
+
+**Built as specified further down this section, with one substantive departure
+and three corrections the spec did not anticipate.** The spec is kept below,
+because what it got wrong is more useful than what it got right.
+
+### What shipped
+
+- **`InstallLockSettings`** — device-local, off by default, holding the switch
+  and the closed set. The set is `Set<String>?` and **the null is the point**: an
+  empty set means *this phone carries nothing*, so every package on it would be a
+  newcomer and the rule would take the device apart. A snapshot never taken has
+  to say "I cannot say", which is the same distinction `protectedSince` got wrong
+  on 2026-08-12.
+- **The set is recorded at every lock**, in `AppBlocker.closeTheInstalledSet`,
+  called from `DrawbridgeApplication.sweepOnLock` **before** the sweep it is
+  named for. That order is the whole feature: the sweep is what enforces the set,
+  so a sweep running against the previous lock's snapshot would remove exactly
+  the app the parent unlocked the phone to install. Recorded whether the switch
+  is on or not, so a phone that had it off is not carrying months of drift ready
+  to be believed the moment somebody turns it back on.
+- **One branch in `AppBlocker.reasonToRemove`**, joining the existing ladder
+  untouched — uninstall for user apps — and `deferred` returns true for it.
+- **`DISALLOW_INSTALL_APPS`** in `restrictionsFor`, keyed on the lock and on the
+  switch. It is in `MANAGED_RESTRICTIONS`, so `applyUserRestrictions` clears it
+  when it is not wanted.
+- **The switch** sits between the browser policy and the options, with its
+  explanation on the card — like the disconnect philosophies and unlike the
+  options, because *only the apps already on this phone* does not say that
+  updates still arrive, and that is the half that makes it livable. The cost is
+  behind the ⓘ, in all three languages.
+- **Diagnostics reports it**: `install lock`, `installed set` (or *(never
+  taken)*, which with the lock on is the failure), and when the set was taken. A
+  wrong snapshot is invisible from every other angle — a phone that evicts the
+  parent's new app and one that lets a stranger's stay look identical from the
+  outside.
+- **548 → 588 tests**: twenty new cases, which is forty because dpc's suite runs
+  in both its variants. Lint warnings unchanged, count for count.
+
+  **That is a different baseline from the 574 this file has been claiming**, and
+  the 574 does not reproduce: `./gradlew clean test` on the commit before this
+  one gives 548, counted from every `test-results` XML in the tree. Stale result
+  files from earlier runs will inflate it, which is the likeliest explanation and
+  is worth knowing before somebody quotes a number out of a dirty build
+  directory. Count after a `clean`.
+
+### The three things the spec had wrong
+
+**1. A package still downloading has to count as present.** The spec said
+`AppInstaller.install` should add the package to the set *when it succeeds*. Both
+halves of that are wrong, in opposite directions. It has to be added **before the
+session is committed**, because `ACTION_PACKAGE_ADDED` can beat the
+install-result broadcast and `PackageWatcher` would then evaluate a package not
+yet in the set — and that still is not enough, because herald is 230 MB. *Choose
+the allowed browsers, then lock* commits the install and then spends minutes
+downloading, and the lock lands in the middle of it: it re-takes the snapshot
+from the packages actually on the phone, does not find herald, and writes the
+name straight back out. So `closeTheInstalledSet` unions the installed packages
+with whatever drawbridge has in flight, and the result receiver adds it a second
+time on success. Three mechanisms for one app, each covering a window the others
+do not.
+
+**2. Layer 1 could not be left to chance after all.** The spec's plan was to test
+`DISALLOW_INSTALL_APPS` against drawbridge's own `PackageInstaller` sessions on
+the Moto and drop layer 1 if it refused them. That blocks the feature on a
+handset for something that can be made not to matter: the restriction is now
+**stood down for the length of an install** and put back by the install's own
+result broadcast — not by a `finally`, since `commit` returns long before the
+package lands. If the Device Owner exemption exists this is two no-op calls; if
+it does not, herald still comes back. What bounds the window when a broadcast is
+lost is that `applyUserRestrictions` recomputes the whole set on every process
+start, boot, lock and unlock.
+
+The honest cost, stated where somebody will find it: while drawbridge is
+downloading an app the parent's own signed policy named, a locked phone can
+install apps. The closed set removes anything else that arrives through that
+window, which is layer 2 doing exactly the job it exists for.
+
+**3. The rule is limited to user-installed apps**, which the spec did not say and
+`AppBlocker.notAllowed` had already learned. This is the second rule in that
+class that removes what is *not* named, and the snapshot is the worse of the two:
+it is generated rather than written, so nobody ever reads it, and it cannot know
+about a package that does not exist yet. An Android version upgrade legitimately
+adds system apps — a snapshot taken on 15 has never heard of what 16 ships — and
+hiding those would be an OTA quietly subtracting from the phone, with nothing
+able to restore them because `restoreNowAllowed` only brings back what the
+*policy* names. Nothing is lost by the limit: the Play Store is what this is for,
+and a preinstalled app was on the phone when the parent locked it.
+
+### herald survives four separate ways, and that is deliberate
+
+It is the thing that strands a phone if it goes wrong — a locked handset with no
+browser and no way back short of the key — so it is over-defended on purpose:
+
+1. `isProtected` declines it before the install-lock branch is reached, because
+   it is an allowed browser;
+2. `InstallLockSettings.allow` puts it in the set before the session commits;
+3. `closeTheInstalledSet` counts it as present while it is still downloading;
+4. the install-result broadcast adds it again on success.
+
+Only the first is specific to browsers. The other three are what make the rule
+right for **any** required app, including ones no policy names yet.
+
+### What needs the Moto
+
+**Shipped as build 29, policy 60, `dpc-0f45a23a895fb552.apk`**, on the dev site.
+herald did not move, so its `required_apps` pins are untouched and the only thing
+a phone will fetch is drawbridge itself.
+
+Nothing here has been on a handset. The emulator shows the mechanism but neither
+of the two questions worth asking, because both are about the platform:
+
+1. **Does `DISALLOW_INSTALL_APPS` let a Play Store update through?** Switch the
+   install lock on, lock, then force an update of an installed app. If it does,
+   both layers agree and the restriction is carrying real weight. If it does not,
+   the promise is still kept — the app updates whenever the restriction is off,
+   and layer 2 was never going to stop it — but `install_lock_description` would
+   need to say so, and that is a correction rather than a nicety.
+2. **Does herald come back on a locked phone?** *No browser*, lock, unlock, *the
+   allowed browsers*, lock again — with the install lock **on**. This exercises
+   all four defences above at once, and it is the failure that strands a phone
+   rather than merely annoying it. Diagnostics answers it without a cable:
+   `installed set` should grow, and herald should neither appear under `still
+   usable` nor vanish after arriving.
+
+Item 3 in *What to do on the Moto* at the top of this file is the same herald
+test **without** the install lock, and it is still unrun. Do that one first: a
+failure there is the browser policy, not this.
+
+---
+
+### The specification this was built from, kept for what it got wrong
 
 **That sentence is the specification, and Android expresses it exactly.** A
 package arriving as `ACTION_PACKAGE_ADDED` carries `EXTRA_REPLACING`: false for a
 package the phone did not have, true for an update of one it did. New app versus
 update is not a heuristic here — it is a boolean the platform hands over.
 
-### Two layers, and only the second is certain
+*As built, nothing reads that flag. The set answers the question instead, and the
+reason is in the spec's own "what to watch for" three sections below: the
+fifteen-minute sweep has no broadcast to read a flag from. The spec settled its
+own design question and did not notice.*
+
+#### Two layers, and only the second is certain
 
 **Layer 1, prevention: `DISALLOW_INSTALL_APPS`.** One entry in
 `DeviceOwnerManager.restrictionsFor`, which is where the whole restriction set is
@@ -227,6 +368,10 @@ AMAPI's wording, not a promise about the AOSP restriction on a sideloaded DPC.
    Owner rather than through the user, so both *should* be exempt — and if
    either is not, this layer cannot ship as it stands and layer 2 carries it
    alone.
+
+*Not how it went. The restriction stands down for the length of an install, so
+the answer stops deciding anything — see "Layer 1 could not be left to chance"
+above. Test 1 is still worth running; test 2 no longer gates the ship.*
 
 **Layer 2, enforcement: the closed set.** This is the part that gives the
 promised semantics whatever the restriction turns out to do, and most of it
@@ -254,17 +399,23 @@ exists.
   had to be guarded against. One line, and it is honest: drawbridge putting an
   app on the phone is the parent's decision arriving by proxy.
 
-### The switch, and what it must say
+*The one line was three, and "when it succeeds" was the wrong moment twice over.
+`hideOrSuspend` never happens either — the rule declines preinstalled packages.*
+
+#### The switch, and what it must say
 
 A device-local setting like the browser policy, defaulting **off**, because it
 changes what the phone is rather than what it filters. The wording has to carry
 the cost, which is not obvious until it bites: **an app you have not installed
-yet, you cannot install** — no new bank app, no new train ticket app, no app a
+yet, you cannot install** — no new bank app, no train ticket app, no app a
 school asks for in March — without unlocking with the key. That is the whole
 point of it and the whole objection to it, and a parent should meet the sentence
 before the situation.
 
-### What to watch for
+*Built as written, and the sentence is in `install_lock_info` in three
+languages.*
+
+#### What to watch for
 
 - **The sweep is the backstop, not the receiver.** `PackageWatcher`'s receiver
   only fires while the filter service is alive, so an app installed during a
@@ -612,9 +763,9 @@ which way it goes on real hardware.
 
 | | `main` (the alpha) | `dev` |
 |---|---|---|
-| drawbridge | 0.2.7, build 18 | **0.2.8, build 28** |
+| drawbridge | 0.2.7, build 18 | **0.2.8, build 29** |
 | herald | 0.1.9 | **0.1.13** |
-| policy | **50** | **59** |
+| policy | **50** | **60** |
 | install page | <https://drawbridge-project.pages.dev/install/usb/> | <https://dev.drawbridge-project.pages.dev/install/usb/> |
 | provisioned devices | the owner's Nothing Phone (A059) | the Moto G15 |
 
@@ -663,9 +814,9 @@ still broken".
 |---|---|
 | Repo | https://github.com/Nilss3/drawbridge — public, `main` + `dev` |
 | Alpha | **[v0.2.7](https://github.com/Nilss3/drawbridge/releases/tag/v0.2.7)** is what testers install, from `main`. [v0.2.5](https://github.com/Nilss3/drawbridge/releases/tag/v0.2.5) stays **latest** because `required_apps` resolves herald through it |
-| Dev | **drawbridge build 28, herald 0.1.13, policy 59**, served from the dev site. herald is unchanged since v0.2.8-dev.4, whose versioned URLs `required_apps` still names |
+| Dev | **drawbridge build 29, herald 0.1.13, policy 60**, served from the dev site. herald is unchanged since v0.2.8-dev.4, whose versioned URLs `required_apps` still names |
 | Devices | Two managed phones: the Moto G15 on dev, and the owner's **Nothing Phone A059** on the alpha since 2026-08-13 |
-| Tests | **574** unit tests across four build variants, lint clean |
+| Tests | **588** unit tests across eight variant suites, lint clean. Counted after a `clean`; see the install-lock section for why the old 574 was wrong |
 | Website | trilingual, generated into `site/`, both channels served from Cloudflare Pages |
 
 **herald is no longer frozen.** It sat at 0.1.9 from 2026-08-10 to 2026-08-13
@@ -724,16 +875,17 @@ documents the state drawbridge is meant to reach at public beta: a long-form
 video streaming option, the browser choice (herald, herald mono only, or no
 browser at all), and the app-install lock behind "only certain apps". The app
 catches up step by step, and **the first step landed the same day**: policy 52
-adds the `streaming` option. **Two of the three are now real** — the browser
-chooser was built on 2026-08-15, see the section at the top of this file — and
-the app-install lock is the one still only on the website — though it is no
-longer only an idea: the build plan is written up under *Next: the install lock*
-at the top of this file, on the owner's call of 2026-08-16.
+adds the `streaming` option. **All three are now real**, in three days: the
+streaming option on 2026-08-14, the browser chooser on 2026-08-15 and the install
+lock on 2026-08-16. Both later ones have their own sections at the top of this
+file.
 
-So a gap between that page and a dev handset is the expected state, not a bug to
-go and fix, and this is another reason the two sites must not converge: `main`
-still describes what a tester's phone actually does. Read the page as the target
-and this file as the position.
+That closes the gap this paragraph was written to explain, and it does not close
+the *rule*. The dev site still describes the target and this file still describes
+the position, which is now "built, and no handset has seen it" rather than "not
+built" — a different kind of gap and a shorter one, but the same reason the two
+sites must not converge: `main` describes what a tester's phone actually does.
+Read the page as the target and this file as the position.
 
 **`dev` is on drawbridge 0.2.8 build 24, herald 0.1.10 and policy 46**; `main` on
 0.2.7 (18), herald 0.1.9 and policy 37. Built 2026-08-12 — the first builds this channel has ever carried,

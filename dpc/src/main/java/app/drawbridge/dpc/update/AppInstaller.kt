@@ -6,7 +6,9 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.util.Log
 import app.drawbridge.dpc.DrawbridgeApplication
+import app.drawbridge.dpc.admin.DeviceOwnerManager
 import app.drawbridge.dpc.apps.BrowserSettings
+import app.drawbridge.dpc.apps.InstallLockSettings
 import app.drawbridge.policy.model.AppUpdate
 import app.drawbridge.policy.net.Downloader
 import kotlinx.coroutines.Dispatchers
@@ -120,6 +122,29 @@ class AppInstaller(context: Context) {
         0
     }
 
+    /**
+     * Downloads, checks and installs one APK the signed policy names.
+     *
+     * **The install lock is stood down around it, and the package joins the
+     * closed set before a single byte is committed.** Both halves are needed and
+     * they guard different things:
+     *
+     *  - `DISALLOW_INSTALL_APPS` might refuse this session outright. A Device
+     *    Owner is expected to be exempt; that is unverified on a handset, and the
+     *    thing depending on it is herald coming back after a browser-policy
+     *    change. See [DeviceOwnerManager.allowOwnInstalls].
+     *  - The closed set would remove the app moments after it arrived. herald is
+     *    user-installed, so it is uninstalled rather than hidden, and a phone
+     *    that fetches 230 MB only to sweep it away at the next pass is the loop
+     *    the browser choice already had to be guarded against.
+     *
+     * The snapshot is written **before** the session rather than on success,
+     * because success is a broadcast and `ACTION_PACKAGE_ADDED` can beat it:
+     * [app.drawbridge.dpc.apps.PackageWatcher] would then evaluate a package
+     * that was not yet in the set. Adding a name for an install that later fails
+     * costs nothing — the set is only ever read as *not in*, and a name with no
+     * app behind it answers nothing.
+     */
     private fun install(update: AppUpdate): Result {
         val staged = File(appContext.cacheDir, "${update.packageName}-${update.versionCode}.apk")
         try {
@@ -135,6 +160,12 @@ class AppInstaller(context: Context) {
             if (!digest.equalsIgnoringCase(update.sha256)) {
                 return Result.Failed("checksum mismatch: expected ${update.sha256}, got $digest")
             }
+
+            // Both before the session, and neither is undone here: the window is
+            // closed by InstallResultReceiver when the platform reports back, and
+            // the set entry is meant to be permanent.
+            InstallLockSettings(appContext).allow(update.packageName)
+            DeviceOwnerManager(appContext).allowOwnInstalls(update.packageName)
 
             val installer = appContext.packageManager.packageInstaller
             val params = PackageInstaller.SessionParams(
@@ -166,6 +197,11 @@ class AppInstaller(context: Context) {
             return Result.Started
         } catch (e: Exception) {
             Log.e(TAG, "Install of ${update.packageName} failed", e)
+            // Nothing was committed, so no verdict is coming and
+            // InstallResultReceiver will never close the window this opened.
+            // Harmless for the failures that happen before it was opened at all:
+            // the call removes nothing and re-applies the same restrictions.
+            DeviceOwnerManager(appContext).ownInstallFinished(update.packageName)
             return Result.Failed(e.message ?: e.javaClass.simpleName)
         } finally {
             staged.delete()

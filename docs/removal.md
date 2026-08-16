@@ -14,7 +14,9 @@ question there is, and asking the same thing twice is ceremony rather than
 security.
 
 This lifts every restriction, stops the filter, un-hides any system browser that
-was hidden, and gives up Device Owner. **No wipe and no data loss.** Use it when
+was hidden, un-suspends anything that could only be suspended, forgets the
+install lock's record of which apps the phone was sealed with, and gives up
+Device Owner. **No wipe and no data loss.** Use it when
 the child grows up and you are keeping the phone, or before selling it (followed
 by a normal factory reset, as you would with any phone you are selling — that
 part has nothing to do with drawbridge).

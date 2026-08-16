@@ -13,6 +13,7 @@ import app.drawbridge.dpc.BuildConfig
 import app.drawbridge.dpc.DrawbridgeApplication
 import app.drawbridge.dpc.R
 import app.drawbridge.dpc.apps.BrowserSettings
+import app.drawbridge.dpc.apps.InstallLockSettings
 import app.drawbridge.dpc.security.ParentKey
 
 /**
@@ -342,7 +343,59 @@ class DeviceOwnerManager(context: Context) {
         } else if (!locked) {
             Log.i(TAG, "Unlocked: leaving USB debugging available to the parent")
         }
-        return restrictionsFor(isLocked = locked, retainAdbAccess = BuildConfig.RETAIN_ADB_ACCESS)
+        return restrictionsFor(
+            isLocked = locked,
+            retainAdbAccess = BuildConfig.RETAIN_ADB_ACCESS,
+            // Held off while drawbridge is putting an app on the phone itself.
+            // See allowOwnInstalls.
+            installLock = InstallLockSettings(appContext).isEnabled &&
+                InstallLockSettings.ownInstallsInFlight.isEmpty(),
+        )
+    }
+
+    /**
+     * Stands the install restriction down while drawbridge installs something of
+     * its own, and is the reason layer 1 can ship without waiting for a handset.
+     *
+     * **The open question this closes.** `DISALLOW_INSTALL_APPS` is documented as
+     * disallowing *a user* from installing apps, and a Device Owner pushing a
+     * package is expected to be exempt — that is how every managed enterprise
+     * phone works, and Google's own EMM API keeps the two in separate fields. It
+     * has not been checked on a handset, and the thing that depends on it is the
+     * one that must not break: `required_apps` fetching herald after the browser
+     * choice goes from *no browser* back to *the allowed browsers*, and
+     * [app.drawbridge.dpc.ui.UpdateActivity] installing a new drawbridge. A
+     * phone that cannot do the first has lost its browser permanently, with the
+     * key as the only way back.
+     *
+     * So the restriction comes off for the length of the install rather than
+     * being trusted to make an exception. If the exemption does exist this is
+     * redundant and costs two no-op platform calls; if it does not, herald still
+     * comes back. Either way the answer stops mattering.
+     *
+     * **It is put back by [app.drawbridge.dpc.update.InstallResultReceiver], not
+     * by a `finally`.** The install is asynchronous — `commit` returns long
+     * before the package lands — so restoring it at the end of the calling
+     * method would re-block the very session it was lifted for. What bounds the
+     * window if that broadcast never arrives is that
+     * [applyUserRestrictions] recomputes the whole set from scratch on every
+     * process start, every boot, every lock and every unlock.
+     *
+     * The window itself is the honest cost: while drawbridge is downloading and
+     * installing an app the parent's policy asked for, a locked phone can install
+     * apps. The closed set in [app.drawbridge.dpc.apps.AppBlocker] still removes
+     * anything that arrives through it, which is layer 2 doing exactly the job it
+     * exists for.
+     */
+    fun allowOwnInstalls(packageName: String) {
+        InstallLockSettings.beginOwnInstall(packageName)
+        applyUserRestrictions()
+    }
+
+    /** Ends the window [allowOwnInstalls] opened, whatever the install's verdict. */
+    fun ownInstallFinished(packageName: String) {
+        InstallLockSettings.endOwnInstall(packageName)
+        applyUserRestrictions()
     }
 
     fun clearUserRestrictions() {
@@ -497,17 +550,47 @@ class DeviceOwnerManager(context: Context) {
          *
          * Note this does not switch USB debugging *on*. It stops the platform
          * refusing it; the developer options toggle is still a deliberate act.
+         *
+         * **[UserManager.DISALLOW_INSTALL_APPS] is the second conditional
+         * entry**, and it is keyed on the lock for the same reason rather than
+         * on protection: installing something is the main thing a parent unlocks
+         * the phone *to do*. It also takes a third condition, the household's
+         * own [app.drawbridge.dpc.apps.InstallLockSettings] switch, because
+         * unlike everything else here it is off by default — it changes what the
+         * phone is rather than what it filters, so nobody gets it by leaving a
+         * button unpressed.
+         *
+         * This is prevention, and it is deliberately not the whole feature.
+         * Whether the platform lets Play Store *updates* through it is
+         * unverified on real hardware, so the promise — no new apps, updates
+         * still arriving — is carried by the closed set in
+         * [app.drawbridge.dpc.apps.AppBlocker] whatever this restriction turns
+         * out to do. See docs/handoff.md.
+         *
+         * There is no default for [installLock] on purpose. A safety feature
+         * that switches itself off when a caller forgets an argument is the kind
+         * of silence this codebase has paid for before.
          */
-        fun restrictionsFor(isLocked: Boolean, retainAdbAccess: Boolean): List<String> =
-            if (!isLocked || retainAdbAccess) {
-                MANAGED_RESTRICTIONS - UserManager.DISALLOW_DEBUGGING_FEATURES
-            } else {
-                MANAGED_RESTRICTIONS
+        fun restrictionsFor(
+            isLocked: Boolean,
+            retainAdbAccess: Boolean,
+            installLock: Boolean,
+        ): List<String> {
+            val withheld = buildSet {
+                if (!isLocked || retainAdbAccess) add(UserManager.DISALLOW_DEBUGGING_FEATURES)
+                if (!isLocked || !installLock) add(UserManager.DISALLOW_INSTALL_APPS)
             }
+            return MANAGED_RESTRICTIONS - withheld
+        }
 
         val MANAGED_RESTRICTIONS: List<String> = buildList {
             add(UserManager.DISALLOW_CONFIG_VPN)
             add(UserManager.DISALLOW_DEBUGGING_FEATURES)
+            // Conditional, like debugging above it — see restrictionsFor. It has
+            // to be in this list all the same, because applyUserRestrictions
+            // computes what to *clear* from it: a conditional restriction
+            // outside this list would be applied once and never come off.
+            add(UserManager.DISALLOW_INSTALL_APPS)
             add(UserManager.DISALLOW_SAFE_BOOT)
             add(UserManager.DISALLOW_ADD_USER)
             add(UserManager.DISALLOW_ADD_MANAGED_PROFILE)
