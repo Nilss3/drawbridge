@@ -339,23 +339,36 @@ naming by hand:
 | CRUSH: AI Romance × Otome | `xyz.passion.crushai` | Parental guidance |
 | zeta: AI Chat, Story, Play | `com.scatterlab.messenger` | Parental guidance |
 
-**That claim was written before the rule was run against the long tail, and the
-long tail corrected it.** `tools/app-ratings.py search "ai girlfriend" "ai
-companion chat"` returned 35 candidate ids that are not on the blocklist, and the
-rule's verdict on them was **12 keep, 10 neutral, 13 remove** — 37%, against the
-68% the twenty-two apps above suggested.
+**Checked against a second, independent sample, and it holds — but not as
+stated.** `tools/app-ratings.py search "ai girlfriend" "ai companion chat"`
+returned 35 candidate ids not on the blocklist. Splitting them by what they
+actually are, because the search terms also surface general-purpose assistants
+that branches 6–7 are not meant to catch:
 
-The difference is a selection effect worth naming: policy 59's twenty-two are
-apps the owner *found on a phone*, which skews to the prominent and monetised
-ones, and those rate themselves higher. The long tail does not. **Ashley:
-American Ai Girlfriend** and **HerStory: AI Girlfriend** are PEGI 3. **AI
-Girlfriend – Idolchat**, **Sammi: AI Girlfriend** and **Vexy – AI Girlfriend
-Chat** are *Parental guidance*, so they fall through to branch 8 and survive on
-any phone without the install lock.
+| | AI companions | General assistants |
+|---|---|---|
+| remove | **13** | 0 |
+| neutral | 4 | 6 |
+| keep | 2 | 10 |
+| total | **19** | 16 |
 
-**So the list does not stop growing, and this spec should not promise that it
-will.** What the rule does is dispatch a third of the arrivals without a human
-looking, and rank the rest. That is worth having and it is not the same claim.
+**13 of 19 companions = 68%**, which is the same as 15 of 22 above. Two
+independent samples, the same number: that is a replication rather than a
+coincidence, and it is much better evidence than either was alone.
+
+**A first pass at this reported 37% and was wrong**, having divided 13 by all 35
+and counted sixteen general-purpose assistants — ChatGPT, Gemini, Perplexity,
+Copilot, Poe — as escapes. They are not escapes; the chatbot toggle names them,
+and the rating rule leaving them alone is the design working. The wrong
+denominator then invited an invented explanation about prominent apps rating
+themselves higher, which no evidence supported. Recorded because the arithmetic
+error was harder to see than the story built on top of it.
+
+**What is true is narrower than "stops growing".** Six of nineteen leak, and two
+of them are named *AI Girlfriend* while sitting at PEGI 3 — Ashley
+(`com.ashley.ashley_ai`) and HerStory (`com.hyperitycorp.herstoryai`). Four more
+are *Parental guidance* and so survive on any phone without the install lock. The
+list keeps growing; it grows at roughly a third of the rate.
 
 The half that actually attacks *"this cannot be kept up with"* turns out to be
 **search, not rating**. Two query terms surfaced 35 unlisted candidates in a few
@@ -380,6 +393,49 @@ choice, because "this family cycles" is not something a signed document can know
 
 It sits at branch 2, above the blocklist, and can only *keep* an app. It cannot
 remove one, and it cannot override `isProtected`.
+
+---
+
+## The audit against the existing blocklist
+
+`tools/app-ratings.py audit --policy-blocklist` ran the rule over all 304
+packages `dist/policy.json` blocks by name. **148 remove, 87 neutral, 57 keep, 12
+unverified.**
+
+Taken flat that reads as the rule catching half of what the list carries, and
+that reading is wrong. Bucketing the 57 it would *keep* by **why the policy blocks
+them**:
+
+| | count | can a rating ever catch it? |
+|---|---|---|
+| Filter-bypass — VPN, proxy, Tor, DNS changers | 27 | **no, and it should not** |
+| Browsers — Opera, Tor Browser, Aloha, Ecosia | 4 | answered earlier, at branch 5 |
+| Content and option-governed | 26 | partly |
+
+**The list has a permanent job, and this is it.** NordVPN is PEGI 3 and correctly
+so — a VPN carries no age-inappropriate content. It is blocked because it defeats
+a DNS-only filter, which is a fact about drawbridge's architecture rather than a
+fact about the app, and no content rating from anybody will ever express it.
+Twenty-nine of the 304 are in that class. They are not the rule failing; they are
+work the rule was never able to do.
+
+The 87 *neutral* break down the same way: 84 are content or option-governed —
+9GAG, Apple TV, BeReal, Bluesky, BritBox, CANAL+, Crunchyroll, DAZN — sitting at
+*Parental guidance* and correctly falling through to the streaming option and the
+blocklist that already govern them.
+
+**So the genuine rating-rule misses are the seven AI companions** rated PEGI 3 or
+*Parental guidance*, which is the same finding as the search sample and the same
+seven-ish apps. Everything else the list carries, it carries on purpose.
+
+The 12 *unverified* are worth a separate look, because two of them are
+`app.drawbridge.probe` and `app.drawbridge.probeb` — this project's own Play
+Protect probe packages, which are on the blocklist and have no Play listing. The
+rest are dead or region-locked services: `com.showmax.app` (superseded),
+`com.orange.ocsgo`, `com.youku.phone`, `com.tencent.qqlive`,
+`com.vkontakte.android`, `org.telegram.messenger.web`. A 404 is not proof of a
+wrong id — four streaming listings answered 404 from outside their market during
+policy 52 — so these want checking against APKMirror rather than deleting.
 
 ---
 
