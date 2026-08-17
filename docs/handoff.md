@@ -248,6 +248,30 @@ The gap is worth naming: everything about the install lock was tested as a *pure
 rule*, and the rule was right. What was wrong was the order it got asked in,
 which no pure test could see. The four new cases go through `evaluate`.
 
+### The whitelist grew, and it needs no build
+
+**Policy 65 adds nine apps and no APK**, which is the point of keeping the rule
+and its exceptions in the signed document: a household discovering a missing app
+costs a re-sign, not a release.
+
+**Shazam** (`com.shazam.android`) and then **music streaming as a category** —
+TIDAL, Apple Music, Qobuz, Deezer, SoundCloud, Amazon Music, Bandcamp and TuneIn.
+All *Parental guidance*, all for the same structural reason: a music service
+carries user playlists, comments or podcasts, and that is ungraded content
+whatever the music is.
+
+**YouTube Music is deliberately absent, and it is the sharpest case in the
+file.** It is *Parental guidance* like the rest and it is exempted by *Allow
+YouTube*, so whitelisting it would override the parent's switch and leave a
+control that moves and changes nothing. `policytool.py sign` refuses it twice
+over — the package is also on `blocked_packages`, which the whitelist is
+consulted before. Checked by constructing the mistake rather than trusting the
+check.
+
+The band is behaving exactly as the measurements predicted: ordinary apps land in
+it because they carry some ungraded element, and the whitelist is what pays for
+blocking it.
+
 ### Also in this build
 
 **Shazam is on the whitelist** — `com.shazam.android`, *Parental guidance*,
@@ -1009,7 +1033,7 @@ which way it goes on real hardware.
 |---|---|---|
 | drawbridge | 0.2.7, build 18 | **0.2.8, build 32** |
 | herald | 0.1.9 | **0.1.13** |
-| policy | **50** | **64** |
+| policy | **50** | **65** |
 | install page | <https://drawbridge-project.pages.dev/install/usb/> | <https://dev.drawbridge-project.pages.dev/install/usb/> |
 | provisioned devices | the owner's Nothing Phone (A059) | the Moto G15 |
 
@@ -1058,7 +1082,7 @@ still broken".
 |---|---|
 | Repo | https://github.com/Nilss3/drawbridge — public, `main` + `dev` |
 | Alpha | **[v0.2.7](https://github.com/Nilss3/drawbridge/releases/tag/v0.2.7)** is what testers install, from `main`. [v0.2.5](https://github.com/Nilss3/drawbridge/releases/tag/v0.2.5) stays **latest** because `required_apps` resolves herald through it |
-| Dev | **drawbridge build 32, herald 0.1.13, policy 64**, served from the dev site. herald is unchanged since v0.2.8-dev.4, whose versioned URLs `required_apps` still names |
+| Dev | **drawbridge build 32, herald 0.1.13, policy 65**, served from the dev site. herald is unchanged since v0.2.8-dev.4, whose versioned URLs `required_apps` still names |
 | Devices | Two managed phones: the Moto G15 on dev, and the owner's **Nothing Phone A059** on the alpha since 2026-08-13 |
 | Tests | **660** unit tests across eight variant suites, lint clean. Counted after a `clean`; see the install-lock section for why the old 574 was wrong |
 | Website | trilingual, generated into `site/`, both channels served from Cloudflare Pages |

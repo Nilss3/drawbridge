@@ -50,10 +50,28 @@ com.apex.community.birdbrain.birdbrain
 # device-local half of the whitelist is for.
 app.newpharma.shop
 
-# --- music and audiobooks (not video: that is the streaming option's business)
+# --- music and audiobooks -----------------------------------------------------
+# Not video: long-form streaming has its own option, and this list must never
+# reach into a category a switch already governs. Every one of these is Parental
+# guidance — a music service carries user playlists, comments or podcasts, which
+# is ungraded content and therefore the band, whatever the music is.
+#
+# YouTube Music is deliberately absent and is the sharpest case in this file:
+# it is Parental guidance like the rest, and it is exempted by *Allow YouTube*.
+# Whitelisting it would override that switch, and policytool.py sign refuses the
+# document for exactly that reason — it also names blocked_packages, so the
+# refusal fires twice.
 com.spotify.music
 com.audible.application
 com.shazam.android
+com.aspiro.tidal                # TIDAL
+com.apple.android.music         # Apple Music
+com.qobuz.music                 # Qobuz
+deezer.android.app              # Deezer
+com.soundcloud.android          # SoundCloud
+com.amazon.mp3                  # Amazon Music
+com.bandcamp.android            # Bandcamp
+tunein.player                   # TuneIn radio
 
 # --- family photo sharing ----------------------------------------------------
 us.mitene
