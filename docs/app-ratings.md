@@ -649,6 +649,21 @@ policy 52 — so these want checking against APKMirror rather than deleting.
 1. ~~`tools/` curation script.~~ **Built** — `tools/app-ratings.py`, with
    `check`, `audit` and `search`. It is what produced every number in this file,
    and running it corrected the spec three times.
+
+**Steps 2 through 6 are built as of 2026-08-17**, and nothing carries them on a
+handset yet — no build has been cut since drawbridge 30. The rule goes live the
+moment one is, because policy 62 already carries `app_ratings` and there is no
+separate switch. **Run the tools script against the target phone's own package
+list before cutting that build**:
+
+```
+adb shell pm list packages -3 | sed 's/package://' > /tmp/phone.txt
+python3 tools/app-ratings.py audit --corpus /tmp/phone.txt --expect keep
+```
+
+That prints exactly what would be removed, offline, before anything is. The
+measurement says to expect roughly one app in eleven to want a whitelist entry,
+and it is better to meet them in a terminal than by noticing Zoom has gone.
 2. **The default whitelist**, from the measurement above: private messengers,
    conferencing, sport and recipe apps, pharmacies, digital identity, and the
    general-purpose assistants. This is the prerequisite for blocking *Parental
@@ -659,7 +674,24 @@ policy 52 — so these want checking against APKMirror rather than deleting.
 4. `StoreMetadata` + cache in the DPC, with Diagnostics reporting the unverified
    count and the first-scan progress.
 5. Branches 6 and 7 in `AppBlocker`, in the order above.
-6. The first-lock full scan, deferred to an unmetered network.
+6. ~~The first-lock full scan, deferred to an unmetered network.~~ **Built** —
+   `StoreScanWorker`. Queued at the lock and re-run weekly, both constrained to
+   an unmetered network at the *request* rather than checked inside the job,
+   which is the opposite of `UpdateWorker` and deliberate: that worker carries a
+   3 MB self-update which must reach a phone that never sees Wi-Fi alongside a
+   235 MB browser that must not, so it splits the decision internally. Here the
+   whole job is the expensive half, so WorkManager can simply hold it.
+
+   It resumes rather than restarts, because the cache *is* the progress: a
+   package with a current answer is skipped. Bounded at 60 listings a run so one
+   pass cannot approach WorkManager's ten-minute limit, and an interrupted run
+   returns `retry` rather than `success` — a scan that stopped and a scan that
+   finished must not be indistinguishable.
+
+   The weekly repeat is not about staleness. An expired entry reads as
+   `unverified`, which is *keep*, and an app that survived the first pass was
+   allowed anyway. What it catches is a publisher **re-rating an app already on
+   the phone**, which no other signal on the device would reveal.
 7. The website page.
 
 Step 2 before step 5, always. The rule is not safe to enable on a phone until the

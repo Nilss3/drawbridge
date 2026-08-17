@@ -153,6 +153,11 @@ class DiagnosticsActivity : AppCompatActivity() {
             appendLine("store cached:      ${store.known} (${store.usable} usable)")
             appendLine("store unverified:  ${store.failed}")
             appendLine("store last fetch:  ${timestamp(store.newestFetchMillis)}")
+            // How much of the catch-up pass is left. Zero with the rule on means
+            // the phone has been asked about; a number that never falls means the
+            // scan is waiting for Wi-Fi it is not getting, which is a phone
+            // enforcing nothing and looking exactly like one that has finished.
+            appendLine("store to scan:     ${AppBlocker(this@DiagnosticsActivity).packagesWantingStoreAnswer().size}")
 
             appendLine("install lock:      ${installLock.isEnabled}")
             appendLine(

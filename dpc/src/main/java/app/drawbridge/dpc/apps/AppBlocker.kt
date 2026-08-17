@@ -222,6 +222,36 @@ class AppBlocker(context: Context) {
      * read. The sweep does not call it — a full pass is 50–100 MB and belongs on
      * an unmetered network, deliberately, rather than every fifteen minutes.
      */
+    /**
+     * The packages a store scan still has to ask about: user-installed, not
+     * already spoken for by an earlier branch, and not already answered.
+     *
+     * The same four gates [ensureStoreAnswer] applies, in one place, because two
+     * callers need the answer and they must not drift: the worker that does the
+     * scanning and the Diagnostics line that reports how much of it is left. A
+     * screen that counted differently from the job would be a screen reporting
+     * progress on something else.
+     *
+     * **This is what makes the scan affordable.** A handset carries ~294
+     * packages and this returns a few dozen: everything preinstalled is exempt
+     * from the rule, everything protected was never a candidate, and everything
+     * already cached is answered. At ~1.2 MB a listing, the difference between
+     * those two numbers is the difference between 350 MB and 50.
+     */
+    fun packagesWantingStoreAnswer(): List<String> {
+        val policy = DrawbridgeApplication.policy(appContext).policy.value
+        val ratings = policy.appRatings ?: return emptyList()
+        if (!ratings.isConfigured) return emptyList()
+
+        val allowedBrowsers = allowedBrowsers(policy)
+        return packageManager.getInstalledApplications(0)
+            .map { it.packageName }
+            .filterNot { isSystemPackage(it) }
+            .filterNot { isProtected(it, policy, allowedBrowsers) }
+            .filterNot { storeCatalogue.isFresh(it) }
+            .sorted()
+    }
+
     fun ensureStoreAnswer(packageName: String) {
         val policy = DrawbridgeApplication.policy(appContext).policy.value
         val ratings = policy.appRatings ?: return

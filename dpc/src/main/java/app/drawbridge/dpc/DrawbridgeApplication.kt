@@ -6,6 +6,7 @@ import android.util.Log
 import app.drawbridge.dpc.admin.DeviceOwnerManager
 import app.drawbridge.dpc.admin.ProvisioningLog
 import app.drawbridge.dpc.apps.AppBlocker
+import app.drawbridge.dpc.apps.store.StoreScanWorker
 import app.drawbridge.dpc.curfew.CurfewController
 import app.drawbridge.dpc.curfew.CurfewWorker
 import app.drawbridge.dpc.update.UpdateWorker
@@ -28,6 +29,11 @@ class DrawbridgeApplication : Application() {
         applicationScope.launch { policy(this@DrawbridgeApplication).ensureLoaded() }
         PolicyWorker.schedule(this)
         UpdateWorker.schedule(this)
+        // Weekly, on Wi-Fi, and mostly a job that finds nothing to do: only a
+        // cache entry that has expired costs a request. What it is for is a
+        // publisher re-rating an app that is already on the phone, which nothing
+        // else on the device would ever reveal.
+        StoreScanWorker.schedule(this)
 
         // Restrictions can be dropped by an OS upgrade, so re-assert them on every
         // process start rather than only at provisioning time.
@@ -174,6 +180,16 @@ class DrawbridgeApplication : Application() {
          */
         fun sweepOnLock(context: Context) {
             val appContext = context.applicationContext
+
+            // The catch-up pass, queued rather than run: it is 50-100 MB and
+            // waits for Wi-Fi, so it cannot be part of the work a parent stands
+            // and watches. Queued *here* because the lock is when the store rule
+            // starts applying and therefore the first moment the phone needs
+            // answers about what is already on it — the install receiver only
+            // ever covers what arrives next, which is the wrong half on a phone
+            // somebody installed drawbridge to fix.
+            StoreScanWorker.runNow(appContext)
+
             lockScope.launch {
                 val blocker = AppBlocker(appContext)
                 runCatching { blocker.closeTheInstalledSet() }
