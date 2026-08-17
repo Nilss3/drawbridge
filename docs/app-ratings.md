@@ -1,6 +1,7 @@
 # Spec: app admission by store metadata
 
-**Status: specified 2026-08-16, not built.** This is the design for deciding
+**Status: specified 2026-08-16, revised 2026-08-17, not built.** The tooling in
+`tools/app-ratings.py` is built and is where every number below comes from. This is the design for deciding
 whether an app may stay on a managed phone using Google Play's own content
 rating and category, instead of only a hand-written list of package names.
 
@@ -92,7 +93,7 @@ Evaluated in this order. The first branch that answers, wins.
 | 4 | Local **blocklist** (`blocked_packages`) | **remove** | no |
 | 5 | Browser rule | existing behaviour | no |
 | 6 | Store **category** in `GAME_*` or `DATING` | **remove** | yes |
-| 7 | Store **rating** not in `allowed_ratings` and not in `neutral_ratings` | **remove** | yes |
+| 7 | Store **rating** not in `allowed_ratings` — *Parental guidance included* | **remove** | yes |
 | 8 | Install lock: outside the closed set | **remove** | no |
 | 9 | otherwise | **keep** | — |
 
@@ -135,15 +136,24 @@ The check must be prefix-based on `GAME_` rather than an enumeration —
 `GAME_CASUAL`, `GAME_ARCADE`, `GAME_STRATEGY`, `GAME_ADVENTURE` and the rest,
 plus whatever Google adds next.
 
-### Three rating outcomes, not two
+### Two rating outcomes: PEGI 3, or blocked
 
 - **`allowed_ratings`** → keep. `PEGI 3` and its equivalents.
-- **`neutral_ratings`** → *fall through to branch 8*, i.e. the rating says
-  nothing and the rest of drawbridge decides. This is `Parental guidance`, and it
-  is a third state rather than a lenient second one: 15 of 35 ordinary apps carry
-  it, so treating it as blocked takes half the phone, and treating it as allowed
-  would silently exempt an entire band from the rule.
-- **anything else** → remove.
+- **anything else** → remove, *Parental guidance included*.
+
+**Blocking `Parental guidance` is the owner's call of 2026-08-17, and it reverses
+an earlier draft of this file** which let that band fall through to the rest of
+policy. The reasoning is what changed, not the data: IARC assigns *Parental
+guidance* where it grades nothing, and the apps that carry it are the ones with
+no moderation — TikTok, Roblox, Bigo, Discord. "Watch your child every second" is
+not a rating a managed phone can act on, and drawbridge is built for adults
+locking their own device as much as for parents, where the same absence of
+moderation is the same problem.
+
+**It is the expensive half of the rule and the cost is measured**, below. Roughly
+one useful app in eleven is *Parental guidance*, and the whitelist is what pays
+for it — which is why the whitelist stops being a convenience and becomes load
+bearing. See *The whitelist is now core*.
 
 Both lists live in the **signed policy**, not in the app:
 
@@ -151,11 +161,14 @@ Both lists live in the **signed policy**, not in the app:
 "app_ratings": {
   "store_region": "BE",
   "allowed_ratings": ["pegi 3", "everyone", "usk: all ages", "rated 3+"],
-  "neutral_ratings": ["parental guidance"],
   "blocked_category_prefixes": ["GAME_"],
-  "blocked_categories": ["DATING"]
+  "blocked_categories": ["DATING"],
+  "allowed_packages": ["ch.threema.app", "network.loki.messenger", "..."]
 }
 ```
+
+`allowed_packages` is the **default whitelist**, and it belongs in the signed
+document rather than only on the device — see below.
 
 Keeping them in the document means a threshold can move with a policy re-sign
 rather than an APK update — which matters, because a build cannot be pushed to a
@@ -231,73 +244,172 @@ same failure as the pre-2026-08-15 log nobody could read.
 
 ---
 
-## The chatbot toggle
+---
 
-Chatbots are **blocked by default and restorable by one option**, in the shape
-the streaming option already has.
+## The whitelist is now core, and here is what it has to carry
 
-**The option is a named list, and the rating rule contributes nothing to it.**
-Measured 2026-08-16, in Belgium:
+Blocking *Parental guidance* moves the whitelist from insurance to load-bearing:
+without it the phone loses its messengers. **`tools/corpora/useful-wide.txt`** is
+323 packages harvested from Play search on 2026-08-17 across banking, government,
+health, school, transport, utilities, office, tools, hobbies and messaging —
+harvested rather than hand-written, so the ids are real and the population is
+weighted by what people actually install. The rule over that corpus:
 
-| App | Rating | Category |
+**280 keep, 26 *Parental guidance*, 17 removed by rating or category.**
+
+Per bucket, the share the rule would block:
+
+| bucket | blocked | note |
 |---|---|---|
-| Copilot `com.microsoft.copilot` | PEGI 3 | PRODUCTIVITY |
-| Meta AI `com.facebook.stella` | PEGI 3 | PRODUCTIVITY |
-| Pi `ai.inflection.pi` | PEGI 3 | LIFESTYLE |
-| ChatGPT `com.openai.chatgpt` | Parental guidance | PRODUCTIVITY |
-| Claude `com.anthropic.claude` | Parental guidance | PRODUCTIVITY |
-| Gemini `com.google.android.apps.bard` | Parental guidance | PRODUCTIVITY |
-| Perplexity `ai.perplexity.app.android` | Parental guidance | PRODUCTIVITY |
-| DeepSeek `com.deepseek.chat` | Parental guidance | PRODUCTIVITY |
-| Le Chat `ai.mistral.chat` | Parental guidance | PRODUCTIVITY |
-| Grok `ai.x.grok` | **PEGI 18** | PRODUCTIVITY |
-| Character.AI `ai.character.app` | **PEGI 18** | ENTERTAINMENT |
-| Chai `com.Beauchamp.Messenger.external` | **PEGI 18** | ENTERTAINMENT |
+| banking | **0 / 25** | the category where a false positive is worst is clean |
+| transport | **0 / 35** | likewise |
+| tools | 1 / 36 | a Xiaomi file manager |
+| school | 1 / 32 | LinDuo, filed `GAME_EDUCATIONAL` |
+| government / ID | 3 / 36 | three digital-identity apps, all PG |
+| office / work | 4 / 36 | Zoom, Webex, Viber (PG); Tango correctly at PEGI 18 |
+| health | 4 / 36 | **see below — these are the surprising ones** |
+| hobbies / sport | 8 / 36 | Strava, Sports Tracker, FITAPP, Cookpad, ReciMe, Samsung Food, and two birdwatching apps |
+| utilities / home | 12 / 36 | **11 are supermarket *simulator games*** the search term dragged in, correctly blocked |
+| messaging | **10 / 15** | every private messenger is PG |
 
-Nine of the twelve are PEGI 3 or *Parental guidance*, so **branch 7 lets every
-mainstream chatbot through** and each has to be named on `blocked_packages` for
-the default to be "blocked". The category is no help either: nine are
-`PRODUCTIVITY`, filed with Outlook and Google Drive. Only the three that are
-really companions — Grok, Character.AI, Chai — are caught by the rating.
+Discounting the supermarket games, **about 30 of 323 genuinely useful apps — 9% —
+need whitelisting**, and they are not spread evenly. They are concentrated in
+three places:
 
-That settles what the toggle is for. It is not a convenience on top of a rule
-that already blocks these; it *is* the rule for this category, and the rating
-gate is irrelevant to it.
+1. **Messengers, 66%.** WhatsApp, Telegram, Threema, Session, SimpleX, Keet,
+   Zangi, xPal, Messenger, WeChat. WhatsApp and Telegram already have options;
+   the private ones need the whitelist, exactly as the owner predicted. A
+   messenger is *Parental guidance* because it carries ungraded conversation,
+   which is true of every messenger including the ones chosen for privacy.
+2. **Hobbies, 22%.** Strava, two recipe apps, two birdwatching apps. These are
+   the entries that would surprise a household, because nothing about *Birda –
+   Birding Made Better* suggests a content rating problem. It has a community
+   feed, so it is ungraded, so it is PG.
+3. **Health, and this one is not PG at all.** Newpharma, i-Pharmacy and Aetna
+   Health come back **PEGI 18**, so they are blocked by the base rule rather than
+   by the new decision. A pharmacy rates 18 because it sells medicines. **This is
+   the one genuine false positive class the measurement found**, it predates the
+   *Parental guidance* change, and a household that needs its pharmacy app is
+   stuck without a whitelist entry.
 
-**Three ids could not be confirmed and are deliberately not in the table above** —
-Poe, Talkie and Genspark were guessed and all three 404. Talkie in particular is a
-large companion app and its id needs finding before the list is written. This is
-the discovery problem in miniature, and the reason the `tools/` script comes
-first: a lookup answers *tell me about this id*, and what is actually missing is
-*what is this app called*.
+### It has to ship in the policy, not only on the device
 
-- `dist/lists/chatbots.txt` — the domains, blocked in the DNS filter and
-  therefore in every browser including herald.
-- `blocked_packages` — the app ids.
-- An option whose `allowed_domains` **mirror that list exactly** and whose
-  `exempt_packages` name the same apps. `policytool.py sign` already refuses to
-  sign when a list and its option's `allowed_domains` disagree, so the mirror is
-  enforced rather than remembered.
+If the whitelist were purely device-local, every household would discover that
+Zoom is gone by finding Zoom gone. So it is two lists that union:
 
-**Grok is never in the option.** It is blocked by package and by domain, and it
-is deliberately absent from both `allowed_domains` and `exempt_packages`, so the
-toggle cannot restore it.
+- **`app_ratings.allowed_packages` in the signed document** — the known-good set
+  above, curated the same way `blocked_packages` is, updated by a policy re-sign
+  rather than an app update.
+- **A device-local list**, like the browser choice, for what a signed document
+  cannot know: this family cycles, that one needs a specific school app.
 
-**Grok's domains go in `ai-companions.txt`, not `chatbots.txt`**, and that is a
-constraint rather than a preference. The mirror check compares a list against its
-option, so a domain in `chatbots.txt` must be restorable by the toggle — which is
-the one thing Grok's must not be. `ai-companions.txt` already has the right shape:
-no option behind it, nothing to mirror. It is also where Grok belongs on the
-merits (owner's call, 2026-08-16).
+The default list can only *keep*. It cannot remove anything, and it cannot
+override `isProtected` — narrowing stays the only direction a household can move,
+which is the same rule the browser choice follows.
 
-Measured 2026-08-16: **Grok is PEGI 18**, so branch 7 blocks it without the list
-being consulted at all. The blocklist entry stays anyway — it is what keeps the
-answer true if a future policy widens `allowed_ratings`.
+---
 
-Blocked in the web filter *as well as* by package is the point, and the reason is
-the one policy 55 established for Ecosia: an app id stops the app, and only a
-domain rule stops the same service reached through a browser. Both, or neither
-works.
+## Chatbots are not blocked, and the reason is architectural
+
+**An earlier draft of this file specified a chatbot toggle. It is withdrawn.**
+
+The question that settled it: can drawbridge suppress the AI assistant built into
+the search engines it already allows? Measured 2026-08-17:
+
+```
+forcesafesearch.google.com  ->  216.239.38.120          its own IP
+strict.bing.com             ->  150.171.28.16 ...       its own IP
+noai.duckduckgo.com         ->  CNAME duckduckgo.com -> 52.142.124.215   the same IP
+```
+
+SafeSearch is deliverable over DNS because Google and Bing run **separate
+enforcement IPs**: point the name at that address and the server enforces it
+whatever the browser sends. DuckDuckGo's `noai` is a CNAME to the ordinary
+address, so its behaviour is selected by the `Host` header, and a DNS rewrite
+cannot deliver it. Google and Bing publish no AI-suppression hostname at all —
+Google's mechanism is `&udm=14`, a URL parameter.
+
+A URL parameter reaches **only herald**, because herald is the only browser
+drawbridge can rewrite in. That is precisely the test Ecosia failed on
+2026-08-15: *an engine is only as forced as its weakest browser.* On a phone that
+allows Chrome, Focus or Vivaldi, Gemini answers in the search box whether or not
+the ChatGPT app is installed.
+
+So blocking the apps would be a claim the phone cannot keep, and this project
+deletes those rather than shipping them. **General-purpose assistants go on the
+whitelist** — ChatGPT, Claude, Gemini, Copilot, Perplexity, DeepSeek, Le Chat,
+Pi, Meta AI — six of which are *Parental guidance* and would otherwise be caught
+by the rating rule as a side effect.
+
+**The line is companion versus assistant, not AI versus not-AI.** Grok,
+Character.AI, Chai and Talkie stay blocked as AI companions: that is a decision
+about content, it is reachable by the rating rule (all four are PEGI 18), and it
+is unaffected by what a search box does. Grok's domains live in
+`ai-companions.txt`, which has no option behind it, so the mirror check that
+`policytool.py sign` enforces has nothing to complain about.
+
+The website should say plainly that AI chat is not blocked and why. The
+documentation already takes that position; this is the measurement behind it.
+
+---
+
+## Dating needs a web list
+
+`dist/lists/dating.txt`, always-on, no option, beside `games.txt`. The app side is
+covered twice — `blocked_packages` names Tinder and Bumble, and the `DATING`
+category catches them again — but **there is no domain list today**, so a browser
+reaches Tinder's web app unimpeded. The popular set is small; the long tail is
+regional and low-traffic, and will stay leaky in the way `games.txt` is leaky.
+
+Note the category does not catch everything in the space: **Grindr is filed
+`SOCIAL`**, so the curated list still does the last mile here as everywhere else.
+
+---
+
+## Scanning: everything once at the first lock, then per install
+
+**Every user-installed package is checked at the lock, at least once.** After that
+the install receiver covers arrivals one at a time and the fifteen-minute sweep
+reads the cache. Without the first pass the rule would only ever apply to apps
+installed *after* drawbridge was set up, which is the wrong half — the phone
+arrives with the problem already on it.
+
+**The traffic is the cost, and it is not small.** A listing page is ~1.2 MB and
+the fields sit **85–91% of the way into it**, so a Range request saves nothing —
+measured, and recorded here so nobody tries it again. Forty to eighty
+user-installed apps is therefore **50–100 MB, once**.
+
+That wants the treatment herald's own download already gets: **defer the first
+full scan to an unmetered network.** Until it completes the unscanned apps are
+`unverified`, which is fail-open, and Diagnostics reports the count so the state
+is visible rather than silent. Enforcement arrives on wifi; nothing is removed on
+mobile data because a parent happened to press Lock in a car.
+
+### On robots and whether this is scraping
+
+**`play.google.com/robots.txt` does not disallow `/store/apps/details`.** It
+disallows a long list of neighbouring paths — `/store/apps/datasafety*`,
+`/store/people/details`, `/store/purchase`, `/store/xhr`, `/apps` — and pointedly
+not the app listing, which Google wants indexed so that listings appear in search
+results. The machine-readable crawl policy permits exactly the URL this design
+uses and forbids the ones it does not touch.
+
+That answers robots.txt and not Google's terms of service, which are a different
+instrument. What makes the position defensible rather than merely unpunished:
+
+- **One request per app the user actually installs, on their own device, on their
+  own behalf.** This is not a crawl of the catalogue; a phone will make a few
+  dozen requests once and a handful a month thereafter.
+- **Identify honestly.** The `User-Agent` says what this is rather than
+  impersonating Chrome. A service that would rather not serve us should be able
+  to tell that it is us.
+- **Degrade, do not escalate.** A rate limit or a block produces `unverified`,
+  which keeps the app and reports the fact. There is no retry storm and no
+  fallback to a private API.
+
+If that ever stops being acceptable, the fallback is the one the curated list
+already provides, and the measurements in this file say what it costs: the list
+alone catches the biggest offenders and misses about a third of new arrivals.
 
 ---
 
@@ -312,8 +424,12 @@ The page becomes an explanation of the **rule**, in this order:
 1. What is allowed: apps rated for everyone, that are not games and not dating.
 2. What is blocked and why: everything rated above PEGI 3, all games, all dating,
    and the curated list.
-3. What a parent can switch back on: the options, chatbots among them.
-4. The curated list, last — as the exceptions the rule misses rather than as the
+3. What a parent can switch back on: the options — WhatsApp, YouTube, Telegram,
+   streaming.
+4. **What is deliberately *not* blocked, and why**: AI chat, because every
+   allowed browser reaches an assistant through its search box. Saying so is
+   better than a claim the phone cannot keep.
+5. The curated list, last — as the exceptions the rule misses rather than as the
    policy itself.
 
 Trilingual like the rest of the site, and it must say plainly that the ratings
@@ -460,15 +576,21 @@ policy 52 — so these want checking against APKMirror rather than deleting.
 
 ## Build order
 
-1. `tools/` curation script — fetch, parse, cache, and print what the rule would
-   do over a large app list. No phone involved. This is what validates the
-   thresholds.
-2. Policy fields and the two lists, signed.
-3. `StoreMetadata` + cache in the DPC, with Diagnostics reporting the unverified
-   count.
-4. Branches 6 and 7 in `AppBlocker`, in the order above.
-5. The chatbot option and its domain list.
-6. The website page.
+1. ~~`tools/` curation script.~~ **Built** — `tools/app-ratings.py`, with
+   `check`, `audit` and `search`. It is what produced every number in this file,
+   and running it corrected the spec three times.
+2. **The default whitelist**, from the measurement above: private messengers,
+   conferencing, sport and recipe apps, pharmacies, digital identity, and the
+   general-purpose assistants. This is the prerequisite for blocking *Parental
+   guidance*, not a follow-up to it — shipping the rule without it takes the
+   phone's messengers away.
+3. Policy fields (`app_ratings`), `dist/lists/dating.txt`, and Grok into
+   `ai-companions.txt`. Signed.
+4. `StoreMetadata` + cache in the DPC, with Diagnostics reporting the unverified
+   count and the first-scan progress.
+5. Branches 6 and 7 in `AppBlocker`, in the order above.
+6. The first-lock full scan, deferred to an unmetered network.
+7. The website page.
 
-Nothing here reaches a phone before step 1 has been run against a few hundred
-apps and the result looked at by a human.
+Step 2 before step 5, always. The rule is not safe to enable on a phone until the
+list that pays for it exists.
