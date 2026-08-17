@@ -188,4 +188,42 @@ class AppBlockerStoreRuleTest {
             AppBlocker.deferred("com.example.game", policy, allowedBrowsers),
         )
     }
+
+    /**
+     * Who the store rule may judge, and the case that changed it.
+     *
+     * The owner's Moto G15 kept a preloaded game — Amaze GO!,
+     * `com.oakever.arrows`, which Play files under `GAME_PUZZLE` and this policy
+     * therefore rejects. It survived because it came from the factory rather than
+     * from Play, and preinstalled meant exempt. The exemption is now the narrower
+     * "nobody can open it anyway", which a game with an icon on the home screen
+     * fails by definition.
+     */
+    @Test
+    fun `a preloaded game with an icon is within the store's reach`() {
+        assertTrue(
+            "Amaze GO! is preinstalled and tappable, which is the whole case",
+            AppBlocker.withinStoreReach(isPreinstalled = true, hasLauncherEntry = true),
+        )
+    }
+
+    @Test
+    fun `a preinstalled service nobody can open is not`() {
+        // The hundreds of framework and OEM packages on a handset. Asking Play
+        // about each would multiply the scan and answer nothing, and the rule
+        // could not act on the answer anyway — isProtected covers the ones that
+        // matter, and a package with no listing is UNVERIFIED, which is keep.
+        assertFalse(
+            AppBlocker.withinStoreReach(isPreinstalled = true, hasLauncherEntry = false),
+        )
+    }
+
+    @Test
+    fun `a user-installed app is always within reach, icon or not`() {
+        // Installed by a person, so Play has an answer about it by construction —
+        // and an app that hides its own icon is exactly the kind this rule should
+        // still be allowed to judge.
+        assertTrue(AppBlocker.withinStoreReach(isPreinstalled = false, hasLauncherEntry = true))
+        assertTrue(AppBlocker.withinStoreReach(isPreinstalled = false, hasLauncherEntry = false))
+    }
 }

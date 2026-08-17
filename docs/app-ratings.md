@@ -99,14 +99,20 @@ Evaluated in this order. The first branch that answers, wins.
 Branches 5 and 6 are the new ones. Everything else is today's behaviour, in
 today's order.
 
+Branches 5 and 6 apply to every user-installed app, and to a preinstalled one
+**only if it has a launcher icon** — see below. That is narrower than "everything
+on the phone" and much wider than the original "user-installed only", which let a
+preloaded game through.
+
 **An earlier draft of this table had two mistakes, and the second was
 dangerous.** It listed the whitelist as a branch of its own; it is folded into
 `isProtected`, which is the existing "never touch this" gate and already runs
 first. And it listed *preinstalled → keep* as a global branch, which would have
 stopped `blocked_packages` hiding YouTube — the single most-exercised removal
-this project has. Preinstalled packages are exempt from **the store rule only**,
-which is what the prose below always said and what the code does. Corrected
-2026-08-17 while building it.
+this project has. Preinstalled packages were exempt from **the store rule only**,
+which is what the prose below always said and what the code did. Corrected
+2026-08-17 while building it — and then narrowed the same day, when a preloaded
+game showed that even that exemption was too broad.
 
 ### Why the local lists come first
 
@@ -117,15 +123,49 @@ This is the owner's call of 2026-08-16 and it also happens to be what keeps the
 store lookup affordable: on a 294-package handset, branches 1–5 answer for
 almost all of them.
 
-### Why preinstalled apps are exempt
+### Preinstalled apps are no longer exempt — the test is a launcher icon
 
-**This is the third rule in `AppBlocker` that removes what is *not* named**, after
-allowlist mode and the install lock, and both of those already learned it. A
-store verdict cannot know about a package that does not exist yet, an Android
-version upgrade legitimately adds system apps, and hiding the OEM's dialer or
-keyboard because Play has no listing for it would leave an unusable phone with no
-sanctioned way to fix it. Nothing is lost: this rule exists because of the Play
-Store, and a preinstalled app did not come from there.
+**Changed 2026-08-17, after the owner's Moto kept a preloaded game.** Amaze GO!,
+`com.oakever.arrows`, which Play files under `GAME_PUZZLE`: branch 5 had the
+right answer and was never asked the question, because the game came from the
+factory rather than from Play. The reasoning below is what the exemption used to
+say, and it is kept because it is still right about its own example — it simply
+proved too much.
+
+> A store verdict cannot know about a package that does not exist yet, an Android
+> version upgrade legitimately adds system apps, and hiding the OEM's dialer or
+> keyboard because Play has no listing for it would leave an unusable phone with
+> no sanctioned way to fix it. Nothing is lost: this rule exists because of the
+> Play Store, and a preinstalled app did not come from there.
+
+The last sentence is what broke. On a handset whose junk is *preloaded*, the
+exemption covered precisely the apps somebody installs drawbridge to be rid of,
+and the fix on offer — name each one in `blocked_packages` — is the treadmill this
+whole rule exists to end.
+
+**The dialer was never at risk from a missing listing.** A package Play has never
+heard of is `UNVERIFIED`, which is *keep*: the rule fails open, and that is what
+answers the objection above. `isProtected` runs first regardless, so the launcher,
+the keyboard, Settings, Play and the rest of `NEVER_TOUCH` are not candidates at
+all.
+
+So the test is now **can a person open it**: every user-installed app, and a
+preinstalled one only if it has a launcher entry. That is `AppBlocker.withinStoreReach`,
+pure and unit-tested. A preloaded game always has an icon, because being tapped is
+the point of it; the hundreds of framework and OEM services do not, which is what
+keeps the scan affordable — asking Play about all ~294 packages on a handset
+would multiply it sevenfold to learn nothing.
+
+**Measured before shipping, over a corpus of typical Moto and Google preloads:**
+19 keep, 4 neutral, 1 remove, 5 unverified. Every essential preload — Gmail,
+Photos, Maps, Drive, Messages, Phone, Contacts, Clock, Calculator, Moto Camera,
+FM Radio — is PEGI 3 and survives on its own rating. The five unverified are OEM
+services with no Play listing (`com.motorola.launcher3`, `com.motorola.notification`,
+`com.facebook.system` and friends), which fail open. The four neutral ones are
+*Parental guidance* and therefore decided elsewhere in the policy: Facebook and
+Google TV by the blocklist and the streaming option, YouTube Music by *Allow
+YouTube*, Google Play Games by neither — worth a decision of its own. The one
+removal is Amaze GO!.
 
 ### Games and dating are categories, not ratings
 

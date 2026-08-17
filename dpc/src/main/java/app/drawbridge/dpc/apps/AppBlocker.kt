@@ -247,14 +247,9 @@ class AppBlocker(context: Context) {
      *  - **the rule has to be configured.** An empty `allowed_ratings` cannot
      *    express *these pass*, and reading it as *nothing passes* would remove
      *    every app on the phone — see [AppRatings.isConfigured];
-     *  - **the package has to be user-installed.** This is the third rule in this
-     *    class that removes what is *not* named, after [notAllowed] and the
-     *    install lock, and both already learned it. A store verdict cannot know
-     *    about a package that does not exist yet, an Android upgrade
-     *    legitimately adds system apps, and hiding the OEM's dialer because Play
-     *    has no listing for it would leave an unusable phone. Nothing is lost:
-     *    this rule exists because of the Play Store, and a preinstalled app did
-     *    not come from there.
+     *  - **the store has to be able to reach the package** — see
+     *    [withinStoreReach]. Every user-installed app, and a preinstalled one
+     *    only if it has a launcher icon.
      *
      * Then the cache, which never blocks on the network — see [StoreCatalogue].
      * A package nobody has fetched yet is [AppRatings.Verdict.UNVERIFIED], which
@@ -263,7 +258,7 @@ class AppBlocker(context: Context) {
     private fun storeReason(packageName: String, policy: Policy): String? {
         val ratings = policy.appRatings ?: return null
         if (!ratings.isConfigured) return null
-        if (isSystemPackage(packageName)) return null
+        if (!withinStoreReach(packageName)) return null
 
         if (storeCatalogue.verdictFor(packageName, ratings) != AppRatings.Verdict.BLOCKED) {
             return null
@@ -303,11 +298,14 @@ class AppBlocker(context: Context) {
      * screen that counted differently from the job would be a screen reporting
      * progress on something else.
      *
-     * **This is what makes the scan affordable.** A handset carries ~294
-     * packages and this returns a few dozen: everything preinstalled is exempt
-     * from the rule, everything protected was never a candidate, and everything
-     * already cached is answered. At ~1.2 MB a listing, the difference between
-     * those two numbers is the difference between 350 MB and 50.
+     * **This is what makes the scan affordable**, and the launcher-icon rule in
+     * [withinStoreReach] is what keeps it affordable now that preloads are in
+     * scope. A handset carries ~294 packages, of which the great majority are
+     * framework and OEM services nobody can open: those have no launcher entry,
+     * so they are never asked about. What is left is the user-installed apps plus
+     * the preloads a person can actually tap, minus everything protected and
+     * everything already cached. At ~1.2 MB a listing, that difference is the
+     * difference between 350 MB and something a phone can do on Wi-Fi.
      */
     fun packagesWantingStoreAnswer(): List<String> {
         val policy = DrawbridgeApplication.policy(appContext).policy.value
@@ -317,7 +315,7 @@ class AppBlocker(context: Context) {
         val allowedBrowsers = allowedBrowsers(policy)
         return packageManager.getInstalledApplications(0)
             .map { it.packageName }
-            .filterNot { isSystemPackage(it) }
+            .filter { withinStoreReach(it) }
             .filterNot { isProtected(it, policy, allowedBrowsers) }
             .filterNot { storeCatalogue.isFresh(it) }
             .sorted()
@@ -327,11 +325,67 @@ class AppBlocker(context: Context) {
         val policy = DrawbridgeApplication.policy(appContext).policy.value
         val ratings = policy.appRatings ?: return
         if (!ratings.isConfigured) return
-        if (isSystemPackage(packageName)) return
+        if (!withinStoreReach(packageName)) return
         if (isProtected(packageName, policy, allowedBrowsers(policy))) return
         if (storeCatalogue.isFresh(packageName)) return
         storeCatalogue.fetch(packageName, ratings)
     }
+
+    /**
+     * Whether the store rule is allowed to have an opinion about this package.
+     *
+     * **Preinstalled apps used to be exempt outright, and stopped being on
+     * 2026-08-17, because a Moto G15 kept a preloaded game called Amaze GO!
+     * (`com.oakever.arrows`, which Play files under `GAME_PUZZLE`).** The rule
+     * had the right answer and was never asked the question: the game arrived
+     * from the factory rather than from the Play Store, so all of it — the
+     * verdict, the scan, the diagnostics count — skipped it. On a handset whose
+     * junk is preloaded, that exempted precisely the apps somebody bought this
+     * project to be rid of, and naming them one at a time in `blocked_packages`
+     * is the treadmill the store rule exists to end.
+     *
+     * **The launcher icon is what replaces the exemption.** The old reasoning was
+     * sound about its own example — hiding the OEM's dialer or a framework
+     * service because Play has no listing for it would leave an unusable phone —
+     * but it proved too much. Two rails already answer it:
+     *
+     *  - **no listing means keep.** A package Play has never heard of is
+     *    [AppRatings.Verdict.UNVERIFIED], which this rule treats as *keep*. The
+     *    dialer was never at risk from a missing listing; it was at risk from a
+     *    rule that fails closed, and this one fails open.
+     *  - **[isProtected] still runs first**, so the launcher, the keyboard,
+     *    Settings, Play and the rest of [NEVER_TOUCH] are not candidates at all.
+     *
+     * What the icon adds is scale rather than safety: the ~294 packages on a
+     * handset are mostly services with no way to open them, and asking Play about
+     * every one would multiply the scan sevenfold to learn nothing. A preloaded
+     * *game* always has an icon, because being tapped is the whole point of it.
+     */
+    private fun withinStoreReach(packageName: String): Boolean = withinStoreReach(
+        isPreinstalled = isSystemPackage(packageName),
+        hasLauncherEntry = hasLauncherEntry(packageName),
+    )
+
+    /**
+     * Whether anything on this phone can open [packageName] from the home screen.
+     *
+     * **Queried with the two `MATCH_` flags rather than through
+     * `getLaunchIntentForPackage`, and that is not a detail.** A hidden package
+     * answers no ordinary intent query — the same property [browsersOnDevice]
+     * documents — so the simple call would report *no icon* for exactly the apps
+     * this rule has already removed. The verdict would then flip to *keep* on the
+     * next sweep, [disallows] would stop naming it, and Diagnostics' `still
+     * usable` line would lose the one package it was meant to explain.
+     */
+    private fun hasLauncherEntry(packageName: String): Boolean = runCatching {
+        val probe = Intent(Intent.ACTION_MAIN)
+            .addCategory(Intent.CATEGORY_LAUNCHER)
+            .setPackage(packageName)
+        packageManager.queryIntentActivities(
+            probe,
+            PackageManager.MATCH_DISABLED_COMPONENTS or PackageManager.MATCH_UNINSTALLED_PACKAGES,
+        ).isNotEmpty()
+    }.getOrDefault(false)
 
     /**
      * Whether the install lock has anything to say about this package, read off
@@ -986,6 +1040,22 @@ class AppBlocker(context: Context) {
          * this project has now paid four times for a rule that could only be
          * checked by holding a phone.
          */
+        /**
+         * The store rule's reach, as a function of the two facts about a package
+         * that decide it.
+         *
+         * Pure and tested for the same reason [actsNow], [deferred] and
+         * [InstallLockSettings.outsideTheSet] are: it decides what gets removed,
+         * and the case it was written for — a preinstalled app with an icon — is
+         * one nobody can reproduce without an OEM handset and its preloads.
+         *
+         * The prose is on the instance [withinStoreReach]; the short version is
+         * that "not from the Play Store" turned out to be the wrong exemption,
+         * and "nobody can open it anyway" is the right one.
+         */
+        internal fun withinStoreReach(isPreinstalled: Boolean, hasLauncherEntry: Boolean): Boolean =
+            !isPreinstalled || hasLauncherEntry
+
         internal fun optionGoverned(policy: Policy): Set<String> =
             policy.options
                 .flatMapTo(mutableSetOf()) { it.exemptPackages + it.allowedPackages }

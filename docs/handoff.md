@@ -8,6 +8,65 @@ machine, what was and was not verified, and what to do next.
 
 ---
 
+## The preloaded game the store rule never asked about — 2026-08-17, unreleased
+
+**Reported from the Moto: a game called Amaze GO! survived a locked phone.** It is
+`com.oakever.arrows`, and Play files it under `GAME_PUZZLE` — a category this
+policy rejects outright. The rule had the right answer and was never asked the
+question.
+
+**Why:** it is *preloaded*, and preinstalled packages were exempt from the store
+rule. Three separate gates enforced that, one line each — `storeReason`,
+`packagesWantingStoreAnswer` and `ensureStoreAnswer` — with a documented reason
+that reads well and proved too much: *hiding the OEM's dialer because Play has no
+listing for it would leave an unusable phone*. True of the dialer, and the wrong
+conclusion for a preloaded game, because on a handset whose junk arrives from the
+factory the exemption covers exactly the apps somebody installs drawbridge to be
+rid of.
+
+**The fix is the narrower exemption: can a person open it.** Every user-installed
+app is in reach, and a preinstalled one only if it has a launcher entry.
+`AppBlocker.withinStoreReach(isPreinstalled, hasLauncherEntry)` is pure and
+tested, like `actsNow` and `deferred`. Two rails were already there and are what
+make it safe: an app Play has never heard of is `UNVERIFIED`, which is *keep*, so
+the rule fails open on exactly the case the old comment worried about; and
+`isProtected` still runs first, so the launcher, keyboard, Settings and Play are
+not candidates at all. The icon test is about **scale** rather than safety — the
+~294 packages on a handset are mostly services nobody can open, and asking Play
+about each would multiply the scan to learn nothing.
+
+**One subtlety that is easy to get wrong**: the launcher query uses
+`MATCH_DISABLED_COMPONENTS or MATCH_UNINSTALLED_PACKAGES`, because a *hidden*
+package answers no ordinary intent query. Without those flags the rule would
+report "no icon" for precisely the apps it had just removed, flip to *keep* on the
+next sweep, and drop them from Diagnostics' `still usable` line.
+
+### Measured before shipping, which is the part worth keeping
+
+`app-ratings.py audit` over a corpus of typical Moto and Google preloads:
+**19 keep, 4 neutral, 1 remove, 5 unverified.**
+
+- Every essential preload survives on its own PEGI 3 rating — Gmail, Photos,
+  Maps, Drive, Messages, Phone, Contacts, Clock, Calculator, Moto Camera, FM
+  Radio. The worry that widening the rule would hide Gmail is measured and
+  unfounded.
+- The five unverified are OEM services with no Play listing — `com.motorola.launcher3`,
+  `com.motorola.notification`, `com.facebook.system` and friends — and they fail
+  open, as designed.
+- The four *Parental guidance* ones are decided elsewhere: Facebook and Google TV
+  by the blocklist and the streaming option, YouTube Music by *Allow YouTube*.
+  **Google Play Games is governed by nothing**, and is a decision waiting to be
+  made: a games hub on a phone whose whole point is not having games.
+- The one removal is Amaze GO!.
+
+**Expect `store to scan` in Diagnostics to jump** the first time a phone runs
+this: every launcher-visible preload is a new question, ~1.2 MB each, on Wi-Fi.
+
+Code and tests are done; **not released**. It needs a build, so it should ride
+with the next one rather than interrupt the timer that is running on the Moto.
+
+---
+
 ## The lock timer — 2026-08-17, drawbridge 0.2.9 build 34, policy 69
 
 **A lock can now end by itself.** This is the last feature asked for before the
@@ -4698,6 +4757,57 @@ because anyone should generate it:
 Remember `site/` is generated: edit `site-src/` and `tools/build-site.py`, run
 `python3 tools/build-site.py`, and commit what it writes. Hand-edited HTML in
 `site/` is overwritten without warning.
+
+### 12. herald mono: take out always-on reader view
+
+**Asked for 2026-08-17, from use.** `Edition.autoReaderView` is `isMono`, and
+`ReaderViewIntegration` enters reader view on every page Gecko calls readerable.
+It is not working out:
+
+- **pages hang in a loop** — reported from the phone, and the likeliest shape is
+  the entry racing a load that has not settled, so entering re-triggers a load
+  that is entered again;
+- **slow pages never get there**, because readerability is decided on a document
+  that has not finished arriving;
+- and when it does work it is still the wrong default often enough to be noticed.
+
+Removing it is small: `autoReaderView` goes, `ReaderViewIntegration` keeps the
+manual button, and mono keeps greyscale, one tab and the load pause. Reader view
+remains available on request, which is where it started — see
+[reader-view-back](reader-view-back.md), which is worth reading first, since this
+feature has been rebuilt once already for a different reason.
+
+**The replacement idea is the owner's and is worth taking seriously rather than
+dropping the goal**: a *lower scrolling speed*. Mono's thesis is friction, not
+stripping — `loadDelayMillis` is the same idea already shipped — and a slower
+fling is friction that no page can fight, whereas reader view depends on a
+Readability pass that either works or leaves the reader worse off. Note it is a
+Gecko-side scroll behaviour, so scope it before promising it.
+
+### 13. A copy pass over the app, then the website
+
+**Asked for 2026-08-17.** The strings have grown by accretion — three languages,
+several features added in a week, and each one written in the moment. They want
+reading end to end for consistency of voice, length and terminology: `values`,
+`values-nl`, `values-fr`, and the ⓘ dialogs in particular, which are the longest
+text in the app and the least re-read.
+
+Do the app first and the site second, so the site can quote what the app actually
+says. The website half is item 11 above, which lists what is out of date there;
+this is the same pass carried through to `tools/build-site.py`.
+
+### 14. Cut this file down
+
+**Asked for 2026-08-17, and overdue.** This handoff is past 4,800 lines and
+carries a full narrative of things that are settled: Play Protect, the QR path,
+FRP, several bugs fixed in builds nobody runs any more. It is meant to be *what a
+new person needs to pick this up*, and at this length it hides that.
+
+The shape that would work: keep the top sections (current state, what is
+untested, next steps), move settled investigations into `design-decisions.md`
+where they belong as *why the code is like this*, and delete the rest — git
+history has it if anyone wants it back. **Do not summarise the traps section
+away**; that one earns its length, and every entry in it cost a day.
 
 ### Standing items, unchanged
 
