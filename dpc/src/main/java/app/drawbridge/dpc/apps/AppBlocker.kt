@@ -112,7 +112,7 @@ class AppBlocker(context: Context) {
         if (!newcomer && isProtected(packageName, policy, allowedBrowsers)) return Action.NONE
 
         val browser = isBrowser(packageName)
-        val reason = reasonToRemove(packageName, policy, browser, newcomer) ?: return Action.NONE
+        val removal = reasonToRemove(packageName, policy, browser, newcomer) ?: return Action.NONE
 
         // **Only what a control on the configuration screen could still change
         // waits for the lock.** Everything else goes as soon as it is seen. See
@@ -124,15 +124,9 @@ class AppBlocker(context: Context) {
         // The window before the *first* lock is untouched, and is checked above:
         // it is what lets a parent move their data across, and it is the reason
         // drawbridge does not need a factory reset.
-        if (!actsNow(
-                deferred(packageName, policy, allowedBrowsers, newcomer),
-                parentKey.isLocked,
-            )
-        ) {
-            return Action.NONE
-        }
+        if (!actsNow(removal.waitsForLock, parentKey.isLocked)) return Action.NONE
 
-        Log.i(TAG, "Removing $packageName: $reason")
+        Log.i(TAG, "Removing $packageName: ${removal.reason}")
         return remove(packageName)
     }
 
@@ -146,7 +140,7 @@ class AppBlocker(context: Context) {
         browser: Boolean,
         newcomer: Boolean,
         allowedBrowsers: Set<String> = allowedBrowsers(policy),
-    ): String? {
+    ): Removal? {
         // **The install lock outranks every other rule here, including
         // [isProtected], and that is the fix for a bug the Moto found on
         // 2026-08-17.** With the option on and the phone locked, Claude, DeepSeek
@@ -162,20 +156,34 @@ class AppBlocker(context: Context) {
         // still downloading as present. herald reappearing after a browser-policy
         // change survives on those two mechanisms rather than on a bypass, which
         // is why removing the bypass costs it nothing.
-        val newcomerReason =
-            "not among the apps this phone had when it was locked".takeIf { newcomer }
+        val newcomerRemoval = Removal(
+            "not among the apps this phone had when it was locked",
+            // Being new is the one reason that waits: the unlock window is the
+            // only way to add an app, so removing it there would take away
+            // exactly what the parent unlocked the phone to install.
+            waitsForLock = true,
+        ).takeIf { newcomer }
 
-        if (isProtected(packageName, policy, allowedBrowsers)) return newcomerReason
+        if (isProtected(packageName, policy, allowedBrowsers)) return newcomerRemoval
+
+        // Whether a *switch on the configuration screen* still governs this
+        // package. It is asked per reason rather than per package, which is the
+        // fix for the second Moto report of 2026-08-17 — see [Removal].
+        val switchGoverned = deferred(packageName, policy, allowedBrowsers)
 
         return when {
-            packageName in policy.blockedPackages -> "on the blocked package list"
+            packageName in policy.blockedPackages ->
+                Removal("on the blocked package list", switchGoverned)
             // The *effective* set rather than the policy's, so the log line says
             // what this phone actually allows — "allows only nothing" is the
             // honest reading of the no-browser choice, and was worth not hiding.
-            browser ->
+            browser -> Removal(
                 "is a browser, and this phone allows only " +
-                    allowedBrowsers.joinToString().ifEmpty { "no browser at all" }
-            notAllowed(packageName, policy) -> "not on this profile's allowed list"
+                    allowedBrowsers.joinToString().ifEmpty { "no browser at all" },
+                switchGoverned,
+            )
+            notAllowed(packageName, policy) ->
+                Removal("not on this profile's allowed list", waitsForLock = false)
             // The store's answer, after everything the phone can decide for
             // itself. Deliberately below the blocklist: an app the policy names
             // has already been decided on, and asking Play about it would be a
@@ -187,9 +195,42 @@ class AppBlocker(context: Context) {
             // log the blocklist. That is about the log line, not about
             // precedence — a protected package has already been checked against
             // it above, which is where the outranking happens.
-            else -> storeReason(packageName, policy) ?: newcomerReason
+            else -> storeReason(packageName, policy)
+                ?.let { Removal(it, waitsForLock = false) }
+                ?: newcomerRemoval
         }
     }
+
+    /**
+     * Why a package goes, and whether that reason waits for the lock.
+     *
+     * **The two used to be decided separately, and that was a bug the Moto found
+     * on 2026-08-17.** Deferral was asked about the *package* — is it
+     * option-governed, is it a narrowed-away browser, is it outside the install
+     * lock's set — and a newly installed package is outside that set by
+     * definition. So with the install lock on, every app installed during an
+     * unlock was deferred, whatever else was wrong with it: TikTok, Firefox and
+     * Temu all stayed on an unlocked phone that should have removed all three on
+     * sight.
+     *
+     * Instagram is what gave it away by behaving correctly. It was on the phone
+     * at the previous lock, so it was *in* the set, so it was not a newcomer, so
+     * nothing deferred it and the blocklist removed it immediately. One app out
+     * of five doing the right thing is a better clue than five doing the wrong
+     * one.
+     *
+     * The rule now travels with the reason. Being **new** waits for the lock,
+     * because the unlock window is the only way to add an app. Being **blocked
+     * by name** or **an unsanctioned browser** or **rated out** does not, and the
+     * install lock cannot rescue it — an app can be new *and* disallowed, and the
+     * disallowed half is the one that decides.
+     *
+     * Crunchyroll is the case that shows the rule is not simply "act always": it
+     * is on the blocklist *and* covered by the streaming option, so it waits for
+     * the lock like everything a switch still governs. That was correct
+     * behaviour in the same report.
+     */
+    private data class Removal(val reason: String, val waitsForLock: Boolean)
 
     /**
      * What the store says, or null if it has nothing to say about this package.
@@ -873,7 +914,14 @@ class AppBlocker(context: Context) {
          * configuration screen could answer — in which case it waits for the
          * lock, and otherwise it goes now.
          *
-         * Three things defer, and they are the same kind of thing:
+         * **This asks about the package, not about the removal**, and the
+         * distinction cost a build. It answers one question only: *is there a
+         * switch on the configuration screen that still governs this app*. What
+         * waits for the lock is decided per *reason* in [Removal], because a
+         * package can be new and disallowed at once and the disallowed half is
+         * the one that decides.
+         *
+         * Two things defer, and they are the same kind of thing:
          *
          *  - **What an option covers** — WhatsApp, Telegram, YouTube, the
          *    streaming catalogue. See [optionGoverned].
@@ -882,15 +930,6 @@ class AppBlocker(context: Context) {
          *    *no browser*. The parent picked that from a chooser and can unpick
          *    it, and the website has promised since before it was built that the
          *    choice lands at the lock.
-         *  - **A package outside the install lock's closed set.** This one is
-         *    not merely a courtesy: the unlock window is the *only* way to add
-         *    an app to a phone that has the install lock on, so an app installed
-         *    during an unlock has to survive until the lock. It then survives
-         *    permanently, because [closeTheInstalledSet] re-takes the snapshot
-         *    at that lock and the app is in it. Acting immediately here would
-         *    uninstall the app a parent had just unlocked the phone to install,
-         *    which is not a stricter phone — it is a phone with no way in at all.
-         *
          * **A browser the policy never sanctioned is not deferred**, and that
          * distinction is the whole reason this is not simply "browsers wait
          * too". Opera is a way around a DNS-only filter — it ships an in-browser
@@ -906,10 +945,8 @@ class AppBlocker(context: Context) {
             packageName: String,
             policy: Policy,
             allowedBrowsers: Set<String>,
-            outsideInstalledSet: Boolean = false,
         ): Boolean =
-            outsideInstalledSet ||
-                packageName in optionGoverned(policy) ||
+            packageName in optionGoverned(policy) ||
                 (packageName in policy.browserPackages && packageName !in allowedBrowsers)
 
         /**

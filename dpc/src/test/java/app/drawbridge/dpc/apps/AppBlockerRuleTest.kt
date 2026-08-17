@@ -191,4 +191,52 @@ class AppBlockerRuleTest {
     fun `a policy with no options governs nothing`() {
         assertTrue(AppBlocker.optionGoverned(Policy(version = 1)).isEmpty())
     }
+
+    // --- what the reason defers, not what the package defers ------------------
+
+    /**
+     * **The second Moto report of 2026-08-17, as a table.** With the install lock
+     * on and drawbridge *unlocked*, TikTok, Firefox and Temu were installed and
+     * all three stayed. They should have gone on sight: the blocklist, the
+     * browser rule and the store rule all act continuously after the first lock.
+     *
+     * The cause was that deferral was asked about the *package* — and a newly
+     * installed package is outside the install lock's set by definition, so every
+     * arrival was deferred whatever else was wrong with it.
+     *
+     * Instagram is what exposed it, by working. It was on the phone at the
+     * previous lock, so it was in the set, so nothing deferred it and the
+     * blocklist removed it at once. These cases assert the property that was
+     * missing: **a switch is what defers, and being new is not a switch.**
+     */
+    @Test
+    fun `a blocklisted app is not deferred merely by being newly installed`() {
+        assertFalse(
+            "TikTok: on the blocked list, no switch governs it, so it goes on sight",
+            AppBlocker.deferred("com.instagram.android", policy, allowed(BrowserSettings.Choice.ALL)),
+        )
+    }
+
+    @Test
+    fun `an unsanctioned browser is not deferred either`() {
+        assertFalse(
+            "Firefox: the policy never sanctioned it, so it is a filter bypass rather " +
+                "than a preference, and it goes whether the phone is locked or not",
+            AppBlocker.deferred("org.mozilla.firefox", policy, allowed(BrowserSettings.Choice.ALL)),
+        )
+    }
+
+    /**
+     * The case in that report that was **correct**, and the reason this rule is
+     * not simply "act always". Crunchyroll is on the blocklist *and* covered by
+     * the streaming option, so it waits for the lock like everything a switch can
+     * still change — the parent may be about to turn streaming on.
+     */
+    @Test
+    fun `an app an option covers still waits, even though it is also blocklisted`() {
+        assertTrue(
+            "WhatsApp stands in for Crunchyroll: blocked by name, exempted by a switch",
+            AppBlocker.deferred("com.whatsapp", policy, allowed(BrowserSettings.Choice.ALL)),
+        )
+    }
 }

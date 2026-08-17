@@ -203,6 +203,71 @@ of the apps already there still come through*. That is the next section.
 
 ---
 
+## Build 33: deferral was a property of the package; it is a property of the reason
+
+**2026-08-17, the second report from the Moto that day, and the inverse of the
+first.** Build 32 made the install lock outrank everything. This one stops it
+rescuing apps that other rules should have removed on sight.
+
+**`dpc-9be19a55f51e8727.apk`, policy 66.**
+
+### What was seen
+
+With the install lock on and drawbridge **unlocked**, the owner installed TikTok,
+Firefox, Temu and Crunchyroll. None was removed. Instagram, installed the same
+way, **was**.
+
+| app | rule | should act unlocked? | did it |
+|---|---|---|---|
+| Instagram | blocklist | yes | **yes** |
+| TikTok | blocklist | yes | no |
+| Firefox | browser the policy never sanctioned | yes | no |
+| Temu | store rule, *Parental guidance* | yes | no |
+| Crunchyroll | blocklist **and** the streaming option | **no** | no — correct |
+
+### Instagram is the one that explained it
+
+Four apps behaving wrongly says very little; one behaving *rightly* says
+everything. Instagram was on the phone at the previous lock, so it was **in the
+install lock's set**, so it was not a newcomer — and nothing deferred it. The
+other three had just been installed, which makes them newcomers by definition.
+
+`deferred` was asked about the **package**: is it option-governed, is it a
+narrowed-away browser, is it outside the closed set. With the install lock on,
+every app installed during an unlock answers yes to the third, so every arrival
+waited for the lock **whatever else was wrong with it**. The blocklist, the
+browser rule and the store rule were all being overruled by a rule that only
+meant *this app is new*.
+
+### The fix
+
+Deferral now travels with the **reason**, not the package. Being *new* waits for
+the lock, because the unlock window is the only way to add an app. Being *blocked
+by name*, *an unsanctioned browser* or *rated out* does not, and the install lock
+cannot rescue it: an app can be new **and** disallowed, and the disallowed half
+decides.
+
+`AppBlocker.Removal` carries the pair, and `deferred` went back to answering the
+one question it should ever have answered — *is there a switch on the
+configuration screen still governing this app*. The install lock is not a switch.
+
+Crunchyroll is the case that keeps the rule honest. It is blocklisted *and*
+covered by the streaming option, so it genuinely waits: the parent may be about
+to switch streaming on. "Act always" would have been the wrong fix.
+
+### Twice in one day, same class of bug
+
+Build 32 fixed the install lock being **too weak** — protected packages bypassed
+it. Build 33 fixes it being **too strong** — it deferred everything else. Both
+were precedence between rules rather than the rules themselves, and both were
+invisible to the pure-function tests this class leans on, because every
+individual rule was returning the right answer the whole time.
+
+The suite now tests the *interactions*: six cases through `evaluate`, plus the
+table above expressed against `deferred`.
+
+---
+
 ## Build 32: the install lock had an exception it should never have had
 
 **2026-08-17, reported from the Moto within hours of build 31.** With *Only the
@@ -1031,9 +1096,9 @@ which way it goes on real hardware.
 
 | | `main` (the alpha) | `dev` |
 |---|---|---|
-| drawbridge | 0.2.7, build 18 | **0.2.8, build 32** |
+| drawbridge | 0.2.7, build 18 | **0.2.8, build 33** |
 | herald | 0.1.9 | **0.1.13** |
-| policy | **50** | **65** |
+| policy | **50** | **66** |
 | install page | <https://drawbridge-project.pages.dev/install/usb/> | <https://dev.drawbridge-project.pages.dev/install/usb/> |
 | provisioned devices | the owner's Nothing Phone (A059) | the Moto G15 |
 
@@ -1082,9 +1147,9 @@ still broken".
 |---|---|
 | Repo | https://github.com/Nilss3/drawbridge — public, `main` + `dev` |
 | Alpha | **[v0.2.7](https://github.com/Nilss3/drawbridge/releases/tag/v0.2.7)** is what testers install, from `main`. [v0.2.5](https://github.com/Nilss3/drawbridge/releases/tag/v0.2.5) stays **latest** because `required_apps` resolves herald through it |
-| Dev | **drawbridge build 32, herald 0.1.13, policy 65**, served from the dev site. herald is unchanged since v0.2.8-dev.4, whose versioned URLs `required_apps` still names |
+| Dev | **drawbridge build 33, herald 0.1.13, policy 66**, served from the dev site. herald is unchanged since v0.2.8-dev.4, whose versioned URLs `required_apps` still names |
 | Devices | Two managed phones: the Moto G15 on dev, and the owner's **Nothing Phone A059** on the alpha since 2026-08-13 |
-| Tests | **660** unit tests across eight variant suites, lint clean. Counted after a `clean`; see the install-lock section for why the old 574 was wrong |
+| Tests | **666** unit tests across eight variant suites, lint clean. Counted after a `clean`; see the install-lock section for why the old 574 was wrong |
 | Website | trilingual, generated into `site/`, both channels served from Cloudflare Pages |
 
 **herald is no longer frozen.** It sat at 0.1.9 from 2026-08-10 to 2026-08-13

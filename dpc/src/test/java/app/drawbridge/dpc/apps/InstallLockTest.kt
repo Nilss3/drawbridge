@@ -166,36 +166,41 @@ class InstallLockTest {
      * unlock has to survive to the lock — where the snapshot is re-taken with it
      * in, and the question never arises again.
      */
+    /**
+     * The case that would otherwise make the phone unusable: unlocking is the
+     * *only* way to add an app once this is on, so an app installed during an
+     * unlock has to survive to the lock — where the snapshot is re-taken with it
+     * in, and the question never arises again.
+     */
     @Test
-    fun `a newcomer waits for the lock`() {
-        assertTrue(
-            AppBlocker.deferred(
-                "com.example.newcomer",
-                policy,
-                allBrowsers,
-                outsideInstalledSet = true,
-            ),
-        )
+    fun `being new waits for the lock`() {
         assertFalse(
             "removing it now would take away the app the parent just unlocked to install",
             AppBlocker.actsNow(isDeferred = true, isLocked = false),
         )
         assertTrue(
-            "and it goes at the lock, like everything else a switch governs",
+            "and it goes at the lock",
             AppBlocker.actsNow(isDeferred = true, isLocked = true),
         )
     }
 
+    /**
+     * **`deferred` asks about the package, not about the removal**, and
+     * conflating the two cost build 32. It answers one question — is there a
+     * *switch* still governing this app — and the install lock is not a switch,
+     * so it must not appear here. What waits for the lock is decided per reason
+     * inside `AppBlocker`, because an app can be new *and* disallowed and the
+     * disallowed half is the one that decides.
+     */
     @Test
-    fun `the install lock does not defer anything on its own`() {
+    fun `the install lock is not a switch, so it does not belong in deferred`() {
         assertFalse(
-            "a package inside the set is not this rule's business at all",
-            AppBlocker.deferred(
-                "com.example.ordinary",
-                policy,
-                allBrowsers,
-                outsideInstalledSet = false,
-            ),
+            "nothing on the configuration screen governs an ordinary package",
+            AppBlocker.deferred("com.example.newcomer", policy, allBrowsers),
+        )
+        assertTrue(
+            "whereas an option's package is genuinely switch-governed",
+            AppBlocker.deferred("com.whatsapp", policy, allBrowsers),
         )
     }
 
