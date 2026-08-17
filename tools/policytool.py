@@ -209,6 +209,67 @@ def check_options_mirror_lists(document: dict) -> list[str]:
     return problems
 
 
+def check_whitelist_is_coherent(document: dict) -> list[str]:
+    """`app_ratings.allowed_packages` must not quietly undo a decision.
+
+    The whitelist exists because blocking every rating above PEGI 3 takes a
+    phone's messengers with it — see docs/app-ratings.md. It is consulted
+    **before** the blocklist and before the options, which is what makes it
+    useful and also what makes these two mistakes silent:
+
+    1. **A package on both lists is unblocked**, not blocked. The whitelist wins,
+       so adding a name to it can undo a `blocked_packages` entry that somebody
+       put there deliberately — and nothing on a phone or in this tool would say
+       so. The first draft of the whitelist was assembled from measurements of
+       apps the *rating rule* would remove, which is exactly the process that
+       could drift into naming one the *policy* removes.
+    2. **A package an option governs stops being the parent's decision.**
+       WhatsApp and Telegram are reached by a switch on the configuration screen;
+       whitelisting either would keep it whatever that switch said, leaving a
+       control that moves and changes nothing. That is the failure this project
+       already paid for once, when a restore subtracted exactly what an option
+       had allowed.
+
+    Both are cheap to check and impossible to notice by hand once the whitelist
+    is a few dozen names long.
+    """
+    ratings = document.get("app_ratings") or {}
+    allowed = ratings.get("allowed_packages") or []
+    if not allowed:
+        return []
+
+    problems = []
+
+    blocked = set(document.get("blocked_packages", []))
+    overlap = sorted(set(allowed) & blocked)
+    if overlap:
+        problems.append(
+            f"app_ratings.allowed_packages unblocks {len(overlap)} package(s) that "
+            "blocked_packages names — the whitelist is consulted first: "
+            + ", ".join(overlap[:5])
+            + (" ..." if len(overlap) > 5 else "")
+        )
+
+    governed: dict[str, str] = {}
+    for option in document.get("options", []):
+        for package in option.get("exempt_packages", []) + option.get("allowed_packages", []):
+            governed.setdefault(package, option.get("id", "?"))
+    captured = sorted(p for p in allowed if p in governed)
+    if captured:
+        problems.append(
+            "app_ratings.allowed_packages overrides an option for "
+            f"{len(captured)} package(s), so the switch would do nothing: "
+            + ", ".join(f"{p} (option {governed[p]!r})" for p in captured[:5])
+            + (" ..." if len(captured) > 5 else "")
+        )
+
+    duplicates = sorted({p for p in allowed if allowed.count(p) > 1})
+    if duplicates:
+        problems.append("app_ratings.allowed_packages repeats: " + ", ".join(duplicates))
+
+    return problems
+
+
 def check_urls_resolve(document: dict, *, published: bool = False) -> list[str]:
     """Fetch every URL the policy names and report the ones that do not resolve.
 
@@ -294,7 +355,7 @@ def cmd_sign(args: argparse.Namespace) -> None:
     rewrite_local_list_urls(document)
     pin_local_lists(document)
 
-    mismatches = check_options_mirror_lists(document)
+    mismatches = check_options_mirror_lists(document) + check_whitelist_is_coherent(document)
     if mismatches:
         sys.exit("Refusing to sign:\n  " + "\n  ".join(mismatches))
 
