@@ -1,10 +1,120 @@
-# Handoff — state as of 2026-08-16
+# Handoff — state as of 2026-08-17
 
 Everything about *how the system works* lives in [README](../README.md),
 [design-decisions](design-decisions.md), [policy](policy.md),
 [provisioning](provisioning.md) and [removal](removal.md). This file covers only
 what those do not: where the project actually stands, what is on the build
 machine, what was and was not verified, and what to do next.
+
+---
+
+## Handover — 2026-08-17, end of the store-rule work
+
+**Where it stands: drawbridge build 33, policy 67, and build 33 is confirmed
+working on the Moto.** herald did not move all day and its `required_apps` pins
+are untouched. Read this section first; everything below it is the day's detail.
+
+### What was built today
+
+Apps are now admitted by the Play Store's own rating and category rather than
+only by a hand-written list of names — the fix upstream of the blocklist that
+policy 59 argued for. The design, every measurement behind it, and the parts
+still unbuilt are in [app-ratings](app-ratings.md). In brief:
+
+| | |
+|---|---|
+| **PEGI 3 passes**, everything else does not | *Parental guidance* included, which is the expensive half and was measured before it was chosen |
+| **Games and dating go by category** | the rating cannot see addictive design: Candy Crush is PEGI 3, Minecraft is PEGI 7 |
+| **A 32-package whitelist pays for it** | in the signed policy, because every private messenger is *Parental guidance* |
+| **Chatbots are not blocked** | drawbridge cannot suppress the assistant inside the search engines it already allows |
+| **`dating.txt` and 59 web-game domains** | the browser side, which the app rules cannot reach |
+
+### The three bugs the Moto found, in order
+
+All three were **precedence between rules**, not the rules themselves, and all
+three were invisible to this project's pure-function tests because every
+individual rule was returning the right answer the whole time. That is the
+lesson worth carrying: `AppBlocker` now has six rules, and the interactions are
+where the bugs live.
+
+1. **Build 30** — `DISALLOW_INSTALL_APPS` blocked Play Store *updates*, not just
+   new installs. Retired rather than dropped, so phones already carrying it get
+   it cleared.
+2. **Build 32** — the install lock was *too weak*. `isProtected` ran first, so
+   whitelisted apps (Claude, DeepSeek, Session) and option-allowed apps
+   (Telegram) bypassed the closed set entirely.
+3. **Build 33** — the install lock was *too strong*. Deferral was asked about the
+   **package**, and a newly installed package is outside the closed set by
+   definition, so every arrival waited for the lock whatever else was wrong with
+   it. TikTok, Firefox and Temu all survived on an unlocked phone. **Instagram is
+   what exposed it, by working** — it was in the snapshot, so nothing deferred
+   it. Deferral now travels with the *reason*.
+
+### What has still never been watched working
+
+**The install lock's closed set has never been seen removing an app it was right
+about.** Build 30's sweeps logged zero because layer 1 was preventing anything
+from reaching it; builds 32 and 33 were about the same mechanism failing in two
+directions. With the lock on and the phone locked, install anything and watch:
+
+```
+adb logcat | grep "not among the apps"
+```
+
+**The store rule's first full scan.** `store to scan` in Diagnostics should fall
+to 0 once the phone is on Wi-Fi. A number that never falls is a scan waiting for
+a network it is not getting — a phone enforcing nothing that looks exactly like
+one that has finished. `store unverified` staying high means it cannot reach
+`play.google.com`.
+
+**herald coming back**, still, from before any of this: *no browser*, lock,
+unlock, *the allowed browsers*, lock again.
+
+### The pre-flight that was never run
+
+Build 31 turned the store rule on and the check the spec asks for has still not
+happened, because the Moto was not connected when any build was cut:
+
+```bash
+adb shell pm list packages -3 | sed 's/package://' > /tmp/phone.txt
+python3 tools/app-ratings.py audit --corpus /tmp/phone.txt --expect keep
+```
+
+It prints what the rule would remove from that handset, offline. The whitelist
+has grown four times today by the other route — somebody noticing an app is
+gone — and this finds the rest in one pass. Anything it turns up is a policy edit
+and a re-sign, no build.
+
+### Rolling back costs no build
+
+Re-sign the policy with `app_ratings` removed and every phone stops enforcing the
+store rule at its next poll. That is why the rule lives in the document rather
+than the APK, and it is worth remembering before anything more drastic.
+
+### The tooling is the durable part
+
+`tools/app-ratings.py` — `check`, `audit`, `search` — produced every number in
+`app-ratings.md` and **corrected the spec four times**, including one case where
+a wrong denominator produced a confident three-paragraph explanation of a gap
+that did not exist. Use it before believing anything about a package.
+
+`search` is the half that matters most and was the last to be understood: a
+rating answers *tell me about com.x.y*, and the actual problem is *what is the
+newest companion app called*. Two query terms surfaced 35 unlisted candidates in
+seconds.
+
+### The judgement calls left in the files, so nobody re-litigates them blind
+
+- **Four domains held back** from the games list — `vrt.be`, `bbc.co.uk`,
+  `archive.org`, `ouders.ketnet.be` — commented out with the reasoning. DNS
+  cannot see a path, so blocking these blocks a broadcaster, a library and a page
+  written for parents. One word to include them.
+- **Educational games are blocked**, and schools use several of them. Recorded in
+  the list rather than left to be discovered.
+- **Chess is blocked**, on the engagement machinery rather than the game.
+- **YouTube Music is not whitelisted** although it is *Parental guidance*, because
+  *Allow YouTube* governs it. `policytool.py sign` refuses the document if anyone
+  tries — verified by constructing the mistake.
 
 ---
 
@@ -1107,7 +1217,7 @@ which way it goes on real hardware.
 |---|---|---|
 | drawbridge | 0.2.7, build 18 | **0.2.8, build 33** |
 | herald | 0.1.9 | **0.1.13** |
-| policy | **50** | **66** |
+| policy | **50** | **67** |
 | install page | <https://drawbridge-project.pages.dev/install/usb/> | <https://dev.drawbridge-project.pages.dev/install/usb/> |
 | provisioned devices | the owner's Nothing Phone (A059) | the Moto G15 |
 
@@ -1156,7 +1266,7 @@ still broken".
 |---|---|
 | Repo | https://github.com/Nilss3/drawbridge — public, `main` + `dev` |
 | Alpha | **[v0.2.7](https://github.com/Nilss3/drawbridge/releases/tag/v0.2.7)** is what testers install, from `main`. [v0.2.5](https://github.com/Nilss3/drawbridge/releases/tag/v0.2.5) stays **latest** because `required_apps` resolves herald through it |
-| Dev | **drawbridge build 33, herald 0.1.13, policy 66**, served from the dev site. herald is unchanged since v0.2.8-dev.4, whose versioned URLs `required_apps` still names |
+| Dev | **drawbridge build 33, herald 0.1.13, policy 67**, served from the dev site. herald is unchanged since v0.2.8-dev.4, whose versioned URLs `required_apps` still names |
 | Devices | Two managed phones: the Moto G15 on dev, and the owner's **Nothing Phone A059** on the alpha since 2026-08-13 |
 | Tests | **666** unit tests across eight variant suites, lint clean. Counted after a `clean`; see the install-lock section for why the old 574 was wrong |
 | Website | trilingual, generated into `site/`, both channels served from Cloudflare Pages |
