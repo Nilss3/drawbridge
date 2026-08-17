@@ -11,6 +11,7 @@ import app.drawbridge.dpc.R
 import app.drawbridge.dpc.admin.DeviceOwnerManager
 import app.drawbridge.dpc.apps.AppBlocker
 import app.drawbridge.dpc.apps.InstallLockSettings
+import app.drawbridge.dpc.apps.store.StoreCatalogue
 import app.drawbridge.dpc.security.ParentKey
 import app.drawbridge.dpc.vpn.DnsFilterService
 
@@ -75,6 +76,11 @@ class RemoveActivity : AppCompatActivity() {
         // a reinstalled drawbridge measure the device against a set from before
         // it was removed.
         InstallLockSettings(this).clear()
+        // Derived data about apps on a phone drawbridge no longer manages. It
+        // enforces nothing once the rule is gone, and a reinstalled drawbridge
+        // should ask the store afresh rather than believe a cache from before it
+        // was removed.
+        StoreCatalogue(this).clear()
 
         val message = when {
             !wasOwner -> getString(R.string.remove_done_not_owner)

@@ -20,6 +20,7 @@ import app.drawbridge.dpc.admin.DeviceOwnerManager
 import app.drawbridge.dpc.admin.ProvisioningLog
 import app.drawbridge.dpc.apps.AppBlocker
 import app.drawbridge.dpc.apps.InstallLockSettings
+import app.drawbridge.dpc.apps.store.StoreCatalogue
 import app.drawbridge.dpc.curfew.DisconnectSettings
 import app.drawbridge.dpc.vpn.DnsFilterService
 import java.time.LocalDateTime
@@ -141,6 +142,18 @@ class DiagnosticsActivity : AppCompatActivity() {
             // with the lock on is the failure — the rule is inert, and no line
             // above says so.
             val installLock = InstallLockSettings(this@DiagnosticsActivity)
+            // The store catalogue, and specifically the failures, because
+            // fail-open is only a deliberate choice while somebody can see how
+            // much of it is happening. A phone quietly unable to reach
+            // play.google.com keeps every app on it and looks identical to one
+            // where the rule is working — `store unverified` is the only line
+            // that tells the two apart.
+            val store = StoreCatalogue(this@DiagnosticsActivity).stats()
+            appendLine("store rule:        ${policy.appRatings?.let { "on, ${it.storeRegion}" } ?: "(policy has none)"}")
+            appendLine("store cached:      ${store.known} (${store.usable} usable)")
+            appendLine("store unverified:  ${store.failed}")
+            appendLine("store last fetch:  ${timestamp(store.newestFetchMillis)}")
+
             appendLine("install lock:      ${installLock.isEnabled}")
             appendLine(
                 "installed set:     " +

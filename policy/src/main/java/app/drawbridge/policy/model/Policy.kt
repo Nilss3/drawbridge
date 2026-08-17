@@ -129,6 +129,14 @@ data class Policy(
      */
     @SerialName("required_apps")
     val requiredApps: List<AppUpdate> = emptyList(),
+
+    /**
+     * Admitting apps by the store's own rating and category, rather than only by
+     * a hand-written list of package names. Null on a document that predates it,
+     * which disables the rule rather than defaulting it — see [AppRatings].
+     */
+    @SerialName("app_ratings")
+    val appRatings: AppRatings? = null,
 ) {
     /**
      * Every browser this policy permits, with [allowedBrowserPackage] always a
