@@ -22,6 +22,7 @@ import app.drawbridge.dpc.apps.AppBlocker
 import app.drawbridge.dpc.apps.InstallLockSettings
 import app.drawbridge.dpc.apps.store.StoreCatalogue
 import app.drawbridge.dpc.curfew.DisconnectSettings
+import app.drawbridge.dpc.security.LockTimer
 import app.drawbridge.dpc.vpn.DnsFilterService
 import java.time.LocalDateTime
 
@@ -131,6 +132,21 @@ class DiagnosticsActivity : AppCompatActivity() {
             )
             appendLine("should be offline: ${disconnect.isOfflineAt(now)}")
             appendLine("next boundary:     ${disconnect.nextChangeAfter(now) ?: "(none)"}")
+
+            // The lock timer, in full, because it is the one piece of state on
+            // this phone that can end the lock without anybody typing anything —
+            // and because it is the escape hatch for a lost key, which means the
+            // person who needs to read it is holding a phone they cannot open.
+            // Every stored field is printed rather than a summary: "armed" and
+            // "due" are computed from these three numbers, and a timer that will
+            // never fire looks identical to a working one unless you can see them.
+            val lockTimer = LockTimer(this@DiagnosticsActivity)
+            appendLine("timer next lock:   ${lockTimer.isEnabled} (${lockTimer.length})")
+            appendLine("timer armed:       ${timestamp(lockTimer.armedAt)}")
+            appendLine("timer expires:     ${timestamp(lockTimer.expiresAt)}")
+            appendLine("timer length:      ${lockTimer.armedLength}")
+            appendLine("timer reason:      ${lockTimer.reason ?: "(none)"}")
+            appendLine("timer due now:     ${lockTimer.isDue()}")
             appendLine("blocked packages:  ${policy.blockedPackages.size}")
             appendLine("browsers allowed:  ${policy.browserPackages.joinToString()}")
 

@@ -53,6 +53,7 @@
     <string name="action_lock">Verrouiller drawbridge</string>
     <string name="action_refresh">Rechercher des mises à jour de politique</string>
     <string name="action_remove">Désactiver les restrictions drawbridge</string>
+    <string name="action_forgot_key">Code oublié</string>
 
     <string name="policy_refreshed">Politique mise à jour (version %1$d)</string>
     <string name="policy_refresh_failed">Le serveur de politique est injoignable</string>
@@ -81,8 +82,22 @@
     <string name="update_result_blocked">Le téléphone a refusé la mise à jour, ce qui correspond à un blocage par Play Protect. Suspendez Play Protect et réessayez.</string>
     <string name="update_result_failed">La mise à jour n\'a pas été installée : %1$s</string>
     <string name="update_turn_back_on">Réactivez Play Protect ensuite. C\'est la seule chose sur ce téléphone qui surveille les applications réellement nuisibles, et elle ne gêne rien d\'autre dans drawbridge.</string>
-    <string name="lock_screen_info">Drawbridge veille sur cet appareil et sur son propriétaire</string>
-    <string name="lock_screen_info_locked">Drawbridge veille sur cet appareil et sur son propriétaire - Verrouillé depuis %1$s</string>
+    <string name="lock_screen_info">drawbridge protège</string>
+    <string name="lock_screen_info_locked">drawbridge verrouillé depuis %1$s</string>
+    <string name="lock_screen_info_timer">drawbridge se déverrouille dans %1$s</string>
+
+    <plurals name="duration_days">
+        <item quantity="one">%d jour</item>
+        <item quantity="other">%d jours</item>
+    </plurals>
+    <plurals name="duration_hours">
+        <item quantity="one">%d heure</item>
+        <item quantity="other">%d heures</item>
+    </plurals>
+    <plurals name="duration_minutes">
+        <item quantity="one">%d minute</item>
+        <item quantity="other">%d minutes</item>
+    </plurals>
     <string name="lock_key_glyphs">Une clé ne contient jamais les lettres O, I ni L. Un caractère rond est un zéro. Si votre écriture est ambiguë, taper O, I ou l fonctionne quand même.</string>
     <string name="lock_reveal_not_sealed_yet">Ces réglages ne sont scellés qu\'au moment où vous touchez Terminé. Si vous quittez cet écran avant, la clé est oubliée et rien n\'est verrouillé — le téléphone continue de filtrer, et vous pouvez verrouiller à nouveau pour obtenir une nouvelle clé.</string>
     <string name="lock_reveal_confirm">J\'ai noté ou imprimé cette clé</string>
@@ -99,6 +114,38 @@
     <string name="lock_since_protected">Protège ce téléphone depuis le %1$s</string>
     <string name="lock_since_locked">Verrouillé depuis le %1$s</string>
     <string name="lock_since_hint">Si cela ne correspond pas à vos souvenirs, ce téléphone a été déverrouillé ou réinitialisé depuis.</string>
+
+    <!-- La minuterie du verrouillage -->
+    <string name="lock_timer_name">Se déverrouiller de lui-même après un temps</string>
+    <string name="lock_timer_description">Le verrouillage prend fin de lui-même après la période choisie. Vous recevez toujours une clé, et elle fonctionne toujours.</string>
+    <string name="lock_timer_info">Sans minuterie, le verrouillage dure jusqu\'à ce que quelqu\'un saisisse la clé. Avec une minuterie, il prend aussi fin de lui-même après la période que vous choisissez — une journée hors ligne pour étudier, un week-end, une semaine de camping, deux semaines sans discussion sur le couvre-feu, une période de jeûne de quarante jours.\n\nLa clé ne change pas : elle est toujours créée, toujours affichée une seule fois, et elle ouvre toujours le téléphone à tout moment. L\'utiliser met aussi fin à la minuterie. Celle-ci décide seulement de ce qui se passe si personne ne l\'utilise jamais — et c\'est ce qui permet de ne délibérément pas noter la clé sans risque.\n\nLa période est fixée au moment du verrouillage. Elle ne peut être ni raccourcie, ni prolongée, ni désactivée depuis un téléphone verrouillé, et l\'horloge du téléphone est maintenue à l\'heure du réseau pour que la date ne puisse pas être déplacée non plus.\n\nAu terme de la période, les réglages peuvent de nouveau être modifiés et drawbridge peut être retiré du téléphone. Le filtre web, lui, reste en place jusqu\'à ce que quelqu\'un le retire.</string>
+    <string name="lock_timer_length_hint">Reste verrouillé pendant</string>
+    <string name="lock_timer_applied">Le verrouillage prendra fin de lui-même après %1$s.</string>
+    <string name="lock_timer_off_applied">Le verrouillage durera jusqu\'à ce que vous le leviez avec la clé.</string>
+    <string name="lock_confirm_timer">Ce verrouillage prend fin de lui-même après %1$s. Vous recevez toujours une clé et elle fonctionne toujours — la minuterie n\'est que ce qui se passe si personne ne l\'utilise.</string>
+    <string name="lock_timer_reveal">Ce téléphone se déverrouille de lui-même %1$s après votre appui sur Terminé, avec ou sans cette clé. D\'ici là, la clé est la seule entrée.</string>
+    <string name="lock_timer_running">Se déverrouille de lui-même le %1$s</string>
+    <string name="lock_timer_running_forgotten">Quelqu\'un a indiqué sur ce téléphone que le code était perdu : il se déverrouille donc de lui-même le %1$s. Si vous avez encore le code, déverrouillez puis verrouillez à nouveau pour l\'arrêter.</string>
+
+    <string name="lock_timer_hours_2">2 heures</string>
+    <string name="lock_timer_hours_4">4 heures</string>
+    <string name="lock_timer_hours_8">8 heures</string>
+    <string name="lock_timer_hours_12">12 heures</string>
+    <string name="lock_timer_day_1">1 jour</string>
+    <string name="lock_timer_days_2">2 jours</string>
+    <string name="lock_timer_days_3">3 jours</string>
+    <string name="lock_timer_week_1">1 semaine</string>
+    <string name="lock_timer_weeks_2">2 semaines</string>
+    <string name="lock_timer_weeks_3">3 semaines</string>
+    <string name="lock_timer_days_30">30 jours</string>
+    <string name="lock_timer_days_40">40 jours</string>
+
+    <!-- Code oublié, sur un téléphone verrouillé -->
+    <string name="forgot_key_title">Code oublié ?</string>
+    <string name="forgot_key_message">Si le code est perdu, voici la voie de retour : une attente de %1$s, au terme de laquelle drawbridge se déverrouille de lui-même. Les réglages peuvent alors être modifiés à nouveau, et drawbridge peut être retiré du téléphone.\n\nCette attente ne peut pas être raccourcie. La date est fixée dès qu\'elle commence, et l\'horloge du téléphone est maintenue à l\'heure du réseau pour qu\'elle ne puisse pas être avancée.\n\nJusque-là, la date est affichée sur cet écran et sur l\'écran de verrouillage du téléphone : personne ne peut donc lancer cela discrètement. Si le code réapparaît malgré tout, déverrouiller avec lui met fin à l\'attente.</string>
+    <string name="forgot_key_start">Lancer l\'attente</string>
+    <string name="forgot_key_started">drawbridge se déverrouille de lui-même le %1$s. D\'ici là rien ne change : le téléphone reste verrouillé et le code l\'ouvre toujours.</string>
+    <string name="forgot_key_running">Ce téléphone se déverrouille déjà de lui-même le %1$s, et cela ne peut pas être avancé. Déverrouiller avec le code avant cette date y met fin.</string>
 
     <!-- Retrait -->
     <string name="remove_title">Désactiver les restrictions drawbridge</string>

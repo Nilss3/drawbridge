@@ -826,11 +826,17 @@ Two consequences worth stating:
   up. Now that whole screen is behind the key, so asking again at the removal
   screen would be asking the same question twice.
 
-There is still no reset, by design, and now the consequence is blunter: lose the
-key and the settings are frozen as they stand. The reveal screen says so, and
-lets the parent close it without keeping the key — deliberately making the
-configuration permanent is a legitimate thing to want, and the second dialog is
-there so it cannot happen by accident.
+There is still no reset, by design. **What answers a lost key since 2026-08-17 is
+a clock rather than a credential** — a timer chosen before the lock, or the
+thirty-day code-forgotten door on the lock screen; see
+[Losing the key](#losing-the-key-a-delay-not-a-back-door). Neither is a second
+secret, which is the property this section is about: there is still exactly one
+thing that opens a phone on demand, and it is the key.
+
+A parent who keeps no copy and sets no timer still freezes the settings as they
+stand. The reveal screen says so, and lets them close it without keeping the key —
+deliberately making the configuration permanent is a legitimate thing to want, and
+the checkbox is there so it cannot happen by accident.
 
 ## Both apps must read the same document, not merely the same shape of one
 
@@ -1486,7 +1492,11 @@ lost the key.
 
 ## Losing the key: a delay, not a back door
 
-*Considered and deferred. Nothing is implemented.*
+**Built 2026-08-17, and as an automatic *unlock* rather than the self-removal
+proposed here.** The note below is what was written before it existed and is
+preserved for its reasoning; ["What was built, and where it departs from the note
+above"](#what-was-built-and-where-it-departs-from-the-note-above) at the end of
+this section says what the code actually does.
 
 The key is shown once and stored only as a hash, so a parent who loses it cannot
 get back into the settings. Since drawbridge stopped preventing factory reset
@@ -1554,14 +1564,103 @@ parent from a determined teenager with a convincing story.
 That converts a tool into a service, which is the one thing this project set out
 not to be.
 
-## The clock is locked on every device, not only for curfews
+### What was built, and where it departs from the note above
+
+**An unlock, not a removal**, and that is the largest departure. `LockTimer` ends
+the *lock*: the key is dropped, the configuration screen opens again, the phone
+comes back online, USB debugging returns. Everything keyed on
+`protectedSince` — the filter, the always-on VPN, the restriction set — stays
+exactly as it was, which is precisely what a parent unlocking to change a setting
+already gets.
+
+It answers the same problem for one reason: **removal lives behind the lock.**
+`RemoveActivity` is in the unlocked screen's overflow menu, so a phone that
+unlocks itself is a phone whose owner can then remove drawbridge, keep it and
+re-lock, or hand it on. The timer therefore did not need to implement a teardown
+of its own — the teardown was already written, and pointing a clock at the *lock*
+rather than at the app is both smaller and reversible. A timer that removed
+drawbridge outright would also be strictly worse for the ordinary case, which is
+not a lost key at all: it is a weekend offline, and nobody wants their filter
+uninstalled on Sunday night.
+
+**Two doors, one deadline.** A period chosen on the configuration screen before
+locking (2 hours to 40 days, armed in `LockActivity.sealWithKey`), and a
+thirty-day one that `Forgot the code` starts from a phone that is already locked.
+Both write the same three numbers and both are read by the same controller, so
+there is one mechanism to get right rather than two. The picker's longest entry is
+forty days; the code-forgotten door is thirty and is not configurable, because a
+dial on that would be a dial on how long a bypass takes.
+
+**Of the note's three requirements, two are met as written and one is met
+differently:**
+
+- *The clock is the attack* — `DISALLOW_CONFIG_DATE_TIME` with network time, for
+  as long as a deadline is armed. The decision lives in `CurfewController.apply`
+  and nowhere else, because two writers of one restriction means whichever runs
+  last wins; see the section below.
+- *Ambiguity fails locked* — `LockTimer.hasExpired` is a pure function of three
+  numbers and refuses to fire on any state it cannot make sense of: a
+  half-written deadline, a deadline at or before its own arming, or a clock now
+  reading earlier than the arming. Nine unit tests cover it, because the
+  alternative is checking a fortnight-long rule by holding a handset.
+- *Impossible to miss* — **the keyguard and the lock screen, not an ongoing
+  notification.** The keyguard counts down in words — *"drawbridge unlocks in 3
+  days"* — which is the surface a parent is already told to check and the one
+  nobody can swipe away. A duration rather than a date, because it is read
+  against nothing; the trade is that a stored string goes stale, so
+  `LockTimerController.apply` rewrites it on every run, hourly at worst. The lock
+  date stays on drawbridge's own screen, which is where somebody comparing it
+  against a memory is already looking. A notification would mostly be seen by whoever started the
+  countdown, and its visibility is not something this build can promise:
+  `POST_NOTIFICATIONS` is declared in the manifest but nothing asks for it and
+  nothing grants it, so on Android 13+ it may simply not appear. The
+  code-forgotten line is coloured as an error and says in words that somebody on
+  the phone declared the code lost, since that is the one countdown a parent may
+  not have started.
+
+**It does not buy back `DISALLOW_FACTORY_RESET`, and no build should assume it
+did.** The argument above holds — an escape that is "ask and wait" makes the
+restriction survivable again — but the property that note flags as lost is now
+real: this escape runs *inside* drawbridge. A crash loop or a bad update takes it
+with it, where a factory reset never involved drawbridge at all. Reinstating the
+restriction is still [step 9 in the handoff](handoff.md#9-lock-factory-reset--last-and-only-with-the-timer),
+still after everything above it, and still the most safety-critical release this
+project would cut. What has changed is only that the prerequisite exists.
+
+**The residual risk is unchanged and cannot be designed away**: somebody starts
+the thirty days, nobody picks the phone up, and it lifts. The length is the only
+dial, and it is set where a child cannot reach it.
+
+## The clock is locked for a curfew and for a lock timer, and this section used to claim more
+
+**Corrected 2026-08-17, while the lock timer was being built.** The heading here
+used to read *"on every device, not only for curfews"* and the paragraph under it
+said the clock pin was part of the standard lockdown. That is what
+`DeviceOwnerManager.applyClockLock`'s own comment still says, and it is not what
+the phone does: `applyManagedDevicePolicy` does apply the pin, and then
+`CurfewController.apply` — which runs immediately afterwards on every process
+start, every boot, both ends of a lock and every fifteen minutes — clears it again
+unless something needs it. Two writers, and the second one wins.
+
+So the rule as built is: **the clock is pinned while a curfew is in force, and
+while a lock timer is counting down.** The timer half is new and is not optional —
+a deadline is a wall-clock instant, and `SystemClock.elapsedRealtime` resets at
+boot, so a phone that can be wound forward forty days is a phone whose forty-day
+lock ends this afternoon. The decision is computed in one place, in
+`CurfewController.apply`, from both inputs at once, because that is the component
+that already runs on every trigger either answer depends on.
+
+**What is still open is whether the wider claim should be made true.** The two
+reasons below are real and have nothing to do with curfews, which is an argument
+for pinning the clock on any locked phone and deleting the condition. That is a
+behaviour change for every device that is not on a curfew — a parent loses manual
+clock setting on a phone where nothing today takes it away — so it is the owner's
+call rather than a tidy-up, and it is written down here rather than made.
 
 `DISALLOW_CONFIG_DATE_TIME`, with `setAutoTimeEnabled` and
-`setAutoTimeZoneEnabled` where the API exists, is part of the standard lockdown
-rather than something a curfew switches on.
-
-It was written for the curfew, where a wall-clock window is advisory if the clock
-can be edited. But the same edit defeats two things that exist without one:
+`setAutoTimeZoneEnabled` where the API exists, was written for the curfew, where a
+wall-clock window is advisory if the clock can be edited. But the same edit
+defeats two things that exist without one:
 
 - **The protected-since date.** Wind the clock back a year, lock, wind it
   forward: the phone now reports a year of continuous protection it never had.
@@ -1572,10 +1671,10 @@ can be edited. But the same edit defeats two things that exist without one:
   does not implement those and cannot enforce them, but it can stop the phone
   lying to them.
 
-The cost is that nobody can set the clock by hand on a locked device. Network
-time and network time zone are forced on instead, which is right on a phone that
-is on a network by definition, and travel is handled by the time zone following
-the network rather than the user.
+The cost is that nobody can set the clock by hand on a phone with a curfew or a
+running timer. Network time and network time zone are forced on instead, which is
+right on a phone that is on a network by definition, and travel is handled by the
+time zone following the network rather than the user.
 
 ## The protected-since date is the cheap tamper check
 

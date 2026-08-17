@@ -1,7 +1,7 @@
 {
-  "version": 68,
+  "version": 69,
   "issued_at": "2026-08-16T12:00:00Z",
-  "comment": "Policy 59, DEV CHANNEL ONLY. Twenty-two AI companion and roleplay apps added to blocked_packages, and six of their web fronts to the AI companion list. The owner found the Play Store side of this category wide open on a locked phone: Cycle AI, Rosytalk, Star Girl and Trend AI all installed and ran. The domain list had been carrying this category almost alone, and it cannot -- these apps talk to their own backends and a person installs them by name from the Play Store, not by typing a domain. Every id was fetched from its Play listing and the title had to be the app it claimed to be; com.saylo.app was dropped for being a different app of the same name, and two domains were dropped for being unreadable or too generic to attribute. Build and herald pins unchanged from 58.",
+  "comment": "Policy 69, DEV CHANNEL ONLY. Re-pins app_update to drawbridge 0.2.9 build 34, which adds the lock timer: a lock can now end by itself after a period chosen before locking (2 hours to 40 days), and a locked phone whose code is gone can start a thirty-day wait from 'Forgot the code' in the overflow menu. Nothing about the filter, the blocklists or the options changed; herald pins are unchanged from 68.",
   "dns": {
     "upstreams": [
       "94.140.14.15",
@@ -730,9 +730,9 @@
   },
   "app_update": {
     "package_name": "app.drawbridge.dpc",
-    "version_code": 33,
-    "url": "https://dev.drawbridge-project.pages.dev/assets/dpc-9be19a55f51e8727.apk",
-    "sha256": "9be19a55f51e87279b80e696fdf2618c9b39b2ff11f86c94084e5007f48b4c2d"
+    "version_code": 34,
+    "url": "https://dev.drawbridge-project.pages.dev/assets/dpc-ba312d4df61967f5.apk",
+    "sha256": "ba312d4df61967f5d49c4a1e0f918c4de5e9ba3c6ba483ecff1beba8934258a4"
   },
   "required_apps": [
     {

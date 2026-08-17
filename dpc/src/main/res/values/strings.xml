@@ -89,6 +89,7 @@
     <string name="diagnostics_copied" translatable="false">Copied</string>
 
     <string name="action_remove">Deactivate drawbridge restrictions</string>
+    <string name="action_forgot_key">Forgot the code</string>
 
     <string name="policy_refreshed">Policy updated (version %1$d)</string>
     <string name="policy_refresh_failed">Could not reach the policy server</string>
@@ -117,8 +118,27 @@
     <string name="update_result_blocked">The phone refused the update, which is what Play Protect blocking it looks like. Pause Play Protect and try again.</string>
     <string name="update_result_failed">The update did not install: %1$s</string>
     <string name="update_turn_back_on">Turn Play Protect back on afterwards. It is the only thing on this phone watching for genuinely harmful apps, and it does not interfere with anything else drawbridge does.</string>
-    <string name="lock_screen_info">Drawbridge is guarding this device and its owner</string>
-    <string name="lock_screen_info_locked">Drawbridge is guarding this device and its owner - Locked since %1$s</string>
+    <!--
+         The keyguard, in three short sentences. One line under a clock, often
+         truncated, read by somebody who was not looking for it — so each state
+         says its one fact and stops.
+    -->
+    <string name="lock_screen_info">drawbridge protecting</string>
+    <string name="lock_screen_info_locked">drawbridge locked since %1$s</string>
+    <string name="lock_screen_info_timer">drawbridge unlocks in %1$s</string>
+
+    <plurals name="duration_days">
+        <item quantity="one">%d day</item>
+        <item quantity="other">%d days</item>
+    </plurals>
+    <plurals name="duration_hours">
+        <item quantity="one">%d hour</item>
+        <item quantity="other">%d hours</item>
+    </plurals>
+    <plurals name="duration_minutes">
+        <item quantity="one">%d minute</item>
+        <item quantity="other">%d minutes</item>
+    </plurals>
     <string name="lock_key_glyphs">A key never contains the letters O, I or L. A round character is a zero. If you write one down ambiguously, typing O, I or l back still works.</string>
     <string name="lock_reveal_not_sealed_yet">These settings are not sealed until you tap Done. If you leave this screen before then, the key is forgotten and nothing is locked — the phone keeps filtering, and you can lock it again for a new key.</string>
     <string name="lock_reveal_confirm">I have written down or printed this key</string>
@@ -135,6 +155,44 @@
     <string name="lock_since_protected">Protecting this phone since %1$s</string>
     <string name="lock_since_locked">Locked since %1$s</string>
     <string name="lock_since_hint">If that does not match what you remember, this phone has been unlocked or reset since.</string>
+
+    <!--
+         The lock timer. The wording holds one line everywhere it appears: the
+         key is not weakened, it is still made and still works, and the timer
+         only decides what happens if nobody ever uses it. A screen that let
+         anyone read this as "the lock is weaker now" would be describing a
+         different feature.
+    -->
+    <string name="lock_timer_name">Unlock by itself after a while</string>
+    <string name="lock_timer_description">The lock ends on its own after the period you choose. You still get a key, and it still works.</string>
+    <string name="lock_timer_info">Locking without a timer lasts until somebody types the key in. With a timer, the lock also ends by itself after the period you choose — a day offline to study, a weekend, a week of camping, two weeks without an argument about the curfew, a fasting period of forty days.\n\nThe key is unchanged: still made, still shown once, and it still opens the phone at any moment. Using it also ends the timer. What the timer decides is only what happens if nobody ever uses it — which is what makes deliberately not writing the key down a safe thing to do.\n\nThe period is fixed at the moment you lock. It cannot be shortened, extended or switched off from a locked phone, and the phone\'s clock is held to network time so the date cannot be moved either.\n\nWhen the time is up, the settings can be changed again and drawbridge can be removed from the phone. The web filter itself stays until somebody removes it.</string>
+    <string name="lock_timer_length_hint">Stays locked for</string>
+    <string name="lock_timer_applied">Locking will end by itself after %1$s.</string>
+    <string name="lock_timer_off_applied">Locking will last until you unlock it with the key.</string>
+    <string name="lock_confirm_timer">This lock ends by itself after %1$s. You still get a key and it still works — the timer is only what happens if nobody uses it.</string>
+    <string name="lock_timer_reveal">This phone unlocks itself %1$s after you tap Done, with or without this key. Until then the key is the only way in.</string>
+    <string name="lock_timer_running">Unlocks by itself on %1$s</string>
+    <string name="lock_timer_running_forgotten">Somebody on this phone said the code was lost, so it unlocks by itself on %1$s. If you still have the code, unlock and lock again to stop that.</string>
+
+    <string name="lock_timer_hours_2">2 hours</string>
+    <string name="lock_timer_hours_4">4 hours</string>
+    <string name="lock_timer_hours_8">8 hours</string>
+    <string name="lock_timer_hours_12">12 hours</string>
+    <string name="lock_timer_day_1">1 day</string>
+    <string name="lock_timer_days_2">2 days</string>
+    <string name="lock_timer_days_3">3 days</string>
+    <string name="lock_timer_week_1">1 week</string>
+    <string name="lock_timer_weeks_2">2 weeks</string>
+    <string name="lock_timer_weeks_3">3 weeks</string>
+    <string name="lock_timer_days_30">30 days</string>
+    <string name="lock_timer_days_40">40 days</string>
+
+    <!-- The code-forgotten door, on a locked phone. -->
+    <string name="forgot_key_title">Forgotten the code?</string>
+    <string name="forgot_key_message">If the code is gone, this is the way back in: a wait of %1$s, after which drawbridge unlocks itself. The settings can be changed again then, and drawbridge can be removed from the phone.\n\nIt cannot be made shorter. The date is fixed the moment it starts, and the phone\'s clock is held to network time so it cannot be moved forward.\n\nThe date is shown on this screen and on the phone\'s lock screen until then, so nobody can start this quietly. If the code turns up after all, unlocking with it ends the wait.</string>
+    <string name="forgot_key_start">Start the wait</string>
+    <string name="forgot_key_started">drawbridge unlocks itself on %1$s. Until then nothing changes: the phone stays locked, and the code still opens it.</string>
+    <string name="forgot_key_running">This phone already unlocks itself on %1$s, and that cannot be brought forward. Unlocking with the code before then ends it.</string>
 
     <!-- Removal -->
     <string name="remove_title">Deactivate drawbridge restrictions</string>

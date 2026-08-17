@@ -25,9 +25,14 @@ import javax.crypto.spec.PBEKeySpec
  * once stops working at the next lock. It is shown exactly once, at that moment;
  * only its salted hash is kept. There is deliberately no reset — an email or
  * account recovery path would reintroduce exactly the account dependency this
- * project exists to avoid — so a parent who does not write the key down cannot
- * unlock the device again, ever. That is a choice they are allowed to make, and
- * the screen that mints the key says so before it does.
+ * project exists to avoid.
+ *
+ * **What answers a lost key is a clock, not a recovery code.** [LockTimer] can
+ * end a lock after a period chosen before it was sealed, and the code-forgotten
+ * door on the lock screen can start a thirty-day one afterwards; both end at
+ * [forget]. A parent may still choose to keep no copy of the key and set no
+ * timer, and then the settings are sealed for good — that is a choice they are
+ * allowed to make, and the screen that mints the key says so before it does.
  */
 class ParentKey(context: Context) {
 
@@ -108,8 +113,28 @@ class ParentKey(context: Context) {
      */
     fun unlock(candidate: String): Boolean {
         if (!matches(candidate)) return false
-        prefs.edit().remove(KEY_HASH).remove(KEY_SALT).apply()
+        forget()
         return true
+    }
+
+    /**
+     * Ends the lock without being given the key. **The timer's door, and only
+     * the timer's.**
+     *
+     * It does exactly what a successful [unlock] does to the stored state — the
+     * key and its salt go, the timestamps stay — so the two unlocks cannot drift
+     * apart. What makes it safe is not this method but what can reach it: nothing
+     * but [LockTimerController.apply], which acts on a deadline that was written
+     * while the phone was already locked and that a moved clock cannot bring
+     * forward. There is no caller that takes a secret and no caller reachable from
+     * a screen.
+     *
+     * It is a separate method rather than an `unlock(null)` because a nullable
+     * candidate is the kind of parameter that eventually gets passed a value
+     * somebody did not check.
+     */
+    fun forget() {
+        prefs.edit().remove(KEY_HASH).remove(KEY_SALT).apply()
     }
 
     /** Drops the key and the history with it. Part of the sanctioned removal flow. */

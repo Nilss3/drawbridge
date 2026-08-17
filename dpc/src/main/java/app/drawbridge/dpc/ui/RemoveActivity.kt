@@ -12,6 +12,8 @@ import app.drawbridge.dpc.admin.DeviceOwnerManager
 import app.drawbridge.dpc.apps.AppBlocker
 import app.drawbridge.dpc.apps.InstallLockSettings
 import app.drawbridge.dpc.apps.store.StoreCatalogue
+import app.drawbridge.dpc.security.LockTimer
+import app.drawbridge.dpc.security.LockTimerController
 import app.drawbridge.dpc.security.ParentKey
 import app.drawbridge.dpc.vpn.DnsFilterService
 
@@ -70,6 +72,12 @@ class RemoveActivity : AppCompatActivity() {
 
         DrawbridgeApplication.policy(this).clear()
         parentKey.clear()
+        // The deadline, and the alarm pointed at it. A pending unlock outliving
+        // the lock it belonged to would be harmless in effect — there is no key
+        // left to remove — but it would keep waking a phone drawbridge no longer
+        // manages, and a reinstall would find a countdown from a previous life.
+        LockTimer(this).clear()
+        LockTimerController(this).apply()
         // The restriction itself came off with clearUserRestrictions above; this
         // is the closed set behind it. A list of the packages a phone happened to
         // carry means nothing once nothing enforces it, and leaving it would have

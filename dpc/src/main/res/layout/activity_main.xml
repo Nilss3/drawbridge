@@ -323,6 +323,64 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/action_lock" />
+
+            <!--
+                Under the button, not up with the other settings, because it is
+                not a setting about the phone — it is a qualifier on the act the
+                button performs. "Lock, and let go again in two weeks" is one
+                decision, and this is the second half of the sentence.
+            -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingTop="12dp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/lock_timer_name"
+                    android:textAppearance="?attr/textAppearanceTitleSmall" />
+
+                <ImageButton
+                    android:id="@+id/lockTimerInfo"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:scaleType="center"
+                    android:src="@drawable/ic_info" />
+
+                <com.google.android.material.materialswitch.MaterialSwitch
+                    android:id="@+id/lockTimerSwitch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/lock_timer_description"
+                android:textAppearance="?attr/textAppearanceBodySmall" />
+
+            <!-- Only while the switch is on: a period with nothing to apply it to
+                 is a control that answers a question nobody asked. -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/lockTimerLength"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:hint="@string/lock_timer_length_hint"
+                android:visibility="gone">
+
+                <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                    android:id="@+id/lockTimerField"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="none" />
+            </com.google.android.material.textfield.TextInputLayout>
         </LinearLayout>
     </LinearLayout>
 </ScrollView>

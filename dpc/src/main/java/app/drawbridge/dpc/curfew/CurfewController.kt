@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.util.Log
 import app.drawbridge.dpc.admin.DeviceOwnerManager
+import app.drawbridge.dpc.security.LockTimer
 import app.drawbridge.dpc.security.ParentKey
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -83,7 +84,17 @@ class CurfewController(context: Context) {
         // wall-clock window is only as trustworthy as the clock, and a child does
         // not stop being able to wind it forward because a parent is halfway
         // through changing a setting.
-        if (mode == DisconnectSettings.Mode.CURFEW) owner.applyClockLock() else owner.clearClockLock()
+        //
+        // **Two features need it now, and this is the only place that decides.**
+        // A lock timer is a wall-clock deadline, so winding the phone forward
+        // forty days would lift it this afternoon — see [LockTimer]. The curfew
+        // controller owns the decision because it is the component that already
+        // runs on every trigger that could change either answer: process start,
+        // boot, each boundary, every fifteen minutes, and both ends of a lock.
+        // Splitting it would mean two writers, and whichever ran second would
+        // undo the other.
+        val pinTheClock = mode == DisconnectSettings.Mode.CURFEW || LockTimer(appContext).isArmed
+        if (pinTheClock) owner.applyClockLock() else owner.clearClockLock()
 
         // **Offline follows the lock.** An unlocked drawbridge is a parent
         // working on the phone: installing something, moving data off it, trying

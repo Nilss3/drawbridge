@@ -13,6 +13,7 @@ import app.drawbridge.dpc.BuildConfig
 import app.drawbridge.dpc.DrawbridgeApplication
 import app.drawbridge.dpc.R
 import app.drawbridge.dpc.apps.BrowserSettings
+import app.drawbridge.dpc.security.LockTimer
 import app.drawbridge.dpc.security.ParentKey
 
 /**
@@ -122,15 +123,33 @@ class DeviceOwnerManager(context: Context) {
      * a date the parent recognises is a far better thing to miss than a generic
      * notice nobody read in the first place. See docs/handoff.md.
      *
-     * Three states, and the distinction between the last two is the point:
+     * Four states, three sentences, and all of them are deliberately short. This
+     * text is set as one line under a clock on a keyguard, often truncated, and
+     * read in a second by somebody who did not come looking for it — so it says
+     * the one fact that state carries and stops. It used to open with *"Drawbridge
+     * is guarding this device and its owner"* every time, which spent the whole
+     * line before reaching anything that varies.
      *
      *  - **Never locked** — nothing is enforced yet, so nothing is claimed. The
      *    message is cleared and Android's default comes back. drawbridge does not
      *    say it is guarding a phone it has not started guarding.
-     *  - **Locked** — the full line, with the date.
-     *  - **Unlocked after having been locked** — still guarding, and truthfully
-     *    so: unlocking removes the key, not the restrictions or the filter. The
-     *    date comes off because it is the *lock* that is no longer in force.
+     *  - **Locked with a timer running** — *"drawbridge unlocks in 3 days"*. A
+     *    duration rather than a date, because it is read against nothing; the lock
+     *    date is still on drawbridge's own screen for anyone who wants it. This is
+     *    the line that makes an automatic unlock impossible to miss, and it earns
+     *    the whole message because of the code-forgotten door: that countdown can
+     *    be started by whoever is holding a locked phone, so a parent has to be
+     *    able to see it without unlocking anything.
+     *  - **Locked** — *"drawbridge locked since …"*, the date a caregiver checks.
+     *  - **Unlocked after having been locked** — *"drawbridge protecting"*.
+     *    Still true: unlocking removes the key, not the restrictions or the
+     *    filter. The date comes off because it is the *lock* that is no longer in
+     *    force.
+     *
+     * **The duration goes stale by construction**, since this is a stored string
+     * rather than something the system re-resolves. [LockTimerController.apply]
+     * rewrites it on every run — process start, boot, and hourly — so it is at
+     * worst an hour behind on a number measured in days.
      *
      * The text is a stored string rather than a resource the system re-resolves,
      * so it does not follow a later language change on its own. Every caller that
@@ -140,22 +159,42 @@ class DeviceOwnerManager(context: Context) {
         if (!isDeviceOwner) return
 
         val key = ParentKey(appContext)
+        val timer = LockTimer(appContext)
         val info = when {
             key.protectedSince == 0L -> null
+            key.isLocked && timer.isArmed -> appContext.getString(
+                R.string.lock_screen_info_timer,
+                remainingText(timer.remaining()),
+            )
             key.isLocked && key.lockedSince > 0 -> appContext.getString(
                 R.string.lock_screen_info_locked,
-                DateUtils.formatDateTime(
-                    appContext,
-                    key.lockedSince,
-                    DateUtils.FORMAT_SHOW_DATE or DateUtils.FORMAT_SHOW_YEAR or
-                        DateUtils.FORMAT_SHOW_TIME,
-                ),
+                moment(key.lockedSince),
             )
             else -> appContext.getString(R.string.lock_screen_info)
         }
 
         runCatching { dpm.setDeviceOwnerLockScreenInfo(admin, info) }
             .onFailure { Log.e(TAG, "Could not set the lock screen message", it) }
+    }
+
+    private fun moment(millis: Long): String = DateUtils.formatDateTime(
+        appContext,
+        millis,
+        DateUtils.FORMAT_SHOW_DATE or DateUtils.FORMAT_SHOW_YEAR or DateUtils.FORMAT_SHOW_TIME,
+    )
+
+    /**
+     * "3 days", "5 hours", "12 minutes" — a quantity string rather than a number
+     * and a noun glued together, because Dutch and French do not agree with
+     * English about which counts are plural.
+     */
+    private fun remainingText(remaining: LockTimer.Remaining): String {
+        val plural = when (remaining.unit) {
+            LockTimer.Remaining.Unit.DAYS -> R.plurals.duration_days
+            LockTimer.Remaining.Unit.HOURS -> R.plurals.duration_hours
+            LockTimer.Remaining.Unit.MINUTES -> R.plurals.duration_minutes
+        }
+        return appContext.resources.getQuantityString(plural, remaining.count, remaining.count)
     }
 
     /** Read back from the platform rather than from what we last wrote. */
@@ -244,11 +283,19 @@ class DeviceOwnerManager(context: Context) {
     }
 
     /**
-     * Pins the clock. Applied on every locked device, curfew or not.
+     * Pins the clock. **Applied here, but decided in
+     * [app.drawbridge.dpc.curfew.CurfewController.apply]**, which calls this or
+     * [clearClockLock] according to whether a curfew or a lock timer needs it —
+     * and which runs on every process start, so it has the last word over the
+     * unconditional call in [applyManagedDevicePolicy]. This comment used to claim
+     * the pin was applied on every locked device; that was never what the phone
+     * did. See docs/design-decisions.md.
      *
      * It began as curfew machinery — a wall-clock window is advisory if the
-     * clock can be edited — but a movable clock defeats two other things that
-     * have nothing to do with curfews:
+     * clock can be edited — and a lock timer needs it for a sharper version of
+     * the same reason: a deadline wound forward is a lock that ends early. Beyond
+     * both, a movable clock defeats two things that have nothing to do with
+     * either:
      *
      *  - **The protected-since date.** Wind the clock back a year, lock, wind it
      *    forward again, and the phone reports a year of continuous protection it

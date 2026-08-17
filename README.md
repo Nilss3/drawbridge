@@ -45,11 +45,23 @@ decisions, and splitting them into two buttons let a phone sit configured,
 unlocked and unfiltered while looking finished.
 
 Locking mints a **key**: twenty characters, shown once, never stored anywhere
-readable, and the only way back into that screen. A new one is minted every time
-you lock, so a key photographed once stops working at the next lock. There is no
-reset — not by email, not by anyone — which means writing it down matters, and
-also means *not* writing it down is a legitimate way to make a decision
-permanent on purpose. The screen says so before it mints anything.
+readable, and the only thing that opens that screen on demand. A new one is minted
+every time you lock, so a key photographed once stops working at the next lock.
+There is no reset — not by email, not by anyone — which means writing it down
+matters, and also means *not* writing it down is a legitimate way to make a
+decision permanent on purpose. The screen says so before it mints anything.
+
+What answers a key you have lost is a **clock**, not a recovery code. Under the
+Lock button you can say that this lock should end by itself after a period from two
+hours to forty days — an afternoon offline to revise, a weekend, a week of camping,
+a fast — and the key still works throughout, so using it simply ends the lock
+early. On a phone that is already locked, `Forgot the code` in the overflow menu
+starts a **thirty-day** wait after which drawbridge unlocks itself; anyone holding
+the phone can start it, the wait cannot be shortened, the phone's own lock screen
+counts it down — *drawbridge unlocks in 3 days* — for every one of those days, and
+unlocking with the key cancels it. The point is
+that nobody ends up with a device they can only reclaim by wiping it. See
+[design-decisions](docs/design-decisions.md#losing-the-key-a-delay-not-a-back-door).
 
 There is no PIN. There used to be, with the key demoted to a recovery code
 behind it; that was one secret too many, and the six digits a parent can

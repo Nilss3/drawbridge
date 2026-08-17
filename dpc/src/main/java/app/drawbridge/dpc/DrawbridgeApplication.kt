@@ -9,6 +9,8 @@ import app.drawbridge.dpc.apps.AppBlocker
 import app.drawbridge.dpc.apps.store.StoreScanWorker
 import app.drawbridge.dpc.curfew.CurfewController
 import app.drawbridge.dpc.curfew.CurfewWorker
+import app.drawbridge.dpc.security.LockTimerController
+import app.drawbridge.dpc.security.LockTimerWorker
 import app.drawbridge.dpc.update.UpdateWorker
 import app.drawbridge.dpc.vpn.DnsFilterService
 import app.drawbridge.policy.PolicyConfig
@@ -53,6 +55,13 @@ class DrawbridgeApplication : Application() {
         // The alarm is punctual and this is not; between them, a boundary that
         // is missed is late rather than permanent. See CurfewWorker.
         CurfewWorker.schedule(this)
+
+        // The lock's own clock, on the same three legs and for a stricter reason:
+        // a curfew that misses a boundary is a phone online at the wrong hour,
+        // and a timer that never fires is a phone nobody can open. This call is
+        // what covers an app upgrade or a force-stop having taken the alarm.
+        LockTimerController(this).apply()
+        LockTimerWorker.schedule(this)
     }
 
     companion object {

@@ -39,6 +39,7 @@ import app.drawbridge.dpc.apps.InstallLockSettings
 import app.drawbridge.dpc.curfew.CurfewController
 import app.drawbridge.dpc.curfew.DisconnectSettings
 import app.drawbridge.dpc.policy.SelectionProvider
+import app.drawbridge.dpc.security.LockTimer
 import app.drawbridge.dpc.security.ParentKey
 import app.drawbridge.dpc.update.AppInstaller
 import app.drawbridge.dpc.vpn.DnsFilterService
@@ -77,6 +78,7 @@ class MainActivity : AppCompatActivity() {
     private val disconnect by lazy { DisconnectSettings(this) }
     private val browsers by lazy { BrowserSettings(this) }
     private val installLock by lazy { InstallLockSettings(this) }
+    private val lockTimer by lazy { LockTimer(this) }
 
     private lateinit var updateNotice: View
     private lateinit var disconnectContainer: LinearLayout
@@ -85,6 +87,9 @@ class MainActivity : AppCompatActivity() {
     private lateinit var curfewWeekendButton: Button
     private lateinit var browserContainer: LinearLayout
     private lateinit var installLockSwitch: MaterialSwitch
+    private lateinit var lockTimerSwitch: MaterialSwitch
+    private lateinit var lockTimerLength: View
+    private lateinit var lockTimerField: MaterialAutoCompleteTextView
     private lateinit var policyContainer: LinearLayout
     private lateinit var optionContainer: LinearLayout
     private lateinit var optionsExplanation: TextView
@@ -131,6 +136,14 @@ class MainActivity : AppCompatActivity() {
         curfewWeekendButton = findViewById(R.id.curfewWeekendButton)
         browserContainer = findViewById(R.id.browserContainer)
         installLockSwitch = findViewById(R.id.installLockSwitch)
+        lockTimerSwitch = findViewById(R.id.lockTimerSwitch)
+        lockTimerLength = findViewById(R.id.lockTimerLength)
+        lockTimerField = findViewById(R.id.lockTimerField)
+        // Here rather than in renderLockTimer, so it is off before anything can be
+        // saved: the stored length is the only truth this field has, and a
+        // restored text going back through the filtering setText is what empties
+        // the dropdown after a recreation. Same trap as bindLanguages below.
+        lockTimerField.isSaveEnabled = false
         policyContainer = findViewById(R.id.policyContainer)
         optionContainer = findViewById(R.id.optionContainer)
         optionsExplanation = findViewById(R.id.optionsExplanation)
@@ -259,8 +272,63 @@ class MainActivity : AppCompatActivity() {
             renderDisconnect()
             renderBrowsers()
             renderInstallLock()
+            renderLockTimer()
             renderPolicies()
             renderOptions()
+        }
+    }
+
+    // --- The lock timer ------------------------------------------------------
+
+    /**
+     * Whether this lock ends by itself, and after how long.
+     *
+     * **This is the only control on the screen that does not wait for the lock,
+     * because it *is* part of the lock.** Everything above records a preference
+     * that lands when the phone is sealed; this records what sealing will mean.
+     * The countdown itself starts in [LockActivity.sealWithKey], for the same
+     * reason the key is committed there rather than when it is shown: a reveal
+     * somebody walks away from must leave the phone exactly as it was, timer
+     * included.
+     *
+     * Nothing here is a weakening of the key. A timed lock mints and shows a key
+     * exactly as an untimed one does, and typing it in still opens the phone at
+     * any moment — which also cancels the timer. What the timer changes is only
+     * what happens if nobody ever types it.
+     */
+    private fun renderLockTimer() {
+        findViewById<View>(R.id.root).bindInfo(
+            R.id.lockTimerInfo,
+            title = getString(R.string.lock_timer_name),
+            body = getString(R.string.lock_timer_info),
+        )
+
+        val labels = LockTimer.Length.entries.map { getString(it.label) }.toTypedArray()
+        lockTimerField.setSimpleItems(labels)
+        // The second argument suppresses filtering; without it, setting the text
+        // narrows the list to the one entry that matches it.
+        lockTimerField.setText(getString(lockTimer.length.label), false)
+        lockTimerField.setOnItemClickListener { _, _, position, _ ->
+            val chosen = LockTimer.Length.entries[position]
+            if (chosen != lockTimer.length) {
+                lockTimer.length = chosen
+                toast(getString(R.string.lock_timer_applied, getString(chosen.label)))
+            }
+        }
+
+        // Set before the listener is attached, so showing the stored value does
+        // not read as the parent having just toggled it.
+        lockTimerSwitch.setOnCheckedChangeListener(null)
+        lockTimerSwitch.isChecked = lockTimer.isEnabled
+        lockTimerLength.visibility = if (lockTimer.isEnabled) View.VISIBLE else View.GONE
+        lockTimerSwitch.setOnCheckedChangeListener { _, checked ->
+            lockTimer.isEnabled = checked
+            lockTimerLength.visibility = if (checked) View.VISIBLE else View.GONE
+            if (checked) {
+                toast(getString(R.string.lock_timer_applied, getString(lockTimer.length.label)))
+            } else {
+                toast(getString(R.string.lock_timer_off_applied))
+            }
         }
     }
 
@@ -804,10 +872,23 @@ class MainActivity : AppCompatActivity() {
 
     // --- Locking -------------------------------------------------------------
 
+    /**
+     * The last sentence of [R.string.lock_confirm_message] says the key is the
+     * only way back short of a factory reset, and with a timer running that is not
+     * true — so the dialog says what is true instead. A confirmation that
+     * overstates what it is about to do is worse than none.
+     */
     private fun confirmLock() {
+        val message = buildString {
+            append(getString(R.string.lock_confirm_message))
+            if (lockTimer.isEnabled) {
+                append("\n\n")
+                append(getString(R.string.lock_confirm_timer, getString(lockTimer.length.label)))
+            }
+        }
         AlertDialog.Builder(this)
             .setTitle(R.string.lock_confirm_title)
-            .setMessage(R.string.lock_confirm_message)
+            .setMessage(message)
             .setPositiveButton(R.string.lock_confirm_yes) { _, _ -> lockDevice() }
             .setNegativeButton(android.R.string.cancel, null)
             .show()

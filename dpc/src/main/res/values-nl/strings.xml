@@ -53,6 +53,7 @@
     <string name="action_lock">drawbridge vergrendelen</string>
     <string name="action_refresh">Controleren op beleidsupdates</string>
     <string name="action_remove">drawbridge-beperkingen uitschakelen</string>
+    <string name="action_forgot_key">Code vergeten</string>
 
     <string name="policy_refreshed">Beleid bijgewerkt (versie %1$d)</string>
     <string name="policy_refresh_failed">De beleidsserver was niet bereikbaar</string>
@@ -81,8 +82,22 @@
     <string name="update_result_blocked">De telefoon heeft de update geweigerd, en zo ziet het eruit als Play Protect hem blokkeert. Pauzeer Play Protect en probeer opnieuw.</string>
     <string name="update_result_failed">De update is niet geïnstalleerd: %1$s</string>
     <string name="update_turn_back_on">Zet Play Protect daarna weer aan. Het is het enige op deze telefoon dat op echt schadelijke apps let, en het zit de rest van drawbridge niet in de weg.</string>
-    <string name="lock_screen_info">Drawbridge bewaakt dit toestel en zijn eigenaar</string>
-    <string name="lock_screen_info_locked">Drawbridge bewaakt dit toestel en zijn eigenaar - Vergrendeld sinds %1$s</string>
+    <string name="lock_screen_info">drawbridge beschermt</string>
+    <string name="lock_screen_info_locked">drawbridge vergrendeld sinds %1$s</string>
+    <string name="lock_screen_info_timer">drawbridge ontgrendelt over %1$s</string>
+
+    <plurals name="duration_days">
+        <item quantity="one">%d dag</item>
+        <item quantity="other">%d dagen</item>
+    </plurals>
+    <plurals name="duration_hours">
+        <item quantity="one">%d uur</item>
+        <item quantity="other">%d uur</item>
+    </plurals>
+    <plurals name="duration_minutes">
+        <item quantity="one">%d minuut</item>
+        <item quantity="other">%d minuten</item>
+    </plurals>
     <string name="lock_key_glyphs">Een sleutel bevat nooit de letters O, I of L. Een rond teken is een nul. Schrijf je er een dubbelzinnig op, dan werkt O, I of l intypen alsnog.</string>
     <string name="lock_reveal_not_sealed_yet">Deze instellingen worden pas verzegeld als je op Klaar tikt. Verlaat je dit scherm eerder, dan wordt de sleutel vergeten en is er niets vergrendeld — de telefoon blijft filteren, en je kunt opnieuw vergrendelen voor een nieuwe sleutel.</string>
     <string name="lock_reveal_confirm">Ik heb deze sleutel opgeschreven of afgedrukt</string>
@@ -99,6 +114,38 @@
     <string name="lock_since_protected">Beschermt deze telefoon sinds %1$s</string>
     <string name="lock_since_locked">Vergrendeld sinds %1$s</string>
     <string name="lock_since_hint">Klopt dat niet met wat je je herinnert, dan is deze telefoon sindsdien ontgrendeld of teruggezet.</string>
+
+    <!-- De vergrendelingstimer -->
+    <string name="lock_timer_name">Zichzelf ontgrendelen na een tijd</string>
+    <string name="lock_timer_description">De vergrendeling stopt na de periode die je kiest. Je krijgt nog steeds een sleutel, en die werkt nog steeds.</string>
+    <string name="lock_timer_info">Vergrendelen zonder timer duurt tot iemand de sleutel intypt. Met een timer stopt de vergrendeling ook van zichzelf na de periode die je kiest — een dag offline om te studeren, een weekendje offline, een weekje kamperen, twee weken geen discussie over de avondklok, een vastenperiode van veertig dagen.\n\nDe sleutel verandert niet: hij wordt nog steeds gemaakt, nog steeds één keer getoond, en hij opent de telefoon nog steeds op elk moment. Hem gebruiken stopt ook de timer. De timer bepaalt alleen wat er gebeurt als niemand hem ooit gebruikt — en dat is precies wat de sleutel bewust niet opschrijven veilig maakt.\n\nDe periode staat vast op het moment dat je vergrendelt. Ze kan vanaf een vergrendelde telefoon niet ingekort, verlengd of uitgezet worden, en de klok van de telefoon wordt op netwerktijd gehouden zodat ook de datum niet verschoven kan worden.\n\nAls de tijd om is, kunnen de instellingen weer gewijzigd worden en kan drawbridge van de telefoon verwijderd worden. De webfilter zelf blijft tot iemand die verwijdert.</string>
+    <string name="lock_timer_length_hint">Blijft vergrendeld</string>
+    <string name="lock_timer_applied">De vergrendeling stopt van zichzelf na %1$s.</string>
+    <string name="lock_timer_off_applied">De vergrendeling duurt tot je ze met de sleutel opheft.</string>
+    <string name="lock_confirm_timer">Deze vergrendeling stopt van zichzelf na %1$s. Je krijgt nog steeds een sleutel en die werkt nog steeds — de timer is enkel wat er gebeurt als niemand hem gebruikt.</string>
+    <string name="lock_timer_reveal">Deze telefoon ontgrendelt zichzelf %1$s nadat je op Klaar tikt, met of zonder deze sleutel. Tot dan is de sleutel de enige weg naar binnen.</string>
+    <string name="lock_timer_running">Ontgrendelt zichzelf op %1$s</string>
+    <string name="lock_timer_running_forgotten">Iemand heeft op deze telefoon gezegd dat de code kwijt was, dus ontgrendelt ze zichzelf op %1$s. Heb je de code nog, ontgrendel dan en vergrendel opnieuw om dat te stoppen.</string>
+
+    <string name="lock_timer_hours_2">2 uur</string>
+    <string name="lock_timer_hours_4">4 uur</string>
+    <string name="lock_timer_hours_8">8 uur</string>
+    <string name="lock_timer_hours_12">12 uur</string>
+    <string name="lock_timer_day_1">1 dag</string>
+    <string name="lock_timer_days_2">2 dagen</string>
+    <string name="lock_timer_days_3">3 dagen</string>
+    <string name="lock_timer_week_1">1 week</string>
+    <string name="lock_timer_weeks_2">2 weken</string>
+    <string name="lock_timer_weeks_3">3 weken</string>
+    <string name="lock_timer_days_30">30 dagen</string>
+    <string name="lock_timer_days_40">40 dagen</string>
+
+    <!-- Code vergeten, op een vergrendelde telefoon -->
+    <string name="forgot_key_title">Code vergeten?</string>
+    <string name="forgot_key_message">Is de code weg, dan is dit de weg terug: een wachttijd van %1$s, waarna drawbridge zichzelf ontgrendelt. Dan kunnen de instellingen weer gewijzigd worden en kan drawbridge van de telefoon verwijderd worden.\n\nDe wachttijd kan niet korter. De datum staat vast zodra ze begint, en de klok van de telefoon wordt op netwerktijd gehouden zodat ze niet vooruit gezet kan worden.\n\nDe datum staat tot dan op dit scherm en op het vergrendelscherm van de telefoon, dus niemand kan dit stil in gang zetten. Vindt de code toch nog terug, dan stopt ontgrendelen met die code de wachttijd.</string>
+    <string name="forgot_key_start">Wachttijd starten</string>
+    <string name="forgot_key_started">drawbridge ontgrendelt zichzelf op %1$s. Tot dan verandert er niets: de telefoon blijft vergrendeld en de code opent ze nog steeds.</string>
+    <string name="forgot_key_running">Deze telefoon ontgrendelt zichzelf al op %1$s, en dat kan niet vervroegd worden. Ontgrendelen met de code voor die tijd stopt het.</string>
 
     <!-- Verwijderen -->
     <string name="remove_title">drawbridge-beperkingen uitschakelen</string>

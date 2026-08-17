@@ -21,9 +21,12 @@ import app.drawbridge.dpc.R
 import app.drawbridge.dpc.admin.DeviceOwnerManager
 import app.drawbridge.dpc.curfew.CurfewController
 import app.drawbridge.dpc.curfew.DisconnectSettings
+import app.drawbridge.dpc.security.LockTimer
+import app.drawbridge.dpc.security.LockTimerController
 import app.drawbridge.dpc.security.ParentKey
 import app.drawbridge.dpc.update.AppInstaller
 import app.drawbridge.policy.PolicyManager
+import com.google.android.material.color.MaterialColors
 import kotlinx.coroutines.launch
 
 /**
@@ -52,10 +55,19 @@ import kotlinx.coroutines.launch
  * configuration screen. There is no attempt limit. A six-digit PIN needed one; a
  * hundred-bit key does not, and a lockout on the only way in is a way to strand
  * the parent for half an hour with nothing else to try.
+ *
+ * **And the key is no longer the only way out.** [LockTimer] can end a lock on a
+ * clock: a period chosen on the configuration screen and armed here at the seal,
+ * or the thirty days the code-forgotten door in the overflow menu offers to
+ * whoever is holding a phone whose key is gone. Both doors are the same door —
+ * they write a deadline, and [LockTimerController] opens it — and both are
+ * cancelled by the ordinary unlock below, because typing the key in ends the lock
+ * the deadline belonged to.
  */
 class LockActivity : AppCompatActivity() {
 
     private val parentKey by lazy { ParentKey(this) }
+    private val lockTimer by lazy { LockTimer(this) }
 
     /**
      * Non-null only while revealing.
@@ -99,8 +111,11 @@ class LockActivity : AppCompatActivity() {
         revealStep.visibility = if (revealing) View.VISIBLE else View.GONE
         challengeStep.visibility = if (revealing) View.GONE else View.VISIBLE
         keyView.text = revealedKey.orEmpty()
-        if (!revealing) {
+        if (revealing) {
+            showTimerToCome()
+        } else {
             showLockHistory()
+            showRunningTimer()
             showCurrentSettings()
             showUpdateNotice()
         }
@@ -237,6 +252,72 @@ class LockActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * On the reveal: that this lock will end by itself, and after how long.
+     *
+     * A period rather than a date, because the countdown starts at *Done* and not
+     * at the moment this screen was drawn — a date computed here would be wrong by
+     * however long the parent spent finding a pen, and this is the screen where
+     * being wrong about the key's importance matters most.
+     *
+     * It is on the reveal at all because of what the timer changes about the
+     * sentence above it. "Write this down or the phone stays like this forever" is
+     * the reason anybody copies a twenty-character key, and with a timer running it
+     * is no longer true.
+     */
+    private fun showTimerToCome() {
+        val notice = findViewById<TextView>(R.id.revealTimerNotice)
+        if (!lockTimer.isEnabled) {
+            notice.visibility = View.GONE
+            return
+        }
+        notice.visibility = View.VISIBLE
+        notice.text = getString(
+            R.string.lock_timer_reveal,
+            getString(lockTimer.length.label),
+        )
+    }
+
+    /**
+     * On the challenge: the day this lock lifts without anybody typing anything.
+     *
+     * Two sentences rather than one, because the two timers are not the same
+     * news. A period the parent chose before locking is a confirmation; a
+     * code-forgotten countdown may have been started by whoever was holding the
+     * phone, and a parent who still has their key needs to see that in words
+     * strong enough to act on. It is coloured as an error for the same reason.
+     *
+     * The keyguard carries the same fact — see
+     * [app.drawbridge.dpc.admin.DeviceOwnerManager.updateLockScreenInfo] — so
+     * noticing it does not depend on anybody opening this app.
+     */
+    private fun showRunningTimer() {
+        val notice = findViewById<TextView>(R.id.timerNotice)
+        if (!lockTimer.isArmed) {
+            notice.visibility = View.GONE
+            return
+        }
+
+        val forgotten = lockTimer.reason == LockTimer.Reason.FORGOTTEN
+        notice.visibility = View.VISIBLE
+        notice.text = getString(
+            if (forgotten) R.string.lock_timer_running_forgotten else R.string.lock_timer_running,
+            formatMoment(lockTimer.expiresAt),
+        )
+        // Resolved off the theme rather than from a colour resource, so the line
+        // follows dark mode like every other themed colour on these screens.
+        notice.setTextColor(
+            MaterialColors.getColor(
+                notice,
+                if (forgotten) {
+                    androidx.appcompat.R.attr.colorError
+                } else {
+                    androidx.appcompat.R.attr.colorPrimary
+                },
+            ),
+        )
+    }
+
     private fun showLockHistory() {
         val protectedSince = findViewById<TextView>(R.id.protectedSince)
         val lockedSince = findViewById<TextView>(R.id.lockedSince)
@@ -280,8 +361,10 @@ class LockActivity : AppCompatActivity() {
     }
 
     /**
-     * The only two ways the device actually gets sealed: *Done* with the
-     * checkbox ticked, and the deliberate "close without the key" dialog.
+     * The one way the device actually gets sealed: *Done*, with the checkbox
+     * ticked. There used to be a second — a deliberate "close without the key"
+     * dialog on the way out — and it went with the back-press change described
+     * above; this comment still named it until 2026-08-17.
      *
      * Everything else — home, recents, the process being killed — leaves the
      * phone unsealed, and the key that was on screen is simply forgotten. That
@@ -297,6 +380,17 @@ class LockActivity : AppCompatActivity() {
      */
     private fun sealWithKey() {
         revealedKey?.let { parentKey.commit(it) }
+        // The countdown starts here for exactly the reason the key is committed
+        // here: an abandoned reveal must leave the phone as it was, and a deadline
+        // written when this screen opened would have left a phone counting down
+        // towards the end of a lock that was never sealed.
+        //
+        // Read off the draft rather than passed in, so what is armed is whatever
+        // the configuration screen last said — including a parent who went back
+        // and changed their mind before pressing Lock.
+        if (lockTimer.isEnabled) {
+            lockTimer.arm(lockTimer.length, LockTimer.Reason.CHOSEN)
+        }
         // After the commit, not before: the keyguard line carries the lock date,
         // and until this moment there was no lock and no date. lockDevice()
         // applies the rest of the policy well before the parent has decided to
@@ -318,8 +412,13 @@ class LockActivity : AppCompatActivity() {
         DrawbridgeApplication.sweepOnLock(this)
         // Connectivity too: the chosen philosophy is a draft until this moment,
         // like everything else on the configuration screen, and protectedSince
-        // is only non-zero once commit() above has run.
+        // is only non-zero once commit() above has run. This is also what pins
+        // the clock when a timer was just armed, since a wall-clock deadline is
+        // only as trustworthy as the clock it is measured against.
         CurfewController(this).apply()
+        // Sets the alarm for the deadline. Last, because it reads the lock state
+        // and the deadline that the lines above have only just written.
+        LockTimerController(this).apply()
         finish()
     }
 
@@ -331,6 +430,13 @@ class LockActivity : AppCompatActivity() {
             challengeError.setText(R.string.lock_challenge_incorrect)
             return
         }
+
+        // **The key cancels the timer**, which is what makes a countdown safe to
+        // let anybody start. A deadline belongs to one lock: this one is over, so
+        // its deadline is too, and a parent who finds their key has nothing to
+        // switch off. Before the keyguard line, which would otherwise still name
+        // an unlock date for a lock that no longer exists.
+        lockTimer.disarm()
 
         // The phone is still guarded — unlocking removes the key, not the
         // restrictions or the filter — so the line stays and only the date goes.
@@ -346,6 +452,10 @@ class LockActivity : AppCompatActivity() {
         // everything they unlocked to do — install something, move data off,
         // try a browser — needs a network. It goes dark again at the next lock.
         CurfewController(this).apply()
+        // And the alarm goes with the deadline. apply() finds nothing armed and
+        // cancels the pending unlock, so a lock that ends early leaves no wake-up
+        // pointed at a phone that is already open.
+        LockTimerController(this).apply()
         // Which makes this the moment to catch up on the blocklists. A phone
         // that has been offline has a stale policy, and the parent is about to
         // use the network it just got back.
@@ -358,8 +468,8 @@ class LockActivity : AppCompatActivity() {
     }
 
     /**
-     * Diagnostics only. Removal is not offered here — it lives behind the key,
-     * on the screen this one guards.
+     * Diagnostics, the policy check, and the code-forgotten door. Removal is not
+     * offered here — it lives behind the key, on the screen this one guards.
      */
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_lock, menu)
@@ -377,7 +487,76 @@ class LockActivity : AppCompatActivity() {
             true
         }
 
+        R.id.actionForgotKey -> {
+            offerForgottenKeyTimer()
+            true
+        }
+
         else -> super.onOptionsItemSelected(item)
+    }
+
+    /**
+     * The way out of a lock whose key is gone: a thirty-day wait, and no way to
+     * shorten it.
+     *
+     * **This is a deliberate hole of a known size, and the size is the security
+     * mechanism.** Anyone holding the phone can start it, the child included —
+     * there is no way to tell a parent who lost a piece of paper from a teenager
+     * who says they did, and a door that only opens for the honest is not a door.
+     * What makes it survivable is that it is slow and loud: a month is not a
+     * bypass of a lock somebody set for an evening, the keyguard says the date for
+     * every one of those days, and unlocking with the key cancels it — so a parent
+     * who still has theirs can end it in seconds and lock again.
+     *
+     * It exists because the alternative outcome is worse than the hole. Without
+     * it, a mislaid key means a phone that can only be reclaimed by wiping
+     * everything on it, and the project's own reason for not preventing factory
+     * reset is that nobody should pay that for losing a piece of paper.
+     *
+     * Thirty days rather than the picker's forty: see [LockTimer.FORGOTTEN].
+     *
+     * A timer already running is not restarted — that would let repeated taps
+     * push the date around, and there is nothing to gain from starting a second
+     * one — so the dialog simply reports the deadline the phone already has.
+     */
+    private fun offerForgottenKeyTimer() {
+        if (lockTimer.isArmed) {
+            AlertDialog.Builder(this)
+                .setTitle(R.string.forgot_key_title)
+                .setMessage(
+                    getString(R.string.forgot_key_running, formatMoment(lockTimer.expiresAt)),
+                )
+                .setPositiveButton(android.R.string.ok, null)
+                .show()
+            return
+        }
+
+        AlertDialog.Builder(this)
+            .setTitle(R.string.forgot_key_title)
+            .setMessage(
+                getString(R.string.forgot_key_message, getString(LockTimer.FORGOTTEN.label)),
+            )
+            .setPositiveButton(R.string.forgot_key_start) { _, _ -> startForgottenKeyTimer() }
+            .setNegativeButton(android.R.string.cancel, null)
+            .show()
+    }
+
+    private fun startForgottenKeyTimer() {
+        lockTimer.arm(LockTimer.FORGOTTEN, LockTimer.Reason.FORGOTTEN)
+        // The keyguard first, because that is the surface a parent who did not
+        // start this will be reading, and the clock pin with it: from here on the
+        // date is the only thing standing between this phone and an unlock, so
+        // Settings may no longer move it.
+        DeviceOwnerManager(this).updateLockScreenInfo()
+        CurfewController(this).apply()
+        LockTimerController(this).apply()
+
+        showRunningTimer()
+        AlertDialog.Builder(this)
+            .setTitle(R.string.forgot_key_title)
+            .setMessage(getString(R.string.forgot_key_started, formatMoment(lockTimer.expiresAt)))
+            .setPositiveButton(android.R.string.ok, null)
+            .show()
     }
 
     /**

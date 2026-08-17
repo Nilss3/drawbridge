@@ -81,6 +81,21 @@
                 android:text="@string/lock_reveal_not_sealed_yet"
                 android:textAppearance="?attr/textAppearanceBodyMedium" />
 
+            <!--
+                Shown only when the configuration screen asked for a timer. It
+                says the period rather than a date on purpose: the countdown
+                starts at Done, not now, and a date computed while somebody is
+                still looking for a pen would be wrong by however long that took.
+            -->
+            <TextView
+                android:id="@+id/revealTimerNotice"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="16dp"
+                android:textAppearance="?attr/textAppearanceBodyMedium"
+                android:textColor="?attr/colorPrimary"
+                android:visibility="gone" />
+
             <Button
                 android:id="@+id/shareKeyButton"
                 style="?attr/materialButtonOutlinedStyle"
@@ -146,6 +161,21 @@
                 android:paddingBottom="16dp"
                 android:text="@string/lock_since_hint"
                 android:textAppearance="?attr/textAppearanceBodySmall" />
+
+            <!--
+                The running timer, if there is one: the day this lock ends without
+                anybody typing anything. Above the settings block because it is a
+                fact about the lock rather than about the configuration, and next
+                to the dates for the same reason — this is the group a caregiver
+                picks the phone up to read.
+            -->
+            <TextView
+                android:id="@+id/timerNotice"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="16dp"
+                android:textAppearance="?attr/textAppearanceBodyLarge"
+                android:visibility="gone" />
 
             <!--
                 What this phone is actually set to. The lock screen is the screen

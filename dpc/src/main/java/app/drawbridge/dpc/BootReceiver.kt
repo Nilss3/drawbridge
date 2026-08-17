@@ -6,6 +6,7 @@ import android.content.Intent
 import android.util.Log
 import app.drawbridge.dpc.admin.DeviceOwnerManager
 import app.drawbridge.dpc.curfew.CurfewController
+import app.drawbridge.dpc.security.LockTimerController
 import app.drawbridge.dpc.vpn.DnsFilterService
 
 /**
@@ -34,6 +35,13 @@ class BootReceiver : BroadcastReceiver() {
         // clock rather than trusting any stored state, so it both restores the
         // right connectivity and sets the next alarm.
         CurfewController(context).apply()
+
+        // And the same argument, one degree more serious: an alarm does not
+        // survive a reboot, so a phone rebooted with a lock timer running would
+        // wait for a wake-up that no longer exists. apply() recomputes from the
+        // stored deadline, so it either lifts a lock whose time passed while the
+        // phone was off or re-arms the alarm that was lost.
+        LockTimerController(context).apply()
 
         // Returns a consent intent when the app is not Device Owner, which cannot
         // be shown from a receiver; in that case the parent starts it from the

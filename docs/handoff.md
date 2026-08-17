@@ -8,6 +8,213 @@ machine, what was and was not verified, and what to do next.
 
 ---
 
+## The lock timer — 2026-08-17, drawbridge 0.2.9 build 34, policy 69
+
+**A lock can now end by itself.** This is the last feature asked for before the
+alpha, and the thing the website has been describing since it was written. Two
+doors, one mechanism:
+
+| | |
+|---|---|
+| **A timer chosen before locking** | a switch and a period under the *Lock drawbridge* button: 2h, 4h, 8h, 12h, 1/2/3 days, 1/2/3 weeks, 30 days, 40 days. Off by default |
+| **`Forgot the code`** | new item in the *locked* screen's overflow menu. Starts a **thirty-day** wait, from a phone nobody can open. Not configurable |
+| **The key is untouched** | still minted, still shown once, still opens the phone on demand — and using it cancels the countdown |
+| **What "unlock" means** | the key is dropped and the settings reopen. The filter, the VPN and the restrictions are keyed on `protectedSince` and stay. Removal is then available, because removal lives behind the lock |
+
+**Where the state is:** `LockTimer`, four values in
+`drawbridge_lock_timer.xml` — the draft (`enabled`, `length`) and the armed
+deadline (`armed_at`, `expires_at`, plus the length and the reason for the
+screens). All of it is printed in Diagnostics. Deliberately trivial: this is the
+escape hatch for a lost key, it runs inside drawbridge, and a state file nobody
+can read is a hatch nobody can trust.
+
+**What drives it:** the alarm is primary (`LockTimerController`, inexact, no new
+permission), and it is not trusted alone — every process start, every boot, and
+`LockTimerWorker` hourly all call the same idempotent `apply()`. The failure that
+matters is the timer *not* firing, which is a phone locked forever with a key that
+may not exist.
+
+**Two safety properties, both deliberate:**
+
+- **The clock is pinned while a deadline is armed** — `DISALLOW_CONFIG_DATE_TIME`
+  plus network time, decided in `CurfewController.apply` so that one place writes
+  it. Without this, winding the phone forward forty days ends a forty-day lock
+  this afternoon.
+- **Ambiguity fails locked** — `LockTimer.hasExpired` refuses to fire on a
+  half-written deadline, a deadline at or before its own arming, or a clock now
+  reading earlier than the arming. Nine unit tests, because the alternative is
+  checking a fortnight-long rule by holding a handset.
+
+**Visibility, which is what makes the code-forgotten door survivable:** the
+keyguard counts down — *"drawbridge unlocks in 3 days"* — and drawbridge's own
+locked screen says it with a date, coloured as an error and naming the reason
+when somebody on the phone declared the code lost rather than a parent choosing a
+period. There is **no ongoing notification**, on purpose:
+`POST_NOTIFICATIONS` is declared but nothing asks for it or grants it, so its
+visibility is not something this build can promise, and the keyguard is the
+surface parents are already told to check.
+
+### What is verified
+
+`./gradlew test lint` passes: 151 dpc unit tests, nine of them new, lint clean on
+both modules.
+
+**The whole flow was then driven on the API 36 emulator**, which was already
+provisioned as Device Owner, and every step below was watched rather than
+reasoned about:
+
+- the switch and the twelve-entry picker under the Lock button, and the picker
+  appearing and disappearing with the switch;
+- the lock confirmation growing its extra sentence when a timer is set, and not
+  growing it when there is none;
+- the reveal screen saying *"unlocks itself 2 hours after you tap Done"*, and
+  saying nothing when the switch is off;
+- sealing writing `expires_at` exactly two hours past `armed_at`, and
+  `dumpsys alarm` carrying an `RTC_WAKEUP` for
+  `app.drawbridge.dpc/.security.LockTimerReceiver` at that instant;
+- the locked screen line, *"Unlocks by itself on August 17, 2026 at 6:33 PM"*;
+- `Forgot the code` in both states — arming thirty days as `FORGOTTEN` with the
+  draft untouched, and reporting the running deadline when one already exists —
+  and its line rendering in the error colour;
+- **the key cancelling the timer**: the armed fields cleared, the draft kept, and
+  `dumpsys alarm` recording `Reason=alarm_cancelled`;
+- **and the unlock itself firing**, with a past deadline written into the
+  preference file:
+
+```
+LockTimerController: Lock timer expired (FORGOTTEN); unlocking
+DeviceOwnerManager:  Network lockdown off
+```
+
+  after which `key_hash` is gone, the timer state is back to the draft alone, no
+  alarm is pending, and the app opens on the configuration screen instead of the
+  lock.
+
+**The keyguard was read back too**, through Diagnostics' `lock screen says:`
+line — the value is not in `dumpsys device_policy`, as the older section on this
+message already warns. All three states, on the device:
+
+```
+lock screen says:  drawbridge protecting
+lock screen says:  drawbridge locked since August 17, 2026 at 5:33 PM
+lock screen says:  drawbridge unlocks in 2 hours
+```
+
+**What the emulator could not show**: Settings refusing the clock, whether
+drawbridge's line is one of many on a real OEM keyguard (on the Moto it is —
+see the older keyguard section), and anything about the alarm surviving hours of
+Doze. Those need the Moto.
+
+### The keyguard message got shorter with it
+
+On the owner's call, and it is a change to all three states rather than a new
+sentence: the line used to open with *"Drawbridge is guarding this device and its
+owner"* every single time, which spent a truncated keyguard line before reaching
+anything that varies. It now says `drawbridge protecting`, `drawbridge locked
+since …`, or `drawbridge unlocks in …` — one fact each.
+
+The timer state says a **duration, not a date**, because a date on a keyguard has
+to be compared against today before it means anything. The cost is that a stored
+string goes stale — the platform does not re-resolve it — so
+`LockTimerController.apply` rewrites it on every run, which is process start,
+boot, and hourly. That is the second job that makes an hourly worker for a
+day-scale countdown reasonable rather than wasteful. The lock date has not gone
+anywhere: it is still on drawbridge's own screen, where somebody comparing it
+against a memory is already looking.
+
+### Released as build 34
+
+`dpc` only. herald did not move, so its APKs and pins are untouched and no GitHub
+release is involved — the phone takes this one from the dev channel's own site,
+as builds 28–33 did.
+
+- `versionCode` 34, `versionName` 0.2.9.
+- Policy **69** re-pins `app_update` to `dpc-ba312d4df61967f5.apk` and changes
+  nothing else. The `comment` field says so.
+- `site/assets/` carries the new APK and the USB installer page is re-pinned to it.
+- **R8 was checked rather than assumed**, since the emulator ran a debug build:
+  `LockTimerReceiver` and `LockTimerWorker` keep their fully-qualified names in
+  the release mapping (the manifest and WorkManager's consumer rules see to it),
+  and the `Length`/`Reason` enum constants survive in the DEX — which is what
+  keeps a running timer's stored state readable across an upgrade.
+- **The policy was signed with `--skip-url-check`**, and that is worth knowing
+  rather than hiding: `raw.githubusercontent.com` was answering 429 to this
+  machine for the whole session, including for `StevenBlack/hosts` and
+  `dibdot/DoH-IP-blocklists`. Checked individually, the 429 body is GitHub's
+  rate-limit page rather than a 404. No blocklist URL changed between 68 and 69,
+  and 68 was signed a few hours earlier with the check passing.
+
+  **The check was then run separately, serially, once the limit cleared: all
+  eighteen URLs resolve.** Two things came out of doing it by hand. The batch
+  check is *itself* what trips the limiter — eighteen near-simultaneous requests,
+  and a different subset is flagged on each run, which is the signature of rate
+  limiting rather than a dead list. Four seconds between requests and everything
+  answers 200.
+
+### The URL check cannot see a wrong `app_update`, and that is new
+
+Found while confirming the above, and it is a gap in the release tooling rather
+than in this release. `check_urls_resolve` judges by status code, and the APK
+URLs now live on **Cloudflare Pages, which answers a missing asset with 200 and
+an HTML page** rather than a 404:
+
+```
+dpc-ba312d4df61967f5.apk   200  text/html                              8410 bytes
+dpc-9be19a55f51e8727.apk   200  application/vnd.android.package-archive  3.39 MB
+```
+
+The first is this release's APK before the push — nothing is deployed yet, and it
+still "passes". So a typo in `app_update`, or a policy signed and pushed before
+the site deploys, sails through the one check meant to catch exactly that. The
+project's own note about names drifting assumes a 404, and on Pages there is
+none.
+
+**No device is at risk from it**, which is why this is a tooling item rather than
+an incident: `AppInstaller` pins the checksum, so a phone that downloads 8 KB of
+HTML fails the hash and installs nothing. The cost is that the failure surfaces
+on a handset instead of at signing time.
+
+Worth fixing in `policytool.py` by checking the content type — or the first bytes
+— for anything that is supposed to be an APK, rather than only the status.
+
+### What to do on a handset
+
+1. **Lock with a two-hour timer** and read the keyguard from the phone's own lock
+   screen — the one surface the emulator could not confirm, and the one the
+   code-forgotten door depends on. It should carry both dates.
+2. **Confirm the clock cannot be moved** while it runs — Settings should refuse
+   the date and time. That is the mechanism, so it failing is the feature failing
+   quietly.
+3. **Let one run out for real**, rather than forcing it. Two hours of Doze on an
+   OEM build is the part no test covers, and `setAndAllowWhileIdle` being deferred
+   or dropped is the likeliest way this disappoints somebody.
+4. **If you do want to force it**, note what the emulator proved: on a
+   Device-Owner phone `am force-stop app.drawbridge.dpc` is **refused** —
+   *"Ignoring request to force stop protected package"* — so the running process
+   keeps its cached preferences and a hand-edited deadline changes nothing. Write
+   the past `expires_at` with `run-as`, then **reboot**; `BootReceiver` re-reads
+   from disk and fires. (On the emulator the first cold boot after that was slow
+   enough to ANR drawbridge before it reached the check, and the unlock happened
+   at the next process start. Worth knowing before reading a slow phone as a
+   broken timer.)
+
+### What was deliberately not done
+
+- **`DISALLOW_FACTORY_RESET` is unchanged.** The timer is the prerequisite
+  [step 9](#9-lock-factory-reset--last-and-only-with-the-timer) was waiting for,
+  and the objection in it still stands: this escape runs inside drawbridge, so a
+  crash loop takes it with it. Still the owner's call, still after everything else.
+- **The clock is still not pinned on every locked phone**, only for a curfew or a
+  running timer. `design-decisions` claimed otherwise and has been corrected —
+  making the wider claim true is a behaviour change for every non-curfew device,
+  so it is written down rather than made.
+- **The website copy changed with the code, not after it.** The FAQ now says
+  2 hours to 40 days, and the code-forgotten wait is 30 days rather than 40 —
+  the owner's decision. `site/` is regenerated in the same commit and still needs
+  deploying.
+
+---
+
 ## Handover — 2026-08-17, end of the store-rule work
 
 **Where it stands: drawbridge build 33, policy 67, and build 33 is confirmed
@@ -4390,7 +4597,12 @@ wait now.
 
 ### 9. Lock factory reset — last, and only with the timer
 
-`DISALLOW_FACTORY_RESET` goes back **only** once the delayed self-removal works,
+**The prerequisite exists as of 2026-08-17**, and is not quite what this entry
+assumed: what was built is a delayed *unlock* rather than a delayed self-removal,
+which answers the same problem because removal lives behind the lock. See the
+lock-timer section at the top of this file. Everything else in this entry stands.
+
+`DISALLOW_FACTORY_RESET` goes back **only** with that timer proven on hardware,
 and deliberately after everything above — unless step 2 shows that FRP does not
 hold, in which case this moves up, because the backstop it was removed in favour
 of would not exist. While features are being built, a
