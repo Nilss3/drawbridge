@@ -203,6 +203,68 @@ of the apps already there still come through*. That is the next section.
 
 ---
 
+## Build 32: the install lock had an exception it should never have had
+
+**2026-08-17, reported from the Moto within hours of build 31.** With *Only the
+apps already on this phone* switched on and the device locked, **Claude, DeepSeek
+and Session installed and stayed** — all three are on the policy whitelist — and
+so did **Telegram**, which the *Allow Telegram* option permits. Telegram had never
+been on that phone.
+
+**`dpc-8c1f79a18994c52e.apk`, policy 64.** herald unchanged.
+
+### The cause was one line of precedence
+
+`AppBlocker.evaluate` asked `isProtected` first and returned early. Every rule
+that answers *is this app acceptable* — the whitelist, the options, the allowed
+browsers — therefore short-circuited the one rule that answers a completely
+different question: *did this phone have it when it was sealed*.
+
+Those are not the same kind of rule and should never have shared a gate. "Only
+the apps already on this phone" cannot have exceptions and still mean anything,
+and the owner's report is the correct reading: an option saying Telegram is
+*allowed* does not say this phone may *acquire* it while locked.
+
+The install lock now outranks everything, `isProtected` included.
+
+### Why that costs herald nothing
+
+The reappearing-browser path never depended on the bypass, and this is the
+payoff for building it three ways in build 29. drawbridge's own installs are put
+**into the set** rather than exempted from it: `InstallLockSettings.allow` before
+the session is committed, `closeTheInstalledSet` counting a still-downloading
+package as present, and the result broadcast adding it again on success.
+
+So *no browser → lock → unlock → the allowed browsers → lock* is unaffected, and
+there is now a test that says so rather than a comment claiming it.
+
+### What the tests learned
+
+`InstallLockTest` gained four cases, using herald as the stand-in for a protected
+package because `isProtected` keeps it under the default browser choice without a
+policy having to be injected. The regression case fails against build 31.
+
+The gap is worth naming: everything about the install lock was tested as a *pure
+rule*, and the rule was right. What was wrong was the order it got asked in,
+which no pure test could see. The four new cases go through `evaluate`.
+
+### Also in this build
+
+**Shazam is on the whitelist** — `com.shazam.android`, *Parental guidance*,
+reported by the owner. The band is doing what the measurements said it would:
+ordinary apps land in it because they carry some ungraded element, and the
+whitelist is the thing that pays for blocking it.
+
+### Still unconfirmed after this build
+
+The closed set has now been *observed removing nothing when it should have
+removed something*, which is a different state from never having run — but it has
+still never been watched removing an app it was right about. That is the first
+thing to try: with the lock on and the phone locked, install anything and watch it
+go. `logcat | grep "not among the apps"`.
+
+---
+
 ## Build 31: the store rule ships, and two mechanisms go live untested
 
 **2026-08-17. `dpc-f2a64e8605a293ea.apk`, policy 63.** herald did not move.
@@ -945,9 +1007,9 @@ which way it goes on real hardware.
 
 | | `main` (the alpha) | `dev` |
 |---|---|---|
-| drawbridge | 0.2.7, build 18 | **0.2.8, build 31** |
+| drawbridge | 0.2.7, build 18 | **0.2.8, build 32** |
 | herald | 0.1.9 | **0.1.13** |
-| policy | **50** | **63** |
+| policy | **50** | **64** |
 | install page | <https://drawbridge-project.pages.dev/install/usb/> | <https://dev.drawbridge-project.pages.dev/install/usb/> |
 | provisioned devices | the owner's Nothing Phone (A059) | the Moto G15 |
 
@@ -996,9 +1058,9 @@ still broken".
 |---|---|
 | Repo | https://github.com/Nilss3/drawbridge — public, `main` + `dev` |
 | Alpha | **[v0.2.7](https://github.com/Nilss3/drawbridge/releases/tag/v0.2.7)** is what testers install, from `main`. [v0.2.5](https://github.com/Nilss3/drawbridge/releases/tag/v0.2.5) stays **latest** because `required_apps` resolves herald through it |
-| Dev | **drawbridge build 31, herald 0.1.13, policy 63**, served from the dev site. herald is unchanged since v0.2.8-dev.4, whose versioned URLs `required_apps` still names |
+| Dev | **drawbridge build 32, herald 0.1.13, policy 64**, served from the dev site. herald is unchanged since v0.2.8-dev.4, whose versioned URLs `required_apps` still names |
 | Devices | Two managed phones: the Moto G15 on dev, and the owner's **Nothing Phone A059** on the alpha since 2026-08-13 |
-| Tests | **652** unit tests across eight variant suites, lint clean. Counted after a `clean`; see the install-lock section for why the old 574 was wrong |
+| Tests | **660** unit tests across eight variant suites, lint clean. Counted after a `clean`; see the install-lock section for why the old 574 was wrong |
 | Website | trilingual, generated into `site/`, both channels served from Cloudflare Pages |
 
 **herald is no longer frozen.** It sat at 0.1.9 from 2026-08-10 to 2026-08-13

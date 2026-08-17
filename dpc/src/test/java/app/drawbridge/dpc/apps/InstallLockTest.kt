@@ -1,10 +1,12 @@
 package app.drawbridge.dpc.apps
 
 import androidx.test.core.app.ApplicationProvider
+import app.drawbridge.dpc.security.ParentKey
 import app.drawbridge.policy.model.Policy
 import app.drawbridge.policy.model.PolicyOption
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -43,14 +45,21 @@ import org.robolectric.annotation.Config
 class InstallLockTest {
 
     private lateinit var settings: InstallLockSettings
+    private lateinit var parentKey: ParentKey
+    private lateinit var blocker: AppBlocker
 
     @Before
     fun setUp() {
-        settings = InstallLockSettings(
-            ApplicationProvider.getApplicationContext<android.app.Application>(),
-        )
+        val context = ApplicationProvider.getApplicationContext<android.app.Application>()
+        settings = InstallLockSettings(context)
         settings.clear()
+        parentKey = ParentKey(context)
+        parentKey.clear()
+        blocker = AppBlocker(context)
     }
+
+    /** drawbridge's own browser: kept by `isProtected` under the default choice. */
+    private val HERALD = "app.drawbridge.herald"
 
     // --- The rule, without a device -----------------------------------------
 
@@ -327,6 +336,90 @@ class InstallLockTest {
         // package name and make every other app on the phone a newcomer.
         settings.allow("app.drawbridge.herald")
         assertNull(settings.snapshot)
+    }
+
+    // --- the install lock outranks every other rule ---------------------------
+
+    /**
+     * **The bug the Moto found on 2026-08-17, and the test that would have caught
+     * it.** With *Only the apps already on this phone* on and the device locked,
+     * Claude, DeepSeek and Session installed and stayed — all three are on the
+     * policy whitelist — and so did Telegram, which an option allows.
+     *
+     * The cause was one line of precedence: `evaluate` asked `isProtected` first
+     * and returned early, so every rule that answers *is this app acceptable*
+     * short-circuited the one that answers *did this phone have it when it was
+     * sealed*. Those are different questions, and the second cannot have
+     * exceptions and still mean anything — "only the apps already on this phone"
+     * is the entire promise.
+     *
+     * herald stands in for the whitelist here because it is reachable without
+     * injecting a policy: `isProtected` keeps it via
+     * `BuildConfig.ALLOWED_BROWSER_PACKAGE` under the default browser choice,
+     * which is exactly the short-circuit that was wrong.
+     */
+    @Test
+    fun `a protected package that arrived after the lock is still removed`() {
+        parentKey.commit(ParentKey.generateKey())
+        settings.isEnabled = true
+        settings.take(listOf("com.example.wasalreadyhere"))
+
+        val action = blocker.evaluate(HERALD)
+
+        assertNotEquals(
+            "an allowed browser is still an app this phone did not have when it was sealed",
+            AppBlocker.Action.NONE,
+            action,
+        )
+    }
+
+    @Test
+    fun `a protected package that was in the set is left alone`() {
+        parentKey.commit(ParentKey.generateKey())
+        settings.isEnabled = true
+        settings.take(listOf(HERALD, "com.example.wasalreadyhere"))
+
+        assertEquals(AppBlocker.Action.NONE, blocker.evaluate(HERALD))
+    }
+
+    /**
+     * **Why removing the bypass costs herald nothing**, which is the half that
+     * would strand a phone if it were wrong.
+     *
+     * herald never depended on `isProtected` to survive the install lock. It
+     * survives because drawbridge puts what it installs *into the set* —
+     * [InstallLockSettings.allow] before the session is committed, and
+     * `closeTheInstalledSet` counting a still-downloading package as present. So
+     * the reappearing-browser path is untouched by this fix, and it is untouched
+     * for a reason that is visible here rather than asserted in a comment.
+     */
+    @Test
+    fun `drawbridge's own install still survives, through the set rather than a bypass`() {
+        parentKey.commit(ParentKey.generateKey())
+        settings.isEnabled = true
+        settings.take(listOf("com.example.wasalreadyhere"))
+
+        // What AppInstaller.install does before committing the session.
+        settings.allow(HERALD)
+
+        assertEquals(
+            "a browser drawbridge fetched itself is in the set by the time it lands",
+            AppBlocker.Action.NONE,
+            blocker.evaluate(HERALD),
+        )
+    }
+
+    @Test
+    fun `with the lock off, a protected package is protected as before`() {
+        parentKey.commit(ParentKey.generateKey())
+        settings.isEnabled = false
+        settings.take(listOf("com.example.wasalreadyhere"))
+
+        assertEquals(
+            "the switch is off, so the closed set has no opinion about anything",
+            AppBlocker.Action.NONE,
+            blocker.evaluate(HERALD),
+        )
     }
 
     @Test

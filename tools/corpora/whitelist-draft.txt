@@ -53,6 +53,7 @@ app.newpharma.shop
 # --- music and audiobooks (not video: that is the streaming option's business)
 com.spotify.music
 com.audible.application
+com.shazam.android
 
 # --- family photo sharing ----------------------------------------------------
 us.mitene

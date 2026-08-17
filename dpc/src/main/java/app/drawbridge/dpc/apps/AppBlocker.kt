@@ -104,10 +104,14 @@ class AppBlocker(context: Context) {
         val policy = DrawbridgeApplication.policy(appContext).policy.value
         val allowedBrowsers = allowedBrowsers(policy)
 
-        if (isProtected(packageName, policy, allowedBrowsers)) return Action.NONE
+        // **The install lock is asked before the fast path, not after it.** It is
+        // the one rule here that is not a judgement about what an app *is* — see
+        // [reasonToRemove] — so a package every content rule would keep can still
+        // be one this phone will not accept today.
+        val newcomer = outsideTheInstalledSet(packageName)
+        if (!newcomer && isProtected(packageName, policy, allowedBrowsers)) return Action.NONE
 
         val browser = isBrowser(packageName)
-        val newcomer = outsideTheInstalledSet(packageName)
         val reason = reasonToRemove(packageName, policy, browser, newcomer) ?: return Action.NONE
 
         // **Only what a control on the configuration screen could still change
@@ -142,9 +146,28 @@ class AppBlocker(context: Context) {
         browser: Boolean,
         newcomer: Boolean,
         allowedBrowsers: Set<String> = allowedBrowsers(policy),
-    ): String? =
-        when {
-            isProtected(packageName, policy, allowedBrowsers) -> null
+    ): String? {
+        // **The install lock outranks every other rule here, including
+        // [isProtected], and that is the fix for a bug the Moto found on
+        // 2026-08-17.** With the option on and the phone locked, Claude, DeepSeek
+        // and Session installed and stayed — they are on the whitelist — and so
+        // did Telegram, which an option allows. All four were wrong for the same
+        // reason: those rules answer *is this app acceptable*, and this one
+        // answers *did this phone have it when it was sealed*. "Only the apps
+        // already on this phone" cannot have exceptions and still mean anything.
+        //
+        // Nothing drawbridge installs itself is caught by this, and not because
+        // it is exempt: [InstallLockSettings.allow] puts a package into the set
+        // before the session is committed, and `closeTheInstalledSet` counts one
+        // still downloading as present. herald reappearing after a browser-policy
+        // change survives on those two mechanisms rather than on a bypass, which
+        // is why removing the bypass costs it nothing.
+        val newcomerReason =
+            "not among the apps this phone had when it was locked".takeIf { newcomer }
+
+        if (isProtected(packageName, policy, allowedBrowsers)) return newcomerReason
+
+        return when {
             packageName in policy.blockedPackages -> "on the blocked package list"
             // The *effective* set rather than the policy's, so the log line says
             // what this phone actually allows — "allows only nothing" is the
@@ -157,13 +180,16 @@ class AppBlocker(context: Context) {
             // itself. Deliberately below the blocklist: an app the policy names
             // has already been decided on, and asking Play about it would be a
             // network round trip to reach the same answer more slowly.
-            else -> storeReason(packageName, policy)
-                // Last of all, because every other branch says *why* an app is
-                // unwelcome and this one only says it is new. A package that is
-                // both on the blocklist and outside the set should log the
-                // blocklist.
-                ?: "not among the apps this phone had when it was locked".takeIf { newcomer }
+            //
+            // The install lock is last of all, because every other branch says
+            // *why* an app is unwelcome and this one only says it is new: a
+            // package that is both on the blocklist and outside the set should
+            // log the blocklist. That is about the log line, not about
+            // precedence — a protected package has already been checked against
+            // it above, which is where the outranking happens.
+            else -> storeReason(packageName, policy) ?: newcomerReason
         }
+    }
 
     /**
      * What the store says, or null if it has nothing to say about this package.
