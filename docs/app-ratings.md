@@ -87,18 +87,26 @@ Evaluated in this order. The first branch that answers, wins.
 
 | # | Branch | Outcome | Needs the store? |
 |---|---|---|---|
-| 1 | `isProtected` — drawbridge, allowed browsers, `exempt_packages`, `NEVER_TOUCH` | **keep** | no |
-| 2 | Local **allowlist** | **keep** | no |
-| 3 | Preinstalled (`isSystemPackage`) | **keep** | no |
-| 4 | Local **blocklist** (`blocked_packages`) | **remove** | no |
-| 5 | Browser rule | existing behaviour | no |
-| 6 | Store **category** in `GAME_*` or `DATING` | **remove** | yes |
-| 7 | Store **rating** not in `allowed_ratings` — *Parental guidance included* | **remove** | yes |
-| 8 | Install lock: outside the closed set | **remove** | no |
-| 9 | otherwise | **keep** | — |
+| 1 | `isProtected` — drawbridge, allowed browsers, `exempt_packages`, `NEVER_TOUCH`, **and the whitelist** | **keep** | no |
+| 2 | Local **blocklist** (`blocked_packages`) | **remove** | no |
+| 3 | Browser rule | existing behaviour | no |
+| 4 | Allowlist mode (`allowed_packages` on a profile) | **remove** | no |
+| 5 | Store **category** in `GAME_*` or `DATING` | **remove** | yes |
+| 6 | Store **rating** not in `allowed_ratings` — *Parental guidance included* | **remove** | yes |
+| 7 | Install lock: outside the closed set | **remove** | no |
+| 8 | otherwise | **keep** | — |
 
-Branches 6 and 7 are the new ones. Everything else is today's behaviour, in
+Branches 5 and 6 are the new ones. Everything else is today's behaviour, in
 today's order.
+
+**An earlier draft of this table had two mistakes, and the second was
+dangerous.** It listed the whitelist as a branch of its own; it is folded into
+`isProtected`, which is the existing "never touch this" gate and already runs
+first. And it listed *preinstalled → keep* as a global branch, which would have
+stopped `blocked_packages` hiding YouTube — the single most-exercised removal
+this project has. Preinstalled packages are exempt from **the store rule only**,
+which is what the prose below always said and what the code does. Corrected
+2026-08-17 while building it.
 
 ### Why the local lists come first
 

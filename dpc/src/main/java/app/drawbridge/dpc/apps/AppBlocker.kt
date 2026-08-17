@@ -11,7 +11,9 @@ import android.util.Log
 import app.drawbridge.dpc.BuildConfig
 import app.drawbridge.dpc.DrawbridgeApplication
 import app.drawbridge.dpc.admin.DrawbridgeDeviceAdminReceiver
+import app.drawbridge.dpc.apps.store.StoreCatalogue
 import app.drawbridge.dpc.security.ParentKey
+import app.drawbridge.policy.model.AppRatings
 import app.drawbridge.policy.model.Policy
 
 /**
@@ -24,9 +26,14 @@ import app.drawbridge.policy.model.Policy
  *  - in allowlist mode (`allowed_packages` set, typically by a profile), any
  *    *user-installed* app that is not on the list.
  *
- * And a fourth that comes from the phone rather than the document: with the
- * install lock on, anything outside the set of packages the phone carried at the
- * last lock. See [InstallLockSettings].
+ * And two more that do not come from a list at all:
+ *
+ *  - **what the store says** — a game, a dating app, or anything rated above
+ *    what the policy allows. This is the rule that goes upstream of the
+ *    blocklist, because new apps in a category appear faster than a signed
+ *    document can name them. See [AppRatings] and [StoreCatalogue];
+ *  - **with the install lock on**, anything outside the set of packages the
+ *    phone carried at the last lock. See [InstallLockSettings].
  *
  * Browsers are *detected*, not listed: a package-name list of browsers is out of
  * date the moment someone publishes a new one, whereas the intent filter that
@@ -41,6 +48,7 @@ class AppBlocker(context: Context) {
     private val admin = DrawbridgeDeviceAdminReceiver.componentName(appContext)
     private val parentKey = ParentKey(appContext)
     private val installLock = InstallLockSettings(appContext)
+    private val storeCatalogue = StoreCatalogue(appContext)
 
     /**
      * What was done to a package, which is not the same question as whether it
@@ -145,12 +153,84 @@ class AppBlocker(context: Context) {
                 "is a browser, and this phone allows only " +
                     allowedBrowsers.joinToString().ifEmpty { "no browser at all" }
             notAllowed(packageName, policy) -> "not on this profile's allowed list"
-            // Last of the four, because the other three say *why* an app is
-            // unwelcome and this one only says it is new. A package that is both
-            // on the blocklist and outside the set should log the blocklist.
-            newcomer -> "not among the apps this phone had when it was locked"
-            else -> null
+            // The store's answer, after everything the phone can decide for
+            // itself. Deliberately below the blocklist: an app the policy names
+            // has already been decided on, and asking Play about it would be a
+            // network round trip to reach the same answer more slowly.
+            else -> storeReason(packageName, policy)
+                // Last of all, because every other branch says *why* an app is
+                // unwelcome and this one only says it is new. A package that is
+                // both on the blocklist and outside the set should log the
+                // blocklist.
+                ?: "not among the apps this phone had when it was locked".takeIf { newcomer }
         }
+
+    /**
+     * What the store says, or null if it has nothing to say about this package.
+     *
+     * **Three gates before the cache is even asked**, and each is load-bearing:
+     *
+     *  - **the policy has to carry the rule.** `app_ratings` is absent from every
+     *    document older than policy 62, and a phone polling one of those must
+     *    behave exactly as it did before;
+     *  - **the rule has to be configured.** An empty `allowed_ratings` cannot
+     *    express *these pass*, and reading it as *nothing passes* would remove
+     *    every app on the phone — see [AppRatings.isConfigured];
+     *  - **the package has to be user-installed.** This is the third rule in this
+     *    class that removes what is *not* named, after [notAllowed] and the
+     *    install lock, and both already learned it. A store verdict cannot know
+     *    about a package that does not exist yet, an Android upgrade
+     *    legitimately adds system apps, and hiding the OEM's dialer because Play
+     *    has no listing for it would leave an unusable phone. Nothing is lost:
+     *    this rule exists because of the Play Store, and a preinstalled app did
+     *    not come from there.
+     *
+     * Then the cache, which never blocks on the network — see [StoreCatalogue].
+     * A package nobody has fetched yet is [AppRatings.Verdict.UNVERIFIED], which
+     * is *keep*, so the rule stays silent until something has actually asked.
+     */
+    private fun storeReason(packageName: String, policy: Policy): String? {
+        val ratings = policy.appRatings ?: return null
+        if (!ratings.isConfigured) return null
+        if (isSystemPackage(packageName)) return null
+
+        if (storeCatalogue.verdictFor(packageName, ratings) != AppRatings.Verdict.BLOCKED) {
+            return null
+        }
+
+        // Say which half fired. "the store disagrees" is the log line that cost
+        // 2026-08-14 an evening in a different part of this class.
+        val answer = storeCatalogue.answerFor(packageName)
+        val category = answer?.category
+        return if (category != null &&
+            ratings.verdict(rating = "", category = category) == AppRatings.Verdict.BLOCKED
+        ) {
+            "the store files it under $category"
+        } else {
+            "the store rates it ${answer?.rating ?: "outside what this phone allows"}"
+        }
+    }
+
+    /**
+     * Fetches the store's answer for one package, if it is wanted and not
+     * already current. Blocking; call it off the main thread.
+     *
+     * **Separate from [evaluate] on purpose.** Evaluation runs from a broadcast
+     * receiver and from a sweep over every package on the device, and it must
+     * never wait on a network. This is what a caller reacting to a single
+     * install does first, so that the evaluation a moment later has something to
+     * read. The sweep does not call it — a full pass is 50–100 MB and belongs on
+     * an unmetered network, deliberately, rather than every fifteen minutes.
+     */
+    fun ensureStoreAnswer(packageName: String) {
+        val policy = DrawbridgeApplication.policy(appContext).policy.value
+        val ratings = policy.appRatings ?: return
+        if (!ratings.isConfigured) return
+        if (isSystemPackage(packageName)) return
+        if (isProtected(packageName, policy, allowedBrowsers(policy))) return
+        if (storeCatalogue.isFresh(packageName)) return
+        storeCatalogue.fetch(packageName, ratings)
+    }
 
     /**
      * Whether the install lock has anything to say about this package, read off
@@ -693,6 +773,19 @@ class AppBlocker(context: Context) {
             // content is that it does not.
             (packageName == BuildConfig.ALLOWED_BROWSER_PACKAGE && isEveryBrowserAllowed()) ||
             packageName in policy.exemptPackages ||
+            // **The whitelist, and it sits here rather than in a branch of its
+            // own.** Blocking `parental guidance` takes a phone's messengers
+            // with it — every one of them carries that rating, because ungraded
+            // conversation is what it means — so the rule is only affordable
+            // because this list pays for it. Threema, Session, Zoom, Strava, the
+            // recipe apps and the general-purpose assistants are all here.
+            //
+            // Consulted before the blocklist, which is what makes it dangerous
+            // and why `policytool.py sign` refuses a document where the two
+            // overlap: an entry on both lists is *unblocked*, silently. It also
+            // refuses one that names a package an option governs, which would
+            // leave the parent's switch moving and changing nothing.
+            policy.appRatings?.isAlwaysAllowed(packageName) == true ||
             packageName in NEVER_TOUCH ||
             NEVER_TOUCH_PREFIXES.any { packageName.startsWith(it) }
 
@@ -810,7 +903,17 @@ class AppBlocker(context: Context) {
          * restorable, because exempt beats blocked everywhere else.
          */
         internal fun restorable(policy: Policy, allowedBrowsers: Set<String>): List<String> =
-            (allowedBrowsers + policy.exemptPackages).distinct()
+            (
+                allowedBrowsers +
+                    policy.exemptPackages +
+                    // A package the whitelist newly names may have been hidden
+                    // before it was named — which is the ordinary case, since
+                    // the list grows in response to somebody losing an app. This
+                    // has to agree with `isProtected` or the two disagree about
+                    // the same package, which is the bug the blocked-list
+                    // subtraction caused on 2026-08-13.
+                    (policy.appRatings?.allowedPackages ?: emptyList())
+                ).distinct()
 
         /**
          * Packages that must survive no matter what the policy says.

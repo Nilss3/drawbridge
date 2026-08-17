@@ -61,6 +61,17 @@ class PackageWatcher(context: Context) {
             // has no opinion about.
             val packageName = intent.data?.schemeSpecificPart ?: return
             scope.launch {
+                // Ask the store first, because [AppBlocker.evaluate] reads a
+                // cache and never waits on a network — it also runs from the
+                // sweep, over every package on the device. This is the one place
+                // a single install can afford a request, and without it the rule
+                // would have nothing to read and would silently keep everything.
+                //
+                // Best-effort by construction: a failure is cached as
+                // "unverified", which means keep, and Diagnostics counts it.
+                runCatching { blocker.ensureStoreAnswer(packageName) }
+                    .onFailure { Log.w(TAG, "Could not ask the store about $packageName", it) }
+
                 val action = blocker.evaluate(packageName)
                 if (action != AppBlocker.Action.NONE) {
                     Log.i(TAG, "Install of $packageName handled: $action")

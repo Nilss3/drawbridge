@@ -84,6 +84,20 @@ class StoreCatalogue(context: Context) {
     /** True when [packageName] has a usable, current answer and needs no fetch. */
     fun isFresh(packageName: String): Boolean = fresh(packageName) != null
 
+    /** What the store actually said, for a log line that names which half fired. */
+    data class Answer(val rating: String?, val category: String?)
+
+    /**
+     * The cached answer, or null if there is not a current one.
+     *
+     * Exists so a removal can say *the store files it under GAME_CASUAL* rather
+     * than *the store disagrees*. A log line that does not say which rule fired
+     * is the line that cost 2026-08-14 an evening and a cable in a different
+     * part of this class.
+     */
+    fun answerFor(packageName: String): Answer? =
+        fresh(packageName)?.takeIf { it.error == null }?.let { Answer(it.rating, it.category) }
+
     private fun fresh(packageName: String): Entry? {
         val entry = load()[packageName] ?: return null
         if (System.currentTimeMillis() - entry.fetchedAt > TTL_MILLIS) return null
