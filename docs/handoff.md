@@ -203,6 +203,99 @@ of the apps already there still come through*. That is the next section.
 
 ---
 
+## Build 31: the store rule ships, and two mechanisms go live untested
+
+**2026-08-17. `dpc-f2a64e8605a293ea.apk`, policy 63.** herald did not move.
+
+This is the largest behaviour change since the app blocker was written, and the
+honest headline is at the top rather than the bottom: **installing it turns on
+two rules that have never run on a handset.**
+
+### What it does
+
+Apps are admitted by the Play Store's own rating and category instead of only by
+a hand-written list of names. Specified and measured in
+[app-ratings](app-ratings.md), which carries every number; the short version:
+
+- **PEGI 3 passes, everything else does not**, *Parental guidance included*.
+  Useful apps are almost never rated above PEGI 3 — banking was 8/8 across
+  Belfius, KBC, Argenta, itsme and BNP; transport 3/3; tools 8/8 — while 15 of
+  the 22 AI companion apps from policy 59 are PEGI 12 or higher.
+- **Games and dating go by category**, not rating, because the rating cannot see
+  addictive design: Candy Crush, Royal Match and FIFA Mobile are PEGI 3 while
+  Minecraft is PEGI 7.
+- **A 23-package whitelist pays for it**, in the signed policy. Every private
+  messenger is *Parental guidance* — ungraded conversation is what the band
+  means — so Threema, Session and SimpleX are named there, with Zoom, Webex,
+  Strava, the recipe apps, Spotify, Audible and the general-purpose AI
+  assistants.
+- **Chatbots are not blocked**, and the reason is architectural rather than a
+  concession. drawbridge cannot suppress the assistant inside the search engines
+  it already allows: SafeSearch is deliverable over DNS because Google and Bing
+  run separate enforcement IPs, while `noai.duckduckgo.com` is a CNAME to the
+  ordinary address and Google's mechanism is a URL parameter, which reaches only
+  herald. That is the test Ecosia failed. The line is companion versus assistant;
+  Grok, Character.AI, Chai and Talkie stay blocked.
+- **`dist/lists/dating.txt`** closes the web side, which was open: the app side
+  was covered twice over and a browser still reached tinder.com.
+
+### The two untested mechanisms, and why they land together
+
+1. **The store rule itself.** Policy 62 has carried `app_ratings` since
+   yesterday, and there is no separate switch — by design, since games get no
+   toggle. So the rule begins applying the moment this build is installed, and
+   the first thing it does is queue a scan of every user-installed app.
+2. **The install lock's closed set**, which *still* has never removed anything.
+   Both sweeps on 2026-08-16 logged `Lock sweep removed 0 packages`, because
+   layer 1 was preventing anything from reaching layer 2, and layer 1 is gone.
+
+Two rules that have only ever run against synthetic tests, going live in one
+build, on a phone in daily use. That is worth knowing before installing rather
+than after.
+
+### The pre-flight, which was not run
+
+**The Moto was not connected when this build was cut**, so the check the spec
+asks for is outstanding. Run it before installing, not after:
+
+```bash
+adb shell pm list packages -3 | sed 's/package://' > /tmp/phone.txt
+python3 tools/app-ratings.py audit --corpus /tmp/phone.txt --expect keep
+```
+
+That prints exactly what the rule would remove from *that* handset, offline,
+before anything is. The measurement says to expect roughly one app in eleven to
+want a whitelist entry. Anything surprising in that list is a policy edit and a
+re-sign — cheap — where finding it afterwards is an app that is already gone.
+
+### What to watch, in order
+
+1. **The pre-flight above.** It is the only step that costs nothing to do and
+   cannot be undone if skipped.
+2. **`store to scan` in Diagnostics.** It should fall to 0 once the phone is on
+   Wi-Fi. A number that never falls is a scan waiting for a network it is not
+   getting, which is a phone enforcing nothing while looking exactly like one
+   that has finished.
+3. **`store unverified`.** Fail-open is a decision only while it is countable. A
+   large number here means the phone cannot reach `play.google.com`, and every
+   app is being kept by default.
+4. **The closed set finally removing something.** With the install lock on and
+   the phone locked, install anything from the Play Store and watch it go within
+   seconds. `logcat | grep "not among the apps"` is the line.
+5. **Updates still work**, which build 30 fixed and nothing here should have
+   touched.
+6. **herald still comes back.** *No browser*, lock, unlock, *the allowed
+   browsers*, lock again. Unchanged since build 30 and still unrun.
+
+### Rolling back
+
+Policy 63 can be re-signed with `app_ratings` removed and every phone stops
+enforcing the rule at its next poll, without a build. That is the escape hatch
+the field was put in the document for, and it is worth remembering it exists
+before doing anything more drastic.
+
+---
+
 ## The install lock is built, and three of its bugs were found by re-reading
 
 **2026-08-16, the same day it was specified.** The phone closes at the lock:
@@ -852,9 +945,9 @@ which way it goes on real hardware.
 
 | | `main` (the alpha) | `dev` |
 |---|---|---|
-| drawbridge | 0.2.7, build 18 | **0.2.8, build 30** |
+| drawbridge | 0.2.7, build 18 | **0.2.8, build 31** |
 | herald | 0.1.9 | **0.1.13** |
-| policy | **50** | **61** |
+| policy | **50** | **63** |
 | install page | <https://drawbridge-project.pages.dev/install/usb/> | <https://dev.drawbridge-project.pages.dev/install/usb/> |
 | provisioned devices | the owner's Nothing Phone (A059) | the Moto G15 |
 
@@ -903,9 +996,9 @@ still broken".
 |---|---|
 | Repo | https://github.com/Nilss3/drawbridge — public, `main` + `dev` |
 | Alpha | **[v0.2.7](https://github.com/Nilss3/drawbridge/releases/tag/v0.2.7)** is what testers install, from `main`. [v0.2.5](https://github.com/Nilss3/drawbridge/releases/tag/v0.2.5) stays **latest** because `required_apps` resolves herald through it |
-| Dev | **drawbridge build 30, herald 0.1.13, policy 61**, served from the dev site. herald is unchanged since v0.2.8-dev.4, whose versioned URLs `required_apps` still names |
+| Dev | **drawbridge build 31, herald 0.1.13, policy 63**, served from the dev site. herald is unchanged since v0.2.8-dev.4, whose versioned URLs `required_apps` still names |
 | Devices | Two managed phones: the Moto G15 on dev, and the owner's **Nothing Phone A059** on the alpha since 2026-08-13 |
-| Tests | **584** unit tests across eight variant suites, lint clean. Counted after a `clean`; see the install-lock section for why the old 574 was wrong |
+| Tests | **652** unit tests across eight variant suites, lint clean. Counted after a `clean`; see the install-lock section for why the old 574 was wrong |
 | Website | trilingual, generated into `site/`, both channels served from Cloudflare Pages |
 
 **herald is no longer frozen.** It sat at 0.1.9 from 2026-08-10 to 2026-08-13
