@@ -43,9 +43,16 @@ import java.util.concurrent.CopyOnWriteArraySet
  *
  * ### Re-taken at every lock, which is what makes the unlock window the way in
  *
- * Unlock, install, lock again, and the app is in the set. That is the whole
- * user-facing answer to "how do I add an app to this phone", and it is the same
- * answer drawbridge already gives for every other change: it costs the key.
+ * Unlock, install, lock again, and the app is in the set. That is the answer to
+ * "how do I add an app" **on a phone that has this switched on**, and it is the
+ * same answer drawbridge gives for every other change: it costs the key.
+ *
+ * **It is not the answer on an ordinary phone**, and the distinction is worth
+ * keeping straight because this setting is off by default. Without it, a locked
+ * phone installs whatever the policy allows — the blocklist, the browser rule
+ * and the store rule still apply, and anything surviving those simply arrives.
+ * What this switch adds is not *allowed versus not*; it is *already here versus
+ * not*.
  */
 class InstallLockSettings(context: Context) {
 
@@ -129,13 +136,15 @@ class InstallLockSettings(context: Context) {
          * Packages drawbridge is installing right now — downloaded, committed,
          * not yet on the phone.
          *
-         * **Two things read it, and both are about a window rather than a
-         * decision.** `DeviceOwnerManager` stands `DISALLOW_INSTALL_APPS` down
-         * while it is non-empty, and [AppBlocker.closeTheInstalledSet] counts
-         * these as present when it records the set.
+         * **One reader now, and it used to be two.** `DeviceOwnerManager` stood
+         * `DISALLOW_INSTALL_APPS` down while this was non-empty; that restriction
+         * was retired in build 30 after it turned out to block Play Store
+         * *updates*, so what is left is the reader that mattered anyway —
+         * [AppBlocker.closeTheInstalledSet] counting these as present when it
+         * records the set.
          *
-         * That second reader is the one that is easy to miss and it cost a
-         * re-read to find. herald is over 200 MB, so *"choose the allowed
+         * That one is easy to miss and it cost a re-read to find. herald is over
+         * 200 MB, so *"choose the allowed
          * browsers, then lock"* commits the session and then takes minutes to
          * land — and the lock happens in the middle. Without this the lock would
          * enumerate the installed packages, not find the herald it had just

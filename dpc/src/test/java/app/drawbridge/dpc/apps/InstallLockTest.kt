@@ -30,9 +30,9 @@ import org.robolectric.annotation.Config
  *  - a snapshot that has **never been taken** is not an empty one. An empty set
  *    means *this phone carries nothing*, which would make the rule remove the
  *    entire device;
- *  - a newcomer **waits for the lock**, because the unlock window is the only way
- *    to add an app and acting immediately would uninstall what the parent
- *    unlocked the phone to install;
+ *  - a newcomer **waits for the lock**, because with this switched on unlocking
+ *    is the only route a person has to add an app, and acting immediately would
+ *    uninstall what the parent unlocked the phone to install;
  *  - **herald survives**, twice over, and that is the half that can strand a
  *    phone — see the last two tests.
  *
@@ -161,16 +161,16 @@ class InstallLockTest {
         BrowserSettings.allowedBrowsers(policy, BrowserSettings.Choice.ALL)
 
     /**
-     * The case that would otherwise make the phone unusable: unlocking is the
-     * *only* way to add an app once this is on, so an app installed during an
-     * unlock has to survive to the lock — where the snapshot is re-taken with it
-     * in, and the question never arises again.
+     * The case that would otherwise make the phone unusable: **once this is on**,
+     * unlocking is the only route a person has to add an app, so one installed
+     * during an unlock has to survive to the lock — where the snapshot is
+     * re-taken with it in, and the question never arises again.
      */
     /**
-     * The case that would otherwise make the phone unusable: unlocking is the
-     * *only* way to add an app once this is on, so an app installed during an
-     * unlock has to survive to the lock — where the snapshot is re-taken with it
-     * in, and the question never arises again.
+     * The case that would otherwise make the phone unusable: **once this is on**,
+     * unlocking is the only route a person has to add an app, so one installed
+     * during an unlock has to survive to the lock — where the snapshot is
+     * re-taken with it in, and the question never arises again.
      */
     @Test
     fun `being new waits for the lock`() {
@@ -424,6 +424,37 @@ class InstallLockTest {
             "the switch is off, so the closed set has no opinion about anything",
             AppBlocker.Action.NONE,
             blocker.evaluate(HERALD),
+        )
+    }
+
+    /**
+     * **The correction of 2026-08-17, as a test.** Several comments in this
+     * codebase claimed the unlock window was *the only way to add an app*. It is
+     * not, and stating it unqualified was wrong: this setting is off by default,
+     * and a locked phone without it installs whatever the policy allows.
+     *
+     * What the switch changes is not *allowed versus not* — the blocklist, the
+     * browser rule and the store rule are untouched by it — but *already here
+     * versus not*.
+     */
+    @Test
+    fun `with the lock off, a locked phone still accepts an ordinary new app`() {
+        parentKey.commit(ParentKey.generateKey())
+        settings.isEnabled = false
+        settings.take(listOf("com.example.wasalreadyhere"))
+
+        assertFalse(
+            "the closed set has no opinion at all while the switch is off",
+            InstallLockSettings.outsideTheSet(
+                enabled = settings.isEnabled,
+                snapshot = settings.snapshot,
+                packageName = "com.example.arrivedjustnow",
+            ),
+        )
+        assertEquals(
+            "so an ordinary app the policy permits simply arrives, locked or not",
+            AppBlocker.Action.NONE,
+            blocker.evaluate("com.example.arrivedjustnow"),
         )
     }
 

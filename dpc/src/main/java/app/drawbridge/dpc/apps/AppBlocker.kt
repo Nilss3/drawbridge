@@ -158,9 +158,12 @@ class AppBlocker(context: Context) {
         // is why removing the bypass costs it nothing.
         val newcomerRemoval = Removal(
             "not among the apps this phone had when it was locked",
-            // Being new is the one reason that waits: the unlock window is the
-            // only way to add an app, so removing it there would take away
-            // exactly what the parent unlocked the phone to install.
+            // Being new is the one reason that waits, and only while the
+            // install lock is on. With it off — the default — a locked phone
+            // installs whatever the policy allows, and this rule never fires at
+            // all. With it on, unlocking is the only route a *person* has, so
+            // removing an app there would take away exactly what the parent
+            // unlocked the phone to install.
             waitsForLock = true,
         ).takeIf { newcomer }
 
@@ -220,10 +223,11 @@ class AppBlocker(context: Context) {
      * one.
      *
      * The rule now travels with the reason. Being **new** waits for the lock,
-     * because the unlock window is the only way to add an app. Being **blocked
-     * by name** or **an unsanctioned browser** or **rated out** does not, and the
-     * install lock cannot rescue it — an app can be new *and* disallowed, and the
-     * disallowed half is the one that decides.
+     * because with the install lock on, unlocking is the only route a person has
+     * to add something. Being **blocked by name** or **an unsanctioned browser**
+     * or **rated out** does not, and the install lock cannot rescue it — an app
+     * can be new *and* disallowed, and the disallowed half is the one that
+     * decides.
      *
      * Crunchyroll is the case that shows the rule is not simply "act always": it
      * is on the blocklist *and* covered by the streaming option, so it waits for

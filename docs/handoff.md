@@ -242,10 +242,19 @@ meant *this app is new*.
 ### The fix
 
 Deferral now travels with the **reason**, not the package. Being *new* waits for
-the lock, because the unlock window is the only way to add an app. Being *blocked
-by name*, *an unsanctioned browser* or *rated out* does not, and the install lock
-cannot rescue it: an app can be new **and** disallowed, and the disallowed half
-decides.
+the lock, because with the install lock on, unlocking is the only route a person
+has to add something. Being *blocked by name*, *an unsanctioned browser* or *rated
+out* does not, and the install lock cannot rescue it: an app can be new **and**
+disallowed, and the disallowed half decides.
+
+**A correction to how that was first written**, on the owner's reading of
+2026-08-17: *"the unlock window is the only way to add an app"* is not true in
+general and was stated as though it were. The install lock is **off by default**,
+and without it a locked phone installs whatever the policy allows — the blocklist,
+the browser rule and the store rule still apply, and anything surviving those
+simply arrives. The switch does not change *allowed versus not*; it changes
+*already here versus not*. Even with it on, drawbridge's own installs still come
+through, because they join the set rather than being exempted from it.
 
 `AppBlocker.Removal` carries the pair, and `deferred` went back to answering the
 one question it should ever have answered — *is there a switch on the
