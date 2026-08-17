@@ -27,7 +27,7 @@ still unbuilt are in [app-ratings](app-ratings.md). In brief:
 | **Games and dating go by category** | the rating cannot see addictive design: Candy Crush is PEGI 3, Minecraft is PEGI 7 |
 | **A 32-package whitelist pays for it** | in the signed policy, because every private messenger is *Parental guidance* |
 | **Chatbots are not blocked** | drawbridge cannot suppress the assistant inside the search engines it already allows |
-| **`dating.txt` and 59 web-game domains** | the browser side, which the app rules cannot reach |
+| **`dating.txt` and 57 web-game domains** | the browser side, which the app rules cannot reach |
 
 ### The three bugs the Moto found, in order
 
@@ -106,12 +106,19 @@ seconds.
 ### The judgement calls left in the files, so nobody re-litigates them blind
 
 - **Four domains held back** from the games list — `vrt.be`, `bbc.co.uk`,
-  `archive.org`, `ouders.ketnet.be` — commented out with the reasoning. DNS
-  cannot see a path, so blocking these blocks a broadcaster, a library and a page
-  written for parents. One word to include them.
+  `archive.org`, `ouders.ketnet.be` — commented out with the reasoning, and the
+  hold **confirmed by the owner**. DNS cannot see a path, so blocking these
+  blocks a broadcaster, a library and a page written for parents.
+- **Chess is not blocked.** `chess.com` and `lichess.org` were on the list and
+  came off it the same day. The case for blocking them was the engagement
+  machinery — rating ladders, streaks, blitz timers — and the case against is
+  that chess is not what the list is for. `lichess.org` came off alongside
+  rather than being asked about: it is the free, ad-free, open-source one, so
+  blocking it while allowing the commercial one would have been backwards.
 - **Educational games are blocked**, and schools use several of them. Recorded in
-  the list rather than left to be discovered.
-- **Chess is blocked**, on the engagement machinery rather than the game.
+  the list rather than left to be discovered — this is the judgement call most
+  likely to surface next, since a child told to do homework on `topmarks.co.uk`
+  will find it blocked.
 - **YouTube Music is not whitelisted** although it is *Parental guidance*, because
   *Allow YouTube* governs it. `policytool.py sign` refuses the document if anyone
   tries — verified by constructing the mistake.
@@ -1217,7 +1224,7 @@ which way it goes on real hardware.
 |---|---|---|
 | drawbridge | 0.2.7, build 18 | **0.2.8, build 33** |
 | herald | 0.1.9 | **0.1.13** |
-| policy | **50** | **67** |
+| policy | **50** | **68** |
 | install page | <https://drawbridge-project.pages.dev/install/usb/> | <https://dev.drawbridge-project.pages.dev/install/usb/> |
 | provisioned devices | the owner's Nothing Phone (A059) | the Moto G15 |
 
@@ -1266,7 +1273,7 @@ still broken".
 |---|---|
 | Repo | https://github.com/Nilss3/drawbridge — public, `main` + `dev` |
 | Alpha | **[v0.2.7](https://github.com/Nilss3/drawbridge/releases/tag/v0.2.7)** is what testers install, from `main`. [v0.2.5](https://github.com/Nilss3/drawbridge/releases/tag/v0.2.5) stays **latest** because `required_apps` resolves herald through it |
-| Dev | **drawbridge build 33, herald 0.1.13, policy 67**, served from the dev site. herald is unchanged since v0.2.8-dev.4, whose versioned URLs `required_apps` still names |
+| Dev | **drawbridge build 33, herald 0.1.13, policy 68**, served from the dev site. herald is unchanged since v0.2.8-dev.4, whose versioned URLs `required_apps` still names |
 | Devices | Two managed phones: the Moto G15 on dev, and the owner's **Nothing Phone A059** on the alpha since 2026-08-13 |
 | Tests | **666** unit tests across eight variant suites, lint clean. Counted after a `clean`; see the install-lock section for why the old 574 was wrong |
 | Website | trilingual, generated into `site/`, both channels served from Cloudflare Pages |
