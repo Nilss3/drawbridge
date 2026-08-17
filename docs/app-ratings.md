@@ -287,10 +287,61 @@ three places:
    feed, so it is ungraded, so it is PG.
 3. **Health, and this one is not PG at all.** Newpharma, i-Pharmacy and Aetna
    Health come back **PEGI 18**, so they are blocked by the base rule rather than
-   by the new decision. A pharmacy rates 18 because it sells medicines. **This is
-   the one genuine false positive class the measurement found**, it predates the
-   *Parental guidance* change, and a household that needs its pharmacy app is
-   stuck without a whitelist entry.
+   by the new decision, and a household needing its pharmacy app is stuck without
+   a whitelist entry.
+
+   **It is not systematic, which is worse rather than better.** Multipharma and
+   Farmaline — the same business in the same country — are **PEGI 3**. So a
+   pharmacy's rating says nothing about pharmacies and everything about which
+   questionnaire that publisher filled in, and there is no category rule to be
+   written here. It is a whitelist entry per app, discovered the hard way, and it
+   is the clearest single illustration in this file that IARC ratings are
+   self-declared.
+
+### What blocking Parental guidance actually buys
+
+The obvious objection is that the band is expensive and mostly benign, so allow
+it and let games and dating carry the load. **Measured 2026-08-17, and the
+objection does not survive.**
+
+Ten search terms for harm-adjacent apps, deliberately excluding games, dating and
+companions because those are already caught by category, produced **103 packages
+not on the blocklist**:
+
+| | count |
+|---|---|
+| caught today, by PEGI 7+ or category | 40 |
+| **caught only by also blocking Parental guidance** | **42** |
+| through regardless, at PEGI 3 | 21 |
+
+Blocking the band takes automatic coverage of that surface from **39% to 80%**.
+What sits in the 42 is the argument: **TikTok Lite**
+(`com.zhiliaoapp.musically.go`, a variant the blocklist does not name), **NGL**
+and **Tellonym** and four anonymous-confession apps, five stranger-livestream
+apps — Likee, Poppo Live, GOGO LIVE, BuzzCast, YouNow — and ten short-drama reels
+apps, which are the addictive-feed format under a different name.
+
+**About 17 of those 42 are benign** — 500px, Vimeo, Meetup, FamilyAlbum and a
+cluster of photo-sharing apps — and they join the whitelist. So the honest trade
+is roughly **25 harmful apps caught for 17 more whitelist entries.**
+
+**The ratio is not what settles it; the shapes are.** The whitelist is finite and
+knowable — every app a household needs can be written down in an afternoon, and
+it changes slowly. The blocklist is neither: a new confession app appears faster
+than a policy can be re-signed, which is the complaint this whole document exists
+to answer. Blocking the band converts an unbounded curation problem into a
+bounded one, which is the same move the install lock makes.
+
+Two smaller points in the same direction. For an app **already** on the
+blocklist, blocking the band adds nothing — the list catches it by name — so the
+entire value lands on the uncurated tail, which is exactly where the measurement
+says it pays. And the cost is front-loaded: the default whitelist is written once
+and shipped, while the harm it forecloses arrives weekly.
+
+**The band means *ungraded*, not *risky*, and the design says so out loud.** It
+contains TikTok Lite and a birdwatching app for the same reason: neither has been
+graded. drawbridge accepts a wider whitelist in order to get a narrower blocklist,
+deliberately.
 
 ### It has to ship in the policy, not only on the device
 
@@ -299,7 +350,18 @@ Zoom is gone by finding Zoom gone. So it is two lists that union:
 
 - **`app_ratings.allowed_packages` in the signed document** — the known-good set
   above, curated the same way `blocked_packages` is, updated by a policy re-sign
-  rather than an app update.
+  rather than an app update. **A first draft of 23 packages is in
+  `tools/corpora/whitelist-draft.txt`**, every entry verified to be one the rule
+  would otherwise remove.
+
+  Two invariants that want enforcing in `policytool.py sign`, both of the same
+  shape as the streaming mirror check:
+
+  1. **No entry may appear in `blocked_packages`.** The whitelist is evaluated
+     *before* the blocklist, so an overlap silently unblocks a blocked app.
+  2. **No entry may be governed by an option.** WhatsApp and Telegram are
+     deliberately absent from the draft: whitelisting them would override the
+     parent's switch and reduce the option to a decoration.
 - **A device-local list**, like the browser choice, for what a signed document
   cannot know: this family cycles, that one needs a specific school app.
 
