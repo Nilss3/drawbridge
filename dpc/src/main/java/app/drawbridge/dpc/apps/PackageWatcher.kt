@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.util.Log
+import app.drawbridge.dpc.DrawbridgeApplication
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -30,6 +31,12 @@ import kotlinx.coroutines.launch
  *
  * Lives inside the always-on VPN service because that is the longest-lived
  * process in the app.
+ *
+ * **Both wait for a policy to have been read**, which matters because of the
+ * shape of the periodic pass: it asks the platform which packages *changed*, so
+ * anything judged wrongly — or skipped — on the way past is not revisited. A
+ * decision made against an unread document does not get a second look until the
+ * process restarts. See [start].
  */
 class PackageWatcher(context: Context) {
 
@@ -61,6 +68,11 @@ class PackageWatcher(context: Context) {
             // has no opinion about.
             val packageName = intent.data?.schemeSpecificPart ?: return
             scope.launch {
+                // A document first, for the reason [start] spells out: an install
+                // that arrives before the policy has been read would be judged
+                // against an empty one, and nothing would look at it again.
+                awaitPolicy()
+
                 // Ask the store first, because [AppBlocker.evaluate] reads a
                 // cache and never waits on a network — it also runs from the
                 // sweep, over every package on the device. This is the one place
@@ -87,6 +99,26 @@ class PackageWatcher(context: Context) {
         appContext.registerReceiver(receiver, filter)
 
         sweepJob = scope.launch {
+            // **Wait for a policy rather than sweep without one.** This service
+            // starts from `Application.onCreate`, which kicks the load off in
+            // parallel, so the first full sweep can easily win the race and judge
+            // every package on the phone against `Policy(version = 0)`.
+            //
+            // Skipping is not enough, because of what comes after: the periodic
+            // pass below looks only at packages that have *changed*, and an app
+            // that was passed over has not changed. Anything the initial sweep
+            // declined for want of a document would therefore sit there until the
+            // process next started. That was survivable while removal waited for
+            // the lock; it is not, now that the first sweep runs minutes after
+            // installation and is the thing that makes an unlocked drawbridge
+            // worth having.
+            //
+            // Cheap and idempotent — it reads what is on disk, or the copy
+            // bundled in the APK — so this is a few milliseconds once, and free
+            // afterwards. `AppBlocker.browserRuleApplies` stays as the last
+            // resort for the case where even that yields nothing readable.
+            awaitPolicy()
+
             // An initial full sweep on start covers anything installed while the
             // service was down, including across a reboot.
             runCatching { blocker.sweep() }
@@ -97,6 +129,11 @@ class PackageWatcher(context: Context) {
                 sweepChanged()
             }
         }
+    }
+
+    private suspend fun awaitPolicy() {
+        runCatching { DrawbridgeApplication.policy(appContext).ensureLoaded() }
+            .onFailure { Log.e(TAG, "Could not load the policy before sweeping", it) }
     }
 
     fun stop() {

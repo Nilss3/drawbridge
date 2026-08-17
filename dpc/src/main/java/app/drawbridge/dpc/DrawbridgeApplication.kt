@@ -200,6 +200,12 @@ class DrawbridgeApplication : Application() {
             StoreScanWorker.runNow(appContext)
 
             lockScope.launch {
+                // A document first, as everywhere that sweeps. In practice it is
+                // long since loaded by the time anybody reaches the Lock button —
+                // this is the same insurance PackageWatcher.start needs for real,
+                // and it costs nothing once the flag is set.
+                runCatching { policy(appContext).ensureLoaded() }
+
                 val blocker = AppBlocker(appContext)
                 runCatching { blocker.closeTheInstalledSet() }
                     .onFailure { Log.e(TAG, "Could not record the installed set", it) }

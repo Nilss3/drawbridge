@@ -1060,9 +1060,22 @@ has read anything — names herald alone. A sweep racing the load would have
 answered *"this phone allows no browser but herald"* and uninstalled Chrome,
 Firefox and Vivaldi on the strength of a document nobody had opened. That race was
 survivable while nothing was removed before the first lock; it is not survivable
-when the first sweep runs minutes after installation. `AppBlocker.browserRuleApplies`
-is the gate, and it is pure and tested. Every other branch fails safe on an empty
-document.
+when the first sweep runs minutes after installation.
+
+**The fix is to wait, not to skip**, and the difference is not academic.
+`PackageWatcher` does one *full* sweep on start and thereafter asks the platform
+only which packages **changed** — so an app passed over in that first sweep has
+not changed, is never revisited, and sits there until the process next starts.
+Declining for want of a document would therefore have traded one bug for a
+quieter one. Both the initial sweep and the install broadcast now await
+`ensureLoaded()`, which reads what is on disk or the copy bundled in the APK,
+costs milliseconds once, and is free afterwards. `StoreScanWorker` already did
+this; the sweep was the odd one out.
+
+`AppBlocker.browserRuleApplies` stays as the last resort, for the case where even
+that yields nothing readable — `ensureLoaded` logs *"No usable policy"* and
+carries on with version 0 rather than throwing. It is pure and tested. Every
+other branch fails safe on an empty document.
 
 ### The filter does not wait, and the old rule was inconsistent
 

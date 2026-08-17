@@ -30,8 +30,20 @@ racing the load would have answered *"this phone allows no browser but herald"*
 and taken Chrome, Firefox and Vivaldi with it. Survivable while nothing was
 removed before the first lock, since by then the document has been read many
 times over; not survivable when the first sweep runs minutes after installation.
-`AppBlocker.browserRuleApplies` is the gate, pure and tested. Every other branch
-fails safe on an empty document.
+
+**And the sweep waits for a document rather than skipping past one**, which is
+the owner's question and the better answer. `PackageWatcher` sweeps everything
+once on start and thereafter asks only which packages *changed* — so anything
+declined for want of a policy has not changed, is never looked at again, and sits
+on the phone until the process restarts. Waiting costs milliseconds once
+(`ensureLoaded` reads the disk copy, or the one bundled in the APK) and nothing
+afterwards. `StoreScanWorker` already did this; the sweep and the install
+broadcast were the odd ones out, and `sweepOnLock` now matches for consistency.
+
+`AppBlocker.browserRuleApplies` stays as the last resort, for the case where even
+that yields nothing readable — `ensureLoaded` logs *"No usable policy"* and
+carries on with version 0 rather than failing. Pure and tested. Every other
+branch fails safe on an empty document.
 
 **The consent moved with the behaviour.** Apps now start disappearing before
 anybody has agreed to anything on the phone, so the warning had to move ahead of
