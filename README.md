@@ -113,11 +113,19 @@ herald exposes no way to install any other extension — the whole extension
 surface is uBO's own popup and dashboard.
 
 **Apps.** drawbridge removes blocked packages the moment they finish installing,
-and removes *any* browser other than herald — detected by intent filter, not by a
-list of package names that would be out of date next month. Preinstalled browsers
-that cannot be uninstalled are hidden instead. This is what makes DNS-only
-filtering sound: with no other browser on the device, nothing is left that can
-run its own encrypted DNS.
+and removes *any* browser the policy does not sanction — detected by intent
+filter, not by a list of package names that would be out of date next month.
+Preinstalled browsers that cannot be uninstalled are hidden instead. This is what
+makes DNS-only filtering sound: with no unsanctioned browser on the device,
+nothing is left that can run its own encrypted DNS.
+
+**This starts at installation, not at the lock**, because not everybody is going
+to lock and a phone that filters the web and drops social media is already worth
+having. What waits for the lock is only what a switch on the configuration screen
+still governs — WhatsApp, Telegram, YouTube, video streaming. The consequence is
+worth stating plainly, and the install instructions say it before the cable
+rather than after: on a phone already in use, blocked apps start disappearing
+within minutes, and anything saved only inside one of them goes with it.
 
 **And optionally, the phone closes at the lock.** A blocklist is a filter for a
 phone whose app store is wide open, and new apps in a category appear faster than

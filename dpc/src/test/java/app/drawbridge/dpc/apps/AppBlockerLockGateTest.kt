@@ -1,8 +1,11 @@
 package app.drawbridge.dpc.apps
 
 import androidx.test.core.app.ApplicationProvider
+import app.drawbridge.dpc.DrawbridgeApplication
 import app.drawbridge.dpc.security.ParentKey
+import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotEquals
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -10,24 +13,26 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 
 /**
- * The gate, and only the gate.
+ * When the blocker may act, which is the question this file has always covered
+ * and the answer to which changed twice.
  *
- * What the blocker *decides* about a package is covered by the policy model's
- * own tests; this file covers the question that turned out to be wrong on a real
- * phone on 2026-08-12 — **whether it may act at all**.
+ * **2026-08-12**: removal followed nothing at all. [PackageWatcher] lives inside
+ * the filter service, the filter deliberately keeps running after the parent
+ * unlocks, so apps went on being uninstalled from an unlocked phone — data could
+ * not be moved off it and a second browser could not be kept long enough to try.
  *
- * Removal used to follow nothing. [PackageWatcher] lives inside the filter
- * service, the filter deliberately keeps running after the parent unlocks, so
- * apps went on being uninstalled from an unlocked phone: data could not be moved
- * off it and a second browser could not be kept long enough to try. The only
- * gate that existed asked `protectedSince != 0`, which means *has ever been
- * locked* and stays true forever afterwards.
+ * **2026-08-17**: the fix for that had gone one step too far in the other
+ * direction. A phone that had never been locked removed *nothing*, so a
+ * drawbridge somebody installed and never locked was a filter with no app rules
+ * at all — and not everybody is going to lock. That gate is gone. What decides
+ * now is [AppBlocker.actsNow]: an app no switch can bring back goes as soon as
+ * drawbridge has read a policy, and one a switch still governs waits for the
+ * lock, because the parent has not answered that question yet.
  *
- * A plain Application is used rather than drawbridge's own, so this exercises the
- * gate without dragging in policy loading and device-admin plumbing — the same
- * reasoning as [app.drawbridge.dpc.security.ParentKeyTest]. Reaching the policy
- * lookup at all would mean the gate had already let the call through, which is
- * what makes an exception here a failure rather than noise.
+ * The bundled default policy is loaded here rather than mocked, because the two
+ * cases below are exactly "on the policy's list" and "on the policy's list but
+ * governed by an option", and a hand-made document would be free to disagree with
+ * the one the app ships.
  */
 @RunWith(RobolectricTestRunner::class)
 @Config(application = android.app.Application::class)
@@ -36,73 +41,79 @@ class AppBlockerLockGateTest {
     private lateinit var parentKey: ParentKey
     private lateinit var blocker: AppBlocker
 
+    /** On the bundled policy's blocklist, and governed by no option. */
+    private val blocked = "com.instagram.android"
+
+    /** On the same list, and rescued by the *Allow WhatsApp* switch. */
+    private val optionGoverned = "com.whatsapp"
+
     @Before
     fun setUp() {
         val context = ApplicationProvider.getApplicationContext<android.app.Application>()
         parentKey = ParentKey(context)
         parentKey.clear()
         blocker = AppBlocker(context)
+        runBlocking { DrawbridgeApplication.policy(context).ensureLoaded() }
     }
 
     @Test
-    fun `removes nothing while the phone is unlocked`() {
-        // A non-browser, which is the half of the rule that still holds while
-        // unlocked. Browsers are removed in either state as of 2026-08-12; see
-        // AppBlockerRuleTest for that table.
-        assertEquals(
-            "an unlocked phone must keep what is installed on it, so data can be moved off",
+    fun `a blocked app goes before the phone has ever been locked`() {
+        // The change of 2026-08-17, in one assertion. protectedSince is zero
+        // here: nothing has been locked, and the app goes anyway, because no
+        // control on the configuration screen was ever going to keep it.
+        assertNotEquals(
+            "a drawbridge that is installed but never locked still has to remove this",
             AppBlocker.Action.NONE,
-            blocker.evaluate("com.example.anything"),
+            blocker.evaluate(blocked),
         )
     }
 
     @Test
-    fun `removes nothing before the first lock, whatever the package is`() {
-        // protectedSince is zero here: the phone has never been locked, so the
-        // migration window is open and even a browser is left alone.
+    fun `an app a switch still governs waits for the lock`() {
+        // The other half, and the reason the gate is per-reason rather than
+        // global: WhatsApp is on the same list, and *Allow WhatsApp* is a
+        // question the parent has not been asked yet on a phone this new.
         assertEquals(
+            "removing it now would answer a question that belongs to the parent",
             AppBlocker.Action.NONE,
-            blocker.evaluate("com.example.anything"),
+            blocker.evaluate(optionGoverned),
         )
     }
 
     @Test
-    fun `removes nothing after unlocking, which is the case that was broken`() {
+    fun `an app no rule names is left alone in every state`() {
+        assertEquals(AppBlocker.Action.NONE, blocker.evaluate("com.example.anything"))
+
         val key = ParentKey.generateKey()
         parentKey.commit(key)
+        assertEquals(AppBlocker.Action.NONE, blocker.evaluate("com.example.anything"))
+
         parentKey.unlock(key)
-
-        assertEquals(
-            "unlocking has to reopen the window, not merely reopen settings",
-            AppBlocker.Action.NONE,
-            blocker.evaluate("com.example.anything"),
-        )
-    }
-
-    @Test
-    fun `protectedSince alone does not reopen removal`() {
-        // The old gate. protectedSince survives unlocking on purpose -- it is the
-        // tamper date a caregiver reads -- so anything keyed on it is keyed on
-        // "this phone was locked once", which is not a state anybody can leave.
-        val key = ParentKey.generateKey()
-        parentKey.commit(key)
-        parentKey.unlock(key)
-
-        assert(parentKey.protectedSince != 0L) {
-            "the protected-since date is expected to survive unlocking"
-        }
         assertEquals(AppBlocker.Action.NONE, blocker.evaluate("com.example.anything"))
     }
 
     @Test
-    fun `a locked phone gets past the gate`() {
-        parentKey.commit(ParentKey.generateKey())
+    fun `unlocking does not reopen what an option governs`() {
+        // The 2026-08-12 case, still true and still worth pinning: a parent
+        // unlocks to move data across, and what a switch governs must survive
+        // that window rather than being swept fifteen minutes later.
+        val key = ParentKey.generateKey()
+        parentKey.commit(key)
+        parentKey.unlock(key)
 
-        // Past the gate, the decision needs the policy and a real package. What
-        // matters here is only that the call is no longer refused outright, so
-        // any outcome other than an early NONE-by-gate is a pass: an unknown
-        // package legitimately evaluates to NONE on its own merits.
-        val action = runCatching { blocker.evaluate("com.example.anything") }
-        assert(action.isSuccess) { "the gate must be open when locked: ${action.exceptionOrNull()}" }
+        assertEquals(AppBlocker.Action.NONE, blocker.evaluate(optionGoverned))
+    }
+
+    /**
+     * The browser rule is the one branch that must not act on an unread
+     * document, because it removes what is *not* named and an empty [Policy]
+     * names herald alone. See [AppBlocker.browserRuleApplies]; the version here
+     * is the sentinel `PolicyManager` starts with.
+     */
+    @Test
+    fun `the browser rule waits for a document to have been read`() {
+        assertEquals(false, AppBlocker.browserRuleApplies(isBrowser = true, policyVersion = 0))
+        assertEquals(true, AppBlocker.browserRuleApplies(isBrowser = true, policyVersion = 1))
+        assertEquals(false, AppBlocker.browserRuleApplies(isBrowser = false, policyVersion = 37))
     }
 }

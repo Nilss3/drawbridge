@@ -189,7 +189,7 @@ HOME = {
         cta_primary="Get started",
         cta_secondary="See what's blocked, and why",
         how_h2="How it works",
-        how_p1='You connect the phone to a computer once, over USB, and run the installer. There is no factory reset, and nothing on the phone is erased. This will embed drawbridge on your device. Once installed, just start it. Locking it does uninstall the apps it blocks, so expect those to go. You\'ll get a random code to deactivate drawbridge. Alternatively, "forget" the code and have your protection indefinitely.',
+        how_p1='You connect the phone to a computer once, over USB, and run the installer. There is no factory reset, and nothing on the phone is erased. This will embed drawbridge on your device. Once installed, just start it. Installing it does uninstall the apps it blocks, so expect those to go — move anything you want to keep off the phone first. You\'ll get a random code to deactivate drawbridge. Alternatively, "forget" the code and have your protection indefinitely.',
         how_p2="Drawbridge relies on a web filter, a block list, and a custom browser. You don't need an account, and no data leaves your device. As opposed to parental controls or app blockers, there is little to no configuration, it already has everything there to protect you. There is also no workaround.",
         how_art_alt="A phone with a raised drawbridge across its screen: a calm green landscape inside, dark creatures shut out behind it.",
         how_cta_faq="Read the Q&amp;A",
@@ -240,7 +240,7 @@ HOME = {
         cta_primary="Aan de slag",
         cta_secondary="Bekijk wat geblokkeerd wordt, en waarom",
         how_h2="Hoe het werkt",
-        how_p1='Je verbindt de telefoon één keer met een computer via USB en voert de installer uit. Er is geen factory reset nodig, en er wordt niets op de telefoon gewist. Dat installeert drawbridge op je toestel. Eenmaal geïnstalleerd, start je het gewoon op. Bij het vergrendelen verdwijnen wel de apps die drawbridge blokkeert. Je krijgt een willekeurige code om drawbridge te deactiveren. Je kan die code ook bewust "vergeten", zodat je bescherming voor onbepaalde tijd actief blijft.',
+        how_p1='Je verbindt de telefoon één keer met een computer via USB en voert de installer uit. Er is geen factory reset nodig, en er wordt niets op de telefoon gewist. Dat installeert drawbridge op je toestel. Eenmaal geïnstalleerd, start je het gewoon op. Bij het installeren verdwijnen wel de apps die drawbridge blokkeert — zet dus eerst weg wat je wil bewaren. Je krijgt een willekeurige code om drawbridge te deactiveren. Je kan die code ook bewust "vergeten", zodat je bescherming voor onbepaalde tijd actief blijft.',
         how_p2="Drawbridge steunt op een webfilter, een blocklist, en een eigen browser. Je hebt geen account nodig, en er wordt nooit data van je toestel verzonden. In tegenstelling tot parental controls of app blockers is er nauwelijks tot geen configuratie nodig — alles staat er al klaar om je te beschermen. Er is ook geen workaround.",
         how_art_alt="Een telefoon met een opgehaalde brug over het scherm: een rustig groen landschap binnenin, duistere wezens buitengesloten.",
         how_cta_faq="Lees de Q&amp;A",
@@ -291,7 +291,7 @@ HOME = {
         cta_primary="Commencer",
         cta_secondary="Voir ce qui est bloqué, et pourquoi",
         how_h2="Comment ça marche",
-        how_p1="Vous reliez le téléphone à un ordinateur une seule fois, par USB, et vous lancez l'installeur. Il n'y a aucune réinitialisation, et rien n'est effacé sur le téléphone. Cela installe drawbridge sur votre appareil. Une fois installé, il suffit de le démarrer. Le verrouillage désinstalle en revanche les applications qu'il bloque. Vous recevrez un code aléatoire pour désactiver drawbridge. Vous pouvez aussi « oublier » ce code volontairement, pour que la protection reste active indéfiniment.",
+        how_p1="Vous reliez le téléphone à un ordinateur une seule fois, par USB, et vous lancez l'installeur. Il n'y a aucune réinitialisation, et rien n'est effacé sur le téléphone. Cela installe drawbridge sur votre appareil. Une fois installé, il suffit de le démarrer. L'installation désinstalle en revanche les applications qu'il bloque — mettez donc d'abord de côté ce que vous voulez garder. Vous recevrez un code aléatoire pour désactiver drawbridge. Vous pouvez aussi « oublier » ce code volontairement, pour que la protection reste active indéfiniment.",
         how_p2="Drawbridge s'appuie sur un filtre web, une liste de blocage, et un navigateur dédié. Aucun compte n'est nécessaire, et aucune donnée ne quitte votre appareil. Contrairement aux contrôles parentaux ou aux bloqueurs d'applications, il n'y a que peu, voire aucune configuration à faire — tout est déjà en place pour vous protéger. Il n'existe pas non plus de moyen de contournement.",
         how_art_alt="Un téléphone dont le pont-levis est relevé sur l'écran : un paysage vert et calme à l'intérieur, des créatures sombres tenues à l'écart.",
         how_cta_faq="Lire la Q&amp;A",
@@ -456,8 +456,8 @@ INSTALL = {
         lede="Install over USB from a computer. No factory reset, and nothing on the phone is erased.",
         alpha_warning="This is still in early alpha testing!!",
         alpha_detail="This public alpha has been tested on exactly one device: a Motorola G15, by the people who built it. It works there end to end. Nothing is known about how it behaves on any other phone. Don't use a device you depend on.",
-        caveat_title="Locking drawbridge uninstalls the apps it blocks.",
-        caveat_text="On a phone that is already in use, those apps are removed the moment you lock it, and switching a setting back on afterwards does not bring them back. Nothing else is erased: your photos, messages and other apps stay where they are.",
+        caveat_title="Installing drawbridge uninstalls the apps it blocks.",
+        caveat_text="On a phone that is already in use, apps that are never allowed — social media, harmful games, browsers the policy does not sanction — start disappearing within minutes of the install, and whatever was only inside them goes too. <strong>Move what you want to keep off the phone first</strong>: export bookmarks, save photos out of an app that holds them, write down what you are signed in to. Apps you can still choose about, like WhatsApp or YouTube, are left alone until you lock. Nothing else is erased: your photos, messages and other apps stay where they are.",
         usb_h2="Install over USB",
         usb_qualifier="For Google (regular) Android phones and also deGoogled open-source Android devices: install over USB using the flow below.",
         usb_steps=[
@@ -487,8 +487,8 @@ INSTALL = {
         lede="Installeer via USB vanaf een computer. Geen factory reset, en er wordt niets op de telefoon gewist.",
         alpha_warning="Dit zit nog volop in vroege alfatesting!!",
         alpha_detail="Deze publieke alfa is op precies één toestel getest: een Motorola G15, door de makers zelf. Daar werkt ze van begin tot eind. Over het gedrag op eender welke andere telefoon is niets bekend. Gebruik geen toestel waar je van afhangt.",
-        caveat_title="Bij het vergrendelen verwijdert drawbridge de apps die het blokkeert.",
-        caveat_text="Op een telefoon die al in gebruik is, verdwijnen die apps zodra je vergrendelt, en een instelling achteraf weer aanzetten brengt ze niet terug. Verder wordt er niets gewist: je foto's, berichten en andere apps blijven staan.",
+        caveat_title="Bij het installeren verwijdert drawbridge de apps die het blokkeert.",
+        caveat_text="Op een telefoon die al in gebruik is, verdwijnen apps die nooit toegelaten zijn — sociale media, schadelijke games, browsers die het beleid niet toelaat — binnen enkele minuten na de installatie, en wat er alleen in die apps zat, gaat mee. <strong>Zet eerst weg wat je wil bewaren</strong>: exporteer bladwijzers, haal foto's uit een app die ze vasthoudt, noteer waar je aangemeld bent. Apps waar je nog over kan kiezen, zoals WhatsApp of YouTube, blijven staan tot je vergrendelt. Verder wordt er niets gewist: je foto's, berichten en andere apps blijven staan.",
         usb_h2="Installeren via USB",
         usb_qualifier="Voor gewone Android-telefoons met Google én voor deGooglede open-source Android-toestellen: installeer via USB met de stappen hieronder.",
         usb_steps=[
@@ -518,8 +518,8 @@ INSTALL = {
         lede="Installez par USB depuis un ordinateur. Aucune réinitialisation, et rien n'est effacé sur le téléphone.",
         alpha_warning="Ceci est encore en phase de test alpha !!",
         alpha_detail="Cette alpha publique a été testée sur exactement un appareil : un Motorola G15, par ceux qui l'ont construite. Elle y fonctionne de bout en bout. On ne sait rien de son comportement sur un autre téléphone. N'utilisez pas un appareil dont vous dépendez.",
-        caveat_title="Le verrouillage de drawbridge désinstalle les applications qu'il bloque.",
-        caveat_text="Sur un téléphone déjà utilisé, ces applications disparaissent dès que vous verrouillez, et réactiver un réglage ensuite ne les rétablit pas. Rien d'autre n'est effacé : vos photos, vos messages et vos autres applications restent en place.",
+        caveat_title="L'installation de drawbridge désinstalle les applications qu'il bloque.",
+        caveat_text="Sur un téléphone déjà utilisé, les applications qui ne sont jamais autorisées — réseaux sociaux, jeux nocifs, navigateurs que la politique ne sanctionne pas — disparaissent dans les minutes qui suivent l'installation, et ce qui n'existait qu'à l'intérieur d'elles disparaît avec. <strong>Mettez d'abord de côté ce que vous voulez garder</strong> : exportez vos favoris, sortez les photos d'une application qui les détient, notez où vous êtes connecté. Les applications sur lesquelles vous pouvez encore choisir, comme WhatsApp ou YouTube, restent jusqu'au verrouillage. Rien d'autre n'est effacé : vos photos, vos messages et vos autres applications restent en place.",
         usb_h2="Installer par USB",
         usb_qualifier="Pour les téléphones Android ordinaires avec Google comme pour les appareils Android open source dégooglisés : installez par USB en suivant les étapes ci-dessous.",
         usb_steps=[
@@ -634,8 +634,8 @@ USB_INSTALLER = {
             "Install it",
             "Make drawbridge the owner",
         ],
-        caveat_title="Locking drawbridge uninstalls the apps it blocks.",
-        caveat_text="That happens later, on the phone, when you press Lock, not here. On a phone already in use those apps go and do not come back.",
+        caveat_title="Installing drawbridge uninstalls the apps it blocks.",
+        caveat_text="It starts within minutes of this install, not later on the phone. Move what you want to keep off it first — bookmarks, anything saved only inside an app. What a setting can still bring back waits until you lock.",
         update_detected="This phone is already managed by drawbridge ({version}). Updating it instead of provisioning. Nothing is reset, and the phone keeps everything on it.",
         update_done_h2="Now lock it again",
         update_done_steps=[
@@ -685,8 +685,8 @@ USB_INSTALLER = {
             "Installeren",
             "drawbridge eigenaar maken",
         ],
-        caveat_title="Bij het vergrendelen verwijdert drawbridge de apps die het blokkeert.",
-        caveat_text="Dat gebeurt later, op de telefoon, wanneer u op Vergrendelen drukt, niet hier. Op een telefoon die al in gebruik is verdwijnen die apps en komen ze niet terug.",
+        caveat_title="Bij het installeren verwijdert drawbridge de apps die het blokkeert.",
+        caveat_text="Dat begint binnen enkele minuten na deze installatie, niet pas later op de telefoon. Zet eerst weg wat u wil bewaren — bladwijzers, en alles wat alleen in een app bewaard zit. Wat een instelling nog kan terugbrengen, wacht tot u vergrendelt.",
         update_detected="Deze telefoon wordt al beheerd door drawbridge ({version}). Hij wordt bijgewerkt in plaats van opnieuw ingericht. Er wordt niets teruggezet en alles op de telefoon blijft staan.",
         update_done_h2="Vergrendel hem opnieuw",
         update_done_steps=[
@@ -736,8 +736,8 @@ USB_INSTALLER = {
             "L'installer",
             "Faire de drawbridge le propriétaire",
         ],
-        caveat_title="Le verrouillage de drawbridge désinstalle les applications qu'il bloque.",
-        caveat_text="Cela se produit plus tard, sur le téléphone, quand vous appuyez sur Verrouiller, pas ici. Sur un téléphone déjà utilisé, ces applications disparaissent et ne reviennent pas.",
+        caveat_title="L'installation de drawbridge désinstalle les applications qu'il bloque.",
+        caveat_text="Cela commence dans les minutes qui suivent cette installation, et non plus tard sur le téléphone. Mettez d'abord de côté ce que vous voulez garder — vos favoris, et tout ce qui n'est enregistré qu'à l'intérieur d'une application. Ce qu'un réglage peut encore rétablir attend le verrouillage.",
         update_detected="Ce téléphone est déjà géré par drawbridge ({version}). Il sera mis à jour plutôt que reconfiguré : rien n'est réinitialisé et tout ce qui s'y trouve est conservé.",
         update_done_h2="Verrouillez-le de nouveau",
         update_done_steps=[
@@ -861,7 +861,7 @@ FAQ = {
             ("p", "Every other website and app works normally: tools, office, weather, banking, public transport, school, work, and so on. Most messengers work too: Signal, Threema, Briar, Session. Private mobile communication is, after all, one of the main purposes of a smartphone."),
 
             ("h2", "How does the drawbridge app work?"),
-            ("p", "As soon as drawbridge is installed, the device is <strong>irrevocably protected by a network filter</strong> that keeps the categories above out, and <strong>every browser is automatically removed except the ones that are allowed</strong>. The allowed browsers are herald (drawbridge's own browser), Chrome, Firefox Focus and Vivaldi. If you use a different browser, export your bookmarks first!"),
+            ("p", "As soon as drawbridge is installed, the device is <strong>irrevocably protected by a network filter</strong> that keeps the categories above out, and <strong>the apps that are never allowed are removed</strong> — social media, harmful games, and every browser except the allowed ones. That happens at install, not at lock, so that a phone somebody never locks is still protected. Apps you can still decide about — WhatsApp, Telegram, YouTube, video streaming — are left alone until you lock. The allowed browsers are herald (drawbridge's own browser), Chrome, Firefox Focus and Vivaldi. If you use a different browser, export your bookmarks first!"),
             ("p", "The drawbridge app is the control centre of drawbridge. It lets you allow certain apps and websites after all, restrict the internet even further, or turn the phone into something close to a dumbphone. These additional settings only take effect once you lock drawbridge."),
 
             ("h3", "Locking"),
@@ -934,7 +934,7 @@ FAQ = {
             ("p", "Alle andere websites en apps werken gewoon: tools, office, weerbericht, banking, publiek transport, school, werk, etc. Ook werken de meeste messengers: Signal, Threema, Briar, Session. Private mobiele communicatie is namelijk een hoofddoel van een smartphone."),
 
             ("h2", "Hoe werkt de drawbridge app?"),
-            ("p", "Van zodra drawbridge geïnstalleerd is, wordt het toestel <strong>onherroepelijk beschermd met een netwerkfilter</strong> die bovenstaande categorieën buitenhoudt, en <strong>automatisch worden alle browsers verwijderd behalve deze die toegestaan zijn</strong>. De toegestane browsers zijn herald (de browser van drawbridge), Chrome, Firefox Focus en Vivaldi. Als je een andere browser gebruikt, exporteer dan eerst je bookmarks!"),
+            ("p", "Van zodra drawbridge geïnstalleerd is, wordt het toestel <strong>onherroepelijk beschermd met een netwerkfilter</strong> die bovenstaande categorieën buitenhoudt, en <strong>worden de apps die nooit toegelaten zijn verwijderd</strong>: sociale media, schadelijke games, en alle browsers behalve de toegestane. Dat gebeurt bij de installatie en niet pas bij het vergrendelen, zodat ook een telefoon die niemand ooit vergrendelt beschermd is. Apps waar je nog over kan beslissen — WhatsApp, Telegram, YouTube, videostreaming — blijven staan tot je vergrendelt. De toegestane browsers zijn herald (de browser van drawbridge), Chrome, Firefox Focus en Vivaldi. Als je een andere browser gebruikt, exporteer dan eerst je bookmarks!"),
             ("p", "De drawbridge app is het controlecentrum van drawbridge en laat de gebruiker toe bepaalde apps en websites toch te gebruiken, het internet juist nog meer te beperken of de telefoon bijna helemaal een dumbphone te maken. Deze bijkomende instellingen gaan pas van kracht als men drawbridge vergrendelt."),
 
             ("h3", "Vergrendelen"),
@@ -1007,7 +1007,7 @@ FAQ = {
             ("p", "Tous les autres sites et applications fonctionnent normalement : outils, bureautique, météo, banque, transports en commun, école, travail, etc. La plupart des messageries fonctionnent aussi : Signal, Threema, Briar, Session. La communication mobile privée est en effet l'un des buts premiers d'un smartphone."),
 
             ("h2", "Comment fonctionne l'application drawbridge ?"),
-            ("p", "Dès que drawbridge est installé, l'appareil est <strong>protégé de façon irrévocable par un filtre réseau</strong> qui tient à l'écart les catégories ci-dessus, et <strong>tous les navigateurs sont automatiquement supprimés, sauf ceux qui sont autorisés</strong>. Les navigateurs autorisés sont herald (le navigateur de drawbridge), Chrome, Firefox Focus et Vivaldi. Si vous utilisez un autre navigateur, exportez d'abord vos favoris !"),
+            ("p", "Dès que drawbridge est installé, l'appareil est <strong>protégé de façon irrévocable par un filtre réseau</strong> qui tient à l'écart les catégories ci-dessus, et <strong>les applications qui ne sont jamais autorisées sont supprimées</strong> : réseaux sociaux, jeux nocifs, et tous les navigateurs sauf ceux qui sont autorisés. Cela se produit à l'installation et non au verrouillage, afin qu'un téléphone que personne ne verrouille soit protégé lui aussi. Les applications sur lesquelles vous pouvez encore décider — WhatsApp, Telegram, YouTube, le streaming vidéo — restent jusqu'au verrouillage. Les navigateurs autorisés sont herald (le navigateur de drawbridge), Chrome, Firefox Focus et Vivaldi. Si vous utilisez un autre navigateur, exportez d'abord vos favoris !"),
             ("p", "L'application drawbridge est le centre de contrôle de drawbridge : elle permet d'autoriser malgré tout certaines applications et certains sites, de restreindre encore davantage l'internet, ou de transformer le téléphone en quasi-dumbphone. Ces réglages supplémentaires ne prennent effet qu'au moment où vous verrouillez drawbridge."),
 
             ("h3", "Verrouiller"),

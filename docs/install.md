@@ -9,11 +9,14 @@ filter and the browser.
 **This works on an ordinary Android phone that is already in use.** It does not
 need a factory reset, and it does not erase your photos, messages or apps.
 
-> **One thing does get removed: the apps drawbridge blocks.** When you lock it,
-> every app the policy blocks is uninstalled from the phone, straight away.
-> Switching a setting back on afterwards does not reinstall them. On a phone
-> already in use that is a real change — check
-> [what is blocked](blocked-apps.md) before you start.
+> **One thing does get removed: the apps drawbridge blocks.** This starts at
+> **installation**, not when you lock: within minutes, every app the policy never
+> allows — social media, harmful games, browsers it does not sanction — is
+> uninstalled, and anything saved only inside one of them goes with it. Move what
+> you want to keep off the phone first: export bookmarks, save photos out of an
+> app that holds them. Apps you can still decide about, like WhatsApp or YouTube,
+> are left alone until you lock. On a phone already in use this is a real change —
+> check [what is blocked](blocked-apps.md) before you start.
 
 ---
 

@@ -60,7 +60,7 @@
 
     <!-- Vergrendelen -->
     <string name="lock_confirm_title">drawbridge vergrendelen?</string>
-    <string name="lock_confirm_message">Drawbridge vergrendelen verwijdert apps die niet volgens het beleid zijn, zoals bepaalde games, sociale media en browsers. Zet je gegevens (zoals bladwijzers) vooraf over. Het past ook de verbindingsfilosofie toe.\n\nAls Android vraagt of drawbridge op de achtergrond mag draaien, sta dat toe. Drawbridge werkt hoe dan ook, maar zo kan het de webfilter bijwerken.\n\nJe krijgt een sleutel te zien. Het is de enige manier om te ontgrendelen, behalve door het toestel terug te zetten naar de fabrieksinstellingen. De sleutel wordt maar één keer getoond. Schrijf hem op of houd je toestel voor altijd zoals het is — dat is jouw keuze.</string>
+    <string name="lock_confirm_message">Vergrendelen past de instellingen van dit scherm toe: de apps die je toch wilde toestaan verdwijnen als je ze uit liet staan, en de verbindingsfilosofie gaat van kracht. Apps die nooit toegelaten zijn, zijn al bij de installatie verdwenen.\n\nAls Android vraagt of drawbridge op de achtergrond mag draaien, sta dat toe. Drawbridge werkt hoe dan ook, maar zo kan het de webfilter bijwerken.\n\nJe krijgt een sleutel te zien. Het is de enige manier om te ontgrendelen, behalve door het toestel terug te zetten naar de fabrieksinstellingen. De sleutel wordt maar één keer getoond. Schrijf hem op of houd je toestel voor altijd zoals het is — dat is jouw keuze.</string>
     <string name="lock_confirm_yes">Vergrendel en toon de sleutel</string>
     <string name="lock_needs_filter">De inhoudsfilter moet draaien voor de telefoon vergrendeld kan worden.</string>
 

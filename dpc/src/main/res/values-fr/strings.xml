@@ -60,7 +60,7 @@
 
     <!-- Verrouillage -->
     <string name="lock_confirm_title">Verrouiller drawbridge ?</string>
-    <string name="lock_confirm_message">Verrouiller drawbridge retire les applications qui ne correspondent pas à la politique, comme certains jeux, réseaux sociaux et navigateurs. Transférez vos données (comme les favoris) au préalable. Cela applique aussi la philosophie de déconnexion.\n\nSi Android demande si drawbridge peut fonctionner en arrière-plan, autorisez-le. Drawbridge fonctionne dans les deux cas, mais ainsi il peut mettre à jour le filtre web.\n\nUne clé vous sera montrée. C\'est le seul moyen de déverrouiller, hormis une réinitialisation d\'usine de l\'appareil. La clé n\'est affichée qu\'une seule fois. Notez-la, ou gardez votre appareil ainsi pour toujours — c\'est votre choix.</string>
+    <string name="lock_confirm_message">Le verrouillage applique les réglages de cet écran : les applications que vous vouliez malgré tout autoriser disparaissent si vous les avez laissées désactivées, et la philosophie de déconnexion prend effet. Les applications qui ne sont jamais autorisées ont disparu dès l\'installation.\n\nSi Android demande si drawbridge peut fonctionner en arrière-plan, autorisez-le. Drawbridge fonctionne dans les deux cas, mais ainsi il peut mettre à jour le filtre web.\n\nUne clé vous sera montrée. C\'est le seul moyen de déverrouiller, hormis une réinitialisation d\'usine de l\'appareil. La clé n\'est affichée qu\'une seule fois. Notez-la, ou gardez votre appareil ainsi pour toujours — c\'est votre choix.</string>
     <string name="lock_confirm_yes">Verrouiller et montrer la clé</string>
     <string name="lock_needs_filter">Le filtre de contenu doit fonctionner avant que le téléphone puisse être verrouillé.</string>
 

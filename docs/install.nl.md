@@ -9,11 +9,15 @@ inhoudsfilter als de browser.
 **Dit werkt op een gewone Android-telefoon die al in gebruik is.** Er is geen
 fabrieksreset nodig, en uw foto's, berichten en apps worden niet gewist.
 
-> **Eén ding verdwijnt wel: de apps die drawbridge blokkeert.** Zodra u
-> vergrendelt, worden alle apps die het beleid blokkeert van de telefoon
-> verwijderd, meteen. Een instelling achteraf weer aanzetten installeert ze niet
-> opnieuw. Op een telefoon die al in gebruik is, is dat een echte verandering —
-> bekijk [wat er geblokkeerd wordt](blocked-apps.md) voor u begint.
+> **Eén ding verdwijnt wel: de apps die drawbridge blokkeert.** Dat begint bij de
+> **installatie**, niet pas bij het vergrendelen: binnen enkele minuten worden alle
+> apps die het beleid nooit toelaat — sociale media, schadelijke games, browsers
+> die het niet toelaat — verwijderd, en wat alleen in zo'n app bewaard zat, gaat
+> mee. Zet eerst weg wat u wil bewaren: exporteer bladwijzers, haal foto's uit een
+> app die ze vasthoudt. Apps waar u nog over kan beslissen, zoals WhatsApp of
+> YouTube, blijven staan tot u vergrendelt. Op een telefoon die al in gebruik is,
+> is dat een echte verandering — bekijk
+> [wat er geblokkeerd wordt](blocked-apps.md) voor u begint.
 
 ---
 

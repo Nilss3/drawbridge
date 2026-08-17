@@ -11,10 +11,15 @@ réinitialisation d'usine n'est nécessaire, et vos photos, messages et
 applications ne sont pas effacés.
 
 > **Une chose disparaît quand même : les applications que drawbridge bloque.**
-> Dès que vous verrouillez, toutes les applications bloquées par la politique
-> sont désinstallées du téléphone, immédiatement. Réactiver un réglage ensuite ne
-> les réinstalle pas. Sur un téléphone déjà utilisé, c'est un vrai changement —
-> regardez [ce qui est bloqué](blocked-apps.md) avant de commencer.
+> Cela commence dès l'**installation**, et non au verrouillage : en quelques
+> minutes, toutes les applications que la politique n'autorise jamais — réseaux
+> sociaux, jeux nocifs, navigateurs qu'elle ne sanctionne pas — sont désinstallées,
+> et ce qui n'était enregistré qu'à l'intérieur de l'une d'elles disparaît avec.
+> Mettez d'abord de côté ce que vous voulez garder : exportez vos favoris, sortez
+> les photos d'une application qui les détient. Les applications sur lesquelles
+> vous pouvez encore décider, comme WhatsApp ou YouTube, restent jusqu'au
+> verrouillage. Sur un téléphone déjà utilisé, c'est un vrai changement — regardez
+> [ce qui est bloqué](blocked-apps.md) avant de commencer.
 
 ---
 

@@ -3,6 +3,8 @@ package app.drawbridge.dpc.ui
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.format.DateUtils
 import android.view.Menu
 import android.view.MenuItem
@@ -78,6 +80,10 @@ class LockActivity : AppCompatActivity() {
      * leaving the device locked and unopenable.
      */
     private var revealedKey: String? = null
+
+    /** Posts the one deadline check this screen makes for itself; see [scheduleInPlaceExpiry]. */
+    private val handler = Handler(Looper.getMainLooper())
+    private var expiryCheck: Runnable? = null
 
     private lateinit var revealStep: View
     private lateinit var challengeStep: View
@@ -170,6 +176,83 @@ class LockActivity : AppCompatActivity() {
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putString(STATE_KEY, revealedKey)
+    }
+
+    /**
+     * Leaves if the lock is gone, and arranges to notice if it goes while this
+     * screen is on top.
+     *
+     * **Reported from the Moto on 2026-08-17, the first time a timer ran out for
+     * real.** The unlock itself worked — the keyguard said so — but drawbridge,
+     * still in the background on this screen, went on asking for a key that no
+     * longer existed. Killing it and reopening fixed it. The mirror of this check
+     * has always been in [MainActivity.onResume], which forwards to *this* screen
+     * when the phone is locked; the way back was never written, because until the
+     * timer there was no way for a phone to unlock without somebody standing in
+     * front of this activity doing it.
+     *
+     * The controller is asked first rather than trusted to have run. It is
+     * idempotent, it costs two preference reads when nothing is due, and it means
+     * a phone whose alarm was lost unlocks the moment a parent opens the app
+     * instead of at the next hourly pass.
+     */
+    override fun onResume() {
+        super.onResume()
+        if (revealedKey != null) return
+
+        LockTimerController(this).apply()
+        if (!parentKey.isLocked) {
+            leaveForConfiguration()
+            return
+        }
+        scheduleInPlaceExpiry()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        expiryCheck?.let { handler.removeCallbacks(it) }
+        expiryCheck = null
+    }
+
+    /**
+     * Watches the deadline pass without leaving the screen.
+     *
+     * [onResume] covers the ordinary case — the phone unlocked while nobody was
+     * looking, and somebody comes back to it. This covers the case a tester
+     * creates and a child would too: sitting on the lock screen *as* the deadline
+     * arrives. Without it the screen would keep asking for a key for as long as
+     * it stayed in front of somebody, which is exactly the moment it looks broken.
+     *
+     * One post rather than a poll, aimed at the deadline itself, with a second's
+     * grace so the controller is not asked a tick early. Cancelled in [onPause],
+     * so a backgrounded screen costs nothing.
+     */
+    private fun scheduleInPlaceExpiry() {
+        expiryCheck?.let { handler.removeCallbacks(it) }
+        expiryCheck = null
+
+        if (!lockTimer.isArmed) return
+        val untilExpiry = lockTimer.expiresAt - System.currentTimeMillis() + 1_000L
+        if (untilExpiry <= 0) return
+
+        val check = Runnable {
+            LockTimerController(this).apply()
+            if (!parentKey.isLocked) leaveForConfiguration()
+        }
+        expiryCheck = check
+        handler.postDelayed(check, untilExpiry)
+    }
+
+    /**
+     * The same hand-over [onBackPressedDispatcher] does on the reveal, and for the
+     * same reason: this activity finishes MainActivity on its way in, so returning
+     * to a configuration screen means starting one.
+     */
+    private fun leaveForConfiguration() {
+        startActivity(
+            Intent(this, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP),
+        )
+        finish()
     }
 
     /**

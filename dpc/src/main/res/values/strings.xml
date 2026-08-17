@@ -96,7 +96,7 @@
 
     <!-- Locking -->
     <string name="lock_confirm_title">Lock drawbridge?</string>
-    <string name="lock_confirm_message">Locking drawbridge removes apps which are not according to the policy, like certain games, social media and browsers. Migrate your data (like bookmarks) beforehand. It will also apply the disconnect philosophy.\n\nIf Android asks whether drawbridge can run in the background, allow it. Drawbridge works either way, but like that it can update the web filter.\n\nYou will be shown a key. It\'s the only way to unlock except by factory reset of the device. The key is shown only once. Write it down or have your device forever like this, which is your choice.</string>
+    <string name="lock_confirm_message">Locking applies the settings on this screen: the apps you chose to allow after all are removed if you left them off, and the disconnect philosophy takes effect. Apps that are never allowed went at installation and are already gone.\n\nIf Android asks whether drawbridge can run in the background, allow it. Drawbridge works either way, but like that it can update the web filter.\n\nYou will be shown a key. It\'s the only way to unlock except by factory reset of the device. The key is shown only once. Write it down or have your device forever like this, which is your choice.</string>
     <string name="lock_confirm_yes">Lock and show the key</string>
     <string name="lock_needs_filter">The content filter has to be running before the phone can be locked.</string>
 

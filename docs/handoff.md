@@ -8,6 +8,63 @@ machine, what was and was not verified, and what to do next.
 
 ---
 
+## Removal starts at installation now — 2026-08-17, unreleased
+
+**The owner's call, and the reasoning is about who drawbridge is for.** Not
+everybody is going to lock. A phone that filters the web and drops social media,
+undoable only by a factory reset, is already most of the value — and the old
+design gave that person nothing until they pressed a button they may never press.
+
+So `AppBlocker.evaluate`'s pre-lock gate is gone. What acts from installation:
+the **blocklist**, **browsers the policy never sanctioned**, the **store rule**,
+and **allowlist mode**. What still waits for the lock is everything a switch on
+the configuration screen governs — WhatsApp, Telegram, YouTube, streaming, a
+browser the *chooser* narrowed away — because the parent has not answered those
+questions yet. `actsNow` already expressed exactly that split; the gate in front
+of it was the only thing making a fresh phone inert.
+
+**One rule had to be hardened first, and this is the part to remember.** The
+browser rule removes what is *not* named, and `Policy(version = 0)` — what
+`PolicyManager` holds before it reads anything — names herald alone. A sweep
+racing the load would have answered *"this phone allows no browser but herald"*
+and taken Chrome, Firefox and Vivaldi with it. Survivable while nothing was
+removed before the first lock, since by then the document has been read many
+times over; not survivable when the first sweep runs minutes after installation.
+`AppBlocker.browserRuleApplies` is the gate, pure and tested. Every other branch
+fails safe on an empty document.
+
+**The consent moved with the behaviour.** Apps now start disappearing before
+anybody has agreed to anything on the phone, so the warning had to move ahead of
+the cable rather than sit beside the Lock button. Rewritten in all three
+languages, in four places: the website's install page, the USB installer page,
+the FAQ's *how it works*, and `docs/install*.md`. Each one now says the same
+thing — **move what you want to keep off the phone first**, because whatever
+lived only inside a blocked app goes with it — and that what a switch can still
+bring back waits for the lock. `lock_confirm_message` in the app changed for the
+same reason: it used to promise removals that have already happened by then.
+
+`AppBlockerLockGateTest` was rewritten around the new rule and now loads the
+bundled policy rather than mocking one, so *"a blocked app goes before the phone
+has ever been locked"* is pinned against the document the app actually ships.
+
+### The lock screen did not notice being unlocked
+
+**Reported from the Moto in the same session, and it is the first thing a real
+timer found.** The two-hour unlock worked — the keyguard said *drawbridge
+protecting* — but drawbridge itself, still open on the lock screen, went on
+asking for a key that no longer existed until it was killed and reopened.
+
+`MainActivity.onResume` has always forwarded to the lock screen when the phone is
+locked. The way back was never written, because until the timer there was no way
+for a phone to unlock without somebody standing in front of that screen doing it.
+`LockActivity.onResume` now asks the controller first — idempotent, and it also
+means a phone whose alarm was lost unlocks the moment somebody opens the app —
+and leaves for the configuration screen if the lock is gone. A second check is
+posted at the deadline itself while the screen is visible, so a phone being
+watched at the moment it expires changes in place rather than looking stuck.
+
+---
+
 ## The preloaded game the store rule never asked about — 2026-08-17, unreleased
 
 **Reported from the Moto: a game called Amaze GO! survived a locked phone.** It is

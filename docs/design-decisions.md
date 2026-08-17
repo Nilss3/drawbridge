@@ -1020,12 +1020,49 @@ would no longer be removed — cannot be written safely, because a hidden app
 answers no intent queries, so asking whether it is a browser requires unhiding
 it, which would hide it again on the next sweep. Every fifteen minutes, forever.
 
-## Nothing is *taken away* until the phone is locked
+## What waits for the lock, and what stopped waiting
 
-**The heading used to read "nothing is enforced", and that stopped being true on
-2026-08-12**, in two steps and both deliberate: herald installs at provisioning,
-and the **filter now runs from provisioning too**. What waits for the lock is the
-restrictions and the app removals — the things that take something away.
+**This heading has moved twice, and each move gave something up.** It read
+*"nothing is enforced until the phone is locked"* until 2026-08-12, when herald
+began installing at provisioning and the filter began running from it. It then
+read *"nothing is **taken away** until the phone is locked"* until 2026-08-17,
+when app removal stopped waiting too.
+
+What waits now is **the restrictions**, and **the removals a switch on the
+configuration screen still governs** — WhatsApp, Telegram, YouTube, streaming, a
+browser the *chooser* narrowed away. Everything else acts from installation.
+
+### Why removal stopped waiting for the lock
+
+**The owner's call, 2026-08-17, and the reasoning is about who this is for:
+not everybody is going to lock.** A phone that filters the web and drops social
+media, undoable only by a factory reset, is already most of what drawbridge
+offers — and a version of that which quietly does nothing until somebody presses a
+button is a version that fails the person who never presses it. The lock is for
+sealing the *choices*; it should not have been the thing that switched the
+product on.
+
+The Moto is what made it concrete, twice in one day: a preloaded game that no
+rule had ever been asked about, and a phone whose owner had every reason to
+believe it was already protecting them.
+
+**What it costs is paid before anybody has agreed to anything**, and that is not
+a small thing. On a phone already in use, apps start disappearing minutes after
+the install, and whatever lived only inside them goes too. The old design bought
+that consent with the lock button. The new one has to buy it earlier, which is why
+the warning moved to **before the install** — the website's install pages, the
+USB installer, and `docs/install*.md` all say it ahead of the cable now, rather
+than beside a button the person has not reached yet.
+
+**One rule had to be hardened for this to be safe.** The browser rule removes what
+is *not* named, and `Policy(version = 0)` — what `PolicyManager` holds before it
+has read anything — names herald alone. A sweep racing the load would have
+answered *"this phone allows no browser but herald"* and uninstalled Chrome,
+Firefox and Vivaldi on the strength of a document nobody had opened. That race was
+survivable while nothing was removed before the first lock; it is not survivable
+when the first sweep runs minutes after installation. `AppBlocker.browserRuleApplies`
+is the gate, and it is pure and tested. Every other branch fails safe on an empty
+document.
 
 ### The filter does not wait, and the old rule was inconsistent
 
@@ -1055,12 +1092,17 @@ That guard costs nothing and encodes the one failure that actually happened.
 profile choice somebody makes, rather than a state reached by leaving a button
 unpressed. Not built; noted as the right shape.
 
-### And the rest still waits
+### And the restrictions still wait
 
-Before the lock, a provisioned phone has no restrictions and no app removal — at
-provisioning, at first launch, and on the daily poll alike. `DeviceOwnerManager.reapplyIfProtected` is
-what every automatic caller goes through, and it is a no-op until then; the lock
-button is the only place the lockdown is applied unconditionally.
+Before the lock, a provisioned phone has no restrictions — at provisioning, at
+first launch, and on the daily poll alike. `DeviceOwnerManager.reapplyIfProtected`
+is what every automatic caller goes through, and it is a no-op until then; the
+lock button is the only place the lockdown is applied unconditionally.
+
+**App removal used to be in this paragraph and is not any more** — see above. The
+reasoning below is about the *restrictions*, and it survives the change intact:
+what the pre-lock window is for is adding a Google account and setting a screen
+lock, neither of which app removal touches.
 
 The rule was learned twice, from opposite directions.
 
@@ -1089,13 +1131,19 @@ not `isLocked`. It survives unlocking, so a parent who unlocks to change a
 setting has not withdrawn their protection and the phone stays filtered while
 they do it. Only removal clears it, which is right: removal is the off switch.
 
-### Except app removal, which follows the lock
+### Except the removals a switch governs, which follow the lock
 
-**Changed 2026-08-12, after the owner found it on a real phone.** Two things are
-keyed on the lock rather than on `protectedSince`: USB debugging, and **taking
-apps away**. Everything else — the DNS filter, the multi-user restrictions, safe
-boot — stays on through an unlock, because dropping those would leave an unlocked
-phone unfiltered rather than merely open.
+**Changed 2026-08-12, after the owner found it on a real phone, and narrowed on
+2026-08-17.** The rule below was written when *all* app removal followed the lock.
+Only half of it does now: what a control on the configuration screen still governs
+waits, and what nothing can bring back does not. The argument is unchanged for the
+half it still covers, and it is the argument that decides which half is which — an
+unlock has to be a window somebody can work in.
+
+USB debugging is keyed on the lock for the same reason. Everything else — the DNS
+filter, the multi-user restrictions, safe boot — stays on through an unlock,
+because dropping those would leave an unlocked phone unfiltered rather than merely
+open.
 
 The bug was that removal followed *nothing at all*. `AppBlocker.evaluate` had no
 gate; `PackageWatcher` lives inside the always-on filter service, which keeps

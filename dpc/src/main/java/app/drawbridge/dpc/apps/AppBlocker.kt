@@ -38,6 +38,28 @@ import app.drawbridge.policy.model.Policy
  * Browsers are *detected*, not listed: a package-name list of browsers is out of
  * date the moment someone publishes a new one, whereas the intent filter that
  * makes an app able to open `https://` links is what actually matters.
+ *
+ * **When this starts, as of 2026-08-17: at installation.** An app that no switch
+ * on the configuration screen can bring back — on the blocklist, a browser the
+ * *policy* never sanctioned, rated or categorised out by the store — goes as soon
+ * as drawbridge is on the phone and has read a policy. It no longer waits for the
+ * first lock.
+ *
+ * The reason is the owner's, and it is about who drawbridge is for: **not
+ * everybody is going to lock.** A phone that filters the web and drops social
+ * media, undoable by a factory reset and nothing else, is already most of the
+ * value, and a version of that which quietly does nothing until a button is
+ * pressed is a version that fails the person who never presses it.
+ *
+ * What still waits for the lock is everything a switch still governs — WhatsApp,
+ * Telegram, YouTube, streaming, a browser the *chooser* narrowed away — because
+ * the parent has not answered those questions yet. See [actsNow].
+ *
+ * **The cost is real and lands before anybody has agreed to anything**: on a
+ * phone already in use, apps start disappearing minutes after installation, and
+ * whatever was in them goes too. That is why the warning moved to *before the
+ * install* rather than before the lock — see the install pages, which now say it
+ * ahead of the cable rather than beside the button.
  */
 class AppBlocker(context: Context) {
 
@@ -96,11 +118,6 @@ class AppBlocker(context: Context) {
      * full sweep the moment the key is committed.
      */
     fun evaluate(packageName: String): Action {
-        // Nothing at all before the first lock. That window is what lets a parent
-        // move bookmarks and data across, and it is the only reason drawbridge
-        // does not require a factory reset.
-        if (parentKey.protectedSince == 0L) return Action.NONE
-
         val policy = DrawbridgeApplication.policy(appContext).policy.value
         val allowedBrowsers = allowedBrowsers(policy)
 
@@ -177,10 +194,13 @@ class AppBlocker(context: Context) {
         return when {
             packageName in policy.blockedPackages ->
                 Removal("on the blocked package list", switchGoverned)
+            // Gated on the document having been read — see [browserRuleApplies],
+            // which is the one branch here that has to ask.
+            //
             // The *effective* set rather than the policy's, so the log line says
             // what this phone actually allows — "allows only nothing" is the
             // honest reading of the no-browser choice, and was worth not hiding.
-            browser -> Removal(
+            browserRuleApplies(browser, policy.version) -> Removal(
                 "is a browser, and this phone allows only " +
                     allowedBrowsers.joinToString().ifEmpty { "no browser at all" },
                 switchGoverned,
@@ -960,9 +980,17 @@ class AppBlocker(context: Context) {
          * This is the rule that decides whether an unlocked phone can be talked
          * around, so it should not be checkable only by holding one.
          *
-         * Callers apply it *after* deciding the package is disallowed at all, and
-         * after the pre-lock window has been checked: this answers "now or at the
-         * lock", not "at all".
+         * Callers apply it *after* deciding the package is disallowed at all:
+         * this answers "now or at the lock", not "at all".
+         *
+         * **There is no pre-lock window in front of it any more.** Until
+         * 2026-08-17 [evaluate] returned early on a phone that had never been
+         * locked, so a freshly installed drawbridge removed nothing until somebody
+         * pressed the button. It now runs from installation, and this function is
+         * what keeps that honest: an app **no switch can bring back** goes at
+         * once, and one a switch still governs — WhatsApp, Telegram, YouTube,
+         * streaming, a browser the *chooser* narrowed away — waits for the lock,
+         * because the parent has not answered that question yet.
          */
         internal fun actsNow(isDeferred: Boolean, isLocked: Boolean): Boolean =
             !isDeferred || isLocked
@@ -1040,6 +1068,32 @@ class AppBlocker(context: Context) {
          * this project has now paid four times for a rule that could only be
          * checked by holding a phone.
          */
+        /**
+         * Whether the browser rule may act, given a package and the version of
+         * the document in hand.
+         *
+         * **The one branch in [reasonToRemove] that has to ask whether a policy
+         * has been read**, because it is the branch that removes what is *not*
+         * named. `Policy(version = 0)` is what `PolicyManager` holds before it
+         * loads anything, and an empty document's `browserPackages` falls back to
+         * herald alone — so a sweep racing the load would answer *"this phone
+         * allows no browser but herald"* and uninstall Chrome, Firefox and
+         * Vivaldi on the strength of a document nobody has opened.
+         *
+         * Every other branch fails safe on an empty document: an empty blocklist
+         * names nobody, a null `allowed_packages` is not allowlist mode, absent
+         * `app_ratings` is no store rule, and the install lock is device-local
+         * and never consults the policy.
+         *
+         * **The race was survivable until 2026-08-17**, because nothing was
+         * removed before the first lock and by then the document has been read
+         * many times over. Removal starting at *installation* is what makes this
+         * load-bearing: the first sweep now runs minutes after the app arrives,
+         * in a process still reading its own assets off disk.
+         */
+        internal fun browserRuleApplies(isBrowser: Boolean, policyVersion: Int): Boolean =
+            isBrowser && policyVersion != 0
+
         /**
          * The store rule's reach, as a function of the two facts about a package
          * that decide it.
