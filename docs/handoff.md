@@ -8,7 +8,7 @@ machine, what was and was not verified, and what to do next.
 
 ---
 
-## Removal starts at installation now — 2026-08-17, unreleased
+## Removal starts at installation now — 2026-08-17, drawbridge 0.2.10 build 35, policy 70
 
 **The owner's call, and the reasoning is about who drawbridge is for.** Not
 everybody is going to lock. A phone that filters the web and drops social media,
@@ -59,6 +59,32 @@ same reason: it used to promise removals that have already happened by then.
 bundled policy rather than mocking one, so *"a blocked app goes before the phone
 has ever been locked"* is pinned against the document the app actually ships.
 
+### Released as build 35, policy 70
+
+`dpc` only again; herald has not moved since v0.2.8-dev.4 and its pins are
+untouched. **Policy 70 was signed with the URL check passing** — all eighteen, no
+rate limiting this time, unlike 69.
+
+**This is the release to watch, and the first install is the moment.** Every
+build before it left a phone alone until somebody pressed Lock. This one starts
+removing apps minutes after it lands, on a phone whose owner may not have opened
+the app yet. Worth doing the first one deliberately, with:
+
+```bash
+adb logcat | grep -E "Removing|not among the apps|browser, and this phone allows"
+```
+
+Three things to look for, in order of how badly they would matter:
+
+1. **Nothing removed that should have stayed** — especially a browser. The
+   unread-document race is what `browserRuleApplies` and the `ensureLoaded` wait
+   are for, and a cold first boot on real hardware is the one place it can still
+   surface.
+2. **Amaze GO! gone**, which is the preload case that started it.
+3. **WhatsApp, Telegram, YouTube still there** until the phone is locked. If any
+   of those goes early, `deferred` has drifted and the parent has lost a choice
+   they were never offered.
+
 ### The lock screen did not notice being unlocked
 
 **Reported from the Moto in the same session, and it is the first thing a real
@@ -77,7 +103,7 @@ watched at the moment it expires changes in place rather than looking stuck.
 
 ---
 
-## The preloaded game the store rule never asked about — 2026-08-17, unreleased
+## The preloaded game the store rule never asked about — 2026-08-17, in build 35
 
 **Reported from the Moto: a game called Amaze GO! survived a locked phone.** It is
 `com.oakever.arrows`, and Play files it under `GAME_PUZZLE` — a category this
@@ -131,8 +157,9 @@ next sweep, and drop them from Diagnostics' `still usable` line.
 **Expect `store to scan` in Diagnostics to jump** the first time a phone runs
 this: every launcher-visible preload is a new question, ~1.2 MB each, on Wi-Fi.
 
-Code and tests are done; **not released**. It needs a build, so it should ride
-with the next one rather than interrupt the timer that is running on the Moto.
+**Shipped in build 35.** Expect `store to scan` in Diagnostics to jump the first
+time the Moto runs it, and `store unverified` to rise with it if the phone is not
+on Wi-Fi — every launcher-visible preload is a new question at ~1.2 MB.
 
 ---
 
