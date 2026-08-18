@@ -56,6 +56,56 @@ hold, which is what makes replaying an old, permissive policy fail.
 | `browser.default_search_engine` | Selected until someone picks another in herald's settings, after which the choice is theirs. Matched loosely, so `duckduckgo` finds `ddg`. |
 | `browser.search_engines` | The engines herald offers at all. Anything not named is hidden, including whatever the phone's locale would otherwise add; anything named that Mozilla's catalogue lacks is added by herald. |
 
+### Adding a service to a domain list: the checklist
+
+**Blocking a brand does not block its app.** TikTok Lite proved it on 2026-08-18:
+`tiktok.com`, `tiktokv.com`, `tiktokcdn.com`, `tiktokcdn-us.com`,
+`byteoversea.com` and `musical.ly` were all blocked, and the app played video.
+It talks to `api.snssdk.com` and fetches media from `ibytedtos.com` — ByteDance's
+own names, not TikTok's. Instagram Lite, on the same phone at the same time,
+showed nothing, because Meta serves its Lite build from `instagram.com` and
+`fbcdn.net` like everything else it runs.
+
+So the brand domains are the *start* of an entry, never the end. For each service
+added or reviewed:
+
+1. **Name the parent company and find its infrastructure.** The pattern to look
+   for is a company whose apps talk to company-named hosts rather than
+   product-named ones. ByteDance is the worst offender in this list; a service
+   whose website works and whose app does not is the symptom in reverse, and a
+   service whose *app* works while the site is blocked is this bug.
+2. **Cross-check against a maintained upstream list** for that service — the
+   drawbridge lists are curated and pinned precisely because they are small, so
+   borrowing somebody else's enumeration and then *reviewing* it is the cheap
+   half. `blocklistproject/Lists` has a per-service file that is a reasonable
+   starting set.
+3. **Check every candidate resolves before adding it**, with `dig +short <domain>
+   NS`. A missing apex `A` record is normal and not a reason to leave a domain
+   out — these are CDN parents whose traffic rides on subdomains, and matching is
+   suffix-based. A missing **NS** record means the domain is dead: `musemuse.cn`
+   sits in upstream TikTok lists and no longer resolves at all.
+4. **Ask what else is on those domains before taking them.** A shared CDN is the
+   one way a domain entry does real damage — see
+   [a wrong domain is not free](blocklist-notes.md#a-wrong-domain-is-not-free-unlike-a-wrong-package).
+   Company-specific CDNs (`ibytedtos.com`, `fbcdn.net`) are safe to take whole;
+   `googlevideo.com` is not, which is why separating YouTube Music from YouTube
+   turned out to be impossible.
+5. **Stop at the product, not the company.** ByteDance's other apps — Toutiao,
+   Xigua, TopBuzz, Ulike — and its ad-tech are a different argument from *this
+   teenager should not have TikTok*. A social-media list that quietly becomes a
+   company blocklist is harder to defend and harder to review.
+6. **Then do the package side, which is a separate list with the same trap.**
+   A service usually ships more than one package: `com.zhiliaoapp.musically` and
+   `com.zhiliaoapp.musically.go`, `com.instagram.android` and
+   `com.instagram.lite`. Play sometimes carries **two listings of one app** —
+   `com.tiktok.lite.go` and `com.zhiliaoapp.musically.go` are both *TikTok Lite -
+   Faster TikTok* — so finding one is not finding them all. Check each with
+   `python3 tools/app-ratings.py check <package>`; a `404` means delisted, and a
+   dead package on the list only makes it harder to read.
+7. **Verify on a phone if there is one to hand.** Install the app, open it, and
+   see whether content loads. That is the only step that catches what this
+   checklist was written for, and it is the step that found it.
+
 ### A filter that blocks its own updates stops being a filter
 
 The blocklists are third-party and change daily, and nothing stops one of them

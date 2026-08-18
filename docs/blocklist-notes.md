@@ -270,6 +270,10 @@ package list rather than duplicating it by accident.
 
 ### TikTok Lite, and why the brand names were not enough
 
+*The procedure this produced is in
+[policy.md](policy.md#adding-a-service-to-a-domain-list-the-checklist). What
+follows is the case that produced it.*
+
 **Reported from the alpha on 2026-08-18: TikTok Lite served video on a phone
 where `tiktok.com`, `tiktokv.com`, `tiktokcdn.com`, `tiktokcdn-us.com`,
 `byteoversea.com` and `musical.ly` were all blocked.** Instagram Lite, installed

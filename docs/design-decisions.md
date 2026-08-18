@@ -204,7 +204,7 @@ the protected-since date be forged (wind back a year, lock, wind forward, and th
 phone reports a year of protection it never had), and it is the standard way
 round screen-time limits in Family Link and similar tools a parent may have
 layered on top. drawbridge cannot enforce those, but it can stop the phone lying
-to them. See [the clock is locked on every device](#the-clock-is-locked-on-every-device-not-only-for-curfews).
+to them. See [the clock is locked on every device](#the-clock-is-locked-for-a-curfew-and-for-a-lock-timer-and-this-section-used-to-claim-more).
 
 Locking is not sufficient on its own, because forbidding edits only freezes
 whatever the clock already said — a device whose clock was wrong when the

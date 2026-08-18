@@ -162,8 +162,9 @@ the key can always unlock and put a build on the phone. See
 **Never watched working**, and worth knowing before trusting it:
 
 - **A phone that only ever sees mobile data.** The catch-up scan is
-  Wi-Fi-only, so preloaded games would survive indefinitely. See
-  [the open question](#the-first-scan-still-waits-for-wi-fi).
+  Wi-Fi-only, so preloaded games would survive indefinitely. Fixed on 2026-08-18 — see
+  [decisions taken](#decisions-taken-2026-08-18-so-they-stop-being-questions) —
+  and never watched working on such a phone.
 - **`Forgot the code` running its full thirty days.** The mechanism is tested and
   the door works; nobody has watched a month elapse.
 - **An inexact alarm surviving days of Doze** on an OEM build. The hourly worker
@@ -964,7 +965,7 @@ streaming media stays untouched. Either broaden the lists or narrow the sentence
 
 - `./gradlew test lint` is the fast check. `assembleDebug` now builds **both**
   browser editions, so it takes about twice as long as it used to.
-- Release procedure is in [policy.md](policy.md#there-is-no-release-workflow),
+- Release procedure is in [policy.md](policy.md#releases-are-cut-locally-not-in-ci),
   and the order matters: herald first, then hash and sign, then drawbridge.
   `tools/stage-release.sh` after the builds.
 - `python3 tools/policytool.py sign --key-id drawbridge-2026-07` then `verify`
@@ -974,6 +975,12 @@ streaming media stays untouched. Either broaden the lists or narrow the sentence
   `--skip-url-check` to sign offline.
 - `python3 tools/build-site.py` after any website change, and commit what it
   writes. `site/` is generated; hand-edited HTML is silently overwritten.
+- **Adding a service to a domain list has a checklist**, and it exists because
+  blocking `tiktok.com` did not stop TikTok Lite playing video —
+  [policy.md](policy.md#adding-a-service-to-a-domain-list-the-checklist). The
+  short version: find the *parent company's* hosts, check each one resolves,
+  ask what else shares the CDN, and remember a service ships more than one
+  package.
 - **Re-signing an unchanged policy still rewrites the file**, because ECDSA
   signatures are non-deterministic. If the base64 payload is identical, restore
   the published signature rather than committing a new one — there is no reason
