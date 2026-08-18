@@ -7,11 +7,9 @@ five builds after it was. The tooling in
 whether an app may stay on a managed phone using Google Play's own content
 rating and category, instead of only a hand-written list of package names.
 
-It exists because of the finding in
-[handoff](handoff.md#policy-59-the-ai-companion-category-was-open-on-the-play-store-side):
-policy 59 added twenty-two AI companion apps by hand, and the category grows
-weekly. A curated list is a filter for a phone whose app store is wide open, and
-the list will always trail.
+It exists because of what policy 59 cost: twenty-two AI companion apps added by
+hand, in one sitting, for a category that grows weekly. A curated list is a filter
+for a phone whose app store is wide open, and the list will always trail.
 
 **Read the measurement under *Curated lists stay* before believing the headline.**
 The rule catches about a third of the apps a Play search turns up in this
