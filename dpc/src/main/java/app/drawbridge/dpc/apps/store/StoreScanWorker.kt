@@ -11,9 +11,6 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
-import app.drawbridge.dpc.DrawbridgeApplication
-import app.drawbridge.dpc.apps.AppBlocker
-import kotlinx.coroutines.delay
 import java.util.concurrent.TimeUnit
 
 /**
@@ -61,79 +58,25 @@ class StoreScanWorker(
 ) : CoroutineWorker(context, parameters) {
 
     override suspend fun doWork(): Result {
-        // The rule is the document's, so a stale document means scanning against
-        // thresholds that have moved — including a whitelist that may have grown
-        // precisely because somebody lost an app.
-        DrawbridgeApplication.policy(applicationContext).ensureLoaded()
+        val outcome = StoreScan.runPass(applicationContext) { isStopped }
 
-        val blocker = AppBlocker(applicationContext)
-        val wanted = blocker.packagesWantingStoreAnswer()
-        if (wanted.isEmpty()) {
-            Log.i(TAG, "Store scan: nothing to ask about")
-            return Result.success()
+        // **An interrupted run must not report success**, or the phone would wait
+        // for the periodic pass while believing it had finished — a scan that
+        // stopped and a scan that completed would be indistinguishable, which is
+        // the shape of silent failure this project keeps paying for. `retry` is
+        // also how a batch-sized run says "there is more": the cache is the
+        // bookmark, so coming back is a continuation rather than a repeat.
+        return if (outcome.interrupted || outcome.remaining > 0) {
+            Result.retry()
+        } else {
+            Result.success()
         }
-
-        val batch = wanted.take(MAX_PER_RUN)
-        Log.i(TAG, "Store scan: asking about ${batch.size} of ${wanted.size} packages")
-
-        var asked = 0
-        var interrupted = false
-        for (packageName in batch) {
-            // Doze, a network change, or the ten-minute limit. Whatever the
-            // reason, stop asking rather than finish a batch nobody is waiting
-            // for any more.
-            if (isStopped) {
-                interrupted = true
-                break
-            }
-            runCatching { blocker.ensureStoreAnswer(packageName) }
-                .onFailure { Log.w(TAG, "Store scan could not ask about $packageName", it) }
-            asked++
-            // Deliberate, and small. This is one phone asking about its own apps
-            // rather than a crawl, and pacing it keeps that true — a burst of
-            // eighty requests looks like something else regardless of intent.
-            // The job is already deferred to Wi-Fi, so the seconds cost nothing.
-            delay(PACE_MILLIS)
-        }
-
-        val stats = StoreCatalogue(applicationContext).stats()
-        Log.i(
-            TAG,
-            "Store scan: asked about $asked of ${wanted.size}, " +
-                "${stats.usable} usable, ${stats.failed} unverified" +
-                if (interrupted) " (stopped early)" else "",
-        )
-
-        // Now the answers can act. Without this the scan would populate a cache
-        // and change nothing until the next fifteen-minute sweep — which is
-        // fine, but a parent who locked the phone is entitled to see it happen.
-        // Worth doing even on an interrupted run: what was asked about is real.
-        runCatching { blocker.sweep() }
-            .onFailure { Log.e(TAG, "Sweep after the store scan failed", it) }
-
-        // **An interrupted run must not report success**, or the phone would
-        // wait a week for the periodic pass while believing it had finished —
-        // a scan that stopped and a scan that completed would be
-        // indistinguishable, which is the shape of silent failure this project
-        // keeps paying for. `retry` is also how a batch-sized run says "there is
-        // more": the cache is the bookmark, so coming back is a continuation
-        // rather than a repeat.
-        return if (interrupted || wanted.size > batch.size) Result.retry() else Result.success()
     }
 
     companion object {
         private const val TAG = "StoreScanWorker"
         private const val WORK_NAME = "drawbridge-store-scan"
         private const val PERIODIC_WORK_NAME = "drawbridge-store-rescan"
-
-        /**
-         * Bounded so one run cannot approach WorkManager's ten-minute limit on a
-         * slow connection. Sixty listings is ~72 MB, which is already generous
-         * for a single pass.
-         */
-        private const val MAX_PER_RUN = 60
-
-        private const val PACE_MILLIS = 250L
 
         /**
          * Fortnightly, and the reason is re-rating rather than drift.

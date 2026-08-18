@@ -5,9 +5,9 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
-import android.net.ConnectivityManager
 import android.util.Log
 import app.drawbridge.dpc.DrawbridgeApplication
+import app.drawbridge.dpc.apps.store.StoreScan
 import app.drawbridge.dpc.apps.store.StoreScanWorker
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -105,7 +105,7 @@ class PackageWatcher(context: Context) {
                 // case of a publisher raising the rating — which can wait for
                 // Wi-Fi and be picked up by the fortnightly pass, since until
                 // then the app keeps the answer it had rather than none.
-                if (!replacing || !onMeteredNetwork()) {
+                if (!replacing || !StoreScan.onMeteredNetwork(appContext)) {
                     runCatching { blocker.ensureStoreAnswer(packageName) }
                         .onFailure { Log.w(TAG, "Could not ask the store about $packageName", it) }
                 }
@@ -167,10 +167,27 @@ class PackageWatcher(context: Context) {
             // because a signed list cannot keep up — sat idle until somebody
             // pressed a button, or for a week if they never did.
             //
-            // `runNow` is unique work under `KEEP`, so calling it at every start
-            // costs nothing when a scan is queued or running, and the worker
-            // itself returns immediately when there is nothing to ask about.
-            StoreScanWorker.runNow(appContext)
+            // **Run here rather than queue a job, which is the fix for a scan
+            // that never ran at all.** Measured on the owner's Moto on
+            // 2026-08-18, on a phone freshly installed with build 36: `store to
+            // scan: 59`, `store last fetch: (never)`, unmetered Wi-Fi, job
+            // constraints satisfied, and nothing running. WorkManager cancels
+            // running work when the app is replaced — which is what installing
+            // drawbridge is — so the pass that matters most was the one least
+            // likely to survive. See [StoreScan].
+            //
+            // This coroutine is the service's, so the scan lives as long as the
+            // filter does and dies with it; the cache is the bookmark, so the
+            // next start continues rather than restarts.
+            if (StoreScan.onMeteredNetwork(appContext)) {
+                // 50-100 MB is not something to spend on somebody's mobile data.
+                // The worker still holds a Wi-Fi-constrained pass for this case,
+                // which is what that scheduler is actually good at.
+                Log.i(TAG, "Store scan deferred to Wi-Fi; queueing it instead")
+                StoreScanWorker.runNow(appContext)
+            } else {
+                StoreScan.runToCompletion(appContext)
+            }
 
             while (isActive) {
                 delay(SWEEP_INTERVAL_MILLIS)
@@ -178,19 +195,6 @@ class PackageWatcher(context: Context) {
             }
         }
     }
-
-    /**
-     * True when the phone is on a connection somebody pays for by the megabyte —
-     * mobile data, or a Wi-Fi hotspot the user has marked as metered, which the
-     * platform reports the same way.
-     *
-     * Treated as metered when it cannot be determined: the fallback should be the
-     * one that spends nothing.
-     */
-    private fun onMeteredNetwork(): Boolean = runCatching {
-        val manager = appContext.getSystemService(ConnectivityManager::class.java)
-        manager?.isActiveNetworkMetered ?: true
-    }.getOrDefault(true)
 
     private suspend fun awaitPolicy() {
         runCatching { DrawbridgeApplication.policy(appContext).ensureLoaded() }
