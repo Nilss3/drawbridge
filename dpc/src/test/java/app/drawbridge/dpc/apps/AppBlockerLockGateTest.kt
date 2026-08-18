@@ -5,7 +5,9 @@ import app.drawbridge.dpc.DrawbridgeApplication
 import app.drawbridge.dpc.security.ParentKey
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotEquals
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -77,6 +79,72 @@ class AppBlockerLockGateTest {
             "removing it now would answer a question that belongs to the parent",
             AppBlocker.Action.NONE,
             blocker.evaluate(optionGoverned),
+        )
+    }
+
+    /**
+     * **The whole switch table, against the document that actually ships**, and
+     * the check the owner asked for before build 36 went out: a drawbridge that
+     * has just been installed must not take away the four things a parent is
+     * about to be asked about.
+     *
+     * Every one of these is on `blocked_packages` — that is what makes the case
+     * worth pinning. The blocklist is the branch that acts from installation now,
+     * and the *only* thing standing between it and WhatsApp on a phone nobody has
+     * configured yet is `deferred` saying an option governs this package. One
+     * wrong answer here is a parent who never got the choice.
+     */
+    @Test
+    fun `none of the four toggles is removed on a phone that has never been locked`() {
+        val governed = mapOf(
+            "com.whatsapp" to "Allow WhatsApp",
+            "com.google.android.youtube" to "Allow YouTube",
+            "org.telegram.messenger" to "Allow Telegram",
+            "com.netflix.mediaclient" to "Allow video streaming",
+        )
+
+        for ((packageName, switch) in governed) {
+            assertEquals(
+                "$packageName is blocklisted but $switch still governs it, " +
+                    "so a fresh install must leave it alone",
+                AppBlocker.Action.NONE,
+                blocker.evaluate(packageName),
+            )
+        }
+    }
+
+    /**
+     * The same four, still safe once the phone *is* locked but the parent has
+     * left the switches off — because at that point the removal is the answer
+     * they gave, and it is `sweepOnLock` that carries it out rather than a
+     * background sweep on an unconfigured phone.
+     */
+    @Test
+    fun `the toggles are what decides them, not the calendar`() {
+        val allowedBrowsers = BrowserSettings.allowedBrowsers(
+            DrawbridgeApplication.policy(
+                ApplicationProvider.getApplicationContext<android.app.Application>(),
+            ).policy.value,
+            BrowserSettings.Choice.ALL,
+        )
+        val policy = DrawbridgeApplication.policy(
+            ApplicationProvider.getApplicationContext<android.app.Application>(),
+        ).policy.value
+
+        for (packageName in listOf(
+            "com.whatsapp",
+            "com.google.android.youtube",
+            "org.telegram.messenger",
+            "com.netflix.mediaclient",
+        )) {
+            assertTrue(
+                "$packageName must be governed by a switch, or nothing defers it",
+                AppBlocker.deferred(packageName, policy, allowedBrowsers),
+            )
+        }
+        assertFalse(
+            "and Instagram must not be, or the blocklist would never act",
+            AppBlocker.deferred("com.instagram.android", policy, allowedBrowsers),
         )
     }
 

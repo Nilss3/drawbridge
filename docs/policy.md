@@ -508,6 +508,21 @@ tools/stage-release.sh                       #    again, now that dpc exists
 gh release create vX.Y.Z dist/release/*.apk dist/release/SHA256SUMS
 ```
 
+**The `cp` is not optional and its position is the whole trick**: the bundled
+copy is what a phone runs on before it has ever polled, and it must be
+*yesterday's* signed document — copied **before** the dpc build, never after.
+Copying afterwards would embed a document that pins the very APK being built,
+which cannot be hashed until it exists. That ordering is also what makes the
+bundled `app_update` harmless: it names the previous build, and
+`AppInstaller.availableSelfUpdate` compares `<=`, so a build never offers to
+update to something older than itself.
+
+A dpc-only release is the same recipe with step 1 skipped and the herald pins
+left exactly as they are.
+
+**Skipping the `cp` cost a feature for thirty-three policies** — see
+[what ships inside the APK](#the-bundled-copy-is-what-a-fresh-install-runs-on).
+
 `assembleRelease` builds **both editions** — six herald APKs, since the mono
 flavour was added. `tools/stage-release.sh` is what keeps the standard edition's
 published filenames stable, because `required_apps` pins them by URL and a

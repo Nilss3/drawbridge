@@ -8,7 +8,7 @@ machine, what was and was not verified, and what to do next.
 
 ---
 
-## The store rule was still waiting for the lock — 2026-08-17, build 36
+## The store rule was still waiting for the lock — 2026-08-17, drawbridge 0.2.11 build 36, policy 71
 
 **Found by the owner doing a fresh cable install of build 35 to watch the
 preinstalled scan, and not seeing one.** Two separate faults, and together they
@@ -42,6 +42,23 @@ exists **because a signed list cannot keep up** sat idle waiting for a button.
 - **A fresh document queues it too**, because a document arriving is how the rule
   can turn on for the first time.
 - The lock still queues it, and the weekly rescan still catches re-ratings.
+
+### Released as build 36, policy 71
+
+`dpc` only; herald untouched. **The bundled policy is 70** — one behind the live
+71, which is the correct and permanent relationship: a build carries yesterday's
+document, and today's document pins the build. `AppInstaller` compares `<=`, so a
+build never offers to update to something older than itself.
+
+**Verified before cutting it, because the risk this release carries is the four
+toggles.** Removal now acts from installation, WhatsApp, YouTube, Telegram and
+the streaming apps are all on `blocked_packages`, and the only thing standing
+between the blocklist and them on an unconfigured phone is `deferred` answering
+*an option governs this*. One wrong answer there is a parent who never got the
+choice. `AppBlockerLockGateTest` pins all four against the document that actually
+ships, alongside the inverse — Instagram, blocklisted and governed by nothing,
+which must go pre-lock. The pair is what makes it meaningful: same path, opposite
+answers.
 
 ### What the periodic pass costs, which turned out to be the wrong worry
 

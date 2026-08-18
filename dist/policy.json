@@ -1,7 +1,7 @@
 {
-  "version": 70,
+  "version": 71,
   "issued_at": "2026-08-16T12:00:00Z",
-  "comment": "Policy 70, DEV CHANNEL ONLY. Re-pins app_update to drawbridge 0.2.10 build 35. That build changes when app removal starts: apps no switch can bring back \u2014 the blocklist, browsers the policy does not sanction, the store rule, allowlist mode \u2014 now go from installation rather than waiting for the first lock, because a phone somebody never locks should still be protected. What a switch governs (WhatsApp, Telegram, YouTube, streaming) still waits for the lock. The store rule also reaches preinstalled apps that have a launcher icon, which is what a preloaded game turned out to need. Nothing about the filter, the blocklists, the options or the herald pins changed; those are unchanged from 69.",
+  "comment": "Policy 71, DEV CHANNEL ONLY. Re-pins app_update to drawbridge 0.2.11 build 36, which fixes when the store rule runs rather than what it says. Build 36 bundles this document in the APK, so a fresh install has the store rule before it has ever reached the network -- the bundled copy had been stuck at policy 37, which predates app_ratings entirely. The catch-up scan is queued at the first sweep after installation and whenever a fresh document arrives, not only at the lock. Cache TTL 30 days -> 180, rescan weekly -> fortnightly, and an app *update* only re-asks the store over Wi-Fi. Nothing about the filter, the blocklists, the options or the herald pins changed; those are unchanged from 70.",
   "dns": {
     "upstreams": [
       "94.140.14.15",
@@ -730,9 +730,9 @@
   },
   "app_update": {
     "package_name": "app.drawbridge.dpc",
-    "version_code": 35,
-    "url": "https://dev.drawbridge-project.pages.dev/assets/dpc-e2cad10d082d0109.apk",
-    "sha256": "e2cad10d082d0109f916ebd47ff1ec1c4c0ab46be8d2dc516daa7515f864f9e9"
+    "version_code": 36,
+    "url": "https://dev.drawbridge-project.pages.dev/assets/dpc-a2bfcef42b7fdd79.apk",
+    "sha256": "a2bfcef42b7fdd793a4c198834ecc8fac4b60350995cef21f6f127d3f58f8223"
   },
   "required_apps": [
     {
