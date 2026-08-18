@@ -620,6 +620,8 @@ copy only applies until the first network poll.
 
 ## What ships inside the APK
 
+### The bundled copy is what a fresh install runs on
+
 Each build embeds a signed copy of the policy and a ~250-domain seed blocklist,
 so a freshly provisioned device filters before it has ever reached the network.
 The bundled copy is verified through exactly the same path as a downloaded one.
@@ -628,3 +630,21 @@ Regenerate it after changing the policy:
 ```bash
 cp dist/policy.signed.json policy/src/main/assets/drawbridge/default-policy.json
 ```
+
+**This step had not been run in thirty-three policies, and it cost a feature.**
+The bundled document sat at version 37 while the live one reached 70 — and
+`app_ratings`, the whole store rule, arrived in policy 62. So a freshly installed
+drawbridge had **no store rule at all** until its first successful poll: not a
+stale rule, an absent one. Nobody noticed because removal used to wait for the
+lock, by which time a document had long since been fetched. Removal starting at
+installation is what turned a harmless staleness into a hole, on exactly the
+phone the rule is for — the one whose junk was preloaded at the factory.
+
+Refreshed to policy 70 in build 36. **Treat it as part of cutting a release
+rather than an optional tidy-up**, and note the ordering that makes it safe: the
+bundled copy pins the *previous* build in its `app_update`, which is correct —
+`AppInstaller.availableSelfUpdate` compares `<=`, so a build carrying a document
+that names itself or anything older offers no update at all.
+
+A build's bundled copy is its own channel's document. A `dev` build bundles the
+dev policy, which says `DEV CHANNEL ONLY` in its comment; `main` bundles main's.

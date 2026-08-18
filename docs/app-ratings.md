@@ -1,7 +1,9 @@
 # Spec: app admission by store metadata
 
-**Status: specified 2026-08-16, revised 2026-08-17, not built.** The tooling in
-`tools/app-ratings.py` is built and is where every number below comes from. This is the design for deciding
+**Status: specified 2026-08-16, built and revised 2026-08-17.** Shipped in
+drawbridge build 31 and refined through 36; the status line said *not built* for
+five builds after it was. The tooling in
+`tools/app-ratings.py` is where every number below comes from. This is the design for deciding
 whether an app may stay on a managed phone using Google Play's own content
 rating and category, instead of only a hand-written list of package names.
 
@@ -476,11 +478,34 @@ Note the category does not catch everything in the space: **Grindr is filed
 
 ---
 
-## Scanning: everything once at the first lock, then per install
+## Scanning: everything once, as soon as there is a policy, then per install
 
-**Every user-installed package is checked at the lock, at least once.** After that
-the install receiver covers arrivals one at a time and the fifteen-minute sweep
-reads the cache. Without the first pass the rule would only ever apply to apps
+**Changed 2026-08-17, and the old heading read "at the first lock".** That was
+coherent while removal itself waited for the lock. It stopped being coherent when
+removal moved to installation: the phone began taking apps away by name and by
+browser rule while the store rule — the one that exists *because* a signed list
+cannot keep up — sat idle until somebody pressed a button, or for a week if they
+never did. On a phone whose junk is preloaded that is most of the problem left
+untouched.
+
+**Every package in reach is now checked as soon as drawbridge has a policy to
+check against**, which is the first sweep after installation. `PackageWatcher`
+queues the scan the moment its initial sweep is done, a fresh document queues it
+again — `app_ratings` did not exist before policy 62, so a document arriving can
+turn the rule on for the first time — and the lock still queues it too, because a
+parent standing over the phone is entitled to see it happen. All three go through
+`StoreScanWorker.runNow`, which is unique work under `KEEP`, so the redundant
+calls cost nothing.
+
+**The APK's bundled policy had to be refreshed for this to mean anything.** It
+was still version 37, which predates `app_ratings` entirely, so a freshly
+installed drawbridge had *no store rule at all* until its first successful poll.
+The release procedure has always said to copy the signed document into the assets;
+it had not been done in thirty-three policies. See
+[policy.md](policy.md#the-bundled-copy-is-what-a-fresh-install-runs-on).
+
+After the first pass the install receiver covers arrivals one at a time and the
+fifteen-minute sweep reads the cache. Without the first pass the rule would only ever apply to apps
 installed *after* drawbridge was set up, which is the wrong half — the phone
 arrives with the problem already on it.
 
@@ -715,7 +740,8 @@ and it is better to meet them in a terminal than by noticing Zoom has gone.
    count and the first-scan progress.
 5. Branches 6 and 7 in `AppBlocker`, in the order above.
 6. ~~The first-lock full scan, deferred to an unmetered network.~~ **Built** —
-   `StoreScanWorker`. Queued at the lock and re-run weekly, both constrained to
+   `StoreScanWorker`. Queued at the first sweep after installation, again when a
+   fresh document arrives, again at the lock, and re-run weekly; all constrained to
    an unmetered network at the *request* rather than checked inside the job,
    which is the opposite of `UpdateWorker` and deliberate: that worker carries a
    3 MB self-update which must reach a phone that never sees Wi-Fi alongside a

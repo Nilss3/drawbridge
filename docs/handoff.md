@@ -8,6 +8,60 @@ machine, what was and was not verified, and what to do next.
 
 ---
 
+## The store rule was still waiting for the lock — 2026-08-17, build 36
+
+**Found by the owner doing a fresh cable install of build 35 to watch the
+preinstalled scan, and not seeing one.** Two separate faults, and together they
+meant a freshly installed drawbridge would not look at a preloaded game for a
+week — or ever, on a phone nobody locks.
+
+**1. A fresh install had no store rule at all.** The policy bundled in the APK was
+still **version 37**, and `app_ratings` — the entire store rule — arrived in
+policy 62. So until the first successful poll, `policy.appRatings` was null and
+branches 5 and 6 did nothing. `docs/policy.md` has always said to copy the signed
+document into the assets when cutting a release; it had not been done in
+thirty-three policies. It was harmless while removal waited for the lock, because
+by then a document had long since been fetched. It stopped being harmless in build
+35.
+
+**2. Nothing queued the scan except the lock and a weekly rescan.**
+`StoreScanWorker.runNow` had exactly one caller — `sweepOnLock` — and its comment
+said why: *"the lock is when the store rule starts applying"*. That was true right
+up until build 35 moved removal to installation. After it, the phone removed apps
+by name and by browser rule from the moment it was installed while the rule that
+exists **because a signed list cannot keep up** sat idle waiting for a button.
+
+### What build 36 does
+
+- **The bundled policy is 70**, so the store rule exists on a phone that has never
+  reached the network.
+- **`PackageWatcher` queues the scan the moment its first sweep finishes** — the
+  sweep can only read a cache that is empty on a new install, so something has to
+  go and fetch. Unique work under `KEEP`, and the worker returns immediately when
+  there is nothing to ask about, so calling it at every process start is free.
+- **A fresh document queues it too**, because a document arriving is how the rule
+  can turn on for the first time.
+- The lock still queues it, and the weekly rescan still catches re-ratings.
+
+### What has not changed, and is the next question
+
+**The scan still waits for Wi-Fi**, and that is the remaining way an app can sit
+there indefinitely: `UNMETERED` is on the work request, so a phone that only ever
+sees mobile data never scans. The number behind it is real — a listing is ~1.2 MB
+and 60 of them is ~72 MB — so this is a trade rather than an oversight, and it is
+the owner's call:
+
+- leave it, and accept that a Wi-Fi-less phone keeps its preloaded games;
+- allow a metered first pass, bounded to something small — the launcher-visible
+  preloads are a few dozen, not hundreds;
+- or ask about the *user-installed* apps over any network and leave the preload
+  sweep on Wi-Fi, on the grounds that what somebody chose to install is the more
+  urgent half.
+
+Nothing here changes it. Written down because "unverified means keep" is a
+fail-open, and a fail-open nobody can see is the shape of bug this project keeps
+paying for — `store to scan` in Diagnostics is the line that shows it.
+
 ## Removal starts at installation now — 2026-08-17, drawbridge 0.2.10 build 35, policy 70
 
 **The owner's call, and the reasoning is about who drawbridge is for.** Not

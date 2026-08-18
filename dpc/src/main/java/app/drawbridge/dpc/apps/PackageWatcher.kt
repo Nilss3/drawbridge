@@ -7,6 +7,7 @@ import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.util.Log
 import app.drawbridge.dpc.DrawbridgeApplication
+import app.drawbridge.dpc.apps.store.StoreScanWorker
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -123,6 +124,28 @@ class PackageWatcher(context: Context) {
             // service was down, including across a reboot.
             runCatching { blocker.sweep() }
                 .onFailure { Log.e(TAG, "Initial package sweep failed", it) }
+
+            // **And the store gets asked about what was already here, now.**
+            //
+            // The sweep above can only read the cache — it runs over every
+            // package on the phone and must never wait on a network — so on a
+            // phone drawbridge has just been installed on, the cache is empty,
+            // every answer is `unverified`, and `unverified` means keep. The rule
+            // that catches a preloaded game therefore knows nothing until
+            // something fetches the answers.
+            //
+            // Until 2026-08-17 the only thing that did was the lock, plus a
+            // weekly rescan. That was coherent while removal itself waited for
+            // the lock. It stopped being coherent the moment removal started at
+            // installation: it left the phone taking apps away by name and by
+            // browser rule while the store rule — the one that exists precisely
+            // because a signed list cannot keep up — sat idle until somebody
+            // pressed a button, or for a week if they never did.
+            //
+            // `runNow` is unique work under `KEEP`, so calling it at every start
+            // costs nothing when a scan is queued or running, and the worker
+            // itself returns immediately when there is nothing to ask about.
+            StoreScanWorker.runNow(appContext)
 
             while (isActive) {
                 delay(SWEEP_INTERVAL_MILLIS)

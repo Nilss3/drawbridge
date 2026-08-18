@@ -154,6 +154,12 @@ class DrawbridgeApplication : Application() {
             ProvisioningLog.record(context, "fetchPolicyAndRequiredApps: policy refresh + required apps")
             PolicyWorker.refreshNow(context)
             UpdateWorker.runNow(context)
+            // A document arriving can turn the store rule on for the first time —
+            // `app_ratings` did not exist before policy 62, and a phone whose
+            // bundled copy predates it has no rule at all until this lands. Queued
+            // rather than run: it waits for Wi-Fi, and `KEEP` means a scan already
+            // in flight keeps its place.
+            StoreScanWorker.runNow(context)
         }
 
         /**
@@ -192,11 +198,15 @@ class DrawbridgeApplication : Application() {
 
             // The catch-up pass, queued rather than run: it is 50-100 MB and
             // waits for Wi-Fi, so it cannot be part of the work a parent stands
-            // and watches. Queued *here* because the lock is when the store rule
-            // starts applying and therefore the first moment the phone needs
-            // answers about what is already on it — the install receiver only
-            // ever covers what arrives next, which is the wrong half on a phone
-            // somebody installed drawbridge to fix.
+            // and watches.
+            //
+            // **This used to be the only thing that queued it**, on the reasoning
+            // that the lock was when the store rule started applying. That
+            // premise died on 2026-08-17, when removal moved to installation: the
+            // scan is now kicked as soon as there is a policy to scan against
+            // (see PackageWatcher.start) and again whenever a fresh document
+            // arrives. This call stays because the lock is still a moment a
+            // parent watches, and `KEEP` makes a redundant one free.
             StoreScanWorker.runNow(appContext)
 
             lockScope.launch {
