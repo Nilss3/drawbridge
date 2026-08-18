@@ -224,8 +224,31 @@ class StoreCatalogue(context: Context) {
         const val TAG = "StoreCatalogue"
         const val FILE_NAME = "store-catalogue.json"
 
-        /** Ratings change rarely; a version bump is the sharper signal. */
-        val TTL_MILLIS = 30L * 24 * 60 * 60 * 1000
+        /**
+         * Six months, and this is the number that decides what the store rule
+         * costs a household.
+         *
+         * **It was thirty days until 2026-08-17, and that was the expensive
+         * mistake — not the weekly worker.** The rescan only re-asks about
+         * entries that have *expired*, so the interval sets the latency and the
+         * TTL sets the bill. At thirty days every answer on the phone expired at
+         * once and the next pass re-fetched the lot: **48–96 MB a month, 0.6–1.2
+         * GB a year**, on somebody's home connection, to re-learn what it already
+         * knew.
+         *
+         * At six months the same safety net costs 8–16 MB a month equivalent, in
+         * two spikes a year, and both land on Wi-Fi.
+         *
+         * What is given up is small and worth naming: an app already on the phone
+         * whose publisher re-rates it upward keeps its old verdict for up to six
+         * months. Three things make that survivable — a re-rating is rare, an app
+         * that turns bad is far more likely to be named in `blocked_packages`,
+         * which reaches the phone every three hours for nothing, and an app the
+         * rule *removed* is gone and has nothing to re-check. The direction that
+         * would matter is an app becoming *less* acceptable, and the curated list
+         * is the mechanism that has always covered it.
+         */
+        val TTL_MILLIS = 180L * 24 * 60 * 60 * 1000
 
         /** Long enough not to hammer, short enough that an outage self-heals. */
         val FAILURE_TTL_MILLIS = 60L * 60 * 1000

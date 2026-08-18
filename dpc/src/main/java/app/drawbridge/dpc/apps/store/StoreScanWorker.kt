@@ -136,17 +136,25 @@ class StoreScanWorker(
         private const val PACE_MILLIS = 250L
 
         /**
-         * Weekly, and the reason is re-rating rather than drift.
+         * Fortnightly, and the reason is re-rating rather than drift.
          *
          * An answer going stale is harmless on its own: an app that survived the
          * first pass was *allowed*, and an expired entry reads as `unverified`,
          * which is also keep. What this catches is the other direction — a
          * publisher who re-rates an app upward after it is already on the phone,
          * which no other signal on the device would ever reveal. Only expired
-         * entries cost a request, so a quiet week is a job that finds nothing to
-         * do and stops.
+         * entries cost a request, so a quiet fortnight is a job that finds
+         * nothing to do and stops.
+         *
+         * **This interval is not what the scan costs**, which is worth stating
+         * because it is the obvious place to look and the wrong one:
+         * `StoreCatalogue`'s TTL decides how often an entry becomes worth
+         * re-asking, and this only decides how soon after that somebody notices.
+         * It went from seven days to fourteen on 2026-08-17 alongside a TTL that
+         * went from one month to six; the halved wake-ups are tidiness, the TTL
+         * is the 0.6–1.2 GB a year.
          */
-        private const val RESCAN_DAYS = 7L
+        private const val RESCAN_DAYS = 14L
 
         private val unmetered = Constraints.Builder()
             .setRequiredNetworkType(NetworkType.UNMETERED)

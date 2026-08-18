@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
+import android.net.ConnectivityManager
 import android.util.Log
 import app.drawbridge.dpc.DrawbridgeApplication
 import app.drawbridge.dpc.apps.store.StoreScanWorker
@@ -68,6 +69,10 @@ class PackageWatcher(context: Context) {
             // is idempotent for the overwhelmingly common case of an app policy
             // has no opinion about.
             val packageName = intent.data?.schemeSpecificPart ?: return
+            // A replace is an update of something already here; a fresh arrival
+            // is not. The two want different answers about spending data — see
+            // below.
+            val replacing = intent.getBooleanExtra(Intent.EXTRA_REPLACING, false)
             scope.launch {
                 // A document first, for the reason [start] spells out: an install
                 // that arrives before the policy has been read would be judged
@@ -82,8 +87,28 @@ class PackageWatcher(context: Context) {
                 //
                 // Best-effort by construction: a failure is cached as
                 // "unverified", which means keep, and Diagnostics counts it.
-                runCatching { blocker.ensureStoreAnswer(packageName) }
-                    .onFailure { Log.w(TAG, "Could not ask the store about $packageName", it) }
+                //
+                // **An update only asks on Wi-Fi, and a new arrival always
+                // asks.** `StoreCatalogue` invalidates an entry when the
+                // installed `versionCode` changes, which is the right rule — a
+                // re-rating rides in on an update — but it also means Play doing
+                // its ordinary job turns into a 1.2 MB listing fetch per updated
+                // app, 24–48 MB a month on a normal phone, over whatever network
+                // happens to be there. That is the largest running cost the store
+                // rule has, and it was invisible: the periodic scan is the part
+                // that looks expensive and is the part already deferred to Wi-Fi.
+                //
+                // The split is what the two cases are actually worth. A new
+                // package has *no* verdict, and the fetch is what decides whether
+                // it stays, so it is worth a metered request. An update has a
+                // verdict already, and what a re-check might find is the rare
+                // case of a publisher raising the rating — which can wait for
+                // Wi-Fi and be picked up by the fortnightly pass, since until
+                // then the app keeps the answer it had rather than none.
+                if (!replacing || !onMeteredNetwork()) {
+                    runCatching { blocker.ensureStoreAnswer(packageName) }
+                        .onFailure { Log.w(TAG, "Could not ask the store about $packageName", it) }
+                }
 
                 val action = blocker.evaluate(packageName)
                 if (action != AppBlocker.Action.NONE) {
@@ -153,6 +178,19 @@ class PackageWatcher(context: Context) {
             }
         }
     }
+
+    /**
+     * True when the phone is on a connection somebody pays for by the megabyte —
+     * mobile data, or a Wi-Fi hotspot the user has marked as metered, which the
+     * platform reports the same way.
+     *
+     * Treated as metered when it cannot be determined: the fallback should be the
+     * one that spends nothing.
+     */
+    private fun onMeteredNetwork(): Boolean = runCatching {
+        val manager = appContext.getSystemService(ConnectivityManager::class.java)
+        manager?.isActiveNetworkMetered ?: true
+    }.getOrDefault(true)
 
     private suspend fun awaitPolicy() {
         runCatching { DrawbridgeApplication.policy(appContext).ensureLoaded() }

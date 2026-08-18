@@ -268,7 +268,28 @@ the `versionCode` it was fetched for.
   branches 1–5 answer first, which on a real handset leaves a few dozen.
 - **Invalidate on `versionCode` change.** An app that updated may have been
   re-rated, and this is the only signal the device gets.
-- **Otherwise a long TTL** — 30 days. Ratings change rarely.
+
+  **What that costs was measured on 2026-08-17 and changed the shape of the
+  install receiver.** Play updating apps is constant, so invalidating on version
+  turns ordinary maintenance into a 1.2 MB listing fetch per updated app — 24–48
+  MB a month on a normal phone, over whatever network is there. It was the store
+  rule's largest running cost and the least visible one, since the *periodic*
+  scan is the part that looks expensive and is the part already held for Wi-Fi.
+
+  So the receiver splits the two cases by what they are worth. **A new package is
+  asked about immediately on any network**: it has no verdict, and the answer is
+  what decides whether it stays. **An update is asked about only on an unmetered
+  connection**: it already has a verdict, and the rare thing a re-check would find
+  — a publisher raising a rating — can wait for the fortnightly pass, because
+  until then the app keeps the answer it had rather than none.
+- **Otherwise a long TTL** — 180 days, and it was 30 until 2026-08-17. The
+  interval of the periodic pass was never the cost: it only re-asks about entries
+  that have *expired*, so the TTL is the bill. At a month, every answer on a phone
+  expired together and the next pass re-fetched the lot — 48–96 MB a month, 0.6–1.2
+  GB a year, to re-learn what it knew. At six months the same net costs a sixth of
+  that, in two Wi-Fi spikes a year. Ratings change rarely, and the `versionCode`
+  rule above is the sharp signal; this is only the backstop for a re-rating that
+  ships with no update at all.
 - The sweep uses the cache and never blocks on the network.
 
 ### When the lookup fails

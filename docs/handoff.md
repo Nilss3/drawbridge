@@ -43,9 +43,38 @@ exists **because a signed list cannot keep up** sat idle waiting for a button.
   can turn on for the first time.
 - The lock still queues it, and the weekly rescan still catches re-ratings.
 
+### What the periodic pass costs, which turned out to be the wrong worry
+
+**The owner's follow-up: a first sweep plus a scan at every install ought to be
+enough, and a weekly re-ask of everything is a lot of data for a rare event.**
+Correct, and the numbers say the lever was not the interval:
+
+- The rescan only re-asks about entries that have **expired**, so the *TTL* is the
+  bill and the interval only sets how soon after expiry anybody notices. At the
+  old 30-day TTL every answer on a phone expired together and the next pass
+  re-fetched the lot: **48–96 MB a month, 0.6–1.2 GB a year**. The TTL is now
+  **180 days** and the pass is fortnightly — a sixth of the data, in two Wi-Fi
+  spikes a year.
+- **`versionCode` invalidation was already implemented**, which is what makes that
+  safe: an app that updates has its entry invalidated and is re-asked at the
+  update, so the calendar is only a backstop for a publisher re-rating something
+  without shipping anything.
+- **And that turned out to be the real bill.** Play updates apps constantly, so
+  invalidating on version meant a 1.2 MB fetch per updated app — **24–48 MB a
+  month, on whatever network the phone was on**. The largest running cost the
+  store rule had, and the least visible, because the *periodic* scan is the part
+  that looks expensive and is the part already held for Wi-Fi.
+
+So the install receiver now splits the two cases by what they are worth. **A new
+package is asked about immediately, on any network** — it has no verdict, and the
+answer decides whether it stays. **An update is asked about only on an unmetered
+connection** — it has a verdict already, and the rare thing a re-check finds can
+wait for the fortnightly pass, because until then the app keeps its old answer
+rather than none.
+
 ### What has not changed, and is the next question
 
-**The scan still waits for Wi-Fi**, and that is the remaining way an app can sit
+**The first scan still waits for Wi-Fi**, and that is the remaining way an app can sit
 there indefinitely: `UNMETERED` is on the work request, so a phone that only ever
 sees mobile data never scans. The number behind it is real — a listing is ~1.2 MB
 and 60 of them is ~72 MB — so this is a trade rather than an oversight, and it is
