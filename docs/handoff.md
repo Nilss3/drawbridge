@@ -8,6 +8,100 @@ machine, what was and was not verified, and what to do next.
 
 ---
 
+## The scan that never ran — 2026-08-18, drawbridge 0.2.12 build 37, policy 72
+
+**Reported from a fresh cable install of build 36: Temu, TikTok Lite, Fruit Ninja
+and Amaze GO! all still there.** None of them is on the blocklist — every one
+needs the store rule — and Diagnostics said exactly what was wrong:
+
+```
+store rule:        on, BE
+store cached:      0 (0 usable)
+store last fetch:  (never)
+store to scan:     59
+```
+
+Unmetered Wi-Fi, the job's own constraints reported satisfied, and three minutes
+of logcat showing nothing at all. **The scan had never fetched a single listing on
+that phone.** What the log did show, at the moment of installation and five times
+that morning:
+
+```
+WM-WorkerWrapper: Work [ ... StoreScanWorker ] was cancelled
+StoreScan: Store scan: asking about 60 of 60 packages
+StoreScan: Store scan: asked about 0 of 60, 0 usable (stopped early)
+```
+
+Two instances starting in the same millisecond, both stopped before the first
+request. **WorkManager cancels running work when the app is replaced — which is
+what installing drawbridge *is*** — and the one-off scan and the periodic rescan
+are two jobs carrying the same worker, so they collide with each other as well.
+The pass that matters most, the first one on a phone somebody has just set up,
+was the pass least likely to survive.
+
+### The work never needed a scheduler
+
+`StoreScan.runPass` is the pass itself; `PackageWatcher` runs it to completion in
+the filter service's own scope, right after the initial sweep. That service is an
+always-on VPN and the longest-lived process this app has — the reason the watcher
+already lives there. No deadline, no charging requirement, and resumable by
+construction, because the cache *is* the progress. What WorkManager was adding
+was a cancellation source, a ten-minute limit and a backoff, in exchange for
+nothing.
+
+Metered still defers: on mobile data the pass is queued as work, which is what a
+scheduler is genuinely good at. `StoreScanWorker` keeps the fortnightly re-ask
+and delegates to the same function, so there is one implementation.
+
+**Verified on the Moto, 35 seconds after installing build 37:**
+
+```
+Store scan: asked about 59 of 59, 48 usable, 11 unverified
+Removing com.zhiliaoapp.musically.go: the store rates it Parental guidance
+Removing com.halfbrick.fruitninjafree: the store files it under GAME_ARCADE
+Removing com.oakever.arrows:           the store files it under GAME_PUZZLE
+Removing com.einnovation.temu:         the store rates it Parental guidance
+Removing com.topgamesinc.evony:        the store files it under GAME_STRATEGY
+Removing com.colorswitch.switch2:      the store files it under GAME_ARCADE
+```
+
+The old failure is in the same log one second earlier — the worker cancelled with
+0 asked — and then the service pass doing the whole job.
+
+### What the first real scan taught about the policy
+
+Two apps went that nobody had thought about, and the pair is instructive.
+
+- **`com.netflix.kids` was uninstalled** as `GAME_EDUCATIONAL`. Play's own
+  category, and the owner's call was *good riddance*: it is a games app wearing a
+  streaming name.
+- **`com.google.android.videos` (Google TV) was hidden** for a *Parental
+  guidance* rating, governed by nothing. The video streaming option names Netflix,
+  Disney+ and sixty-odd others and did not name it, so a phone lost a streaming
+  app without the parent ever being asked. **Policy 72 adds it to that option.**
+  It was hidden rather than uninstalled, so it comes back when the switch goes on.
+- **YouTube Music survived**, because *Allow YouTube* governs it — which is where
+  it belongs.
+
+**And a correction to the preload audit of 2026-08-17.** That run reported four
+apps as `neutral — the rest of policy decides`, and this file recorded them as
+*decided elsewhere*. They are not: *Parental guidance* is absent from
+`allowed_ratings`, so branch 6 removes them unless a switch or the whitelist
+covers them. Google TV going is the direct consequence. `neutral` in
+`app-ratings.py` means *this tool is not deciding*, not *this app is safe*.
+
+### Released as build 37, policy 72
+
+`dpc` only. **The APK that shipped is the binary that was tested** — built,
+installed on the Moto by cable, watched doing the scan above, then staged
+unchanged. The bundled policy is 70 rather than 71, one further behind than usual,
+because build 37 was built to test the fix before it was a release; harmless,
+since 70 carries `app_ratings`, which is all a fresh install needs from it.
+
+**drawbridge was uninstalled from the Moto at 16:00** — `RemoveActivity` then the
+system uninstaller, from the phone side — so the hash comparison against the
+handset could not be made afterwards. The 15:53 log is the evidence instead.
+
 ## The store rule was still waiting for the lock — 2026-08-17, drawbridge 0.2.11 build 36, policy 71
 
 **Found by the owner doing a fresh cable install of build 35 to watch the

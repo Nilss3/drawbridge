@@ -164,10 +164,15 @@ Photos, Maps, Drive, Messages, Phone, Contacts, Clock, Calculator, Moto Camera,
 FM Radio — is PEGI 3 and survives on its own rating. The five unverified are OEM
 services with no Play listing (`com.motorola.launcher3`, `com.motorola.notification`,
 `com.facebook.system` and friends), which fail open. The four neutral ones are
-*Parental guidance* and therefore decided elsewhere in the policy: Facebook and
-Google TV by the blocklist and the streaming option, YouTube Music by *Allow
-YouTube*, Google Play Games by neither — worth a decision of its own. The one
-removal is Amaze GO!.
+*Parental guidance*, and **`neutral` in `app-ratings.py` means "this tool is not
+deciding", not "this app is safe"** — a distinction this document got wrong for a
+day. *Parental guidance* is absent from `allowed_ratings`, so branch 6 removes
+those apps unless a switch or the whitelist covers them. Measured on the Moto on
+2026-08-18: YouTube Music survived because *Allow YouTube* governs it, and Google
+TV was **hidden**, because nothing did — which is why policy 72 adds it to the
+video streaming option. Facebook is on the blocklist and would have gone anyway;
+Google Play Games is governed by neither and is still a decision waiting to be
+made. The one removal in the audit was Amaze GO!.
 
 ### Games and dating are categories, not ratings
 

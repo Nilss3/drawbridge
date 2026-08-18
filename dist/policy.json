@@ -1,7 +1,7 @@
 {
-  "version": 71,
+  "version": 72,
   "issued_at": "2026-08-16T12:00:00Z",
-  "comment": "Policy 71, DEV CHANNEL ONLY. Re-pins app_update to drawbridge 0.2.11 build 36, which fixes when the store rule runs rather than what it says. Build 36 bundles this document in the APK, so a fresh install has the store rule before it has ever reached the network -- the bundled copy had been stuck at policy 37, which predates app_ratings entirely. The catch-up scan is queued at the first sweep after installation and whenever a fresh document arrives, not only at the lock. Cache TTL 30 days -> 180, rescan weekly -> fortnightly, and an app *update* only re-asks the store over Wi-Fi. Nothing about the filter, the blocklists, the options or the herald pins changed; those are unchanged from 70.",
+  "comment": "Policy 72, DEV CHANNEL ONLY. Re-pins app_update to drawbridge 0.2.12 build 37, which moves the store rule's catch-up scan out of WorkManager and into the filter service. On a phone freshly installed with build 36 the scan had never fetched a single listing: WorkManager cancels running work when the app is replaced, which is what installing drawbridge is, so the first pass was the one least likely to survive. Build 37 ran it 35 seconds after installation and removed Temu, TikTok Lite, Fruit Ninja, Amaze GO!, Evony and Color Switch by store rating and category. Also: Google TV (com.google.android.videos) joins the video streaming option, which already names Netflix and Disney+ but not it -- Play rates it Parental guidance, so without a switch it was being hidden without the parent ever being asked. Blocklists and the other options are unchanged from 71.",
   "dns": {
     "upstreams": [
       "94.140.14.15",
@@ -535,6 +535,7 @@
         "com.disneyplus.mea",
         "com.hulu.plus",
         "com.wbd.stream",
+        "com.google.android.videos",
         "com.apple.atve.androidtv.appletv",
         "com.cbs.app",
         "com.skyshowtime.skyshowtime.google",
@@ -730,9 +731,9 @@
   },
   "app_update": {
     "package_name": "app.drawbridge.dpc",
-    "version_code": 36,
-    "url": "https://dev.drawbridge-project.pages.dev/assets/dpc-a2bfcef42b7fdd79.apk",
-    "sha256": "a2bfcef42b7fdd793a4c198834ecc8fac4b60350995cef21f6f127d3f58f8223"
+    "version_code": 37,
+    "url": "https://dev.drawbridge-project.pages.dev/assets/dpc-78382b8e08f9caa5.apk",
+    "sha256": "78382b8e08f9caa59b7043c3a499faf0bbbd71b0e013f6806c0e6feed71ef5fc"
   },
   "required_apps": [
     {
