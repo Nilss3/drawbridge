@@ -40,13 +40,42 @@ cdninstagram.com
 threads.net
 threads.com
 
-# TikTok
+# TikTok — the app talks to ByteDance, not to tiktok.com
+#
+# Added 2026-08-18 after TikTok Lite served video on an alpha phone where the six
+# tiktok-branded entries below were already blocked. The Lite build reaches the
+# same backend under the parent company's own names, so blocking the brand blocks
+# the website and leaves the app working: api.snssdk.com for the feed,
+# ibytedtos/byteimg/pstatp for the media. Instagram Lite showed nothing on the
+# same phone, which is the control — Meta serves its Lite build from the same
+# instagram.com and fbcdn.net the full app uses.
 tiktok.com
 tiktokv.com
 tiktokcdn.com
 tiktokcdn-us.com
 byteoversea.com
 musical.ly
+douyin.com
+# ByteDance API and telemetry
+snssdk.com
+isnssdk.com
+sgsnssdk.com
+amemv.com
+bytedance.com
+bytedanceapi.com
+byted.org
+bytedns.net
+# ByteDance image and video CDNs
+pstatp.com
+ipstatp.com
+sgpstatp.com
+byteimg.com
+ibytedtos.com
+byteicdn.com
+bytetcdn.com
+bytecdn.cn
+muscdn.com
+worldfcdn.com
 
 # Snap
 snapchat.com

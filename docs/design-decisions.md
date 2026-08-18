@@ -1711,12 +1711,13 @@ lock ends this afternoon. The decision is computed in one place, in
 `CurfewController.apply`, from both inputs at once, because that is the component
 that already runs on every trigger either answer depends on.
 
-**What is still open is whether the wider claim should be made true.** The two
-reasons below are real and have nothing to do with curfews, which is an argument
-for pinning the clock on any locked phone and deleting the condition. That is a
-behaviour change for every device that is not on a curfew — a parent loses manual
-clock setting on a phone where nothing today takes it away — so it is the owner's
-call rather than a tidy-up, and it is written down here rather than made.
+**Whether to make the wider claim true was asked and declined, 2026-08-18.** The
+two reasons below are real and have nothing to do with curfews, which is an
+argument for pinning the clock on any locked phone and deleting the condition.
+The owner's answer was no: pin it only where something needs it. Taking manual
+clock setting away from every phone that has neither a curfew nor a timer is a
+real cost, paid to close an attack that only exists where a wall-clock deadline
+does. The condition stays.
 
 `DISALLOW_CONFIG_DATE_TIME`, with `setAutoTimeEnabled` and
 `setAutoTimeZoneEnabled` where the API exists, was written for the curfew, where a

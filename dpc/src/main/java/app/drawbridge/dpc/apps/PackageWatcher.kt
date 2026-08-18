@@ -8,7 +8,6 @@ import android.content.pm.PackageManager
 import android.util.Log
 import app.drawbridge.dpc.DrawbridgeApplication
 import app.drawbridge.dpc.apps.store.StoreScan
-import app.drawbridge.dpc.apps.store.StoreScanWorker
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -179,15 +178,20 @@ class PackageWatcher(context: Context) {
             // This coroutine is the service's, so the scan lives as long as the
             // filter does and dies with it; the cache is the bookmark, so the
             // next start continues rather than restarts.
-            if (StoreScan.onMeteredNetwork(appContext)) {
-                // 50-100 MB is not something to spend on somebody's mobile data.
-                // The worker still holds a Wi-Fi-constrained pass for this case,
-                // which is what that scheduler is actually good at.
-                Log.i(TAG, "Store scan deferred to Wi-Fi; queueing it instead")
-                StoreScanWorker.runNow(appContext)
-            } else {
-                StoreScan.runToCompletion(appContext)
-            }
+            // **On any network, as of 2026-08-18, and that is a deliberate
+            // reversal.** This used to defer to Wi-Fi and queue the work
+            // instead, which reads as prudent and was a hole: a phone that only
+            // ever sees mobile data never scanned, so its preloaded games
+            // survived indefinitely — and once anybody notices, staying off
+            // Wi-Fi is a bypass rather than a delay.
+            //
+            // The trade is one-off. This is 50-100 MB while a phone is being set
+            // up, spent once, against the rule that decides whether the phone has
+            // games and companion apps on it at all. The *recurring* cost is the
+            // per-update re-ask in the receiver above, and that one still waits
+            // for Wi-Fi, because it repeats forever and finds something worth
+            // knowing only rarely.
+            StoreScan.runToCompletion(appContext)
 
             while (isActive) {
                 delay(SWEEP_INTERVAL_MILLIS)

@@ -267,3 +267,46 @@ Blocking a service well means covering both:
 An app blocked by package can still be reached at its website unless the domain
 is listed too, which is why the social, AI-companion and games lists mirror the
 package list rather than duplicating it by accident.
+
+### TikTok Lite, and why the brand names were not enough
+
+**Reported from the alpha on 2026-08-18: TikTok Lite served video on a phone
+where `tiktok.com`, `tiktokv.com`, `tiktokcdn.com`, `tiktokcdn-us.com`,
+`byteoversea.com` and `musical.ly` were all blocked.** Instagram Lite, installed
+on the same phone at the same time, showed nothing.
+
+That contrast is the finding. **Meta serves its Lite build from the same
+`instagram.com` and `fbcdn.net` as the full app, so blocking the brand blocks
+both. ByteDance does not.** The Lite build reaches the same backend under the
+parent company's own names — `api.snssdk.com` for the feed, `ibytedtos.com`,
+`byteimg.com` and `pstatp.com` for the media — so a list of tiktok-branded
+domains blocks the website and leaves the app working.
+
+So the section now carries the ByteDance infrastructure as well: the API and
+telemetry hosts (`snssdk.com` and its regional twins, `amemv.com`,
+`bytedance.com`, `bytedanceapi.com`, `byted.org`, `bytedns.net`) and the image
+and video CDNs (`pstatp.com`, `ipstatp.com`, `sgpstatp.com`, `byteimg.com`,
+`ibytedtos.com`, `byteicdn.com`, `bytetcdn.com`, `bytecdn.cn`, `muscdn.com`,
+`worldfcdn.com`), plus `douyin.com` — the same product under its Chinese name.
+
+**Every one was checked for an NS record before being added**, which is how
+`musemuse.cn` was dropped: it appears in upstream lists and no longer resolves at
+all. An apex with no A record is normal here and not a reason to leave one out —
+these are CDN parents whose traffic rides on subdomains, and matching is
+suffix-based.
+
+**What was deliberately left out.** ByteDance's other products — Toutiao, Xigua,
+TopBuzz, Ulike — and its ad-tech domains are a different argument from *this
+teenager should not have TikTok*, and a social-media list that quietly becomes a
+company blocklist is harder to defend and harder to review. **CapCut is the
+interesting omission**: ByteDance's video editor, very popular with the same age
+group and tightly wired into TikTok, but a video editor rather than a feed. It is
+not blocked, and that is a decision waiting for somebody rather than an oversight.
+
+**The package side needed the same fix.** `com.zhiliaoapp.musically.go` — TikTok
+Lite — was not on `blocked_packages`, though `com.tiktok.lite.go` (a second Play
+listing of the same app) was. `com.instagram.lite` was missing too. Both are now
+named. `com.facebook.mlite`, `com.twitter.android.lite` and
+`com.ss.android.ugc.aweme.lite` were checked at the same time and return 404 on
+Play: they are delisted, and listing dead packages only makes the list harder to
+read.

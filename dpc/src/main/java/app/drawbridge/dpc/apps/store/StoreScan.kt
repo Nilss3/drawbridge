@@ -141,10 +141,19 @@ object StoreScan {
     /**
      * True when the phone is on a connection somebody pays for by the megabyte.
      *
-     * The scan is 50–100 MB, so it belongs on Wi-Fi — but the *decision* is made
-     * here rather than by a WorkManager constraint, for the reason this whole file
-     * exists. Treated as metered when it cannot be determined: the fallback should
-     * be the one that spends nothing.
+     * **No longer consulted for the catch-up scan, and the reason is the owner's,
+     * on 2026-08-18: Wi-Fi-only makes sense right up until somebody works out that
+     * staying on mobile data is a bypass.** A phone that never sees Wi-Fi kept its
+     * preloaded games forever, and "forever" is not a deferral. The scan is a
+     * one-off 50–100 MB on a phone being set up, against a rule that decides
+     * whether the phone has games on it at all.
+     *
+     * It still decides the *update* re-ask in [app.drawbridge.dpc.apps.PackageWatcher],
+     * which is a different trade: that one recurs every time Play refreshes an app,
+     * the verdict already exists, and what a re-check might find is rare.
+     *
+     * Treated as metered when it cannot be determined, for the callers that still
+     * ask: the fallback should be the one that spends nothing.
      */
     fun onMeteredNetwork(context: Context): Boolean = runCatching {
         context.getSystemService(ConnectivityManager::class.java)?.isActiveNetworkMetered ?: true

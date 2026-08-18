@@ -352,47 +352,35 @@ Each of these looks like a bug and is not, or bites silently:
 - **`store to scan` falling to zero is the only sign the store rule is armed.** An
   unscanned app is `unverified`, which means *keep*, so a rule that never ran and
   a rule that found nothing look identical from the outside.
-## Open decisions, none of them mine to take
+## Decisions taken 2026-08-18, so they stop being questions
 
-Three questions are load-bearing, written down rather than answered.
+All three of the open items were answered by the owner on the same day, and the
+answers are recorded here because two of them changed the code and the third
+deliberately did not.
 
-### The first scan still waits for Wi-Fi
+**The catch-up scan runs on any network.** It was Wi-Fi-only, which reads as
+prudent and was a hole: a phone that never sees Wi-Fi never scanned, so its
+preloaded games survived indefinitely — and once anybody notices, staying off
+Wi-Fi stops being a delay and becomes a bypass. The trade is one-off: 50–100 MB
+while a phone is being set up, against the rule that decides whether it has games
+and companion apps on it at all. **The per-update re-ask still waits for Wi-Fi**,
+which is the opposite trade — it recurs every time Play refreshes an app, the
+verdict already exists, and what a re-check finds is rare.
 
-`StoreScan` refuses a metered network, because a listing is ~1.2 MB and sixty of
-them is ~72 MB. So a phone that only ever sees mobile data never does its
-catch-up pass, and its preloaded games survive indefinitely. Three ways out:
+**Google Play Games goes on the blocklist.** It was *Parental guidance* with no
+switch, so it was already being removed by rating on any phone that had it;
+naming it makes that deliberate rather than incidental. Policy 73.
 
-- leave it, and accept that a Wi-Fi-less phone keeps them;
-- allow a metered first pass, bounded — the launcher-visible preloads are a few
-  dozen, not hundreds;
-- ask about the *user-installed* apps over any network and keep the preload sweep
-  on Wi-Fi, on the grounds that what somebody chose to install is the more urgent
-  half.
-
-### Google Play Games is governed by nothing
-
-`com.google.android.play.games` is rated *Parental guidance*, which is not in
-`allowed_ratings`, and no switch covers it — so it is removed by rating on any
-phone that has it, exactly as Google TV was until policy 72 put Google TV in the
-video streaming option. A games hub on a phone whose point is not having games is
-arguably right to remove; the point is that nobody decided it.
-
-**And the trap underneath it:** `neutral` in `app-ratings.py audit` means *this
-tool is not deciding*, **not** *this app is safe*. This file recorded four apps as
-"decided elsewhere" on that misreading for a day.
-
-### Whether the clock should be pinned on every locked phone
-
-`DISALLOW_CONFIG_DATE_TIME` is applied while a curfew is in force or a lock timer
-is counting down, and not otherwise — `CurfewController.apply` decides it for both.
-The two reasons in
+**The clock stays pinned only when something needs it** — a curfew or a running
+lock timer. The wider claim was considered and declined: it would take manual
+clock setting away from every phone that has neither, to close an attack that
+only matters where a wall-clock deadline exists. `CurfewController.apply` remains
+the one place that decides, and
 [design-decisions](design-decisions.md#the-clock-is-locked-for-a-curfew-and-for-a-lock-timer-and-this-section-used-to-claim-more)
-have nothing to do with curfews: a movable clock makes the protected-since date
-lie, and it is the standard way around every screen-time tool. Making the wider
-claim true would take manual clock setting away from every non-curfew phone, so it
-is a behaviour change rather than a tidy-up.
+now records this as settled rather than open.
 
 ---
+
 ## Reasonable next steps
 
 The MVP is done and shipped. What follows is a feature roadmap, in the order the
