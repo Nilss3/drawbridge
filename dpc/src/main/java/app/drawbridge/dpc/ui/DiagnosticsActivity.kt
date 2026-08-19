@@ -93,6 +93,14 @@ class DiagnosticsActivity : AppCompatActivity() {
             // protection, and "it should be there" is not the same as seeing it.
             appendLine("lock screen says:  ${deviceOwner.lockScreenInfo() ?: "(nothing set)"}")
             appendLine("filter running:    ${DnsFilterService.isRunning}")
+            // Every name here is outside the tunnel and therefore unfiltered,
+            // which is the one thing about this device nothing else would show.
+            // It is also the only way to tell, from the phone, whether a policy
+            // written to make Android Auto work has actually reached it.
+            appendLine(
+                "outside the filter: " +
+                    policy.dns.excludedPackages.joinToString().ifEmpty { "(nothing)" },
+            )
             // Denying the battery-optimisation prompt at lock time does not stop
             // the filter -- that is an always-on foreground VpnService and the
             // platform restarts it. What it stops is the *polling*: Doze can

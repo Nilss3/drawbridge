@@ -467,6 +467,31 @@ data class DnsPolicy(
     /** TTL, in seconds, applied to synthesised NXDOMAIN/blocked answers. */
     @SerialName("blocked_response_ttl_seconds")
     val blockedResponseTtlSeconds: Int = 60,
+
+    /**
+     * Packages left outside the tunnel entirely, because the tunnel stops them
+     * working at all.
+     *
+     * **Every name here is a hole in the filter**, and a deliberate one: an
+     * excluded app resolves through the system resolver, so nothing it looks up
+     * is checked against the blocklist. That is the whole cost, and it is why
+     * this list is short, is spelled out in `docs/policy.md`, and should never
+     * grow to hold a browser or anything that renders arbitrary web content.
+     *
+     * The default is Android Auto, which refuses to start wirelessly while a VPN
+     * is present and says so — *"error 21, are you using a VPN?"* — on a car's
+     * screen, every time the phone comes into range. It reaches nothing a child
+     * can steer: it is a projection surface for other apps, which keep their own
+     * network and stay filtered.
+     *
+     * **It is policy rather than a constant because drawbridge cannot update
+     * itself** (see the handoff on Play Protect). An app that turns out to be
+     * incompatible with an always-on VPN can be added to a signed policy and
+     * reach a locked phone at its next poll; the same fix built into the DPC
+     * needs a cable and somebody holding the key.
+     */
+    @SerialName("excluded_packages")
+    val excludedPackages: List<String> = listOf("com.google.android.projection.gearhead"),
 )
 
 @Serializable
