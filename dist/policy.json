@@ -1,7 +1,7 @@
 {
-  "version": 82,
+  "version": 83,
   "issued_at": "2026-08-16T12:00:00Z",
-  "comment": "Podcast players and e-readers join the whitelist. AntennaPod was removed from the owner's phone by the rating rule, and every popular app of either kind rates Parental guidance for the same reason: the catalogue is not graded.",
+  "comment": "Podcast Republic, Microsoft 365, Kimi, GitHub, Anghami and Audiomack whitelisted; Comet allowed as a browser on this channel only, provisionally, until somebody has looked at what it does with DNS.",
   "dns": {
     "upstreams": [
       "94.140.14.15",
@@ -788,7 +788,8 @@
     "app.drawbridge.heraldmono",
     "com.android.chrome",
     "org.mozilla.focus",
-    "com.vivaldi.browser"
+    "com.vivaldi.browser",
+    "ai.perplexity.comet"
   ],
   "app_ratings": {
     "store_region": "BE",
@@ -813,11 +814,13 @@
       "chat.simplex.app",
       "com.amazon.kindle",
       "com.amazon.mp3",
+      "com.anghami",
       "com.anthropic.claude",
       "com.apex.community.birdbrain.birdbrain",
       "com.apple.android.music",
       "com.aspiro.tidal",
       "com.audible.application",
+      "com.audiomack",
       "com.bambuna.podcastaddict",
       "com.bandcamp.android",
       "com.beeper.android",
@@ -826,9 +829,13 @@
       "com.deepseek.chat",
       "com.fitapp",
       "com.foodient.whisk",
+      "com.github.android",
       "com.google.android.apps.bard",
       "com.google.android.apps.books",
+      "com.itunestoppodcastplayer.app",
       "com.kobobooks.android",
+      "com.microsoft.office.officehubrow",
+      "com.moonshot.kimichat",
       "com.mufumbo.android.recipe.search",
       "com.openai.chatgpt",
       "com.overdrive.mobile.android.libby",
