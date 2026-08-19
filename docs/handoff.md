@@ -854,6 +854,35 @@ Neither is urgent and both are visual, from the owner running build 41:
   default action bar, set at runtime from `main_title`; nothing sizes it today,
   so it takes whatever `textAppearanceTitleLarge` the Material theme gives it.
 
+### 12c. Comet is allowed on dev, provisionally, and somebody has to look at it
+
+**Added to `allowed_browser_packages` on `dev` only, 2026-08-19, at the owner's
+request and with the checking still to do.** It is not on `main`.
+
+Comet is Perplexity's browser. The rating rule has no opinion on it — the store
+says PEGI 3 — so the only thing that decides is the browser list, which is why
+this is a browser decision rather than a whitelist one.
+
+**What to look at before it goes near the alpha**, in the order that would settle
+it fastest:
+
+1. **Does it speak its own DNS?** It is Chromium underneath, so it has *Use
+   secure DNS*. Chrome has the same switch and is allowed anyway, because
+   `block_encrypted_dns` blackholes the known DoH endpoints by address — so the
+   question is whether Comet ships a resolver that is not on that list. Set it to
+   a custom provider and watch whether the block page still appears.
+2. **What does the assistant fetch, and from where?** An answer composed on
+   Perplexity's servers and handed to the phone as text is content the DNS filter
+   never sees, whatever the domain lists say. That is a different shape of hole
+   from a browser reaching a blocked site, and it is the one the ordinary browser
+   argument does not cover.
+3. **Does it register as a browser at all?** If it does not answer an `https://`
+   intent, `isBrowser` will not see it and the browser list is not what governs
+   it — check with `pm query-activities`.
+
+If it fails any of those, take it out of `allowed_browser_packages`; nothing else
+in the policy depends on it.
+
 ### 13. A copy pass over the app, then the website — the app half is done
 
 **Asked for 2026-08-17; the app was rewritten by the owner on 2026-08-19.** The
