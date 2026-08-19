@@ -79,22 +79,29 @@ added or reviewed:
    borrowing somebody else's enumeration and then *reviewing* it is the cheap
    half. `blocklistproject/Lists` has a per-service file that is a reasonable
    starting set.
-3. **Check every candidate resolves before adding it**, with `dig +short <domain>
+3. **Look for regional variants of every name already on the list.** This is the
+   step that was missing on 2026-08-18, and it cost a second round on the same
+   phone: the list carried `tiktokcdn-us.com` with no `-eu` counterpart, and a
+   Belgian handset kept playing video after eighteen ByteDance domains had been
+   added. A `-us`, `-eu`, `.us` or `.eu` suffix on an entry is a statement that
+   the service splits by region, and the other half of the split is not going to
+   announce itself.
+4. **Check every candidate resolves before adding it**, with `dig +short <domain>
    NS`. A missing apex `A` record is normal and not a reason to leave a domain
    out — these are CDN parents whose traffic rides on subdomains, and matching is
    suffix-based. A missing **NS** record means the domain is dead: `musemuse.cn`
    sits in upstream TikTok lists and no longer resolves at all.
-4. **Ask what else is on those domains before taking them.** A shared CDN is the
+5. **Ask what else is on those domains before taking them.** A shared CDN is the
    one way a domain entry does real damage — see
    [a wrong domain is not free](blocklist-notes.md#a-wrong-domain-is-not-free-unlike-a-wrong-package).
    Company-specific CDNs (`ibytedtos.com`, `fbcdn.net`) are safe to take whole;
    `googlevideo.com` is not, which is why separating YouTube Music from YouTube
    turned out to be impossible.
-5. **Stop at the product, not the company.** ByteDance's other apps — Toutiao,
+6. **Stop at the product, not the company.** ByteDance's other apps — Toutiao,
    Xigua, TopBuzz, Ulike — and its ad-tech are a different argument from *this
    teenager should not have TikTok*. A social-media list that quietly becomes a
    company blocklist is harder to defend and harder to review.
-6. **Then do the package side, which is a separate list with the same trap.**
+7. **Then do the package side, which is a separate list with the same trap.**
    A service usually ships more than one package: `com.zhiliaoapp.musically` and
    `com.zhiliaoapp.musically.go`, `com.instagram.android` and
    `com.instagram.lite`. Play sometimes carries **two listings of one app** —
@@ -102,7 +109,7 @@ added or reviewed:
    Faster TikTok* — so finding one is not finding them all. Check each with
    `python3 tools/app-ratings.py check <package>`; a `404` means delisted, and a
    dead package on the list only makes it harder to read.
-7. **Verify on a phone if there is one to hand.** Install the app, open it, and
+8. **Verify on a phone if there is one to hand.** Install the app, open it, and
    see whether content loads. That is the only step that catches what this
    checklist was written for, and it is the step that found it.
 

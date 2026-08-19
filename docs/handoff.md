@@ -21,9 +21,9 @@ which is kept whole on purpose.
 
 | | `main` (the alpha) | `dev` |
 |---|---|---|
-| drawbridge | 0.2.7, build 18 | **0.2.12, build 37** |
+| drawbridge | 0.2.7, build 18 | **0.2.13, build 38** |
 | herald | 0.1.9 | **0.1.13** |
-| policy | 50 | **72** |
+| policy | **52** | **74** |
 | install page | <https://drawbridge-project.pages.dev/install/usb/> | <https://dev.drawbridge-project.pages.dev/install/usb/> |
 | phone | the owner's Nothing Phone (A059) | the Moto G15 |
 
@@ -353,6 +353,41 @@ Each of these looks like a bug and is not, or bites silently:
 - **`store to scan` falling to zero is the only sign the store rule is armed.** An
   unscanned app is `unverified`, which means *keep*, so a rule that never ran and
   a rule that found nothing look identical from the outside.
+## The alpha found what the dev phone could not
+
+**A Nothing Phone on the alpha, 2026-08-18: TikTok Lite installed and played
+video; Instagram Lite installed and showed nothing.** Both were installable
+because neither package was listed and the alpha has no store rule. Only one of
+them *worked*, and that difference is the finding.
+
+It took two rounds, and the second is the more useful lesson.
+
+**Round one.** All six tiktok-branded domains were blocked and the app did not
+need any of them: it reaches `api.snssdk.com` for the feed and
+`ibytedtos`/`byteimg`/`pstatp` for media — ByteDance's names, not TikTok's.
+Eighteen domains added, on both channels. Instagram Lite is the control: Meta
+serves its Lite build from `instagram.com` and `fbcdn.net` like everything else,
+so the existing entries already covered it.
+
+**Round two: it still played video.** The list had carried `tiktokcdn-us.com`
+since long before any of this, and no `-eu` counterpart. TikTok serves European
+users from European infrastructure, so a Belgian handset was reaching hosts
+nobody had listed. Eleven more, including `tiktokcdn-eu.com` and `tiktokv.eu`.
+
+**The checklist gained a step from each round** — find the parent company's
+infrastructure, then look for regional variants of names already on the list. The
+second one is the sharper: a `-us` suffix on an existing entry is a statement that
+the service splits by region, and the other half does not announce itself. See
+[policy.md](policy.md#adding-a-service-to-a-domain-list-the-checklist).
+
+**Still unproven**: whether the EU domains are what fixes it. That needs the phone
+to pick up policy 52 and be watched. If TikTok Lite still plays after that, what
+remains is the documented gap — an app resolving through its own HTTPDNS to
+hardcoded IPs, which DNS filtering cannot see, and which the *package* block is
+the answer to.
+
+---
+
 ## Decisions taken 2026-08-18, so they stop being questions
 
 All three of the open items were answered by the owner on the same day, and the
@@ -1006,6 +1041,7 @@ APK from the channel's Pages site and re-pins `app_update`.
 
 | Build | Policy | What it was |
 |---|---|---|
+| 38 | 74 | The catch-up scan runs on mobile data too, because Wi-Fi-only is a bypass once anybody notices. Eleven more ByteDance domains: TikTok has an EU and the list only had the US. |
 | 37 | 72 | The catch-up scan runs in the filter service — WorkManager was cancelling it on every install. Google TV joins the streaming option. |
 | 36 | 71 | The APK bundles a current policy again (it was stuck at 37, which predates the store rule); the scan is queued at the first sweep, not only at the lock; cache TTL 30 → 180 days. |
 | 35 | 70 | Removal starts at installation rather than at the lock. The keyguard becomes three short lines. The store rule reaches preloads with a launcher icon. |
