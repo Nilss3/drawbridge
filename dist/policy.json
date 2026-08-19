@@ -1,7 +1,7 @@
 {
-  "version": 52,
+  "version": 53,
   "issued_at": "2026-08-13T18:00:00Z",
-  "comment": "Policy 52, the alpha. Eleven more ByteDance domains, because 51 did not fix the phone: the list carried tiktokcdn-us.com and no EU counterpart, and TikTok serves European users from European infrastructure. tiktokcdn-eu.com, tiktokv.eu and tiktokv.us join, with ttcdn-us.com, tiktokrow-cdn.com, ttlivecdn.com, tiktokd.org, byteoversea.net and ibyteimg.com. Each checked for an NS record first. Nothing else changed: same builds, same profiles, same options, same packages as 51.",
+  "comment": "Policy 53, the alpha. Takes com.zhiliaoapp.musically.go (TikTok Lite) back out of blocked_packages, on the owner's call and deliberately: the app is the probe. Blocking the package uninstalls it, and an uninstalled app cannot answer the question being asked, which is whether the DNS filter stops TikTok's traffic now that the ByteDance and EU domains are listed. The domains stay. com.instagram.lite stays blocked; it is the control that already showed nothing. Put the package back once the domain question is settled.",
   "dns": {
     "upstreams": [
       "94.140.14.15",
@@ -283,7 +283,6 @@
     "com.windscribe.vpn",
     "com.withfeelingai.test",
     "com.zhiliaoapp.musically",
-    "com.zhiliaoapp.musically.go",
     "de.mobileconcepts.cyberghost",
     "free.vpn.unblock.proxy.turbovpn",
     "hotspotshield.android.vpn",
