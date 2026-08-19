@@ -43,9 +43,10 @@
       <h2>On the phone, first</h2>
       <ol class="steps">
 <li><span class="num">1</span><div><strong>Remove every account.</strong> Settings → Passwords, passkeys &amp; accounts. You sign back in at the end. Nothing else is erased.</div></li>
-<li><span class="num">2</span><div>Enable Developer Options: Settings → About phone, tap <strong>Build number</strong> seven times.</div></li>
-<li><span class="num">3</span><div>Settings → System → Developer options → turn on <strong>USB debugging</strong>.</div></li>
-<li><span class="num">4</span><div>Plug the phone into this computer.</div></li>
+<li><span class="num">2</span><div><strong>Delete the Private Space, if there is one.</strong> Settings → Security &amp; privacy → Private Space. Android will not hand over the phone while a second profile exists, and this one is hidden from the user switcher. Deleting it removes what is inside it.</div></li>
+<li><span class="num">3</span><div>Enable Developer Options: Settings → About phone, tap <strong>Build number</strong> seven times.</div></li>
+<li><span class="num">4</span><div>Settings → System → Developer options → turn on <strong>USB debugging</strong>.</div></li>
+<li><span class="num">5</span><div>Plug the phone into this computer.</div></li>
 </ol>
 
       <h2>Then, here</h2>
@@ -75,8 +76,8 @@
 
       <div id="installer-done" hidden>
         <div class="callout callout--alpha">
-          <strong>Locking drawbridge uninstalls the apps it blocks.</strong>
-          <p style="margin: 0.5rem 0 0;">That happens later, on the phone, when you press Lock, not here. On a phone already in use those apps go and do not come back.</p>
+          <strong>Installing drawbridge uninstalls the apps it blocks.</strong>
+          <p style="margin: 0.5rem 0 0;">It starts within minutes of this install, not later on the phone. Move what you want to keep off it first — bookmarks, anything saved only inside an app. What a setting can still bring back waits until you lock.</p>
         </div>
         <h2>Now finish on the phone</h2>
         <ol class="steps">
@@ -112,9 +113,9 @@
 <script type="module">
 import { init } from "/assets/js/installer.js";
 init({
-  apkUrl: "/assets/dpc-85d840257e10426c.apk",
-  apkSha256: "85d840257e10426cd2b1673d5b388a7ebb15b65df4c2dc655f16f43cefc6d52d",
-  apkName: "dpc-85d840257e10426c.apk",
+  apkUrl: "/assets/dpc-11dae7e565f95fa7.apk",
+  apkSha256: "11dae7e565f95fa77ac0c78835dc64560ab5e8d6b3252c7fa18b0ed573e1162e",
+  apkName: "dpc-11dae7e565f95fa7.apk",
   text: { updateDetected: "This phone is already managed by drawbridge ({version}). Updating it instead of provisioning. Nothing is reset, and the phone keeps everything on it." },
 });
 </script>

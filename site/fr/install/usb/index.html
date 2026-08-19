@@ -43,9 +43,10 @@
       <h2>D'abord, sur le téléphone</h2>
       <ol class="steps">
 <li><span class="num">1</span><div><strong>Retirez tous les comptes.</strong> Paramètres → Mots de passe, clés d'accès et comptes. Vous vous reconnecterez à la fin. Rien d'autre n'est effacé.</div></li>
-<li><span class="num">2</span><div>Activez les options pour développeurs : Paramètres → À propos du téléphone, touchez sept fois <strong>Numéro de build</strong>.</div></li>
-<li><span class="num">3</span><div>Paramètres → Système → Options pour développeurs → activez le <strong>débogage USB</strong>.</div></li>
-<li><span class="num">4</span><div>Branchez le téléphone à cet ordinateur.</div></li>
+<li><span class="num">2</span><div><strong>Supprimez l'espace privé, s'il y en a un.</strong> Paramètres → Sécurité et confidentialité → Espace privé. Android ne confie pas le téléphone tant qu'un second profil existe, et celui-ci est masqué dans le sélecteur d'utilisateur. Ce qu'il contient disparaît avec lui.</div></li>
+<li><span class="num">3</span><div>Activez les options pour développeurs : Paramètres → À propos du téléphone, touchez sept fois <strong>Numéro de build</strong>.</div></li>
+<li><span class="num">4</span><div>Paramètres → Système → Options pour développeurs → activez le <strong>débogage USB</strong>.</div></li>
+<li><span class="num">5</span><div>Branchez le téléphone à cet ordinateur.</div></li>
 </ol>
 
       <h2>Ensuite, ici</h2>
@@ -75,8 +76,8 @@
 
       <div id="installer-done" hidden>
         <div class="callout callout--alpha">
-          <strong>Le verrouillage de drawbridge désinstalle les applications qu'il bloque.</strong>
-          <p style="margin: 0.5rem 0 0;">Cela se produit plus tard, sur le téléphone, quand vous appuyez sur Verrouiller, pas ici. Sur un téléphone déjà utilisé, ces applications disparaissent et ne reviennent pas.</p>
+          <strong>L'installation de drawbridge désinstalle les applications qu'il bloque.</strong>
+          <p style="margin: 0.5rem 0 0;">Cela commence dans les minutes qui suivent cette installation, et non plus tard sur le téléphone. Mettez d'abord de côté ce que vous voulez garder — vos favoris, et tout ce qui n'est enregistré qu'à l'intérieur d'une application. Ce qu'un réglage peut encore rétablir attend le verrouillage.</p>
         </div>
         <h2>Terminez maintenant sur le téléphone</h2>
         <ol class="steps">
@@ -112,9 +113,9 @@
 <script type="module">
 import { init } from "/assets/js/installer.js";
 init({
-  apkUrl: "/assets/dpc-85d840257e10426c.apk",
-  apkSha256: "85d840257e10426cd2b1673d5b388a7ebb15b65df4c2dc655f16f43cefc6d52d",
-  apkName: "dpc-85d840257e10426c.apk",
+  apkUrl: "/assets/dpc-11dae7e565f95fa7.apk",
+  apkSha256: "11dae7e565f95fa77ac0c78835dc64560ab5e8d6b3252c7fa18b0ed573e1162e",
+  apkName: "dpc-11dae7e565f95fa7.apk",
   text: { updateDetected: "Ce t\u00e9l\u00e9phone est d\u00e9j\u00e0 g\u00e9r\u00e9 par drawbridge ({version}). Il sera mis \u00e0 jour plut\u00f4t que reconfigur\u00e9 : rien n'est r\u00e9initialis\u00e9 et tout ce qui s'y trouve est conserv\u00e9." },
 });
 </script>
