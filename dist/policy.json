@@ -428,15 +428,15 @@
       "description": "Keeps out algorithmic social media, adult sites, gambling, ads, dating apps, games, and AI companions. The only search engines available are Google, DuckDuckGo, Bing, and Kagi. The only browsers are herald (recommended), herald mono, Chrome, Firefox Focus, and Vivaldi.",
       "name_i18n": {
         "nl": "Standaardbeleid",
-        "fr": "Politique par défaut"
+        "fr": "Politique par d\u00e9faut"
       },
       "subtitle_i18n": {
         "nl": "Houdt het toxische internet buiten",
-        "fr": "Tient l'internet toxique à distance"
+        "fr": "Tient l'internet toxique \u00e0 distance"
       },
       "description_i18n": {
         "nl": "Houdt algoritmische sociale media, pornosites, gokken, advertenties, datingapps, games en AI-gezelschapsapps buiten. De enige beschikbare zoekmachines zijn Google, DuckDuckGo, Bing en Kagi. De enige browsers zijn herald (aanbevolen), herald mono, Chrome, Firefox Focus en Vivaldi.",
-        "fr": "Tient à distance les réseaux sociaux algorithmiques, les sites pornographiques, les jeux d'argent, la publicité, les applications de rencontre, les jeux et les compagnons IA. Les seuls moteurs de recherche disponibles sont Google, DuckDuckGo, Bing et Kagi. Les seuls navigateurs sont herald (recommandé), herald mono, Chrome, Firefox Focus et Vivaldi."
+        "fr": "Tient \u00e0 distance les r\u00e9seaux sociaux algorithmiques, les sites pornographiques, les jeux d'argent, la publicit\u00e9, les applications de rencontre, les jeux et les compagnons IA. Les seuls moteurs de recherche disponibles sont Google, DuckDuckGo, Bing et Kagi. Les seuls navigateurs sont herald (recommand\u00e9), herald mono, Chrome, Firefox Focus et Vivaldi."
       },
       "recommended_age": 14
     }
@@ -464,7 +464,7 @@
       },
       "description_i18n": {
         "nl": "WhatsApp brengt privacyrisico's mee, heeft toxische socialemediafuncties en een vervelende chatbot. Signal is op dit toestel altijd toegelaten, al raden we ook daar 14+ en/of ouderlijke begeleiding aan: als groepschat-app draagt het een risico op cyberpesten.",
-        "fr": "WhatsApp comporte des risques pour la vie privée, des fonctions de réseau social toxiques et un chatbot pénible. Signal est toujours autorisé sur cet appareil, même si nous y recommandons aussi 14+ et/ou un accompagnement parental : en tant qu'application de discussion de groupe, elle comporte un risque de cyberharcèlement."
+        "fr": "WhatsApp comporte des risques pour la vie priv\u00e9e, des fonctions de r\u00e9seau social toxiques et un chatbot p\u00e9nible. Signal est toujours autoris\u00e9 sur cet appareil, m\u00eame si nous y recommandons aussi 14+ et/ou un accompagnement parental : en tant qu'application de discussion de groupe, elle comporte un risque de cyberharc\u00e8lement."
       }
     },
     {
@@ -497,7 +497,7 @@
       },
       "description_i18n": {
         "nl": "De aanbevelingsfeed en Shorts van YouTube zijn gemaakt om je te laten doorkijken, en daarom staat YouTube standaard uit. Zet je dit aan, dan komen YouTube en zijn familie terug (Kids, TV, Creator Studio, Music) en gaat Google's eigen Beperkte modus aan voor de YouTube-app en voor de browser. De telefoon dwingt dat af, dus het kan niet vanuit YouTube worden uitgezet. In herald openen Shorts als gewone video's.",
-        "fr": "Le fil de recommandations et les Shorts de YouTube sont conçus pour vous garder devant l'écran : c'est pourquoi YouTube est bloqué par défaut. En activant ceci, YouTube et sa famille reviennent (Kids, TV, Creator Studio, Music) et le mode Restreint de Google s'active pour l'application YouTube et pour le navigateur. Le téléphone l'impose, il ne peut donc pas être désactivé depuis YouTube. Dans herald, les Shorts s'ouvrent comme des vidéos ordinaires."
+        "fr": "Le fil de recommandations et les Shorts de YouTube sont con\u00e7us pour vous garder devant l'\u00e9cran : c'est pourquoi YouTube est bloqu\u00e9 par d\u00e9faut. En activant ceci, YouTube et sa famille reviennent (Kids, TV, Creator Studio, Music) et le mode Restreint de Google s'active pour l'application YouTube et pour le navigateur. Le t\u00e9l\u00e9phone l'impose, il ne peut donc pas \u00eatre d\u00e9sactiv\u00e9 depuis YouTube. Dans herald, les Shorts s'ouvrent comme des vid\u00e9os ordinaires."
       }
     },
     {
@@ -521,8 +521,8 @@
         "fr": "Autoriser Telegram"
       },
       "description_i18n": {
-        "nl": "Telegram is een goede berichtenapp om een slechte heen. Privéchats zijn prima. Publieke kanalen zijn doorzoekbaar, in de praktijk ongemodereerd, en het is daar dat pornografie, extremistische ronselarij en illegale bestanden op dit platform zitten. Er is geen instelling die ze weghaalt, en gewone chats zijn niet end-to-end versleuteld tenzij je telkens een Geheime chat begint. Signal mag altijd op dit toestel en doet het berichtendeel beter.",
-        "fr": "Telegram est une bonne messagerie enveloppée dans une mauvaise. Les conversations privées ne posent pas de problème. Les canaux publics sont consultables, dans les faits non modérés, et c'est là que se trouvent la pornographie, le recrutement extrémiste et les fichiers piratés sur cette plateforme. Aucun réglage ne les enlève, et les conversations ordinaires ne sont pas chiffrées de bout en bout sauf à ouvrir une conversation secrète à chaque fois. Signal est toujours autorisé sur cet appareil et fait mieux la partie messagerie."
+        "nl": "Telegram is een goede berichtenapp om een slechte heen. Priv\u00e9chats zijn prima. Publieke kanalen zijn doorzoekbaar, in de praktijk ongemodereerd, en het is daar dat pornografie, extremistische ronselarij en illegale bestanden op dit platform zitten. Er is geen instelling die ze weghaalt, en gewone chats zijn niet end-to-end versleuteld tenzij je telkens een Geheime chat begint. Signal mag altijd op dit toestel en doet het berichtendeel beter.",
+        "fr": "Telegram est une bonne messagerie envelopp\u00e9e dans une mauvaise. Les conversations priv\u00e9es ne posent pas de probl\u00e8me. Les canaux publics sont consultables, dans les faits non mod\u00e9r\u00e9s, et c'est l\u00e0 que se trouvent la pornographie, le recrutement extr\u00e9miste et les fichiers pirat\u00e9s sur cette plateforme. Aucun r\u00e9glage ne les enl\u00e8ve, et les conversations ordinaires ne sont pas chiffr\u00e9es de bout en bout sauf \u00e0 ouvrir une conversation secr\u00e8te \u00e0 chaque fois. Signal est toujours autoris\u00e9 sur cet appareil et fait mieux la partie messagerie."
       }
     },
     {
@@ -710,11 +710,11 @@
       ],
       "name_i18n": {
         "nl": "Long-form video streaming toestaan",
-        "fr": "Autoriser le streaming vidéo long format"
+        "fr": "Autoriser le streaming vid\u00e9o long format"
       },
       "description_i18n": {
         "nl": "Netflix, Prime Video, Disney+, HBO Max en een vijftigtal andere abonnementsdiensten voor video staan standaard uit, want een avond verdwijnt daarin even makkelijk als in een feed. Zet je dit aan, dan komen ze allemaal tegelijk terug, de apps en de websites. YouTube hoort hier niet bij: dat heeft zijn eigen optie, want een aanbevelingsfeed is iets anders dan een film waar je voor bent gaan zitten.",
-        "fr": "Netflix, Prime Video, Disney+, HBO Max et une cinquantaine d'autres services vidéo par abonnement sont bloqués par défaut, car une soirée y disparaît aussi facilement que dans un fil d'actualité. En activant ceci, ils reviennent tous d'un coup, les applications comme les sites. YouTube n'en fait pas partie : il a sa propre option, car un fil de recommandations n'est pas la même chose qu'un film devant lequel on s'est installé."
+        "fr": "Netflix, Prime Video, Disney+, HBO Max et une cinquantaine d'autres services vid\u00e9o par abonnement sont bloqu\u00e9s par d\u00e9faut, car une soir\u00e9e y dispara\u00eet aussi facilement que dans un fil d'actualit\u00e9. En activant ceci, ils reviennent tous d'un coup, les applications comme les sites. YouTube n'en fait pas partie : il a sa propre option, car un fil de recommandations n'est pas la m\u00eame chose qu'un film devant lequel on s'est install\u00e9."
       },
       "various_ages": true
     }
