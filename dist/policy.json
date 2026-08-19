@@ -1,7 +1,7 @@
 {
-  "version": 51,
+  "version": 52,
   "issued_at": "2026-08-13T18:00:00Z",
-  "comment": "Policy 51, the alpha. Ports policy 73's blocklist work from dev, and nothing else. TikTok Lite served video on an alpha phone with all six tiktok-branded domains already blocked, because the app talks to ByteDance's own infrastructure -- api.snssdk.com for the feed, ibytedtos/byteimg/pstatp for the media -- so eighteen ByteDance API and CDN domains join the social list. Instagram Lite showed nothing on the same phone, which is the control: Meta serves its Lite build from instagram.com and fbcdn.net like everything else. Also blocks the two Lite packages that were installable by name (com.zhiliaoapp.musically.go, com.instagram.lite) and Google Play Games. The builds, the profiles and the options are untouched: this is a list change.",
+  "comment": "Policy 52, the alpha. Eleven more ByteDance domains, because 51 did not fix the phone: the list carried tiktokcdn-us.com and no EU counterpart, and TikTok serves European users from European infrastructure. tiktokcdn-eu.com, tiktokv.eu and tiktokv.us join, with ttcdn-us.com, tiktokrow-cdn.com, ttlivecdn.com, tiktokd.org, byteoversea.net and ibyteimg.com. Each checked for an NS record first. Nothing else changed: same builds, same profiles, same options, same packages as 51.",
   "dns": {
     "upstreams": [
       "94.140.14.15",
@@ -49,7 +49,7 @@
       "url": "https://raw.githubusercontent.com/Nilss3/drawbridge/main/dist/lists/social.txt",
       "format": "domains",
       "category": "social",
-      "sha256": "f3d3a83dbbc7ab3238cd40d301660156866c27da3eb165e7dba6ac29f9ed1ad6"
+      "sha256": "fe2b43adb59354555055e83ccd126ee2e88ee5ea052f48ccafbcdd530e71f5b6"
     },
     {
       "id": "ai-companions",

@@ -52,10 +52,23 @@ threads.com
 tiktok.com
 tiktokv.com
 tiktokcdn.com
-tiktokcdn-us.com
-byteoversea.com
 musical.ly
 douyin.com
+# Regional splits. The list carried tiktokcdn-us.com and no EU counterpart,
+# which is the likeliest reason a Belgian phone kept playing video with
+# everything else here blocked: TikTok serves European users from European
+# infrastructure. Added 2026-08-18.
+tiktokcdn-us.com
+tiktokcdn-eu.com
+tiktokv.us
+tiktokv.eu
+ttcdn-us.com
+tiktokrow-cdn.com
+ttlivecdn.com
+tiktokd.org
+byteoversea.com
+byteoversea.net
+ibyteimg.com
 # ByteDance API and telemetry
 snssdk.com
 isnssdk.com
