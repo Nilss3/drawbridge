@@ -21,9 +21,9 @@ which is kept whole on purpose.
 
 | | `main` (the alpha) | `dev` |
 |---|---|---|
-| drawbridge | 0.2.7, build 18 | **0.2.13, build 38** |
-| herald | 0.1.9 | **0.1.13** |
-| policy | **52** | **74** |
+| drawbridge | 0.2.7, build 18 | **0.2.15, build 40** |
+| herald | 0.1.9 | **0.1.14** |
+| policy | **52** | **80** |
 | install page | <https://drawbridge-project.pages.dev/install/usb/> | <https://dev.drawbridge-project.pages.dev/install/usb/> |
 | phone | the owner's Nothing Phone (A059) | the Moto G15 |
 
@@ -60,8 +60,14 @@ alpha:**
 
 **A dpc-only release does not touch GitHub releases at all.** The APK is served
 from the channel's own Pages site (`site/assets/dpc-<digest16>.apk`, pinned by
-`app_update`), which is how builds 28–37 shipped. Only a herald change needs a
-GitHub release.
+`app_update`), which is how builds 28–37 shipped, and build 40 after them. Only a
+herald change needs a GitHub release.
+
+**Two releases went out on 2026-08-19**, and they are the two shapes:
+`v0.2.8-dev.5` carried herald 0.1.14 and drawbridge build 39 and needed the whole
+GitHub dance; build 40 changed only the DPC and needed none of it. Policies 75 to
+80 went out between and around them, several of which reached the phone with no
+build at all.
 
 ---
 
@@ -147,8 +153,15 @@ the key can always unlock and put a build on the phone. See
 
 ## What has been watched working, and what has not
 
-**Watched working on hardware**, most recently on 2026-08-18 with build 37:
+**Watched working on hardware**, most recently on 2026-08-19 with build 40:
 
+- **A removal a switch governs hides the app instead of uninstalling it**, so
+  herald survives the browser chooser going back and forth without a
+  quarter-gigabyte download each way, and WhatsApp comes back with its chats. The
+  owner confirmed it on the G15 the day it shipped. What that turned on is in
+  [design-decisions](design-decisions.md#a-removal-a-switch-can-undo-hides-the-app-instead-of-uninstalling-it);
+  the thing to re-check after any change near it is that a package **no** switch
+  governs still goes for good.
 - A clean cable install removing Temu, TikTok Lite, Fruit Ninja, Amaze GO!, Evony
   and Color Switch **35 seconds after installation**, by store rating and
   category, on a phone that had never been locked — while WhatsApp, YouTube,
@@ -315,6 +328,23 @@ Each of these looks like a bug and is not, or bites silently:
   is live.
 - **`site/` is generated.** Hand-edited HTML disappears at the next
   `build-site.py` run, with no error. It has happened once already.
+- **Editing `build-site.py`'s copy by string-matching corrupts it, in two
+  different ways, and both were walked on 2026-08-19.** Scanning backwards from a
+  match to find the opening quote stops at an apostrophe *inside* French text, so
+  the replacement is spliced into the middle of the sentence. Using `ast` node
+  positions instead is right, but `col_offset` is a **UTF-8 byte** offset while
+  Python string indices are characters: on any line carrying an em-dash or an
+  accent the span overshoots the closing quote, and the edit silently eats the
+  next entry. Work in `src.encode()` and assert the span starts and ends on a
+  quote before splicing. Both failures parse afterwards, which is what makes them
+  worth this paragraph.
+- **A hidden package is "not installed for this user", and that is the same bit.**
+  `getPackageInfo` throws for a hidden app exactly as for an absent one, and
+  `isApplicationHidden` returns true for a package the phone has never had. So
+  anything asking "is this here" about an app drawbridge may have hidden needs
+  `MATCH_UNINSTALLED_PACKAGES` — `AppInstaller` would otherwise re-download
+  herald to replace the copy already on the disk, which is the whole thing the
+  hiding change exists to prevent.
 - **The Play-image emulator cannot test QR provisioning.** No consumer Setup
   Wizard, no `DISPATCH_PROVISIONING_MESSAGE` for adb shell, and `adb root` is
   refused. Rooting requires a non-Play image, which has no Play Protect —
@@ -842,8 +872,31 @@ following while every switch reads off. One command closes it:
 python3 tools/policytool.py sign --in dist/policy.json --out dist/policy.signed.json
 ```
 
-**The website half is still open.** It is item 11 above, and it should be done
-after this rather than before, so the site can quote what the app now says.
+**A second pass followed on the same day, from the phone, and it split in two.**
+Half of what wanted changing is in `values/`, which needs a build; the other half
+is the option descriptions, which are the *document's* and reach a phone at the
+next poll. That is worth knowing before promising somebody a text change: the
+option and profile wording ships in a policy, everything else on that screen
+ships in an APK, and only one of those two can reach a locked phone.
+
+The curfew now says
+*after lock* like the offline choice next to it; the browser and option
+descriptions say what a switch actually does since build 40 — suspended and
+hidden, back with bookmarks and chats intact, uninstall it yourself first if you
+want it really gone — and that half of it lives in the signed policy rather than
+in `values/`, because the option descriptions are the document's.
+
+**The website half is done too, for the blocklist page.** It says at the top that
+it is written by a language model and apologises for the em-dashes, counts seven
+categories rather than six, and explains that what a list can never close is
+closed from the other side by removing anything the store does not rate PEGI 3.
+Three of its tables are generated from the signed policy and the ratings cache
+rather than typed: the AI companion apps removed by name, the tools allowed above
+PEGI 3, and the streaming services the one switch governs. **Regenerate them when
+those lists change** — they are in `site-src/block-list.md` as plain markdown,
+so nothing will tell you they have drifted.
+
+What is left of item 11 is the rest of the site.
 
 ### Standing items, unchanged
 

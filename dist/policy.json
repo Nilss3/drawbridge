@@ -1,7 +1,7 @@
 {
-  "version": 79,
+  "version": 80,
   "issued_at": "2026-08-16T12:00:00Z",
-  "comment": "drawbridge 0.2.15 build 40 on the dev channel: a removal a switch governs hides the app instead of uninstalling it, so its data survives being switched back on.",
+  "comment": "What a switch turns off is suspended and hidden rather than uninstalled, and the WhatsApp and Telegram options now say so.",
   "dns": {
     "upstreams": [
       "94.140.14.15",
@@ -447,7 +447,7 @@
       "id": "whatsapp",
       "name": "Allow WhatsApp",
       "recommended_age": 14,
-      "description": "WhatsApp carries privacy risks, has toxic social media features and an annoying chatbot. Signal is always allowed on this device, even though as a group chat app with risk of cyberbullying we also recommend 14+ and/or parental guidance.",
+      "description": "WhatsApp carries privacy risks, has toxic social media features and an annoying chatbot. Signal is always allowed on this device, even though as a group chat app with risk of cyberbullying we also recommend 14+ and/or parental guidance. Switching this off does not uninstall the app: it is suspended and hidden, and comes back with all its chats and media intact if you switch it on again. If you would rather it were really gone, uninstall it yourself before locking.",
       "default_enabled": true,
       "exempt_packages": [
         "com.whatsapp",
@@ -463,8 +463,8 @@
         "fr": "Autoriser WhatsApp"
       },
       "description_i18n": {
-        "nl": "WhatsApp brengt privacyrisico's mee, heeft toxische socialemediafuncties en een vervelende chatbot. Signal is op dit toestel altijd toegelaten, al raden we ook daar 14+ en/of ouderlijke begeleiding aan: als groepschat-app draagt het een risico op cyberpesten.",
-        "fr": "WhatsApp comporte des risques pour la vie priv\u00e9e, des fonctions de r\u00e9seau social toxiques et un chatbot p\u00e9nible. Signal est toujours autoris\u00e9 sur cet appareil, m\u00eame si nous y recommandons aussi 14+ et/ou un accompagnement parental : en tant qu'application de discussion de groupe, elle comporte un risque de cyberharc\u00e8lement."
+        "nl": "WhatsApp brengt privacyrisico's mee, heeft toxische socialemediafuncties en een vervelende chatbot. Signal is op dit toestel altijd toegelaten, al raden we ook daar 14+ en/of ouderlijke begeleiding aan: als groepschat-app draagt het een risico op cyberpesten. Dit uitzetten verwijdert de app niet: ze wordt opgeschort en verborgen, en komt met al haar gesprekken en media intact terug zodra je ze weer aanzet. Wil je ze echt kwijt, verwijder ze dan zelf voor je vergrendelt.",
+        "fr": "WhatsApp comporte des risques pour la vie priv\u00e9e, des fonctions de r\u00e9seau social toxiques et un chatbot p\u00e9nible. Signal est toujours autoris\u00e9 sur cet appareil, m\u00eame si nous y recommandons aussi 14+ et/ou un accompagnement parental : en tant qu'application de discussion de groupe, elle comporte un risque de cyberharc\u00e8lement. D\u00e9sactiver cette option ne d\u00e9sinstalle pas l'application : elle est suspendue et masqu\u00e9e, et revient avec toutes ses conversations et tous ses m\u00e9dias intacts si vous la r\u00e9activez. Si vous pr\u00e9f\u00e9rez qu'elle disparaisse vraiment, d\u00e9sinstallez-la vous-m\u00eame avant de verrouiller."
       }
     },
     {
@@ -504,7 +504,7 @@
       "id": "telegram",
       "name": "Allow Telegram",
       "recommended_age": 18,
-      "description": "Telegram is a good messenger wrapped around a bad one. Private chats are fine. Public channels are searchable, effectively unmoderated, and are where adult material, extremist recruitment and pirated files live on this platform. There is no setting that removes them, and ordinary chats are not end-to-end encrypted unless you start a Secret Chat every time. Signal is always allowed on this device and does the messaging part better.",
+      "description": "Telegram is a good messenger wrapped around a bad one. Private chats are fine. Public channels are searchable, effectively unmoderated, and are where adult material, extremist recruitment and pirated files live on this platform. There is no setting that removes them, and ordinary chats are not end-to-end encrypted unless you start a Secret Chat every time. Signal is always allowed on this device and does the messaging part better. Switching this off does not uninstall the app: it is suspended and hidden, and comes back with all its chats and media intact if you switch it on again. If you would rather it were really gone, uninstall it yourself before locking.",
       "default_enabled": true,
       "exempt_packages": [
         "org.telegram.messenger",
@@ -521,8 +521,8 @@
         "fr": "Autoriser Telegram"
       },
       "description_i18n": {
-        "nl": "Telegram is een goede berichtenapp om een slechte heen. Priv\u00e9chats zijn prima. Publieke kanalen zijn doorzoekbaar, in de praktijk ongemodereerd, en het is daar dat pornografie, extremistische ronselarij en illegale bestanden op dit platform zitten. Er is geen instelling die ze weghaalt, en gewone chats zijn niet end-to-end versleuteld tenzij je telkens een Geheime chat begint. Signal mag altijd op dit toestel en doet het berichtendeel beter.",
-        "fr": "Telegram est une bonne messagerie envelopp\u00e9e dans une mauvaise. Les conversations priv\u00e9es ne posent pas de probl\u00e8me. Les canaux publics sont consultables, dans les faits non mod\u00e9r\u00e9s, et c'est l\u00e0 que se trouvent la pornographie, le recrutement extr\u00e9miste et les fichiers pirat\u00e9s sur cette plateforme. Aucun r\u00e9glage ne les enl\u00e8ve, et les conversations ordinaires ne sont pas chiffr\u00e9es de bout en bout sauf \u00e0 ouvrir une conversation secr\u00e8te \u00e0 chaque fois. Signal est toujours autoris\u00e9 sur cet appareil et fait mieux la partie messagerie."
+        "nl": "Telegram is een goede berichtenapp om een slechte heen. Priv\u00e9chats zijn prima. Publieke kanalen zijn doorzoekbaar, in de praktijk ongemodereerd, en het is daar dat pornografie, extremistische ronselarij en illegale bestanden op dit platform zitten. Er is geen instelling die ze weghaalt, en gewone chats zijn niet end-to-end versleuteld tenzij je telkens een Geheime chat begint. Signal mag altijd op dit toestel en doet het berichtendeel beter. Dit uitzetten verwijdert de app niet: ze wordt opgeschort en verborgen, en komt met al haar gesprekken en media intact terug zodra je ze weer aanzet. Wil je ze echt kwijt, verwijder ze dan zelf voor je vergrendelt.",
+        "fr": "Telegram est une bonne messagerie envelopp\u00e9e dans une mauvaise. Les conversations priv\u00e9es ne posent pas de probl\u00e8me. Les canaux publics sont consultables, dans les faits non mod\u00e9r\u00e9s, et c'est l\u00e0 que se trouvent la pornographie, le recrutement extr\u00e9miste et les fichiers pirat\u00e9s sur cette plateforme. Aucun r\u00e9glage ne les enl\u00e8ve, et les conversations ordinaires ne sont pas chiffr\u00e9es de bout en bout sauf \u00e0 ouvrir une conversation secr\u00e8te \u00e0 chaque fois. Signal est toujours autoris\u00e9 sur cet appareil et fait mieux la partie messagerie. D\u00e9sactiver cette option ne d\u00e9sinstalle pas l'application : elle est suspendue et masqu\u00e9e, et revient avec toutes ses conversations et tous ses m\u00e9dias intacts si vous la r\u00e9activez. Si vous pr\u00e9f\u00e9rez qu'elle disparaisse vraiment, d\u00e9sinstallez-la vous-m\u00eame avant de verrouiller."
       }
     },
     {

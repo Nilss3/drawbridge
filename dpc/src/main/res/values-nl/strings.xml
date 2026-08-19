@@ -31,9 +31,9 @@
     <string name="browser_all_name">De browsers toestaan</string>
     <string name="browser_all_description">Elke browser die goed werkt met de webfilter. We raden herald aan: minimalistisch, toont een duidelijke pagina bij blokkeren, en volgt het beleid van drawbridge.</string>
     <string name="browser_mono_name">Enkel herald mono</string>
-    <string name="browser_mono_description">Een minimalistische browser voor wie te veel surft: standaard zwart-wit, hij scrolt en klikt trager, en heeft slechts één tab. Elke andere browser wordt verwijderd.</string>
+    <string name="browser_mono_description">Een minimalistische browser voor wie te veel surft: standaard zwart-wit, hij scrolt en klikt trager, en heeft slechts één tab.\n\nZe worden niet verwijderd: elke andere browser wordt opgeschort en verborgen, en komt terug met zijn favorieten en aanmeldingen intact zodra je hem opnieuw toelaat. Wil je hem echt kwijt, verwijder hem dan zelf voor je vergrendelt.</string>
     <string name="browser_none_name">Helemaal geen browser</string>
-    <string name="browser_none_description">Verwijdert alle browsers. Zorg dat al je apps ingelogd zijn voor je dit vastzet, want sommige apps hebben een browser nodig om aan te melden.\n\nHou er ook rekening mee dat bepaalde functies kunnen haperen of niet werken, bv. betalingen, QR-codes, enz.</string>
+    <string name="browser_none_description">Laat de telefoon achter zonder browser die je kan openen. Zorg dat al je apps ingelogd zijn voor je dit vastzet, want sommige apps hebben een browser nodig om aan te melden.\n\nHou er ook rekening mee dat bepaalde functies kunnen haperen of niet werken, bv. betalingen, QR-codes, enz.\n\nZe worden niet verwijderd: elke andere browser wordt opgeschort en verborgen, en komt terug met zijn favorieten en aanmeldingen intact zodra je hem opnieuw toelaat. Wil je hem echt kwijt, verwijder hem dan zelf voor je vergrendelt.</string>
     <string name="browser_icons_description">De browsers die deze keuze toelaat</string>
 
     <string name="install_lock_heading">App-installaties</string>
@@ -168,7 +168,7 @@
     <string name="disconnect_online_name">Helaas altijd online</string>
     <string name="disconnect_online_description">Standaard, en altijd wanneer ontgrendeld.</string>
     <string name="disconnect_curfew_name">Avondklok voor het internet</string>
-    <string name="disconnect_curfew_description">Internet alleen tussen bepaalde uren. Aanbevolen is minstens een half uur per week om updates te installeren.</string>
+    <string name="disconnect_curfew_description">Na vergrendeling: internet alleen tussen bepaalde uren. Aanbevolen is minstens een half uur per week om updates te installeren.</string>
     <string name="curfew_explanation">De telefoon is offline tussen deze uren.</string>
     <string name="curfew_weekdays">Maandag tot vrijdag</string>
     <string name="curfew_weekend">Zaterdag en zondag</string>

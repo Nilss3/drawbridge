@@ -48,9 +48,9 @@
     <string name="browser_all_name">Allow the browsers</string>
     <string name="browser_all_description">Every browser that works properly with the web filter. We recommend herald: it is minimalist, it shows a clear page when something is blocked, and it follows drawbridge\'s policy.</string>
     <string name="browser_mono_name">herald mono only</string>
-    <string name="browser_mono_description">A minimalist browser for those who surf too much: it\'s by default monochrome, it scrolls and clicks more slowly, and has only one tab. Every other browser is removed.</string>
+    <string name="browser_mono_description">A minimalist browser for those who surf too much: it\'s by default monochrome, it scrolls and clicks more slowly, and has only one tab.\n\nThey are not uninstalled: every other browser is suspended and hidden, and comes back with its bookmarks and logins intact if you allow it again. If you would rather it were really gone, uninstall it yourself before locking.</string>
     <string name="browser_none_name">No browser at all</string>
-    <string name="browser_none_description">Removes all browsers. Before locking this in, make sure all your apps are logged in, because some apps require a browser to sign in.\n\nAlso, know that some functionalities may break or not work, e.g. payments, QR codes, etc.</string>
+    <string name="browser_none_description">Leaves the phone with no browser you can open. Before locking this in, make sure all your apps are logged in, because some apps require a browser to sign in.\n\nAlso, know that some functionalities may break or not work, e.g. payments, QR codes, etc.\n\nThey are not uninstalled: every other browser is suspended and hidden, and comes back with its bookmarks and logins intact if you allow it again. If you would rather it were really gone, uninstall it yourself before locking.</string>
     <string name="browser_icons_description">The browsers this choice allows</string>
 
     <!-- The app-install lock. Promised on the website before it was built, and
@@ -220,7 +220,7 @@
     <string name="disconnect_online_name">Sadly always online</string>
     <string name="disconnect_online_description">Default and always when unlocked.</string>
     <string name="disconnect_curfew_name">Curfew for the internet</string>
-    <string name="disconnect_curfew_description">Only allow internet between certain times. Recommended is at least a half hour per week to install updates.</string>
+    <string name="disconnect_curfew_description">After lock: internet only between certain times. Recommended is at least a half hour per week to install updates.</string>
     <string name="curfew_explanation">The phone is offline between these hours.</string>
     <string name="curfew_weekdays">Monday to Friday</string>
     <string name="curfew_weekend">Saturday and Sunday</string>

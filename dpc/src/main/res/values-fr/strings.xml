@@ -31,9 +31,9 @@
     <string name="browser_all_name">Autoriser les navigateurs</string>
     <string name="browser_all_description">Tous les navigateurs qui fonctionnent bien avec le filtre web. Nous recommandons herald : minimaliste, il affiche une page claire lorsqu\'un site est bloqué et il suit la politique de drawbridge.</string>
     <string name="browser_mono_name">herald mono uniquement</string>
-    <string name="browser_mono_description">Un navigateur minimaliste pour qui navigue trop : monochrome par défaut, il défile et réagit plus lentement, et n\'a qu\'un seul onglet. Tous les autres navigateurs sont supprimés.</string>
+    <string name="browser_mono_description">Un navigateur minimaliste pour qui navigue trop : monochrome par défaut, il défile et réagit plus lentement, et n\'a qu\'un seul onglet.\n\nIls ne sont pas désinstallés : tous les autres navigateurs sont suspendus et masqués, et reviennent avec leurs favoris et leurs connexions intacts si vous les réautorisez. Si vous préférez qu\'un navigateur disparaisse vraiment, désinstallez-le vous-même avant de verrouiller.</string>
     <string name="browser_none_name">Aucun navigateur</string>
-    <string name="browser_none_description">Supprime tous les navigateurs. Avant de verrouiller ce choix, assurez-vous d\'être connecté dans toutes vos applications, car certaines exigent un navigateur pour s\'y connecter.\n\nSachez aussi que certaines fonctions peuvent mal fonctionner ou ne plus fonctionner du tout, par exemple les paiements, les codes QR, etc.</string>
+    <string name="browser_none_description">Laisse le téléphone sans navigateur que vous puissiez ouvrir. Avant de verrouiller ce choix, assurez-vous d\'être connecté dans toutes vos applications, car certaines exigent un navigateur pour s\'y connecter.\n\nSachez aussi que certaines fonctions peuvent mal fonctionner ou ne plus fonctionner du tout, par exemple les paiements, les codes QR, etc.\n\nIls ne sont pas désinstallés : tous les autres navigateurs sont suspendus et masqués, et reviennent avec leurs favoris et leurs connexions intacts si vous les réautorisez. Si vous préférez qu\'un navigateur disparaisse vraiment, désinstallez-le vous-même avant de verrouiller.</string>
     <string name="browser_icons_description">Les navigateurs que ce choix autorise</string>
 
     <string name="install_lock_heading">Installation d\'applications</string>
@@ -168,7 +168,7 @@
     <string name="disconnect_online_name">Hélas toujours en ligne</string>
     <string name="disconnect_online_description">Par défaut, et toujours lorsque drawbridge est déverrouillé.</string>
     <string name="disconnect_curfew_name">Couvre-feu pour internet</string>
-    <string name="disconnect_curfew_description">N\'autoriser internet qu\'entre certaines heures. Il est recommandé de prévoir au moins une demi-heure par semaine pour installer les mises à jour.</string>
+    <string name="disconnect_curfew_description">Après le verrouillage : internet uniquement entre certaines heures. Nous recommandons au moins une demi-heure par semaine pour installer les mises à jour.</string>
     <string name="curfew_explanation">Le téléphone est hors ligne entre ces heures.</string>
     <string name="curfew_weekdays">Du lundi au vendredi</string>
     <string name="curfew_weekend">Samedi et dimanche</string>
