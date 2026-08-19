@@ -1,7 +1,7 @@
 {
-  "version": 78,
+  "version": 79,
   "issued_at": "2026-08-16T12:00:00Z",
-  "comment": "Beeper is whitelisted: a universal chat client the store rates Parental guidance, so the rating rule would have removed a messaging tool rather than a feed.",
+  "comment": "drawbridge 0.2.15 build 40 on the dev channel: a removal a switch governs hides the app instead of uninstalling it, so its data survives being switched back on.",
   "dns": {
     "upstreams": [
       "94.140.14.15",
@@ -734,9 +734,9 @@
   },
   "app_update": {
     "package_name": "app.drawbridge.dpc",
-    "version_code": 39,
-    "url": "https://dev.drawbridge-project.pages.dev/assets/dpc-22db2b9b341076d3.apk",
-    "sha256": "22db2b9b341076d3a0d5a14c1defb16dddd68577f95b26dd90eecccfe072b1d8"
+    "version_code": 40,
+    "url": "https://dev.drawbridge-project.pages.dev/assets/dpc-6e635490a9709784.apk",
+    "sha256": "6e635490a9709784aa1333e027c6b9b76fcec3bc6cc4dfce93112495105154ca"
   },
   "required_apps": [
     {
