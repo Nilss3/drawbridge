@@ -115,8 +115,28 @@ class AppInstaller(context: Context) {
     private fun AppUpdate.matchesThisDevice(): Boolean =
         abi == null || Build.SUPPORTED_ABIS.any { it.equals(abi, ignoreCase = true) }
 
+    /**
+     * The installed version of [packageName], or 0 when the phone does not have
+     * it at all.
+     *
+     * **`MATCH_UNINSTALLED_PACKAGES` is what stops a hidden app being downloaded
+     * again.** Since 2026-08-19 a browser the chooser narrowed away is hidden
+     * rather than uninstalled, so that switching back keeps its bookmarks — and
+     * hiding a package is implemented by clearing its installed flag for the
+     * user, so a plain `getPackageInfo` throws for it exactly as it does for an
+     * app that was never here. Without the flag, the first poll after herald
+     * came back into the allowed set would fetch 230 MB to replace an app that
+     * is already on the disk.
+     *
+     * The flag also matches a package uninstalled with its data kept, which this
+     * would then decline to reinstall. Nothing here does that: `uninstall` is
+     * called without `DELETE_KEEP_DATA`, and the reversible removals that keep
+     * data are precisely the ones that hide.
+     */
     private fun versionCodeOf(packageName: String): Int = try {
-        appContext.packageManager.getPackageInfo(packageName, 0).longVersionCode.toInt()
+        appContext.packageManager
+            .getPackageInfo(packageName, PackageManager.MATCH_UNINSTALLED_PACKAGES)
+            .longVersionCode.toInt()
     } catch (e: Exception) {
         // Not installed — for a required app, exactly the case to act on.
         0

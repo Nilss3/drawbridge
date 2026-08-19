@@ -1,8 +1,14 @@
 # Clarifications for the block list
 
-The scope of this document is only to explain a bit why certain social media apps, games and websites are denied access to a device with drawbridge. We do not elaborate on pornography and gambling.
+This document explains why certain social media apps, games, dating apps, AI companions and websites are denied access to a device with drawbridge, and lists the exceptions. We do not elaborate on pornography and gambling.
+
+It is written and kept up to date by a large language model, because the list moves faster than anyone wants to hand-write. Every claim here is meant to carry a source you can check. It also means more em-dashes than a person would use, for which we apologise.
 
 # Social media and chat apps
+
+**This is the blocklist, and it works alongside the age-rating rule rather than instead of it.**
+Every app named here is removed by name, whatever the store says about it. Separately, and for
+everything nobody has written down, an app is removed unless the store rates it PEGI 3.
 
 ## Facebook
 Meta's own internal research, leaked by whistleblower Frances Haugen, showed the company knew its products could harm teen mental health but kept that research from the public and regulators ([NPR](https://www.npr.org/2021/10/05/1043207218/whistleblower-to-congress-facebook-products-harm-children-and-weaken-democracy), [BBC](https://www.bbc.com/news/technology-58784615)). A meta-analysis of adolescents and young adults also linked problematic Facebook use to psychological distress and lower well-being ([PubMed](https://pubmed.ncbi.nlm.nih.gov/29024900/)). Beyond teens, longitudinal research found Facebook use predicts declines in mental health over time in general adult samples, and a 2023 review linked overuse to broader psychological and physiological risks, including sleep disruption and anxiety, in adults ([World Psychiatry](https://pmc.ncbi.nlm.nih.gov/articles/PMC7801842/), [Frontiers in Psychology](https://pmc.ncbi.nlm.nih.gov/articles/PMC10435997/)).
@@ -71,6 +77,11 @@ Security researchers found LINE's end-to-end encryption is only partial/optional
 As Russia's dominant social network, VK operates under state content controls and has been identified as a channel for state-linked disinformation campaigns, with limited independent oversight of what content (including misleading material) is amplified ([RAND Corporation](https://www.rand.org/content/dam/rand/pubs/research_reports/RR4300/RR4373z1/RAND_RR4373z1.pdf)). A Citizen Lab analysis found VK enforces significant in-platform censorship affecting the general adult user base's access to information, particularly for users inside Russia, compounding the disinformation concerns already noted ([Citizen Lab](https://citizenlab.ca/wp-content/uploads/2025/12/Report169-not-ok-on-vk.pdf)).
 
 # Android games and AI companions requiring caution, tailored towards Europe
+
+**Two mechanisms cover this section, not one.** The titles below are on the blocklist by name. The
+rest is covered by the rating and category rule: an app is removed unless it is rated PEGI 3, and
+the store's own *Games* categories are removed as a group, so a game released tomorrow is caught
+without anybody adding it here.
 
 ---
 
@@ -238,6 +249,45 @@ This is a separate high-risk category, not a always game genre. These apps simul
 - **The available evidence supports a no-companions rule for minors.** Common Sense Media and Stanford Brainstorm concluded that social AI companions pose unacceptable risks for under-18s, while the APA calls for privacy, content and interaction defaults that establish healthy boundaries with simulated relationships ([risk assessment](https://www.techpolicy.press/why-ai-companions-are-not-kids-friends/); [APA advisory](https://www.apa.org/news/press/releases/2025/06/protect-adolescent-ai-users)).
 
 
+### The apps drawbridge removes by name
+
+The table below is the reasoning; this is the consequence. These 28 companion and
+character-chat apps are on `blocked_packages`, so they are removed from the phone whether or not
+anybody visits the websites. **Note the middle column.** Several of these carry a store rating of
+PEGI 3 or *Parental guidance*, which is exactly why naming them is necessary: the rating rule alone
+would have let them stay.
+
+| App | Play rating (BE) | Package |
+|---|---|---|
+| AI Character: Roleplay Chat | PEGI 3 | `com.ai.chat.assistant.smart.bot` |
+| Anima: AI Friend Virtual Chat | PEGI 3 | `anima.virtual.ai.robot.friend` |
+| Botify AI: Chatbot & Companion | PEGI 16 | `ai.botify.app` |
+| Chai: Chat AI Platform | PEGI 18 | `com.Beauchamp.Messenger.external` |
+| Character AI: Chat, Talk, Text | PEGI 18 | `ai.character.app` |
+| CrushX: Fantasy Roleplay Chat | PEGI 18 | `com.crushx.aichatfriends` |
+| Cycle AI: Chat & AI Friends | PEGI 16 | `com.cycleai.android` |
+| EVA AI Soulmate | PEGI 18 | `com.ifriend.app` |
+| Fantasia: Character AI Chat | PEGI 16 | `com.fantasia.ai` |
+| Fantasy AI: RP & Companions | PEGI 18 | `com.fantasychat.withai` |
+| Fantasy.AI:Chat With Character | PEGI 16 | `online.fantasyai.android` |
+| FantasyX: AI Roleplay Chat | PEGI 3 | `com.fantasyx.chat` |
+| HiWaifu: AI Friend & Waifu Hub | PEGI 18 | `com.hiwaifu.app` |
+| Joyland:Chat with AI Character | PEGI 16 | `com.joyland.ai` |
+| Kajiwoto AI Friend Companions | Parental guidance | `com.cho.kajiwoto` |
+| Kindroid: Your Personal AI | PEGI 16 | `com.kindroid.app` |
+| Linky AI: Chat, Play, Connect | PEGI 18 | `com.aigc.ushow.ichat` |
+| Magic: Fantasy Roleplay Chat | PEGI 18 | `com.magicai.android` |
+| Mimo: Connect with Characters | PEGI 16 | `chat.aimimo.mimo` |
+| Nomi AI: Chat, Play, Connect | PEGI 3 | `nomi.ai.friend.chat` |
+| Paradot: Personal AI chat | Parental guidance | `com.withfeelingai.test` |
+| PolyBuzz: Chat with AI Friends | PEGI 18 | `ai.socialapps.speakmaster` |
+| Replika: My AI Friend | Parental guidance | `ai.replika.app` |
+| RolePlai - Ai Character Chat | PEGI 12 | `com.roleplai.app` |
+| Rosytalk: AI Character Chat | PEGI 16 | `com.rosytalk.ai` |
+| SimSimi | PEGI 16 | `com.ismaker.android.simsimi` |
+| Talkie: Creative AI Community | PEGI 18 | `com.weaver.app.prod` |
+| iGirl: AI Girlfriend | PEGI 16 | `ai.girlfriend.virtual.dating.lover.igirl` |
+
 ### Detailed table
 
 | # | App | Developer / publisher | Google Play availability + European (IARC/PEGI, BE storefront) & US (ESRB-style) rating | Stated minimum age (official source) | Popularity / download signal | Parent / child-safety org or regulator evidence | Pediatric / clinical / academic / government safety evidence | Key concrete risk for minors | Sources |
@@ -294,3 +344,129 @@ Belga News Agency (Belgian national example): https://www.belganewsagency.eu/we-
 UNICEF policy guidance on AI for children: https://www.unicef.org/innocenti/reports/policy-guidance-ai-children ·
 FTC 6(b) inquiry: https://www.ftc.gov/news-events/news/press-releases/2025/09/ftc-launches-inquiry-ai-chatbots-acting-companions ·
 Character.AI under-18 changes: https://blog.character.ai/an-update-on-changes-to-our-under-18-experience/
+
+
+## The exceptions: apps allowed above PEGI 3
+
+The rating rule removes anything the store does not rate PEGI 3, which is deliberately blunt and
+would take a pile of ordinary tools with it. These 33 are named as exceptions, one at a
+time. They are tools rather than entertainment: music you already chose, messaging that is not a
+feed, recipes, sport tracking, video calls for school and work, and the general-purpose assistants.
+None of them has an algorithmic feed of strangers' content, which is the line this list is drawn
+on.
+
+| App | Play rating (BE) | Package |
+|---|---|---|
+| Amazon Music: Songs & Podcasts | Parental guidance | `com.amazon.mp3` |
+| Apple Music | Parental guidance | `com.apple.android.music` |
+| Audible: Audiobooks & Podcasts | Parental guidance | `com.audible.application` |
+| Bandcamp | Parental guidance | `com.bandcamp.android` |
+| Beeper: Universal Chat | Parental guidance | `com.beeper.android` |
+| Birda - Birding Made Better | Parental guidance | `com.chirpbirding.birda` |
+| Birdero: Birdwatching, Bird ID | Parental guidance | `com.apex.community.birdbrain.birdbrain` |
+| ChatGPT | Parental guidance | `com.openai.chatgpt` |
+| Claude by Anthropic | Parental guidance | `com.anthropic.claude` |
+| Cookpad recipes, homemade food | Parental guidance | `com.mufumbo.android.recipe.search` |
+| DeepSeek - AI Assistant | Parental guidance | `com.deepseek.chat` |
+| Deezer: Music & Podcast Player | Parental guidance | `deezer.android.app` |
+| FamilyAlbum - Photo Sharing | Parental guidance | `us.mitene` |
+| Google Gemini | Parental guidance | `com.google.android.apps.bard` |
+| Newpharma | PEGI 18 | `app.newpharma.shop` |
+| Perplexity - Ask Anything | Parental guidance | `ai.perplexity.app.android` |
+| Qobuz: Music & Editorial | Parental guidance | `com.qobuz.music` |
+| ReciMe: Recipes & Meal Planner | Parental guidance | `com.recime.app` |
+| Running Tracker App – FITAPP | Parental guidance | `com.fitapp` |
+| Samsung Food: Meal Planner | Parental guidance | `com.foodient.whisk` |
+| Session - Private Messenger | Parental guidance | `network.loki.messenger` |
+| Shazam: Find Music & Concerts | Parental guidance | `com.shazam.android` |
+| SimpleX Chat | Parental guidance | `chat.simplex.app` |
+| SoundCloud: The Music You Love | Parental guidance | `com.soundcloud.android` |
+| Sports Tracker: Run Bike Hike | Parental guidance | `com.stt.android` |
+| Spotify: Music and Podcasts | Parental guidance | `com.spotify.music` |
+| Strava: Run, Bike, Walk | Parental guidance | `com.strava` |
+| Threema. The Secure Messenger | Parental guidance | `ch.threema.app` |
+| TIDAL Music: HiFi sound | Parental guidance | `com.aspiro.tidal` |
+| TuneIn Radio: Music & Sports | Parental guidance | `tunein.player` |
+| Vibe by Mistral (ex-Le Chat) | Parental guidance | `ai.mistral.chat` |
+| Webex | Parental guidance | `com.cisco.wx2.android` |
+| Zoom Workplace | Parental guidance | `us.zoom.videomeetings` |
+
+## Video streaming, which is a switch rather than a rule
+
+Streaming is not one of the seven blocked categories and is not removed by default. It is a single
+switch on the configuration screen: leave it on and these 66 services keep working, turn it
+off before locking and they are hidden, along with 103 matching domains at
+the DNS layer. It is a switch rather than a rule because a film on a Friday evening is not the thing
+drawbridge was built to interrupt, and a household that disagrees can say so once.
+
+Switching it back on restores the apps with their downloads and logins intact, because a removal a
+switch governs hides the app rather than uninstalling it.
+
+| Service | Package(s) |
+|---|---|
+| Apple TV: Shows, Movies & More | `com.apple.atve.androidtv.appletv` |
+| atresplayer: Ver TV online | `com.antena3.atresplayer.tv` |
+| atresplayer・Estrenos de Series | `com.a3.sgt` |
+| beIN CONNECT (MENA) | `ptv.bein.mena` |
+| beIN SPORTS | `com.beinsports.andcontent` |
+| beIN SPORTS CONNECT | `ptv.bein.ui` |
+| beIN SPORTS CONNECT (TV) | `com.beinsports.connect.tv.apac` |
+| bilibili - All Your Fav Videos | `tv.danmaku.bili` |
+| BritBox: Home of British TV | `com.britbox.tv`, `com.britbox.us` |
+| CANAL+, Live and catch-up TV | `com.canal.android.canal` |
+| Claro video | `com.amco.clarovideo_atv`, `com.dla.android` |
+| com.orange.ocsgo | `com.orange.ocsgo` |
+| com.showmax.app | `com.showmax.app` |
+| com.showmax.showmax.google | `com.showmax.showmax.google` |
+| com.tencent.qqlive | `com.tencent.qqlive` |
+| com.youku.phone | `com.youku.phone` |
+| Crunchyroll: Anime Streaming | `com.crunchyroll.crunchyroid` |
+| Curiosity Stream | `com.curiosity.curiositystream` |
+| Curiosity Stream (TV) | `com.curiosity.curiositystream.androidtv` |
+| DAZN - Watch Live Sports | `com.dazn` |
+| Disney+ | `com.disney.disneyplus`, `com.disneyplus.mea` |
+| DStv Stream | `com.dstvmobile.android` |
+| Globoplay: Novelas, séries e + | `com.globo.globotv` |
+| Google TV | `com.google.android.videos` |
+| HBO Max: Stream TV & Movies | `com.wbd.stream` |
+| Hulu: Stream TV shows & movies | `com.hulu.plus` |
+| iflix: Asian & Local Dramas | `iflix.play` |
+| iQIYI - Drama, Anime, Show | `com.iqiyi.i18n` |
+| ITVX | `air.ITVMobilePlayer` |
+| JioHotstar | `in.startv.hotstar` |
+| Joyn | deine Streaming App | `de.prosiebensat1digital.seventv` |
+| MBC Shahid | `net.mbc.shahid` |
+| MEGOGO: Online TV, Movies | `com.megogo.application` |
+| Movistar Plus | `com.movistarplus.androidtv`, `es.plus.yomvi` |
+| myOSNtv | `com.osn.myosntv` |
+| Nebula | `tv.standard.nebula` |
+| Netflix | `com.netflix.mediaclient` |
+| Odysee | `com.odysee.app` |
+| OSN+ | `com.osn.go` |
+| Paramount+ | `com.cbs.app` |
+| Peacock TV: Stream TV & Movies | `com.peacocktv.peacockandroid` |
+| PeerTube | `org.framasoft.peertube` |
+| Polsat Box Go | `pl.cyfrowypolsat.cpgo` |
+| Prime Video | `com.amazon.amazonvideo.livingroom`, `com.amazon.avod.thirdpartyclient` |
+| Rakuten TV -Movies & TV Series | `tv.wuaki` |
+| RTL+ | `de.rtli.tvnow` |
+| SkyShowtime: Movies & Series | `com.skyshowtime.skyshowtime.google` |
+| Sony LIV: Sports & Entmt | `com.sonyliv` |
+| StarTimes ON for TV - Live,Vod | `com.startimes.vod.ontv` |
+| StarTimes ON Lite-Live TV | `com.star.mobile.video.lite` |
+| StarTimes ON-Live TV, Football | `com.star.mobile.video` |
+| Streamz | `be.dpgmedia.streamz` |
+| Tencent Video | `com.tencent.qqlivei18n.us` |
+| TIMVISION | `it.telecomitalia.cubovision` |
+| TOD by beIN | `com.todtv.tod` |
+| TV 2 Play | `no.tv2.sumo` |
+| TV4 Play | `se.tv4.tv4playtab` |
+| Viaplay: Movies & TV Shows | `com.viaplay.android` |
+| Videoland | `nl.rtl.videoland.v2` |
+| Vidio: Sports, Movies, Series | `com.vidio.android` |
+| Viu : Korean & Asian content | `com.viu.phone` |
+| ViX: TV, Deportes y Noticias | `com.univision.prendetv` |
+| WATCH IT | `com.watchit.vod` |
+| YOUKU-Drama, Film, Show, Anime | `com.youku.international.phone` |
+| Иви: сериалы, фильмы и ТВ | `ru.ivi.client` |
+| Кинопоиск－фильмы，сериалы，спорт | `ru.kinopoisk` |

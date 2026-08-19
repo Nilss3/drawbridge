@@ -22,6 +22,11 @@ SOURCE = pathlib.Path(__file__).resolve().parent.parent / "site-src" / "block-li
 
 def inline(text: str) -> str:
     text = html.escape(text.strip(), quote=False)
+    # Code spans, before every other pass. The document names about a hundred
+    # and thirty Android packages, and a package id is full of dots and
+    # underscores that must not be re-punctuated on the way to the page; doing
+    # this first also means nothing inside a span can be read as emphasis.
+    text = re.sub(r"`([^`]+)`", r"<code>\1</code>", text)
     # Bare URLs first, and only ones not already the target of a markdown
     # link — otherwise the second pass would re-wrap the href value itself.
     text = re.sub(

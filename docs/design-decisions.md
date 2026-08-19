@@ -477,6 +477,43 @@ feature after a De Morgen article that Firefox offered reader mode for and heral
 did not — that URL serves a consent interstitial first and only then redirects to
 the article, so the article itself was never checked.
 
+## A removal a switch can undo hides the app instead of uninstalling it
+
+Until 2026-08-19 the choice between hiding and uninstalling was made on one
+question: can the platform uninstall this at all? System apps like Chrome cannot
+be, so they were hidden; everything else was uninstalled. That is right for what
+the policy never allows, and wrong for everything a control on the configuration
+screen governs.
+
+**Two things went wrong in use, and they are the same thing.** Switching the
+browser chooser back and forth uninstalled herald and re-downloaded it from the
+release, a quarter of a gigabyte each way. And switching *Allow WhatsApp* off and
+then on again lost the chat history, because an uninstall is permanent and
+nothing reinstalls a user-installed app: `restoreNowAllowed` can unhide, it
+cannot resurrect.
+
+So the question is no longer only *can this be uninstalled* but also *is this
+removal one somebody is expected to reverse*. `Removal.reversible` carries the
+answer, and it is exactly the set `deferred` already computed for a different
+purpose — what an option covers, and a browser the chooser narrowed away. Those
+hide. Their data sits untouched underneath, and the switch going the other way
+brings the app back with its bookmarks, logins and messages.
+
+**The install lock deliberately does not qualify**, though it waits for the lock
+like the others. "No other apps" is a statement about what the phone carries, not
+a preference to flip back and forth, and an app kept on disk in case the lock is
+ever lifted would be a phone quietly full of things it says it does not have.
+That is why `reversible` is a separate field from `waitsForLock` rather than the
+same one read twice.
+
+**One consequence had to be fixed at the other end.** Hiding a package is
+implemented by clearing its installed flag for the user, so `getPackageInfo`
+throws for a hidden app exactly as it does for an absent one — and `AppInstaller`
+reads that to decide whether a required app needs fetching. Without
+`MATCH_UNINSTALLED_PACKAGES` there, the first poll after herald came back into
+the allowed set would have downloaded it again to replace the copy already on the
+disk, which is the bug this whole change exists to stop.
+
 ## The filter has a door in it, and Android Auto is what it is for
 
 `dns.excluded_packages` leaves named apps outside the tunnel. Every name in it

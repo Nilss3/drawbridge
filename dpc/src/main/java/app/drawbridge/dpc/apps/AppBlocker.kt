@@ -144,7 +144,7 @@ class AppBlocker(context: Context) {
         if (!actsNow(removal.waitsForLock, parentKey.isLocked)) return Action.NONE
 
         Log.i(TAG, "Removing $packageName: ${removal.reason}")
-        return remove(packageName)
+        return remove(packageName, reversible = removal.reversible)
     }
 
     /**
@@ -193,7 +193,7 @@ class AppBlocker(context: Context) {
 
         return when {
             packageName in policy.blockedPackages ->
-                Removal("on the blocked package list", switchGoverned)
+                Removal("on the blocked package list", switchGoverned, reversible = switchGoverned)
             // Gated on the document having been read — see [browserRuleApplies],
             // which is the one branch here that has to ask.
             //
@@ -204,6 +204,7 @@ class AppBlocker(context: Context) {
                 "is a browser, and this phone allows only " +
                     allowedBrowsers.joinToString().ifEmpty { "no browser at all" },
                 switchGoverned,
+                reversible = switchGoverned,
             )
             notAllowed(packageName, policy) ->
                 Removal("not on this profile's allowed list", waitsForLock = false)
@@ -254,7 +255,29 @@ class AppBlocker(context: Context) {
      * the lock like everything a switch still governs. That was correct
      * behaviour in the same report.
      */
-    private data class Removal(val reason: String, val waitsForLock: Boolean)
+    private data class Removal(
+        val reason: String,
+        val waitsForLock: Boolean,
+        /**
+         * Whether this removal is one a switch can undo, and must therefore keep
+         * the app's data.
+         *
+         * **The same set as [waitsForLock] for the two rules a control governs,
+         * and deliberately not the same field.** A newcomer under the install
+         * lock also waits for the lock, and that one is not reversible: "no other
+         * apps" is a decision about what the phone carries, not a preference
+         * somebody flips back and forth, and an app kept on disk in case the
+         * install lock is ever switched off would be a phone quietly full of
+         * things it says it does not have.
+         *
+         * What this covers is exactly what a parent can put back from the
+         * configuration screen: WhatsApp and Telegram under their options, and a
+         * browser the chooser narrowed away. Those are hidden rather than
+         * uninstalled, so the chats, the bookmarks and the logins are all still
+         * there when the switch goes the other way. See [remove].
+         */
+        val reversible: Boolean = false,
+    )
 
     /**
      * What the store says, or null if it has nothing to say about this package.
@@ -689,7 +712,17 @@ class AppBlocker(context: Context) {
 
     /**
      * Removes [packageName]: uninstall for user-installed apps, hide for
-     * preinstalled ones.
+     * preinstalled ones **and for anything a switch can put back**.
+     *
+     * The second half arrived on 2026-08-19, from use. Switching the browser
+     * chooser back and forth uninstalled and re-downloaded herald every time —
+     * a quarter of a gigabyte per change — and switching *Allow WhatsApp* off
+     * and on again lost the chats, because an uninstall is permanent and nothing
+     * reinstalls a user-installed app. Both are controls a parent is expected to
+     * change their mind about, so both now hide: the app stops existing as far
+     * as the launcher is concerned, and its data is untouched underneath. See
+     * [Removal.reversible] for which removals qualify and which deliberately do
+     * not.
      *
      * `PackageInstaller.uninstall` fails on system apps — Chrome, Samsung
      * Internet and OEM browsers can never be uninstalled — so those are hidden
@@ -706,21 +739,24 @@ class AppBlocker(context: Context) {
      * took, and a [Action.FAILED] is visible on the phone rather than only in a
      * log nobody reads — see [standings].
      */
-    fun remove(packageName: String): Action {
+    fun remove(packageName: String, reversible: Boolean = false): Action {
         if (!dpm.isDeviceOwnerApp(appContext.packageName)) {
             Log.w(TAG, "Not device owner; cannot remove $packageName")
             return Action.FAILED
         }
 
-        val system = isSystemPackage(packageName)
+        // Two reasons to hide rather than uninstall: the platform refuses to
+        // uninstall a system app, and a removal a switch can undo has to keep
+        // the app's data. See [Removal.reversible].
+        val hide = isSystemPackage(packageName) || reversible
         // Which branch a package took is the first question worth asking when one
         // of them survives a lock, and until 2026-08-14 the log did not say. The
         // owner found com.google.android.youtube still there after the option was
         // switched off while com.google.android.apps.youtube.music had gone, and
         // nothing on the device could distinguish "hide refused" from "uninstall
         // removed the update and left the factory build".
-        Log.i(TAG, "Removing $packageName by ${if (system) "hiding" else "uninstalling"} it")
-        return if (system) hideOrSuspend(packageName) else uninstall(packageName)
+        Log.i(TAG, "Removing $packageName by ${if (hide) "hiding" else "uninstalling"} it")
+        return if (hide) hideOrSuspend(packageName) else uninstall(packageName)
     }
 
     /**

@@ -1,7 +1,7 @@
 {
-  "version": 77,
+  "version": 78,
   "issued_at": "2026-08-16T12:00:00Z",
-  "comment": "drawbridge 0.2.14 build 39 and herald 0.1.14 on the dev channel: Android Auto outside the tunnel, the rewritten configuration screen, and mono's reader view back on request.",
+  "comment": "Beeper is whitelisted: a universal chat client the store rates Parental guidance, so the rating rule would have removed a messaging tool rather than a feed.",
   "dns": {
     "upstreams": [
       "94.140.14.15",
@@ -816,6 +816,7 @@
       "com.aspiro.tidal",
       "com.audible.application",
       "com.bandcamp.android",
+      "com.beeper.android",
       "com.chirpbirding.birda",
       "com.cisco.wx2.android",
       "com.deepseek.chat",

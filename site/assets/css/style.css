@@ -91,6 +91,20 @@ p { margin: 0 0 1rem; }
 .lang-switch a:hover { color: var(--ink); }
 .lang-switch a.lang-current { color: var(--ink); background: var(--paper); border: 1px solid var(--line); font-weight: 600; }
 
+/* Package ids and shell commands. The blocklist page names about a hundred and
+   thirty Android packages, and in a proportional face `com.a3.sgt` reads as
+   prose rather than as an identifier. Wraps rather than overflows: some of
+   these are long and they sit in narrow table cells. */
+code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.88em;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 0.05em 0.35em;
+  overflow-wrap: anywhere;
+}
+
 /* hero */
 
 .hero { padding: 2.5rem 0 2.5rem; }
