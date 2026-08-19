@@ -1,7 +1,7 @@
 {
-  "version": 50,
+  "version": 51,
   "issued_at": "2026-08-13T18:00:00Z",
-  "comment": "Policy 50 brings the alpha up to dev's policy content: the three toggles (WhatsApp 14+, YouTube 16+, Telegram 18+), the search-engine block, five allowed browsers, the proxy and VPN package list, and the Telegram packages that were reachable. What deliberately did NOT travel is the two fields that name builds. app_update still points at drawbridge 0.2.7 (version_code 18) and required_apps still resolves herald through /releases/latest/download/, which is v0.2.5 and herald 0.1.9 -- so the alpha is unchanged as software and only its rules move. One sentence was also dropped rather than copied: dev's YouTube description says Shorts open as ordinary videos in herald, which is true of herald 0.1.10 and false of the 0.1.9 this document is served to. Note two things reach a 0.2.7 phone only partly: Chrome and the other newly allowed browsers will stop being removed, but a phone that already hid Chrome cannot unhide it until it takes build 22 or later, and browsers are still only removed at the lock rather than always.",
+  "comment": "Policy 51, the alpha. Ports policy 73's blocklist work from dev, and nothing else. TikTok Lite served video on an alpha phone with all six tiktok-branded domains already blocked, because the app talks to ByteDance's own infrastructure -- api.snssdk.com for the feed, ibytedtos/byteimg/pstatp for the media -- so eighteen ByteDance API and CDN domains join the social list. Instagram Lite showed nothing on the same phone, which is the control: Meta serves its Lite build from instagram.com and fbcdn.net like everything else. Also blocks the two Lite packages that were installable by name (com.zhiliaoapp.musically.go, com.instagram.lite) and Google Play Games. The builds, the profiles and the options are untouched: this is a list change.",
   "dns": {
     "upstreams": [
       "94.140.14.15",
@@ -49,7 +49,7 @@
       "url": "https://raw.githubusercontent.com/Nilss3/drawbridge/main/dist/lists/social.txt",
       "format": "domains",
       "category": "social",
-      "sha256": "ab44c4ce6a166c9087b5f1b85673253db42dc8f413b922a3b2ea8df90c93b3a2"
+      "sha256": "f3d3a83dbbc7ab3238cd40d301660156866c27da3eb165e7dba6ac29f9ed1ad6"
     },
     {
       "id": "ai-companions",
@@ -167,6 +167,7 @@
     "com.google.android.apps.youtube.kids",
     "com.google.android.apps.youtube.music",
     "com.google.android.apps.youtube.unplugged",
+    "com.google.android.play.games",
     "com.google.android.youtube",
     "com.google.android.youtube.tv",
     "com.grindrapp.android",
@@ -178,6 +179,7 @@
     "com.innersloth.spacemafia",
     "com.instagram.android",
     "com.instagram.barcelona",
+    "com.instagram.lite",
     "com.instagram.moonshot",
     "com.ismaker.android.simsimi",
     "com.jds.batds",
@@ -281,6 +283,7 @@
     "com.windscribe.vpn",
     "com.withfeelingai.test",
     "com.zhiliaoapp.musically",
+    "com.zhiliaoapp.musically.go",
     "de.mobileconcepts.cyberghost",
     "free.vpn.unblock.proxy.turbovpn",
     "hotspotshield.android.vpn",
