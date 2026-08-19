@@ -1,7 +1,7 @@
 {
-  "version": 80,
+  "version": 81,
   "issued_at": "2026-08-16T12:00:00Z",
-  "comment": "What a switch turns off is suspended and hidden rather than uninstalled, and the WhatsApp and Telegram options now say so.",
+  "comment": "drawbridge 0.2.16 build 41 on the dev channel, and the streaming option carries a 16+ shield like YouTube next to it.",
   "dns": {
     "upstreams": [
       "94.140.14.15",
@@ -528,6 +528,7 @@
     {
       "id": "streaming",
       "name": "Allow long-form video streaming",
+      "recommended_age": 16,
       "description": "Netflix, Prime Video, Disney+, HBO Max and around fifty other subscription video services are blocked by default, because an evening disappears into one as easily as into a feed. Switching this on restores all of them at once, the apps and the websites. YouTube is not included: it has its own option, since a recommendation feed is a different thing from a film you sat down to watch.",
       "default_enabled": true,
       "exempt_packages": [
@@ -734,9 +735,9 @@
   },
   "app_update": {
     "package_name": "app.drawbridge.dpc",
-    "version_code": 40,
-    "url": "https://dev.drawbridge-project.pages.dev/assets/dpc-6e635490a9709784.apk",
-    "sha256": "6e635490a9709784aa1333e027c6b9b76fcec3bc6cc4dfce93112495105154ca"
+    "version_code": 41,
+    "url": "https://dev.drawbridge-project.pages.dev/assets/dpc-c0a460f4aa6babab.apk",
+    "sha256": "c0a460f4aa6babab137ef24f0269db01c7806f8f405b294501a597398467eb3d"
   },
   "required_apps": [
     {
