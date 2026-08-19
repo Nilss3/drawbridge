@@ -331,6 +331,12 @@ Each of these looks like a bug and is not, or bites silently:
   is live.
 - **`site/` is generated.** Hand-edited HTML disappears at the next
   `build-site.py` run, with no error. It has happened once already.
+- **`dist/release/dpc-release.apk` is shared between branches**, so building a
+  release on one channel leaves the other channel's staged APK wrong, and
+  `build-site.py` then refuses to run — correctly, since the installer page must
+  hand out the build the policy names. The fix is to fetch that channel's
+  published APK back into `dist/release/`, not to force the build. It happened
+  twice on 2026-08-19 while moving between channels.
 - **Editing `build-site.py`'s copy by string-matching corrupts it, in two
   different ways, and both were walked on 2026-08-19.** Scanning backwards from a
   match to find the opening quote stops at an apostrophe *inside* French text, so
@@ -1234,6 +1240,76 @@ BitChute. Netflix and friends are absent deliberately — the same paragraph say
 streaming media stays untouched. Either broaden the lists or narrow the sentence.
 
 ---
+
+## Two questions people ask, answered as far as they can be
+
+Neither has been tested. Both are written down because they are asked often
+enough that guessing twice is worse than reasoning once.
+
+### Would drawbridge work on GrapheneOS?
+
+**Most of it should, one part silently would not, and one problem disappears.**
+
+*What should work.* Everything drawbridge enforces is `DevicePolicyManager` on
+AOSP: Device Owner itself, `setApplicationHidden`, `setPackagesSuspended`,
+`PackageInstaller.uninstall`, the user restrictions, the always-on VPN and the
+clock lock. GrapheneOS is AOSP underneath and does not remove those. The cable
+route is `dpm set-device-owner`, which is the same call on any AOSP build, so
+`tools/provision-adb.sh` is the route to try first.
+
+*What disappears, in a good way.* **The Play Protect problem is a Play problem.**
+GrapheneOS has no Play services, so nothing refuses `app.drawbridge.dpc` at
+install and nothing blocks a `PackageInstaller` self-update. The single largest
+constraint on this project — see [the way in is adb](#the-way-in-is-adb-and-play-protect-is-why)
+— is a Google Play behaviour, and it is absent there. Unattended updates would
+work on GrapheneOS today.
+
+*What would silently stop working, and this is the one to warn people about.*
+**The store rule needs the Play Store.** `StoreCatalogue` fetches
+`https://play.google.com/store/apps/details` per package to read its age rating.
+That is an ordinary HTTPS request rather than a Play services API, so it works
+wherever the network does — but on a phone with no Play *listing* for a
+sideloaded app there is nothing to read, and an app the scan cannot answer for is
+`unverified`, which means **keep**. So on a GrapheneOS phone carrying F-Droid
+builds, the rating rule quietly allows everything it cannot look up, and
+[store to scan falling to zero](#traps-that-cost-time-here) is the only sign it
+ran at all. The blocklist, the domain filter and the browser rule are unaffected.
+
+*What changes shape.* Factory Reset Protection is Google's, and the decision to
+remove `DISALLOW_FACTORY_RESET` rests on FRP being the backstop. GrapheneOS has
+its own scheme, so that reasoning has to be redone rather than assumed.
+
+### Could herald be Chromium-based, using the system WebView?
+
+**Yes, and it would be a different product with a different set of holes.** Worth
+laying out because the size argument is genuinely strong: herald is about 230 MB
+per ABI because GeckoView is inside it, and a WebView browser is a few megabytes.
+
+*What gets better.* The engine is updated by the system rather than by us, so
+security fixes arrive without a release. **And the DNS story improves**: WebView
+uses the platform network stack, so lookups go to the system resolver where the
+filter sees them — there is no in-browser DoH to disable, which is the thing
+`EngineProvider` has to be careful about today and the thing every new browser
+has to be checked for. `shouldInterceptRequest` is a cleaner hook for the
+blocklist than `RequestInterceptor` is.
+
+*What gets lost, and the first one is the reason not to do it lightly.*
+**WebView has no extension support, so uBlock Origin goes.** Request-level
+blocking survives — that is the blocklist, and it is ours — but cosmetic
+filtering, element hiding and everything uBO does inside the page do not, unless
+they are reimplemented as injected scripts. Reader view goes the same way:
+Readability would have to be injected rather than being an extension Gecko
+already ships. The block page and the filtering are portable; the two features
+built on Gecko's extension support are not.
+
+*What is unknown.* Whether `shouldInterceptRequest` sees everything worth
+blocking — WebSocket upgrades and some subresource types are worth measuring
+before promising the filter is equivalent.
+
+**The honest summary:** a WebView herald would be smaller, safer at the DNS layer
+and cheaper to keep current, at the cost of the ad blocker and reader view as
+they exist now. That is a product decision rather than a technical blocker, and
+Via is the existence proof that the shape works.
 
 ## Working notes for whoever picks this up
 

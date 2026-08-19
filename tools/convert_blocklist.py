@@ -90,8 +90,17 @@ def render_table(header: list[str], rows: list[list[str]], caption: str | None) 
     return "\n".join(out)
 
 
-def build_fragment() -> str:
-    lines = SOURCE.read_text(encoding="utf-8").splitlines()
+def build_fragment(tables: dict[str, str] | None = None) -> str:
+    tables = tables or {}
+    text = SOURCE.read_text(encoding="utf-8")
+    # Counts appear mid-sentence rather than on a line of their own, so they are
+    # substituted as text before anything is parsed. The prose says how many
+    # apps a table holds, and it says it from the same source the rows come
+    # from — that sentence drifted once too.
+    for key, value in tables.items():
+        if key.startswith("count-"):
+            text = text.replace("{{table:%s}}" % key, value)
+    lines = text.splitlines()
     out: list[str] = []
     toc: list[tuple[str, str]] = []  # (anchor, label) for h2s
 
@@ -125,6 +134,18 @@ def build_fragment() -> str:
             continue
 
         if stripped.startswith("# "):
+            i += 1
+            continue
+
+        # A generated table, dropped in where the document wants it rather than
+        # appended at the end. The rows come from the signed policy at build
+        # time, so they cannot drift from what phones enforce; the document owns
+        # only the prose around them. See build-site.py's generated_tables().
+        if stripped.startswith("{{table:") and stripped.endswith("}}"):
+            key = stripped[len("{{table:"):-2]
+            if key not in tables:
+                raise SystemExit(f"block-list.md asks for an unknown table: {key!r}")
+            out.append(tables[key])
             i += 1
             continue
 

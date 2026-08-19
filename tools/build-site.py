@@ -11,6 +11,8 @@ below; the page functions and layout are language-agnostic.
 
 from __future__ import annotations
 
+import html
+import json
 import pathlib
 import shutil
 
@@ -1188,6 +1190,96 @@ def render_why_summary(lang: str) -> str:
     )
 
 
+def generated_tables() -> dict[str, str]:
+    """The blocklist page's three package tables, built from the signed policy.
+
+    They used to be pasted into `site-src/block-list.md` by hand, and drifted
+    twice in one day: the whitelist table said 33 apps while the policy allowed
+    49, so sixteen apps were permitted on phones and missing from the page that
+    documents what is permitted. Rows now come from `dist/policy.json`, so the
+    page cannot claim a different set from the one devices enforce.
+
+    Names come from `site-src/app-names.json`, which the policy has no room for.
+    A package with no entry falls back to its own id and is printed at build
+    time, because a missing name is cosmetic and should not stop a release.
+    """
+    policy = json.loads((REPO_ROOT / "dist" / "policy.json").read_text(encoding="utf-8"))
+    catalogue = json.loads((SITE_SRC / "app-names.json").read_text(encoding="utf-8"))
+    names = catalogue["names"]
+    unknown: list[str] = []
+
+    def described(package: str) -> tuple[str, str]:
+        entry = names.get(package)
+        if entry is None:
+            unknown.append(package)
+            return package, "not in the store cache"
+        return entry["title"], entry["rating"]
+
+    def table(headers: list[str], rows: list[list[str]]) -> str:
+        head = "".join(f"<th>{html.escape(h)}</th>" for h in headers)
+        body = "\n".join(
+            "<tr>" + "".join(f"<td>{c}</td>" for c in row) + "</tr>" for row in rows
+        )
+        return (
+            '<div class="table-wrap"><table>\n<thead><tr>'
+            + head
+            + "</tr></thead>\n<tbody>\n"
+            + body
+            + "\n</tbody>\n</table></div>"
+        )
+
+    def app_rows(packages: list[str]) -> list[list[str]]:
+        described_rows = [(described(p), p) for p in packages]
+        described_rows.sort(key=lambda r: r[0][0].lower())
+        return [
+            [html.escape(title), html.escape(rating), f"<code>{html.escape(p)}</code>"]
+            for (title, rating), p in described_rows
+        ]
+
+    # **The one grouping the policy cannot supply.** `blocked_packages` is a flat
+    # list with no categories, so which of them are AI companions is a judgement
+    # kept in app-names.json. What can be checked is that every package claimed
+    # there is still blocked, and it is: a page saying drawbridge removes an app
+    # it no longer removes would be worse than no page.
+    companions = catalogue["ai_companions"]
+    stale = [p for p in companions if p not in policy["blocked_packages"]]
+    if stale:
+        raise SystemExit(
+            "app-names.json lists these as blocked AI companions, but the policy "
+            "no longer blocks them: " + ", ".join(stale)
+        )
+
+    streaming = next(o for o in policy["options"] if o["id"] == "streaming")
+    grouped: dict[str, list[str]] = {}
+    for package in streaming["exempt_packages"]:
+        grouped.setdefault(described(package)[0], []).append(package)
+    streaming_rows = [
+        [
+            html.escape(title),
+            ", ".join(f"<code>{html.escape(p)}</code>" for p in sorted(packages)),
+        ]
+        for title, packages in sorted(grouped.items(), key=lambda kv: kv[0].lower())
+    ]
+
+    tables = {
+        "ai-companions": table(["App", "Play rating (BE)", "Package"], app_rows(companions)),
+        "whitelist": table(
+            ["App", "Play rating (BE)", "Package"],
+            app_rows(policy["app_ratings"]["allowed_packages"]),
+        ),
+        "streaming": table(["Service", "Package(s)"], streaming_rows),
+    }
+    # The prose around each table quotes its size, so the numbers come from the
+    # same place the rows do rather than from somebody remembering to edit them.
+    tables["count-companions"] = str(len(companions))
+    tables["count-whitelist"] = str(len(policy["app_ratings"]["allowed_packages"]))
+    tables["count-streaming"] = str(len(grouped))
+    tables["count-streaming-domains"] = str(len(streaming["allowed_domains"]))
+    if unknown:
+        print("  no display name for, showing the package id:", ", ".join(sorted(set(unknown))))
+    return tables
+
+
 def render_why_blocked(content_fragment: str) -> str:
     paragraphs = "\n      ".join(f"<p>{p}</p>" for p in WHY_INTRO["en"])
     body = f"""
@@ -1330,7 +1422,7 @@ def build_all() -> None:
     import sys
     sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
     import convert_blocklist  # tools/convert_blocklist.py
-    why_fragment = convert_blocklist.build_fragment()
+    why_fragment = convert_blocklist.build_fragment(generated_tables())
     write(SITE_OUT / "why-blocked" / "index.html", render_why_blocked(why_fragment))
 
     apk = stage_installer_assets(checked)

@@ -1,0 +1,607 @@
+{
+  "_comment": "Display names for the packages the blocklist page tabulates. The *rows* of those tables come from dist/policy.json at build time and cannot drift; this file only supplies a human name and the store rating for each package. Refresh it with tools/refresh-app-names.py after adding packages to the policy — the build prints any package it has no name for and falls back to the package id.",
+  "ai_companions": [
+    "ai.botify.app",
+    "ai.character.app",
+    "ai.girlfriend.virtual.dating.lover.igirl",
+    "ai.replika.app",
+    "ai.socialapps.speakmaster",
+    "anima.virtual.ai.robot.friend",
+    "chat.aimimo.mimo",
+    "com.Beauchamp.Messenger.external",
+    "com.ai.chat.assistant.smart.bot",
+    "com.aigc.ushow.ichat",
+    "com.cho.kajiwoto",
+    "com.crushx.aichatfriends",
+    "com.cycleai.android",
+    "com.fantasia.ai",
+    "com.fantasychat.withai",
+    "com.fantasyx.chat",
+    "com.hiwaifu.app",
+    "com.ifriend.app",
+    "com.ismaker.android.simsimi",
+    "com.joyland.ai",
+    "com.kindroid.app",
+    "com.magicai.android",
+    "com.roleplai.app",
+    "com.rosytalk.ai",
+    "com.weaver.app.prod",
+    "com.withfeelingai.test",
+    "nomi.ai.friend.chat",
+    "online.fantasyai.android"
+  ],
+  "names": {
+    "ai.botify.app": {
+      "title": "Botify AI: Chatbot & Companion",
+      "rating": "PEGI 16"
+    },
+    "ai.character.app": {
+      "title": "Character AI: Chat, Talk, Text",
+      "rating": "PEGI 18"
+    },
+    "ai.girlfriend.virtual.dating.lover.igirl": {
+      "title": "iGirl: AI Girlfriend",
+      "rating": "PEGI 16"
+    },
+    "ai.mistral.chat": {
+      "title": "Vibe by Mistral (ex-Le Chat)",
+      "rating": "Parental guidance"
+    },
+    "ai.perplexity.app.android": {
+      "title": "Perplexity - Ask Anything",
+      "rating": "Parental guidance"
+    },
+    "ai.replika.app": {
+      "title": "Replika: My AI Friend",
+      "rating": "Parental guidance"
+    },
+    "ai.socialapps.speakmaster": {
+      "title": "PolyBuzz: Chat with AI Friends",
+      "rating": "PEGI 18"
+    },
+    "air.ITVMobilePlayer": {
+      "title": "ITVX",
+      "rating": "Parental guidance"
+    },
+    "anima.virtual.ai.robot.friend": {
+      "title": "Anima: AI Friend Virtual Chat",
+      "rating": "PEGI 3"
+    },
+    "app.newpharma.shop": {
+      "title": "Newpharma",
+      "rating": "PEGI 18"
+    },
+    "au.com.shiftyjelly.pocketcasts": {
+      "title": "Pocket Casts - Podcast App",
+      "rating": "Parental guidance"
+    },
+    "be.dpgmedia.streamz": {
+      "title": "Streamz",
+      "rating": "Parental guidance"
+    },
+    "ch.threema.app": {
+      "title": "Threema. The Secure Messenger",
+      "rating": "Parental guidance"
+    },
+    "chat.aimimo.mimo": {
+      "title": "Mimo: Connect with Characters",
+      "rating": "PEGI 16"
+    },
+    "chat.simplex.app": {
+      "title": "SimpleX Chat",
+      "rating": "Parental guidance"
+    },
+    "com.Beauchamp.Messenger.external": {
+      "title": "Chai: Chat AI Platform",
+      "rating": "PEGI 18"
+    },
+    "com.a3.sgt": {
+      "title": "atresplayer・Estrenos de Series",
+      "rating": "PEGI 3"
+    },
+    "com.ai.chat.assistant.smart.bot": {
+      "title": "AI Character: Roleplay Chat",
+      "rating": "PEGI 3"
+    },
+    "com.aigc.ushow.ichat": {
+      "title": "Linky AI: Chat, Play, Connect",
+      "rating": "PEGI 18"
+    },
+    "com.amazon.amazonvideo.livingroom": {
+      "title": "Prime Video",
+      "rating": "Parental guidance"
+    },
+    "com.amazon.avod.thirdpartyclient": {
+      "title": "Prime Video",
+      "rating": "Parental guidance"
+    },
+    "com.amazon.kindle": {
+      "title": "Amazon Kindle: Reading App",
+      "rating": "Parental guidance"
+    },
+    "com.amazon.mp3": {
+      "title": "Amazon Music: Songs & Podcasts",
+      "rating": "Parental guidance"
+    },
+    "com.amco.clarovideo_atv": {
+      "title": "Claro video",
+      "rating": "PEGI 3"
+    },
+    "com.anghami": {
+      "title": "Anghami: Play music & Podcasts",
+      "rating": "Parental guidance"
+    },
+    "com.antena3.atresplayer.tv": {
+      "title": "atresplayer: Ver TV online",
+      "rating": "PEGI 3"
+    },
+    "com.anthropic.claude": {
+      "title": "Claude by Anthropic",
+      "rating": "Parental guidance"
+    },
+    "com.apex.community.birdbrain.birdbrain": {
+      "title": "Birdero: Birdwatching, Bird ID",
+      "rating": "Parental guidance"
+    },
+    "com.apple.android.music": {
+      "title": "Apple Music",
+      "rating": "Parental guidance"
+    },
+    "com.apple.atve.androidtv.appletv": {
+      "title": "Apple TV: Shows, Movies & More",
+      "rating": "Parental guidance"
+    },
+    "com.aspiro.tidal": {
+      "title": "TIDAL Music: HiFi sound",
+      "rating": "Parental guidance"
+    },
+    "com.audible.application": {
+      "title": "Audible: Audiobooks & Podcasts",
+      "rating": "Parental guidance"
+    },
+    "com.audiomack": {
+      "title": "Audiomack: Music Downloader",
+      "rating": "Parental guidance"
+    },
+    "com.bambuna.podcastaddict": {
+      "title": "Podcast Addict: Podcast player",
+      "rating": "Parental guidance"
+    },
+    "com.bandcamp.android": {
+      "title": "Bandcamp",
+      "rating": "Parental guidance"
+    },
+    "com.beeper.android": {
+      "title": "Beeper: Universal Chat",
+      "rating": "Parental guidance"
+    },
+    "com.beinsports.andcontent": {
+      "title": "beIN SPORTS",
+      "rating": "PEGI 3"
+    },
+    "com.beinsports.connect.tv.apac": {
+      "title": "beIN SPORTS CONNECT (TV)",
+      "rating": "PEGI 3"
+    },
+    "com.britbox.tv": {
+      "title": "BritBox: Home of British TV",
+      "rating": "PEGI 16"
+    },
+    "com.britbox.us": {
+      "title": "BritBox: Home of British TV",
+      "rating": "Parental guidance"
+    },
+    "com.canal.android.canal": {
+      "title": "CANAL+, Live and catch-up TV",
+      "rating": "Parental guidance"
+    },
+    "com.cbs.app": {
+      "title": "Paramount+",
+      "rating": "Parental guidance"
+    },
+    "com.chirpbirding.birda": {
+      "title": "Birda - Birding Made Better",
+      "rating": "Parental guidance"
+    },
+    "com.cho.kajiwoto": {
+      "title": "Kajiwoto AI Friend Companions",
+      "rating": "Parental guidance"
+    },
+    "com.cisco.wx2.android": {
+      "title": "Webex",
+      "rating": "Parental guidance"
+    },
+    "com.crunchyroll.crunchyroid": {
+      "title": "Crunchyroll: Anime Streaming",
+      "rating": "Parental guidance"
+    },
+    "com.crushx.aichatfriends": {
+      "title": "CrushX: Fantasy Roleplay Chat",
+      "rating": "PEGI 18"
+    },
+    "com.curiosity.curiositystream": {
+      "title": "Curiosity Stream",
+      "rating": "PEGI 3"
+    },
+    "com.curiosity.curiositystream.androidtv": {
+      "title": "Curiosity Stream (TV)",
+      "rating": "PEGI 3"
+    },
+    "com.cycleai.android": {
+      "title": "Cycle AI: Chat & AI Friends",
+      "rating": "PEGI 16"
+    },
+    "com.dazn": {
+      "title": "DAZN - Watch Live Sports",
+      "rating": "Parental guidance"
+    },
+    "com.deepseek.chat": {
+      "title": "DeepSeek - AI Assistant",
+      "rating": "Parental guidance"
+    },
+    "com.disney.disneyplus": {
+      "title": "Disney+",
+      "rating": "Parental guidance"
+    },
+    "com.disneyplus.mea": {
+      "title": "Disney+",
+      "rating": "Parental guidance"
+    },
+    "com.dla.android": {
+      "title": "Claro video",
+      "rating": "PEGI 3"
+    },
+    "com.dstvmobile.android": {
+      "title": "DStv Stream",
+      "rating": "Parental guidance"
+    },
+    "com.fantasia.ai": {
+      "title": "Fantasia: Character AI Chat",
+      "rating": "PEGI 16"
+    },
+    "com.fantasychat.withai": {
+      "title": "Fantasy AI: RP & Companions",
+      "rating": "PEGI 18"
+    },
+    "com.fantasyx.chat": {
+      "title": "FantasyX: AI Roleplay Chat",
+      "rating": "PEGI 3"
+    },
+    "com.fitapp": {
+      "title": "Running Tracker App – FITAPP",
+      "rating": "Parental guidance"
+    },
+    "com.foodient.whisk": {
+      "title": "Samsung Food: Meal Planner",
+      "rating": "Parental guidance"
+    },
+    "com.github.android": {
+      "title": "GitHub",
+      "rating": "Parental guidance"
+    },
+    "com.globo.globotv": {
+      "title": "Globoplay: Novelas, séries e +",
+      "rating": "PEGI 16"
+    },
+    "com.google.android.apps.bard": {
+      "title": "Google Gemini",
+      "rating": "Parental guidance"
+    },
+    "com.google.android.apps.books": {
+      "title": "Google Play Books & Audiobooks",
+      "rating": "Parental guidance"
+    },
+    "com.google.android.videos": {
+      "title": "Google TV",
+      "rating": "Parental guidance"
+    },
+    "com.hiwaifu.app": {
+      "title": "HiWaifu: AI Friend & Waifu Hub",
+      "rating": "PEGI 18"
+    },
+    "com.hulu.plus": {
+      "title": "Hulu: Stream TV shows & movies",
+      "rating": "Parental guidance"
+    },
+    "com.ifriend.app": {
+      "title": "EVA AI Soulmate",
+      "rating": "PEGI 18"
+    },
+    "com.iqiyi.i18n": {
+      "title": "iQIYI - Drama, Anime, Show",
+      "rating": "Parental guidance"
+    },
+    "com.ismaker.android.simsimi": {
+      "title": "SimSimi",
+      "rating": "PEGI 16"
+    },
+    "com.itunestoppodcastplayer.app": {
+      "title": "Podcast Republic - Podcast app",
+      "rating": "PEGI 12"
+    },
+    "com.joyland.ai": {
+      "title": "Joyland:Chat with AI Character",
+      "rating": "PEGI 16"
+    },
+    "com.kindroid.app": {
+      "title": "Kindroid: Your Personal AI",
+      "rating": "PEGI 16"
+    },
+    "com.kobobooks.android": {
+      "title": "Kobo | eBooks & Audiobooks",
+      "rating": "Parental guidance"
+    },
+    "com.magicai.android": {
+      "title": "Magic: Fantasy Roleplay Chat",
+      "rating": "PEGI 18"
+    },
+    "com.megogo.application": {
+      "title": "MEGOGO: Online TV, Movies",
+      "rating": "Parental guidance"
+    },
+    "com.microsoft.office.officehubrow": {
+      "title": "Microsoft Copilot",
+      "rating": "Parental guidance"
+    },
+    "com.moonshot.kimichat": {
+      "title": "Kimi",
+      "rating": "Parental guidance"
+    },
+    "com.movistarplus.androidtv": {
+      "title": "Movistar Plus",
+      "rating": "PEGI 12"
+    },
+    "com.mufumbo.android.recipe.search": {
+      "title": "Cookpad recipes, homemade food",
+      "rating": "Parental guidance"
+    },
+    "com.netflix.mediaclient": {
+      "title": "Netflix",
+      "rating": "Parental guidance"
+    },
+    "com.odysee.app": {
+      "title": "Odysee",
+      "rating": "Parental guidance"
+    },
+    "com.openai.chatgpt": {
+      "title": "ChatGPT",
+      "rating": "Parental guidance"
+    },
+    "com.osn.go": {
+      "title": "OSN+",
+      "rating": "Parental guidance"
+    },
+    "com.osn.myosntv": {
+      "title": "myOSNtv",
+      "rating": "PEGI 3"
+    },
+    "com.overdrive.mobile.android.libby": {
+      "title": "Libby: Read Library Books",
+      "rating": "Parental guidance"
+    },
+    "com.peacocktv.peacockandroid": {
+      "title": "Peacock TV: Stream TV & Movies",
+      "rating": "Parental guidance"
+    },
+    "com.podbean.app.podcast": {
+      "title": "Podcast Player App - Podbean",
+      "rating": "Parental guidance"
+    },
+    "com.qobuz.music": {
+      "title": "Qobuz: Music & Editorial",
+      "rating": "Parental guidance"
+    },
+    "com.recime.app": {
+      "title": "ReciMe: Recipes & Meal Planner",
+      "rating": "Parental guidance"
+    },
+    "com.roleplai.app": {
+      "title": "RolePlai - Ai Character Chat",
+      "rating": "PEGI 12"
+    },
+    "com.rosytalk.ai": {
+      "title": "Rosytalk: AI Character Chat",
+      "rating": "PEGI 16"
+    },
+    "com.shazam.android": {
+      "title": "Shazam: Find Music & Concerts",
+      "rating": "Parental guidance"
+    },
+    "com.skyshowtime.skyshowtime.google": {
+      "title": "SkyShowtime: Movies & Series",
+      "rating": "Parental guidance"
+    },
+    "com.sonyliv": {
+      "title": "Sony LIV: Sports & Entmt",
+      "rating": "Parental guidance"
+    },
+    "com.soundcloud.android": {
+      "title": "SoundCloud: The Music You Love",
+      "rating": "Parental guidance"
+    },
+    "com.spotify.music": {
+      "title": "Spotify: Music and Podcasts",
+      "rating": "Parental guidance"
+    },
+    "com.star.mobile.video": {
+      "title": "StarTimes ON-Live TV, Football",
+      "rating": "PEGI 3"
+    },
+    "com.star.mobile.video.lite": {
+      "title": "StarTimes ON Lite-Live TV",
+      "rating": "Parental guidance"
+    },
+    "com.startimes.vod.ontv": {
+      "title": "StarTimes ON for TV - Live,Vod",
+      "rating": "PEGI 3"
+    },
+    "com.strava": {
+      "title": "Strava: Run, Bike, Walk",
+      "rating": "Parental guidance"
+    },
+    "com.stt.android": {
+      "title": "Sports Tracker: Run Bike Hike",
+      "rating": "Parental guidance"
+    },
+    "com.tencent.qqlivei18n.us": {
+      "title": "Tencent Video",
+      "rating": "Parental guidance"
+    },
+    "com.todtv.tod": {
+      "title": "TOD by beIN",
+      "rating": "Parental guidance"
+    },
+    "com.univision.prendetv": {
+      "title": "ViX: TV, Deportes y Noticias",
+      "rating": "Parental guidance"
+    },
+    "com.viaplay.android": {
+      "title": "Viaplay: Movies & TV Shows",
+      "rating": "Parental guidance"
+    },
+    "com.vidio.android": {
+      "title": "Vidio: Sports, Movies, Series",
+      "rating": "Parental guidance"
+    },
+    "com.viu.phone": {
+      "title": "Viu : Korean & Asian content",
+      "rating": "PEGI 12"
+    },
+    "com.watchit.vod": {
+      "title": "WATCH IT",
+      "rating": "Parental guidance"
+    },
+    "com.wbd.stream": {
+      "title": "HBO Max: Stream TV & Movies",
+      "rating": "Parental guidance"
+    },
+    "com.weaver.app.prod": {
+      "title": "Talkie: Creative AI Community",
+      "rating": "PEGI 18"
+    },
+    "com.withfeelingai.test": {
+      "title": "Paradot: Personal AI chat",
+      "rating": "Parental guidance"
+    },
+    "com.youku.international.phone": {
+      "title": "YOUKU-Drama, Film, Show, Anime",
+      "rating": "Parental guidance"
+    },
+    "de.danoeh.antennapod": {
+      "title": "AntennaPod - Podcast Player",
+      "rating": "Parental guidance"
+    },
+    "de.prosiebensat1digital.seventv": {
+      "title": "Joyn | deine Streaming App",
+      "rating": "Parental guidance"
+    },
+    "de.rtli.tvnow": {
+      "title": "RTL+",
+      "rating": "Parental guidance"
+    },
+    "deezer.android.app": {
+      "title": "Deezer: Music & Podcast Player",
+      "rating": "Parental guidance"
+    },
+    "es.plus.yomvi": {
+      "title": "Movistar Plus",
+      "rating": "Parental guidance"
+    },
+    "fm.castbox.audiobook.radio.podcast": {
+      "title": "Podcast Player - Castbox",
+      "rating": "Parental guidance"
+    },
+    "grit.storytel.app": {
+      "title": "Storytel - Audiobooks & Books",
+      "rating": "Parental guidance"
+    },
+    "iflix.play": {
+      "title": "iflix: Asian & Local Dramas",
+      "rating": "Parental guidance"
+    },
+    "in.startv.hotstar": {
+      "title": "JioHotstar",
+      "rating": "Parental guidance"
+    },
+    "it.telecomitalia.cubovision": {
+      "title": "TIMVISION",
+      "rating": "Parental guidance"
+    },
+    "net.mbc.shahid": {
+      "title": "MBC Shahid",
+      "rating": "Parental guidance"
+    },
+    "network.loki.messenger": {
+      "title": "Session - Private Messenger",
+      "rating": "Parental guidance"
+    },
+    "nl.rtl.videoland.v2": {
+      "title": "Videoland",
+      "rating": "Parental guidance"
+    },
+    "no.tv2.sumo": {
+      "title": "TV 2 Play",
+      "rating": "Parental guidance"
+    },
+    "nomi.ai.friend.chat": {
+      "title": "Nomi AI: Chat, Play, Connect",
+      "rating": "PEGI 3"
+    },
+    "online.fantasyai.android": {
+      "title": "Fantasy.AI:Chat With Character",
+      "rating": "PEGI 16"
+    },
+    "org.framasoft.peertube": {
+      "title": "PeerTube",
+      "rating": "PEGI 3"
+    },
+    "pl.cyfrowypolsat.cpgo": {
+      "title": "Polsat Box Go",
+      "rating": "PEGI 7"
+    },
+    "ptv.bein.mena": {
+      "title": "beIN CONNECT (MENA)",
+      "rating": "PEGI 3"
+    },
+    "ptv.bein.ui": {
+      "title": "beIN SPORTS CONNECT",
+      "rating": "PEGI 3"
+    },
+    "ru.ivi.client": {
+      "title": "Иви: сериалы, фильмы и ТВ",
+      "rating": "Parental guidance"
+    },
+    "ru.kinopoisk": {
+      "title": "Кинопоиск－фильмы，сериалы，спорт",
+      "rating": "Parental guidance"
+    },
+    "se.tv4.tv4playtab": {
+      "title": "TV4 Play",
+      "rating": "Parental guidance"
+    },
+    "tunein.player": {
+      "title": "TuneIn Radio: Music & Sports",
+      "rating": "Parental guidance"
+    },
+    "tv.danmaku.bili": {
+      "title": "bilibili - All Your Fav Videos",
+      "rating": "PEGI 3"
+    },
+    "tv.standard.nebula": {
+      "title": "Nebula",
+      "rating": "Parental guidance"
+    },
+    "tv.wuaki": {
+      "title": "Rakuten TV -Movies & TV Series",
+      "rating": "PEGI 3"
+    },
+    "us.mitene": {
+      "title": "FamilyAlbum - Photo Sharing",
+      "rating": "Parental guidance"
+    },
+    "us.zoom.videomeetings": {
+      "title": "Zoom Workplace",
+      "rating": "Parental guidance"
+    }
+  }
+}

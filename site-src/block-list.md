@@ -251,63 +251,13 @@ This is a separate high-risk category, not a always game genre. These apps simul
 
 ### The apps drawbridge removes by name
 
-The table below is the reasoning; this is the consequence. These 28 companion and
+The table below is the reasoning; this is the consequence. These {{table:count-companions}} companion and
 character-chat apps are on `blocked_packages`, so they are removed from the phone whether or not
 anybody visits the websites. **Note the middle column.** Several of these carry a store rating of
 PEGI 3 or *Parental guidance*, which is exactly why naming them is necessary: the rating rule alone
 would have let them stay.
 
-| App | Play rating (BE) | Package |
-|---|---|---|
-| Amazon Kindle: Reading App | Parental guidance | `com.amazon.kindle` |
-| Amazon Music: Songs & Podcasts | Parental guidance | `com.amazon.mp3` |
-| Anghami: Play music & Podcasts | Parental guidance | `com.anghami` |
-| AntennaPod - Podcast Player | Parental guidance | `de.danoeh.antennapod` |
-| Apple Music | Parental guidance | `com.apple.android.music` |
-| Audible: Audiobooks & Podcasts | Parental guidance | `com.audible.application` |
-| Audiomack: Music Downloader | Parental guidance | `com.audiomack` |
-| Bandcamp | Parental guidance | `com.bandcamp.android` |
-| Beeper: Universal Chat | Parental guidance | `com.beeper.android` |
-| Birda - Birding Made Better | Parental guidance | `com.chirpbirding.birda` |
-| Birdero: Birdwatching, Bird ID | Parental guidance | `com.apex.community.birdbrain.birdbrain` |
-| ChatGPT | Parental guidance | `com.openai.chatgpt` |
-| Claude by Anthropic | Parental guidance | `com.anthropic.claude` |
-| Cookpad recipes, homemade food | Parental guidance | `com.mufumbo.android.recipe.search` |
-| DeepSeek - AI Assistant | Parental guidance | `com.deepseek.chat` |
-| Deezer: Music & Podcast Player | Parental guidance | `deezer.android.app` |
-| FamilyAlbum - Photo Sharing | Parental guidance | `us.mitene` |
-| GitHub | Parental guidance | `com.github.android` |
-| Google Gemini | Parental guidance | `com.google.android.apps.bard` |
-| Google Play Books & Audiobooks | Parental guidance | `com.google.android.apps.books` |
-| Kimi | Parental guidance | `com.moonshot.kimichat` |
-| Kobo | eBooks & Audiobooks | Parental guidance | `com.kobobooks.android` |
-| Libby: Read Library Books | Parental guidance | `com.overdrive.mobile.android.libby` |
-| Microsoft Copilot | Parental guidance | `com.microsoft.office.officehubrow` |
-| Newpharma | PEGI 18 | `app.newpharma.shop` |
-| Perplexity - Ask Anything | Parental guidance | `ai.perplexity.app.android` |
-| Pocket Casts - Podcast App | Parental guidance | `au.com.shiftyjelly.pocketcasts` |
-| Podcast Addict: Podcast player | Parental guidance | `com.bambuna.podcastaddict` |
-| Podcast Player - Castbox | Parental guidance | `fm.castbox.audiobook.radio.podcast` |
-| Podcast Player App - Podbean | Parental guidance | `com.podbean.app.podcast` |
-| Podcast Republic - Podcast app | PEGI 12 | `com.itunestoppodcastplayer.app` |
-| Qobuz: Music & Editorial | Parental guidance | `com.qobuz.music` |
-| ReciMe: Recipes & Meal Planner | Parental guidance | `com.recime.app` |
-| Running Tracker App – FITAPP | Parental guidance | `com.fitapp` |
-| Samsung Food: Meal Planner | Parental guidance | `com.foodient.whisk` |
-| Session - Private Messenger | Parental guidance | `network.loki.messenger` |
-| Shazam: Find Music & Concerts | Parental guidance | `com.shazam.android` |
-| SimpleX Chat | Parental guidance | `chat.simplex.app` |
-| SoundCloud: The Music You Love | Parental guidance | `com.soundcloud.android` |
-| Sports Tracker: Run Bike Hike | Parental guidance | `com.stt.android` |
-| Spotify: Music and Podcasts | Parental guidance | `com.spotify.music` |
-| Storytel - Audiobooks & Books | Parental guidance | `grit.storytel.app` |
-| Strava: Run, Bike, Walk | Parental guidance | `com.strava` |
-| Threema. The Secure Messenger | Parental guidance | `ch.threema.app` |
-| TIDAL Music: HiFi sound | Parental guidance | `com.aspiro.tidal` |
-| TuneIn Radio: Music & Sports | Parental guidance | `tunein.player` |
-| Vibe by Mistral (ex-Le Chat) | Parental guidance | `ai.mistral.chat` |
-| Webex | Parental guidance | `com.cisco.wx2.android` |
-| Zoom Workplace | Parental guidance | `us.zoom.videomeetings` |
+{{table:ai-companions}}
 
 ### Detailed table
 
@@ -370,7 +320,7 @@ Character.AI under-18 changes: https://blog.character.ai/an-update-on-changes-to
 ## The exceptions: apps allowed above PEGI 3
 
 The rating rule removes anything the store does not rate PEGI 3, which is deliberately blunt and
-would take a pile of ordinary tools with it. These 49 are named as exceptions, one at a
+would take a pile of ordinary tools with it. These {{table:count-whitelist}} are named as exceptions, one at a
 time. They are tools rather than entertainment: music you already chose, messaging that is not a
 feed, recipes, sport tracking, video calls for school and work, and the general-purpose assistants.
 None of them has an algorithmic feed of strangers' content, which is the line this list is drawn
@@ -384,118 +334,19 @@ Farmaline are the same business in the same country and come back PEGI 3, so a p
 says nothing about pharmacies and everything about which self-declaration questionnaire that
 publisher filled in.
 
-| App | Play rating (BE) | Package |
-|---|---|---|
-| Amazon Music: Songs & Podcasts | Parental guidance | `com.amazon.mp3` |
-| Apple Music | Parental guidance | `com.apple.android.music` |
-| Audible: Audiobooks & Podcasts | Parental guidance | `com.audible.application` |
-| Bandcamp | Parental guidance | `com.bandcamp.android` |
-| Beeper: Universal Chat | Parental guidance | `com.beeper.android` |
-| Birda - Birding Made Better | Parental guidance | `com.chirpbirding.birda` |
-| Birdero: Birdwatching, Bird ID | Parental guidance | `com.apex.community.birdbrain.birdbrain` |
-| ChatGPT | Parental guidance | `com.openai.chatgpt` |
-| Claude by Anthropic | Parental guidance | `com.anthropic.claude` |
-| Cookpad recipes, homemade food | Parental guidance | `com.mufumbo.android.recipe.search` |
-| DeepSeek - AI Assistant | Parental guidance | `com.deepseek.chat` |
-| Deezer: Music & Podcast Player | Parental guidance | `deezer.android.app` |
-| FamilyAlbum - Photo Sharing | Parental guidance | `us.mitene` |
-| Google Gemini | Parental guidance | `com.google.android.apps.bard` |
-| Newpharma | PEGI 18 | `app.newpharma.shop` |
-| Perplexity - Ask Anything | Parental guidance | `ai.perplexity.app.android` |
-| Qobuz: Music & Editorial | Parental guidance | `com.qobuz.music` |
-| ReciMe: Recipes & Meal Planner | Parental guidance | `com.recime.app` |
-| Running Tracker App – FITAPP | Parental guidance | `com.fitapp` |
-| Samsung Food: Meal Planner | Parental guidance | `com.foodient.whisk` |
-| Session - Private Messenger | Parental guidance | `network.loki.messenger` |
-| Shazam: Find Music & Concerts | Parental guidance | `com.shazam.android` |
-| SimpleX Chat | Parental guidance | `chat.simplex.app` |
-| SoundCloud: The Music You Love | Parental guidance | `com.soundcloud.android` |
-| Sports Tracker: Run Bike Hike | Parental guidance | `com.stt.android` |
-| Spotify: Music and Podcasts | Parental guidance | `com.spotify.music` |
-| Strava: Run, Bike, Walk | Parental guidance | `com.strava` |
-| Threema. The Secure Messenger | Parental guidance | `ch.threema.app` |
-| TIDAL Music: HiFi sound | Parental guidance | `com.aspiro.tidal` |
-| TuneIn Radio: Music & Sports | Parental guidance | `tunein.player` |
-| Vibe by Mistral (ex-Le Chat) | Parental guidance | `ai.mistral.chat` |
-| Webex | Parental guidance | `com.cisco.wx2.android` |
-| Zoom Workplace | Parental guidance | `us.zoom.videomeetings` |
+{{table:whitelist}}
 
 ## Video streaming, which is a switch rather than a rule
 
 Streaming is not one of the seven blocked categories and is not removed by default. It is a single
-switch on the configuration screen: leave it on and these 66 services keep working, turn it
-off before locking and they are hidden, along with 103 matching domains at
+switch on the configuration screen: leave it on and these {{table:count-streaming}}
+services keep working, turn it
+off before locking and they are hidden, along with {{table:count-streaming-domains}}
+matching domains at
 the DNS layer. It is a switch rather than a rule because a film on a Friday evening is not the thing
 drawbridge was built to interrupt, and a household that disagrees can say so once.
 
 Switching it back on restores the apps with their downloads and logins intact, because a removal a
 switch governs hides the app rather than uninstalling it.
 
-| Service | Package(s) |
-|---|---|
-| Apple TV: Shows, Movies & More | `com.apple.atve.androidtv.appletv` |
-| atresplayer: Ver TV online | `com.antena3.atresplayer.tv` |
-| atresplayer・Estrenos de Series | `com.a3.sgt` |
-| beIN CONNECT (MENA) | `ptv.bein.mena` |
-| beIN SPORTS | `com.beinsports.andcontent` |
-| beIN SPORTS CONNECT | `ptv.bein.ui` |
-| beIN SPORTS CONNECT (TV) | `com.beinsports.connect.tv.apac` |
-| bilibili - All Your Fav Videos | `tv.danmaku.bili` |
-| BritBox: Home of British TV | `com.britbox.tv`, `com.britbox.us` |
-| CANAL+, Live and catch-up TV | `com.canal.android.canal` |
-| Claro video | `com.amco.clarovideo_atv`, `com.dla.android` |
-| com.orange.ocsgo | `com.orange.ocsgo` |
-| com.showmax.app | `com.showmax.app` |
-| com.showmax.showmax.google | `com.showmax.showmax.google` |
-| com.tencent.qqlive | `com.tencent.qqlive` |
-| com.youku.phone | `com.youku.phone` |
-| Crunchyroll: Anime Streaming | `com.crunchyroll.crunchyroid` |
-| Curiosity Stream | `com.curiosity.curiositystream` |
-| Curiosity Stream (TV) | `com.curiosity.curiositystream.androidtv` |
-| DAZN - Watch Live Sports | `com.dazn` |
-| Disney+ | `com.disney.disneyplus`, `com.disneyplus.mea` |
-| DStv Stream | `com.dstvmobile.android` |
-| Globoplay: Novelas, séries e + | `com.globo.globotv` |
-| Google TV | `com.google.android.videos` |
-| HBO Max: Stream TV & Movies | `com.wbd.stream` |
-| Hulu: Stream TV shows & movies | `com.hulu.plus` |
-| iflix: Asian & Local Dramas | `iflix.play` |
-| iQIYI - Drama, Anime, Show | `com.iqiyi.i18n` |
-| ITVX | `air.ITVMobilePlayer` |
-| JioHotstar | `in.startv.hotstar` |
-| Joyn | deine Streaming App | `de.prosiebensat1digital.seventv` |
-| MBC Shahid | `net.mbc.shahid` |
-| MEGOGO: Online TV, Movies | `com.megogo.application` |
-| Movistar Plus | `com.movistarplus.androidtv`, `es.plus.yomvi` |
-| myOSNtv | `com.osn.myosntv` |
-| Nebula | `tv.standard.nebula` |
-| Netflix | `com.netflix.mediaclient` |
-| Odysee | `com.odysee.app` |
-| OSN+ | `com.osn.go` |
-| Paramount+ | `com.cbs.app` |
-| Peacock TV: Stream TV & Movies | `com.peacocktv.peacockandroid` |
-| PeerTube | `org.framasoft.peertube` |
-| Polsat Box Go | `pl.cyfrowypolsat.cpgo` |
-| Prime Video | `com.amazon.amazonvideo.livingroom`, `com.amazon.avod.thirdpartyclient` |
-| Rakuten TV -Movies & TV Series | `tv.wuaki` |
-| RTL+ | `de.rtli.tvnow` |
-| SkyShowtime: Movies & Series | `com.skyshowtime.skyshowtime.google` |
-| Sony LIV: Sports & Entmt | `com.sonyliv` |
-| StarTimes ON for TV - Live,Vod | `com.startimes.vod.ontv` |
-| StarTimes ON Lite-Live TV | `com.star.mobile.video.lite` |
-| StarTimes ON-Live TV, Football | `com.star.mobile.video` |
-| Streamz | `be.dpgmedia.streamz` |
-| Tencent Video | `com.tencent.qqlivei18n.us` |
-| TIMVISION | `it.telecomitalia.cubovision` |
-| TOD by beIN | `com.todtv.tod` |
-| TV 2 Play | `no.tv2.sumo` |
-| TV4 Play | `se.tv4.tv4playtab` |
-| Viaplay: Movies & TV Shows | `com.viaplay.android` |
-| Videoland | `nl.rtl.videoland.v2` |
-| Vidio: Sports, Movies, Series | `com.vidio.android` |
-| Viu : Korean & Asian content | `com.viu.phone` |
-| ViX: TV, Deportes y Noticias | `com.univision.prendetv` |
-| WATCH IT | `com.watchit.vod` |
-| YOUKU-Drama, Film, Show, Anime | `com.youku.international.phone` |
-| Иви: сериалы, фильмы и ТВ | `ru.ivi.client` |
-| Кинопоиск－фильмы，сериалы，спорт | `ru.kinopoisk` |
+{{table:streaming}}
