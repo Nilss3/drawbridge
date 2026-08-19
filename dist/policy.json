@@ -1,7 +1,7 @@
 {
-  "version": 73,
+  "version": 74,
   "issued_at": "2026-08-16T12:00:00Z",
-  "comment": "Policy 73, DEV CHANNEL ONLY. Blocklist only -- no build change, app_update still pins build 37. Reported from the alpha: TikTok Lite served video on a phone where all six tiktok-branded domains were blocked, while Instagram Lite on the same phone showed nothing. Meta serves its Lite build from instagram.com and fbcdn.net like the full app; ByteDance does not, so the Lite build reaches the same backend under the parent's own names. The social list gains the ByteDance API and CDN hosts (snssdk.com and its regional twins, amemv, bytedance, bytedanceapi, byted.org, bytedns, pstatp, ipstatp, sgpstatp, byteimg, ibytedtos, byteicdn, bytetcdn, bytecdn.cn, muscdn, worldfcdn) plus douyin.com. blocked_packages gains com.zhiliaoapp.musically.go (TikTok Lite, which was missing while the second listing com.tiktok.lite.go was present), com.instagram.lite, and com.google.android.play.games -- the last on the owner's call, since Parental guidance was already removing it by rating with no switch to govern it.",
+  "comment": "Policy 74, DEV CHANNEL ONLY. Re-pins app_update to drawbridge 0.2.13 build 38, which runs the store rule's catch-up scan on any network rather than only on Wi-Fi. Wi-Fi-only read as prudent and was a hole: a phone that never sees Wi-Fi never scanned, so its preloaded games survived indefinitely, and once anybody notices, staying off Wi-Fi is a bypass rather than a delay. The scan is 50-100 MB once, while a phone is being set up. The recurring costs still wait for Wi-Fi: the per-update re-ask, which repeats every time Play refreshes an app, and the fortnightly rescan. Build 38 also bundles policy 73, so a fresh install carries the ByteDance domains and the Lite packages before it has ever polled. The lists and options are unchanged from 73.",
   "dns": {
     "upstreams": [
       "94.140.14.15",
@@ -49,7 +49,7 @@
       "url": "https://raw.githubusercontent.com/Nilss3/drawbridge/dev/dist/lists/social.txt",
       "format": "domains",
       "category": "social",
-      "sha256": "f3d3a83dbbc7ab3238cd40d301660156866c27da3eb165e7dba6ac29f9ed1ad6"
+      "sha256": "fe2b43adb59354555055e83ccd126ee2e88ee5ea052f48ccafbcdd530e71f5b6"
     },
     {
       "id": "ai-companions",
@@ -734,9 +734,9 @@
   },
   "app_update": {
     "package_name": "app.drawbridge.dpc",
-    "version_code": 37,
-    "url": "https://dev.drawbridge-project.pages.dev/assets/dpc-78382b8e08f9caa5.apk",
-    "sha256": "78382b8e08f9caa59b7043c3a499faf0bbbd71b0e013f6806c0e6feed71ef5fc"
+    "version_code": 38,
+    "url": "https://dev.drawbridge-project.pages.dev/assets/dpc-4193f3bcc561ccd9.apk",
+    "sha256": "4193f3bcc561ccd9848acc1d1d657916c9457d59d1dce43b3a8393d17872fbce"
   },
   "required_apps": [
     {
