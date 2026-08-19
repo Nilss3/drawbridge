@@ -854,10 +854,25 @@ Neither is urgent and both are visual, from the owner running build 41:
   default action bar, set at runtime from `main_title`; nothing sizes it today,
   so it takes whatever `textAppearanceTitleLarge` the Material theme gives it.
 
-### 12c. Comet is allowed on dev, provisionally, and somebody has to look at it
+### 12c. Comet and Via, and what any new browser has to be checked against
 
-**Added to `allowed_browser_packages` on `dev` only, 2026-08-19, at the owner's
-request and with the checking still to do.** It is not on `main`.
+**Both were cleared by the owner on 2026-08-19 and are now on both channels.**
+Neither has a VPN option and neither has a DNS setting, which is the thing that
+mattered: a browser that cannot be pointed at its own resolver cannot route
+around a DNS-only filter. Comet is Perplexity's browser and Perplexity is already
+allowed as an app, so allowing its browser changes nothing about what the phone
+can reach.
+
+The three checks below are what they were cleared against, and are worth keeping
+for the next browser somebody asks for.
+
+**Via is the one with a reason to be there beyond curiosity.** It is what
+tech-minimalists put on a small light phone, which is exactly the household this
+project is for, and a phone whose owner chose Via is a phone whose owner might
+choose drawbridge. It is also the more likely of the two to pass: it is a
+WebView wrapper rather than its own engine, so it resolves through the system
+resolver and has no *Use secure DNS* of its own to turn on. Confirm that rather
+than assume it — a wrapper can still ship a proxy.
 
 Comet is Perplexity's browser. The rating rule has no opinion on it — the store
 says PEGI 3 — so the only thing that decides is the browser list, which is why
@@ -880,8 +895,33 @@ it fastest:
    intent, `isBrowser` will not see it and the browser list is not what governs
    it — check with `pm query-activities`.
 
-If it fails any of those, take it out of `allowed_browser_packages`; nothing else
-in the policy depends on it.
+If either fails any of those, take it out of `allowed_browser_packages`; nothing
+else in the policy depends on either of them.
+
+**The third question is the one that matters most for Via** and is worth putting
+first there: a browser that does not answer an `https://` intent is not seen by
+`isBrowser` at all, so it would survive on any phone whatever this list says —
+which would make allowing it here a formality and its *absence* from the list
+meaningless. That is worth knowing before trusting the browser rule to be
+complete.
+
+### 12d. The browser cards need logos for browsers the phone does not have
+
+**Reported 2026-08-19, once Comet and Via were allowed.** The browser choice
+cards describe themselves with the launcher icons of the browsers *actually
+installed*, which was a good idea while the allowed set was five and every phone
+had most of them. With seven, a phone that has two of them shows two icons under
+a card that claims to allow seven, and the claim reads as false rather than as
+incomplete.
+
+Two ways out, and the owner named both: ship the logos in the app so the card can
+draw browsers the phone has never had, or draw a small **+** after the icons and
+let the ⓘ description carry the list. The second is cheaper and keeps
+`bindBrowserIcons` honest — it would still only draw what is really there — but
+it costs a tap to answer "which browsers?".
+
+Whichever, the description is the fallback either way, so it has to name them:
+the default profile's text does, in three languages, as of policy 85.
 
 ### 13. A copy pass over the app, then the website — the app half is done
 
