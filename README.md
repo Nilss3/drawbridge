@@ -237,11 +237,13 @@ keys/         signing keys — never committed
 ```
 
 Nothing under `art/` is read at build time. `tools/make-artwork.sh` derives the
-adaptive-icon layers, herald's block-page scene and drawbridge's hero image from
-it and writes them into the two apps; run it after changing a master and commit
-what it writes. The two scenes are the same place by day and by night: herald's
-block page carries both and turns with the phone's light or dark mode,
-drawbridge's welcome screen keeps the night one.
+adaptive-icon layers, herald's block-page scene, drawbridge's hero image and the
+website's hero from it; run it after changing a master and commit what it writes.
+`scene-day` and `scene-night` are the same place at two times of day — herald's
+block page carries both and turns with the phone's light or dark mode — while
+`scene-dusk` is a sunset, warm enough to read on a light background and dark
+enough on a dark one, so drawbridge's welcome screen and the website each show
+that one whatever the theme.
 
 ## Licence
 

@@ -1,4 +1,4 @@
-# Handoff — state as of 2026-08-18
+# Handoff — state as of 2026-08-19
 
 Everything about *how the system works* lives in [README](../README.md),
 [design-decisions](design-decisions.md), [policy](policy.md),
@@ -173,6 +173,19 @@ the key can always unlock and put a build on the phone. See
   been on this list since build 30.
 - **A second person installing any of this**, from the website, without the
   author in the room.
+- **Android Auto working wirelessly with the filter on.** The alpha phone shows
+  *"error 21, are you using a VPN?"* on the car's screen whenever it comes into
+  range, and works over a cable. The fix — `dns.excluded_packages`, defaulting
+  to Android Auto — is written and reasoned but has never been in a car. **What
+  would falsify it:** if Android Auto looks for a `tun` interface rather than
+  asking `ConnectivityManager`, no per-app exclusion can help, because the
+  interface is there for every process. Then the honest options are a cable, or
+  dropping the filter while the phone is in car mode, which is a much bigger
+  hole for a much smaller problem.
+- **Mono's slower fling on a real phone.** It is measured and watched working on
+  the emulator, where scrolling is a scripted swipe rather than a thumb — see
+  [next step 12](#12-herald-mono-take-out-always-on-reader-view--done-2026-08-19).
+  Whether 0.05 is friction or annoyance is a question only a day of use answers.
 
 ---
 ## Traps that cost time here
@@ -209,7 +222,8 @@ Each of these looks like a bug and is not, or bites silently:
 - **`SessionUseCases.goBack.invoke(null)` does nothing**, silently. The parameter
   *defaults* to the selected tab, but an explicit null returns before dispatching
   anything — and `sessionId` is null in every browser fragment that is not a
-  custom tab. This cost two rounds on the reader-view back bug; pass `tab.id`.
+  custom tab. This cost two rounds on the reader-view back bug — whose code is
+  gone, while the trap is not; pass `tab.id`.
 - **The readability check is asked once and dropped if nothing answers.**
   `ReaderViewMiddleware` asks at the URL change, before the page exists;
   `checkReaderState` clears `checkRequired` whether or not a port was connected
@@ -220,9 +234,16 @@ Each of these looks like a bug and is not, or bites silently:
   the text. `EditSafeToolbar` is the guard; anything that talks to the toolbar
   through the `Toolbar` interface has to go through it, and it owns the single
   `setOnEditListener` slot.
-- **In mono, anything that turns reader view off has to say so.** The automatic
-  entry re-reads `readerable && !active` and will put the article straight back,
-  which is what made the back button look dead. Set `dismissedForPage`.
+- **The Gecko pref that slows scrolling is not the one it looks like.**
+  `apz.fling_friction` is `GenericFlingAnimation`'s, and Android does not use
+  that animation: the fling here is Chrome's physics, under
+  `apz.android.chrome_fling_physics.friction`. Both prefs exist in this
+  GeckoView and both are given values in its own `geckoview-prefs.js`, so the
+  wrong one is set successfully, reads back correctly and does **nothing** —
+  and so does `apz.max_velocity_inches_per_ms`, measured inert at a fourteenth
+  of its shipped value. `strings libxul.so | grep '^apz\.'` on the AAR is what
+  settled which prefs this build actually reads, and is the tool to reach for
+  next time a pref appears to be ignored.
 - **The phone sleeps mid-test**, which produces entirely black screenshots that
   look like a rendering bug. `adb shell svc power stayon usb` while testing, and
   set it back to `false` afterwards.
@@ -749,43 +770,80 @@ Remember `site/` is generated: edit `site-src/` and `tools/build-site.py`, run
 `python3 tools/build-site.py`, and commit what it writes. Hand-edited HTML in
 `site/` is overwritten without warning.
 
-### 12. herald mono: take out always-on reader view
+### 12. ~~herald mono: take out always-on reader view~~ — done 2026-08-19
 
-**Asked for 2026-08-17, from use.** `Edition.autoReaderView` is `isMono`, and
-`ReaderViewIntegration` enters reader view on every page Gecko calls readerable.
-It is not working out:
+**Asked for 2026-08-17, from use; removed on 2026-08-19.** `Edition.autoReaderView`
+is gone, and with it the automatic entry, the `dismissedForPage` flag and the
+two-step back press that only existed to prop the feature up. Reader view stays
+in the menu, back is `ReaderViewFeature.onBackPressed` again — it leaves reader
+view and stops on the article — and the readability re-check is kept, because it
+is what makes the menu entry appear on pages that are articles in *both*
+editions. See
+[design-decisions](design-decisions.md#mono-asks-for-reader-view-rather-than-imposing-it)
+and the rewritten status header on
+[reader-view-back](reader-view-back.md).
 
-- **pages hang in a loop** — reported from the phone, and the likeliest shape is
-  the entry racing a load that has not settled, so entering re-triggers a load
-  that is entered again;
-- **slow pages never get there**, because readerability is decided on a document
-  that has not finished arriving;
-- and when it does work it is still the wrong default often enough to be noticed.
+**The owner's replacement idea was taken, and it works: a slower fling.** Mono's
+thesis is friction rather than stripping — `loadDelayMillis` is the same idea —
+and a page that is harder to throw is friction no page can fight, whereas reader
+view depends on a Readability pass that either works or leaves the reader worse
+off. One Gecko pref does it, and **it is not the one it looks like**; see the
+trap above, and `EngineProvider.applySlowScrollingPrefs` for the measurements.
 
-Removing it is small: `autoReaderView` goes, `ReaderViewIntegration` keeps the
-manual button, and mono keeps greyscale, one tab and the load pause. Reader view
-remains available on request, which is where it started — see
-[reader-view-back](reader-view-back.md), which is worth reading first, since this
-feature has been rebuilt once already for a different reason.
+Measured on the API 36 emulator with one scripted flick on a 40,000 px page, in
+CSS pixels scrolled — about 460 of which is the drag itself:
 
-**The replacement idea is the owner's and is worth taking seriously rather than
-dropping the goal**: a *lower scrolling speed*. Mono's thesis is friction, not
-stripping — `loadDelayMillis` is the same idea already shipped — and a slower
-fling is friction that no page can fight, whereas reader view depends on a
-Readability pass that either works or leaves the reader worse off. Note it is a
-Gecko-side scroll behaviour, so scope it before promising it.
+| `apz.android.chrome_fling_physics.friction` | scrolled | screenfuls |
+|---|---|---|
+| 0.015, GeckoView's own | 4,466 | 5.6 |
+| **0.05, what mono ships** | 2,045 | 2.6 |
+| 0.15 | 1,143 | 1.4 |
 
-### 13. A copy pass over the app, then the website
+**What is left of this item** is a phone. Everything above was watched on the
+emulator: no automatic reader view on an article, the menu entry still offered
+and still working, back leaving reader view in one press and stopping on the
+article, and the fling shortened on a first run with a fresh profile. How 0.05
+*feels* in the hand, over a day, is the open question, and the number is one
+constant to move.
 
-**Asked for 2026-08-17.** The strings have grown by accretion — three languages,
-several features added in a week, and each one written in the moment. They want
-reading end to end for consistency of voice, length and terminology: `values`,
-`values-nl`, `values-fr`, and the ⓘ dialogs in particular, which are the longest
-text in the app and the least re-read.
+### 13. A copy pass over the app, then the website — the app half is done
 
-Do the app first and the site second, so the site can quote what the app actually
-says. The website half is item 11 above, which lists what is out of date there;
-this is the same pass carried through to `tools/build-site.py`.
+**Asked for 2026-08-17; the app was rewritten by the owner on 2026-08-19.** The
+strings had grown by accretion — three languages, several features added in a
+week, each written in the moment — and what they wanted was not tidying but a
+decision about what each control actually promises. What changed:
+
+- **The screen is called `Drawbridge Control`**, set at runtime rather than as
+  the activity's label, because MainActivity is the launcher activity and a
+  label would rename the icon too.
+- **Sections look like sections.** `TextAppearance.Drawbridge.SectionHeading` is
+  bold, accent-coloured and carries a hairline above it; the first heading takes
+  a variant without the rule, since it has nothing above to be separated from.
+- **The policy note under the card** now says the policy is always on and the
+  options are the part that waits for the lock — which is what the code has done
+  since 2026-08-15 and what the old wording said the long way round.
+- **Always-online is the first disconnect choice**, being the state the phone is
+  already in, and says so.
+- **`No other apps`** is the install lock's name; the section above it keeps the
+  name `App installs`, or the screen says the same three words twice running.
+- **The options are framed as permissions to withdraw** rather than to grant,
+  which is the change that needs the policy document below.
+- **The lock, reveal and forgotten-code screens** say what the key is and is not:
+  a new one every time, written down or deliberately forgotten, and the reveal
+  no longer carries the paragraph about settings not being sealed.
+
+**Two of the owner's items are policy, not app, and are prepared but unsigned**
+in `dist/policy.json` (version 75): the default profile's ⓘ text, and
+`default_enabled: true` on every option. **Until that document is signed the app
+contradicts itself** — the Options section says drawbridge allows all of the
+following while every switch reads off. One command closes it:
+
+```
+python3 tools/policytool.py sign --in dist/policy.json --out dist/policy.signed.json
+```
+
+**The website half is still open.** It is item 11 above, and it should be done
+after this rather than before, so the site can quote what the app now says.
 
 ### Standing items, unchanged
 

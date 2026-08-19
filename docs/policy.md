@@ -21,7 +21,8 @@ hold, which is what makes replaying an old, permissive policy fail.
     "upstreams": ["94.140.14.15", "94.140.15.16"],
     "enforce_safe_search": true,
     "strip_https_records": true,
-    "block_encrypted_dns": true
+    "block_encrypted_dns": true,
+    "excluded_packages": ["com.google.android.projection.gearhead"]
   },
   "blocklists": [
     { "id": "adult", "url": "https://...", "format": "hosts", "category": "adult" }
@@ -42,6 +43,7 @@ hold, which is what makes replaying an old, permissive policy fail.
 |---|---|
 | `dns.encrypted_upstream` | Where queries actually go, over DNS-over-TLS. Encrypts the hop, so the local network cannot read the lookups or forge answers. Mullvad's `all` profile also blocks adult, gambling, social, ads and trackers at their end. |
 | `dns.upstreams` | Plain-DNS fallback. Bootstraps the encrypted upstream's hostname and takes over if it is unreachable — keep it a *filtering* resolver so the failure mode is a narrower filter, not an open one. |
+| `dns.excluded_packages` | Apps left outside the tunnel, **and therefore outside the filter**. For apps an always-on VPN stops working; see below before adding one. Defaults to Android Auto. |
 | `blocklists` | Domain lists downloaded and compiled on device. `format` is `hosts` or `domains`; Adblock-style `\|\|domain^` lines are tolerated in either. |
 | `blocked_domains` | Extra domains on top of the lists. Suffix matching: `example.com` covers `www.example.com`. |
 | `allowed_domains` | Wins over everything else, in the DNS filter and in herald alike. Use it to carve an exception out of a bulk list — and see the note below, because it is also what keeps the filter able to update itself. |
@@ -112,6 +114,44 @@ added or reviewed:
 8. **Verify on a phone if there is one to hand.** Install the app, open it, and
    see whether content loads. That is the only step that catches what this
    checklist was written for, and it is the step that found it.
+
+### An app outside the tunnel is an app outside the filter
+
+`dns.excluded_packages` is the one field here that *removes* protection, and it
+exists because an always-on VPN breaks some apps outright. Everything named in
+it resolves through the system resolver, so nothing it looks up is checked
+against the blocklist and nothing it reaches is recorded anywhere. Adding a name
+is a decision to trust that app with the open internet.
+
+**The rules that keep it small:**
+
+1. **Never a browser**, and never anything that renders arbitrary web pages —
+   a webview-shaped app on this list is a way around the whole product.
+2. **Only for an app that does not work at all**, not one that works badly.
+   A hole is not a performance fix.
+3. **The narrowest package that fixes it.** `com.google.android.gms` is the
+   tempting one and is close to excluding the phone; reach for the specific app
+   first and only widen if the specific app is provably not enough.
+4. **Say what it is for** in the commit that adds it, because the reason will
+   not be obvious to whoever reads the list next.
+
+**Android Auto is the default entry**, and the case it was written for. Wireless
+projection refuses to start while the phone has a VPN and puts *"error 21, are
+you using a VPN?"* on the car's screen every time the phone comes into range —
+over a cable it is fine, which is the tell that this is about the VPN existing
+rather than about anything crossing it. Excluding the app is what every VPN
+calls split tunnelling, and it works because a disallowed app's default network
+is the plain Wi-Fi or mobile one, so the phone answers "no VPN" when Android
+Auto asks. The app itself is a projection surface: the apps it shows keep their
+own network and stay filtered.
+
+**This is policy rather than a constant on purpose.** drawbridge cannot update
+itself on a locked phone, so an app that turns out to be incompatible with an
+always-on VPN would otherwise need a cable and the key. As a policy field it
+reaches a locked phone at the next poll, and the tunnel rebuilds itself when the
+`dns` block changes without so much as a reboot. Older builds ignore the field
+rather than reject the document — both parsers set `ignoreUnknownKeys` — so
+adding it costs nothing on a phone too old to use it.
 
 ### A filter that blocks its own updates stops being a filter
 

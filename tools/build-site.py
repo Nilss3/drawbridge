@@ -173,6 +173,9 @@ HOME = {
         title="drawbridge — protect your Android device from harmful content",
         description="A free, open-source, watertight content filter for Android. For yourself, or for a device you manage on someone else's behalf. No account, no backend, no telemetry.",
         beta="Slowly entering public beta. If it holds up, this site gets a real domain.",
+        hero_title="Drawbridge Project",
+        hero_tagline="Keeps the bad internet on the other side",
+        hero_art_alt="A raised drawbridge at sunset, between an autumn park where somebody is reading on a bench and a rocky shore where cartoon monsters are waiting.",
         h1="Welcome to the drawbridge project",
         lede="Drawbridge protects you and your Android device from harmful content, so you can keep your focus and sanity.",
         p1='Make your phone a drawbridge phone: a phone clear of social media and other harmful time-wasters. A drawbridge phone can be used for yourself, and/or for your teenager, as a free, better and low-maintenance alternative to parental controls. The protection is based on the best practices of digital minimalism and supported by neuroscience and parents\' organisations. Drawbridge is free, open source, no frills, watertight, and respects your privacy. No account is needed, and none of your data is ever uploaded.',
@@ -213,7 +216,7 @@ HOME = {
         mono_intro='herald mono is another version of this browser, especially for people who find browsing the internet itself addictive (news, shopping, etc.). It is inspired by e-ink screens and the Firefox Focus browser to make browsing less enticing:',
         mono_bullets=[
             "It renders everything in black and white",
-            'It opens webpages by default in reader mode when possible<ul><li>You can still choose to see a specific page in normal mode or in color if you need for various reasons (e.g. you need to read a colorful graph in a news article)</li></ul>',
+            'Pages are harder to skim past: a flick throws the page about half as far as in any other browser, so scrolling on and on takes deciding to<ul><li>Dragging is unchanged — the page still follows your finger exactly. Reader mode and colour are both still there, a menu entry away, for the page that needs them</li></ul>',
             "There are no tabs. Single-tasking it is.",
             "There is a breathing pause every time you open a webpage.",
         ],
@@ -224,6 +227,9 @@ HOME = {
         title="drawbridge — bescherm je Android-toestel tegen schadelijke inhoud",
         description="Een gratis, open source, waterdichte contentfilter voor Android. Voor jezelf, of voor een toestel dat je voor iemand anders beheert. Geen account, geen backend, geen telemetrie.",
         beta="Bijna in publieke beta. Als het goed werkt, krijgt deze site een echt domein.",
+        hero_title="Drawbridge Project",
+        hero_tagline="Houdt het slechte internet aan de overkant",
+        hero_art_alt="Een opgehaalde ophaalbrug bij zonsondergang, tussen een herfstpark waar iemand op een bank zit te lezen en een rotsige oever waar tekenfilmmonsters staan te wachten.",
         h1="Welkom bij het drawbridge-project",
         lede="Drawbridge beschermt jou en je Android-toestel tegen schadelijke inhoud, zodat je je focus en gemoedsrust behoudt.",
         p1='Maak van je telefoon een drawbridge-telefoon: een telefoon vrij van social media en andere schadelijke tijdverspillers. Een drawbridge-telefoon kan gebruikt worden voor jezelf, en/of voor je tiener, als een gratis, betere en onderhoudsarme alternatief voor parental controls. De bescherming is gebaseerd op de beste praktijken van digitaal minimalisme en wordt ondersteund door neurowetenschap en ouderverenigingen. Drawbridge is gratis, open source, zonder franjes, waterdicht, en respecteert je privacy. Er is geen account nodig, en er wordt nooit data geüpload.',
@@ -264,7 +270,7 @@ HOME = {
         mono_intro='herald mono is een andere versie van deze browser, speciaal voor mensen die het surfen op internet zelf verslavend vinden (nieuws, online shoppen, enz.). Het is geïnspireerd op e-inktschermen en de Firefox Focus-browser, om browsen minder aanlokkelijk te maken:',
         mono_bullets=[
             "Toont alles in zwart-wit",
-            'Opent webpagina\'s standaard in leesmodus wanneer mogelijk<ul><li>Je kan nog steeds kiezen om een specifieke pagina in normale modus of in kleur te bekijken, indien nodig (bv. om een kleurrijke grafiek in een nieuwsartikel te lezen)</li></ul>',
+            'Pagina\'s zijn moeilijker weg te scrollen: een veeg werpt de pagina ongeveer half zo ver als in een andere browser, dus almaar doorscrollen wordt een keuze<ul><li>Slepen blijft ongewijzigd — de pagina volgt je vinger nog altijd precies. Leesmodus en kleur blijven allebei beschikbaar, één menu-item ver, voor de pagina die ze nodig heeft</li></ul>',
             "Er zijn geen tabbladen. Singletasking dus.",
             "Er is een ademhalingspauze telkens je een webpagina opent.",
         ],
@@ -275,6 +281,9 @@ HOME = {
         title="drawbridge — protégez votre appareil Android des contenus nuisibles",
         description="Un filtre de contenu gratuit, open source et étanche pour Android. Pour vous-même, ou pour un appareil que vous gérez pour quelqu'un d'autre. Pas de compte, pas de serveur, aucune télémétrie.",
         beta="En bêta publique progressive. Si tout se passe bien, ce site aura son propre nom de domaine.",
+        hero_title="Drawbridge Project",
+        hero_tagline="Garde le mauvais internet de l'autre côté",
+        hero_art_alt="Un pont-levis relevé au coucher du soleil, entre un parc d'automne où quelqu'un lit sur un banc et une rive rocheuse où attendent des monstres de dessin animé.",
         h1="Bienvenue sur le projet drawbridge",
         lede="Drawbridge protège votre appareil Android des contenus nuisibles, pour préserver votre concentration et votre équilibre.",
         p1='Faites de votre téléphone un téléphone drawbridge : un téléphone débarrassé des réseaux sociaux et autres pertes de temps nuisibles. Un téléphone drawbridge peut être utilisé pour vous-même, et/ou pour votre adolescent, comme alternative gratuite, meilleure et peu contraignante aux contrôles parentaux. La protection s\'appuie sur les meilleures pratiques du minimalisme numérique et est soutenue par les neurosciences et des associations de parents. Drawbridge est gratuit, open source, sans fioritures, étanche, et respecte votre vie privée. Aucun compte n\'est nécessaire, et aucune de vos données n\'est jamais transmise.',
@@ -315,7 +324,7 @@ HOME = {
         mono_intro="herald mono est une autre version de ce navigateur, spécialement pour les personnes qui trouvent que naviguer sur internet est en soi addictif (actualités, achats en ligne, etc.). Il s'inspire des écrans à encre électronique et du navigateur Firefox Focus pour rendre la navigation moins attrayante :",
         mono_bullets=[
             "Il affiche tout en noir et blanc",
-            "Il ouvre les pages web par défaut en mode lecture, quand c'est possible<ul><li>Vous pouvez toujours choisir d'afficher une page précise en mode normal ou en couleur si besoin (par exemple pour lire un graphique coloré dans un article de presse)</li></ul>",
+            "Les pages sont plus difficiles à faire défiler d'un geste : une chiquenaude lance la page environ deux fois moins loin que dans un autre navigateur, si bien que continuer à faire défiler devient un choix<ul><li>Le glissement ne change pas — la page suit toujours votre doigt exactement. Le mode lecture et la couleur restent disponibles, à un élément de menu, pour la page qui en a besoin</li></ul>",
             "Il n'y a pas d'onglets. Une seule tâche à la fois.",
             "Il y a une pause de respiration à chaque ouverture d'une page web.",
         ],
@@ -339,15 +348,15 @@ def render_home(lang: str) -> str:
     body = f"""
   <section class="hero">
     <div class="wrap">
-      <span class="beta-note">{c['beta']}</span>
-      <h1>{c['h1']}</h1>
-      <p class="lede">{c['lede']}</p>
       <div class="hero-art">
-        <picture>
-          <source srcset="/assets/img/hero-night.webp" media="(prefers-color-scheme: dark)" />
-          <img src="/assets/img/hero.webp" alt="" />
-        </picture>
+        <img src="/assets/img/hero.webp" alt="{c['hero_art_alt']}" />
+        <div class="hero-art-title">
+          <h1>{c['hero_title']}</h1>
+          <p>{c['hero_tagline']}</p>
+        </div>
       </div>
+      <span class="beta-note">{c['beta']}</span>
+      <p class="lede">{c['lede']}</p>
       <p class="voices-lead">{c['use_cases_lead']}</p>
       <ul class="voices">
 {use_cases_html}
@@ -885,7 +894,7 @@ FAQ = {
             ("p", "<strong>A curfew for the internet:</strong> the phone goes offline between set hours, configurable separately for weekdays and the weekend. Do always go online for at least half an hour, so that all updates can come through. That is also useful for updating your Spotify playlist, for instance."),
 
             ("h3", "Additional settings: allowing only certain apps, removing browsers, dumbphone-ification"),
-            ("p", "<strong>Browser choice:</strong> by default drawbridge allows a limited list of browsers that work well with the web filter. We recommend <strong>herald</strong>, because it is a minimalist browser that shows a clear page when something is blocked and follows drawbridge's policy. You can also choose to use <strong>herald mono only</strong>: a browser that browses in black and white by default, in reader mode, and has only one tab. That is a good choice for people with a general browsing addiction (news sites and the like). Finally, you can choose to have <strong>no browser</strong> at all. Bear in mind that certain apps need a browser to work properly and to log in, for instance. So make sure you are already logged in everywhere before you use this option."),
+            ("p", "<strong>Browser choice:</strong> by default drawbridge allows a limited list of browsers that work well with the web filter. We recommend <strong>herald</strong>, because it is a minimalist browser that shows a clear page when something is blocked and follows drawbridge's policy. You can also choose to use <strong>herald mono only</strong>: a browser that browses in black and white by default, has only one tab, and is deliberately harder to scroll on and on in. That is a good choice for people with a general browsing addiction (news sites and the like). Finally, you can choose to have <strong>no browser</strong> at all. Bear in mind that certain apps need a browser to work properly and to log in, for instance. So make sure you are already logged in everywhere before you use this option."),
             ("p", "<strong>Allowing only certain apps:</strong> if you choose this option, app installation is prevented after locking. You can no longer install new apps; existing apps do still get updated, for security. Remove or disable the apps you do not want (preferably leave the Play Store in place, so updates can come through). That way you can build a phone with only the basics: camera, calculator, calendar, maps, public transport, Spotify, and nothing else allowed."),
 
             ("h3", "How can I switch off or bypass drawbridge? Other limitations."),
@@ -930,23 +939,23 @@ FAQ = {
             ("p", "Wie een toestel met drawbridge heeft, maakt de duidelijke keuze om het schadelijke internet niet mee te nemen in de broekzak of handtas, maar het te beperken tot een laptop of desktop. Inderdaad zijn sommige social media nuttig: Reddit en Discord hebben een sterke communitywerking waar soms streng gemodereerd wordt, maar er blijft ook veel extreem gore content beschikbaar en toxische commentaren. In elk geval is er geen enkele reden waarom je die moet meedragen in je zak."),
 
             ("h2", "Welke apps en websites worden tegengehouden?"),
-            ("p", 'Voor het beschermen van je welzijn en je toestel, houdt drawbridge de volgende categorieën tegen: porno, gokken, oplichterij, algoritmische social media, AI companions, games met verslavende mechanismen of gevaar voor grooming. Sommige messenger apps worden beschouwd als social media: Facebook Messenger, WhatsApp en Telegram. Deze twee laatste kan men optioneel toch toestaan. Ook videostreaming is optioneel, zie verder. Meer informatie op <a href="/why-blocked/">deze pagina</a> (in het Engels).'),
+            ("p", 'Voor het beschermen van je welzijn en je toestel, houdt drawbridge de volgende categorieën tegen: porno, gokken, oplichterij, algoritmische social media, AI companions, games, en dating. Sommige messenger apps worden beschouwd als social media: Facebook Messenger (altijd geblokkeerd), WhatsApp en Telegram (optioneel uit te zetten). Videostreaming en YouTube kan men ook apart uitzetten, zie verder. Let op: over het algemeen worden alle apps verwijderd die geen PEGI rating "alle leeftijden" hebben, maar bepaalde tools hebben we toegestaan (zoals Strava). Meer informatie op <a href="/why-blocked/">deze pagina</a> (in het Engels).'),
             ("p", "Alle andere websites en apps werken gewoon: tools, office, weerbericht, banking, publiek transport, school, werk, etc. Ook werken de meeste messengers: Signal, Threema, Briar, Session. Private mobiele communicatie is namelijk een hoofddoel van een smartphone."),
 
             ("h2", "Hoe werkt de drawbridge app?"),
-            ("p", "Van zodra drawbridge geïnstalleerd is, wordt het toestel <strong>onherroepelijk beschermd met een netwerkfilter</strong> die bovenstaande categorieën buitenhoudt, en <strong>worden de apps die nooit toegelaten zijn verwijderd</strong>: sociale media, schadelijke games, en alle browsers behalve de toegestane. Dat gebeurt bij de installatie en niet pas bij het vergrendelen, zodat ook een telefoon die niemand ooit vergrendelt beschermd is. Apps waar je nog over kan beslissen — WhatsApp, Telegram, YouTube, videostreaming — blijven staan tot je vergrendelt. De toegestane browsers zijn herald (de browser van drawbridge), Chrome, Firefox Focus en Vivaldi. Als je een andere browser gebruikt, exporteer dan eerst je bookmarks!"),
+            ("p", "Van zodra drawbridge geïnstalleerd is, wordt het toestel <strong>onherroepelijk beschermd</strong> die bovenstaande categorieën buitenhoudt, en <strong>worden de apps die nooit toegelaten zijn verwijderd</strong>: sociale media, games, dating, de meeste PEGI-7 of hoger, en alle browsers behalve de toegestane. Dat gebeurt reeds bij de installatie, en is geldig tot je drawbridge verwijderd door een factory reset van je toestel. Je kan daarbovenop verdere restricties toepassen: WhatsApp, Telegram, YouTube en/of videostreaming uitschakelen, een avondklok instellen, helemaal offline gaan, geen browser hebben, of slechts enkele apps toestaan. Deze restricties gaan pas in bij het 'vergrendelen' van drawbridge. Voor het ontgrendelen heb je een code nodig, of je kan een timer instellen. Zolang drawbridge vergrendeld is, is er geen manier om de instellingen te veranderen of drawbridge te verwijderen."),
             ("p", "De drawbridge app is het controlecentrum van drawbridge en laat de gebruiker toe bepaalde apps en websites toch te gebruiken, het internet juist nog meer te beperken of de telefoon bijna helemaal een dumbphone te maken. Deze bijkomende instellingen gaan pas van kracht als men drawbridge vergrendelt."),
 
             ("h3", "Vergrendelen"),
-            ("p", 'Drawbridge kan sowieso niet worden verwijderd zonder een factory reset van het toestel: de webfilter is onherroepelijk tot factory reset.<sup><a href="#beta">1</a></sup> Dit is de basisbescherming van drawbridge.'),
-            ("p", "Als men drawbridge vergrendelt, dan gaan de andere instellingen van kracht (zie onder), zowel de verruimingen als de beperkingen. Wanneer vergrendeld kunnen de instellingen niet meer wijzigen en kan drawbridge ook helemaal niet worden verwijderd, zelfs een factory reset is niet meer mogelijk!"),
+            ("p", 'Drawbridge kan sowieso niet worden verwijderd zonder een factory reset van het toestel: de standaard policy is onherroepelijk tot factory reset.<sup><a href="#beta">1</a></sup> Dit is de basisbescherming van drawbridge.'),
+            ("p", "Als men drawbridge vergrendelt, dan gaan de andere instellingen van kracht (zie onder). Wanneer vergrendeld kunnen de instellingen niet meer wijzigen en kan drawbridge ook helemaal niet worden verwijderd, zelfs een factory reset is niet meer mogelijk!"),
             ("p", "Bij vergrendeling krijgt men eerst een code. Deze code is elke keer anders, schrijf die dus telkens opnieuw op! De code is nodig om de vergrendeling op te heffen."),
             ("ul", [
                 "<strong>Definitief vergrendelen</strong>: de code is opzettelijk moeilijk te onthouden. <strong>Je kan ervoor kiezen de code niet op te schrijven en dan blijft de telefoon vergrendeld voor eeuwig en altijd!</strong>",
                 '<strong>Tijdelijk vergrendelen:</strong> je kan ervoor kiezen dat drawbridge automatisch ontgrendelt na een periode van 2 uur tot 40 dagen, dit voor dingen als "een namiddag offline om te kunnen studeren", "weekendje offline", "weekje kamperen", "twee weken geen discussie over de avondklok", een "vastenperiode" etc. Drawbridge toont nog steeds de code, maar hier zal je die waarschijnlijk opzettelijk niet opschrijven.',
             ]),
 
-            ("h3", "Bijkomende instellingen: filter verruimen"),
+            ("h3", "Bijkomende instellingen: bepaalde apps of services niet meer toestaan door de schakelaars hieronder uit te zetten"),
             ("p", "<strong>Long-form video streaming toestaan:</strong> dit staat diensten toe zoals Netflix, Disney+, Hulu etc. YouTube valt hier niet onder (zie verder)."),
             ("p", "<strong>WhatsApp toestaan:</strong> WhatsApp lijkt steeds meer op social media (kanalen, chatbot). Omdat WhatsApp voor veel mensen een noodzakelijk kwaad is (in sommige landen wordt er zelfs niet meer conventioneel gebeld), kan je WhatsApp eventueel toch toestaan. Andere chatapps zoals Signal, Threema, Session, Briar etc. worden toegestaan, omdat versleutelde communicatie een mensenrecht is. Indien je het toestel geeft aan een kind, weet dat kinderen tot 14 jaar heel moeilijk om kunnen met groepschats en die zeer snel ontaarden in cyberpesten en drama."),
             ("p", "<strong>Telegram toestaan:</strong> om dezelfde reden als WhatsApp kan je Telegram toestaan. Telegram is echter niet versleuteld en bevat vele kanalen met harde pornografie, verboden middelen en geweld. Telegram is daarom aanbevolen vanaf 18 jaar."),
@@ -958,7 +967,7 @@ FAQ = {
             ("p", "<strong>Avondklok voor het internet:</strong> de telefoon gaat offline tussen bepaalde uren, apart te configureren voor de week en het weekend. Ga wel altijd minstens een half uur online om alle updates te laten doorkomen. Dit is ook nuttig om eens je Spotify-playlist te updaten, bv."),
 
             ("h3", "Bijkomende instellingen: enkel bepaalde apps toestaan, browsers verwijderen, dumbphone-ificatie"),
-            ("p", "<strong>Browserkeuze:</strong> standaard staat drawbridge een beperkte lijst browsers toe die goed werken met de webfilter. We raden <strong>herald</strong> aan omdat dit een minimalistische browser is die een duidelijke pagina toont bij blokkeren en het beleid van drawbridge volgt. Men kan ook kiezen om <strong>enkel herald mono</strong> te gebruiken: een browser die standaard browst in het zwart-wit, in leesmodus, en slechts één tab heeft. Dit is een goede keuze voor mensen met een algemene browseverslaving (nieuwswebsites e.d.). Tenslotte kan men kiezen om <strong>geen browser</strong> te hebben. Hou er rekening mee dat bepaalde apps een browser vereisen om goed te werken en bv. in te loggen. Maak dus dat je alvast overal ingelogd bent voor je deze optie gebruikt."),
+            ("p", "<strong>Browserkeuze:</strong> standaard staat drawbridge een beperkte lijst browsers toe die goed werken met de webfilter. We raden <strong>herald</strong> aan omdat dit een minimalistische browser is die een duidelijke pagina toont bij blokkeren en het beleid van drawbridge volgt. Men kan ook kiezen om <strong>enkel herald mono</strong> te gebruiken: een browser die standaard browst in het zwart-wit, slechts één tab heeft, en waarin doorscrollen bewust moeilijker gaat. Dit is een goede keuze voor mensen met een algemene browseverslaving (nieuwswebsites e.d.). Tenslotte kan men kiezen om <strong>geen browser</strong> te hebben. Hou er rekening mee dat bepaalde apps een browser vereisen om goed te werken en bv. in te loggen. Maak dus dat je alvast overal ingelogd bent voor je deze optie gebruikt."),
             ("p", "<strong>Enkel bepaalde apps toestaan:</strong> als je kiest voor deze optie, worden na vergrendeling appinstallaties voorkomen. Je kan dan geen nieuwe apps installeren, bestaande apps worden wel nog geüpdatet wegens veiligheid. Verwijder of deactiveer de apps die je niet wilt (laat liefst wel de Play Store staan om updates te laten doorkomen). Zo kan men bv. een telefoon maken met enkel de basis: camera, rekenmachine, kalender, maps, openbaar vervoer, Spotify, en dan voor de rest niks meer toestaan."),
 
             ("h3", "Hoe kan ik drawbridge uitschakelen of omzeilen? Andere beperkingen."),
@@ -969,7 +978,7 @@ FAQ = {
             ("p", 'De enige manier om drawbridge te verwijderen is een factory reset. Daarmee reset je het hele toestel en ben je ook je data kwijt. Het staat eigenlijk gelijk aan een nieuw toestel kopen maar zonder de monetaire kost. <strong>De factory reset is bovendien enkel mogelijk wanneer drawbridge ontgrendeld is. Een vergrendelde drawbridge kan niet worden verwijderd.</strong><sup><a href="#beta">1</a></sup>'),
             ("p", "Indien je drawbridge hebt vergrendeld zonder timer en de code niet meer weet of bent kwijtgespeeld, dan is er nog één manier: in het menu van een vergrendelde drawbridge kan je kiezen voor 'code vergeten'. Daar kan je een timer starten van 30 dagen, waarna drawbridge wordt ontgrendeld. Dit is om te voorkomen dat iemand per ongeluk een waardeloos toestel zou krijgen dat men dan niet meer kan doorgeven of verkopen. Dat is niet de bedoeling. De wachttijd kan niet ingekort worden, de datum staat de hele periode op het vergrendelscherm van de telefoon, en ontgrendelen met de code stopt ze — iedereen in het gezin kan ze dus starten, en wie de code heeft, houdt de controle."),
             ("h4", "Controle op tijdstip"),
-            ("p", "Ouders die drawbridge gebruiken voor hun kinderen, hebben een extra controle om na te gaan of drawbridge niet werd ontgrendeld of de telefoon misschien zelfs werd gereset: op het lockscreen van de telefoon staat er onderaan dat de telefoon wordt beschermd door drawbridge, met het tijdstip van laatste vergrendeling. Dit kan je ook terugvinden in de drawbridge app zelf. Dit tijdstip moet overeenkomen met wanneer jij voor je tiener drawbridge hebt vergrendeld. Loopt er een timer, dan telt het lockscreen in plaats daarvan af — \"drawbridge ontgrendelt over 3 dagen\" — en staat het tijdstip van vergrendeling in de app."),
+            ("p", "Ouders die drawbridge gebruiken voor hun kinderen, hebben een extra controle om na te gaan of drawbridge niet werd ontgrendeld of de telefoon misschien zelfs werd gereset: op het lockscreen van de telefoon staat er onderaan dat de telefoon wordt beschermd door drawbridge, met het tijdstip van laatste vergrendeling. Dit kan je ook terugvinden in de drawbridge app zelf. Dit tijdstip moet overeenkomen met wanneer jij voor je tiener drawbridge hebt vergrendeld. Loopt er een timer, dan telt het lockscreen in plaats daarvan af () \"drawbridge ontgrendelt over 3 dagen\" ) en staat het tijdstip van vergrendeling in de app."),
 
             ("h2", "Waarom niet gewoon parental controls of een app blocker gebruiken?"),
             ("p", "Parental controls hebben veel nadelen:"),
@@ -985,7 +994,7 @@ FAQ = {
             ("p", 'Drawbridge maakt geen gebruik van parental controls maar is een device policy controller, zoals gebruikt voor bedrijfstelefoons en kiosken. In tegenstelling tot parental controls komt drawbridge out-of-the-box met een niet-configureerbare bescherming (de netwerkfilter) die reeds een zeer brede dekking geeft. Sociale media en schadelijke games worden altijd tegengehouden, geen discussie. Dat zorgt voor een omgeving met rust en zonder extra overhead. Besef dat drawbridge alleen niet voldoende is als "begeleiding van een kind online". Daar komt nog veel bij kijken, en bv. een best practice blijft het gebruik van internet op een gedeeld scherm, waar iedereen kan meekijken en discussiëren (niet voor privéconversaties, uiteraard).'),
 
             ("h2", "Waarom worden chatbots niet geblokkeerd?"),
-            ("p", 'Reguliere chatbots, zoals ChatGPT, Claude of Gemini, kunnen inderdaad schadelijke effecten hebben op het brein bij overmatig gebruik en het vervangen van cognitief zware taken. Het is niet zo dat er verslavende mechanismen ingebouwd zijn, en net zoals met zoekmachines komen er steeds strengere guardrails wat te doen bij sommige soorten vragen. Het grootste probleem is echter de alomtegenwoordigheid van de chatbots: elke website of dienst heeft tegenwoordig wel een "assistent" waar je eigenlijk gelijk wat aan kan vragen. Indien je dit niet wil, dan gebruik je beter geen internet.'),
+            ("p", 'Reguliere chatbots, zoals ChatGPT, Claude of Gemini, kunnen inderdaad schadelijke effecten hebben op het brein bij overmatig gebruik en het vervangen van cognitief zware taken. Het is niet zo dat er opzettelijk verslavende mechanismen ingebouwd zijn, en net zoals met zoekmachines komen er steeds strengere guardrails wat te doen bij sommige soorten vragen. Het grootste probleem is echter de alomtegenwoordigheid van de chatbots: elke website of dienst (en zoekmachine!) heeft tegenwoordig wel een "assistent" waar je eigenlijk gelijk wat aan kan vragen. Indien je geen chatbots wilt gebruiken, dan kan je kiezen om geen browser te hebben en enkel bepaalde apps toe te staan,'),
 
             ("h2", "Waarom zegt mijn telefoon dat het wordt 'beheerd door mijn organisatie' of door een 'IT-admin'?"),
             ("p", "Drawbridge is een device policy controller, en die worden normaal gebruikt voor bedrijfstelefoons en kiosken. Je mag deze teksten negeren."),
@@ -1031,7 +1040,7 @@ FAQ = {
             ("p", "<strong>Un couvre-feu pour l'internet :</strong> le téléphone passe hors ligne entre certaines heures, à configurer séparément pour la semaine et le week-end. Prévoyez toujours au moins une demi-heure en ligne, pour laisser passer toutes les mises à jour. C'est aussi utile pour mettre à jour votre playlist Spotify, par exemple."),
 
             ("h3", "Réglages supplémentaires : n'autoriser que certaines applications, supprimer les navigateurs, dumbphone-ification"),
-            ("p", "<strong>Choix du navigateur :</strong> par défaut, drawbridge autorise une liste restreinte de navigateurs qui fonctionnent bien avec le filtre web. Nous recommandons <strong>herald</strong>, parce que c'est un navigateur minimaliste qui affiche une page claire en cas de blocage et qui suit la politique de drawbridge. Vous pouvez aussi choisir de n'utiliser <strong>que herald mono</strong> : un navigateur qui navigue par défaut en noir et blanc, en mode lecture, et qui n'a qu'un seul onglet. C'est un bon choix pour les personnes qui souffrent d'une addiction générale à la navigation (sites d'actualité et autres). Enfin, vous pouvez choisir de n'avoir <strong>aucun navigateur</strong>. Tenez compte du fait que certaines applications ont besoin d'un navigateur pour bien fonctionner, et pour s'y connecter par exemple. Veillez donc à être déjà connecté partout avant d'utiliser cette option."),
+            ("p", "<strong>Choix du navigateur :</strong> par défaut, drawbridge autorise une liste restreinte de navigateurs qui fonctionnent bien avec le filtre web. Nous recommandons <strong>herald</strong>, parce que c'est un navigateur minimaliste qui affiche une page claire en cas de blocage et qui suit la politique de drawbridge. Vous pouvez aussi choisir de n'utiliser <strong>que herald mono</strong> : un navigateur qui navigue par défaut en noir et blanc, qui n'a qu'un seul onglet, et dans lequel faire défiler sans fin est délibérément plus difficile. C'est un bon choix pour les personnes qui souffrent d'une addiction générale à la navigation (sites d'actualité et autres). Enfin, vous pouvez choisir de n'avoir <strong>aucun navigateur</strong>. Tenez compte du fait que certaines applications ont besoin d'un navigateur pour bien fonctionner, et pour s'y connecter par exemple. Veillez donc à être déjà connecté partout avant d'utiliser cette option."),
             ("p", "<strong>N'autoriser que certaines applications :</strong> si vous choisissez cette option, l'installation d'applications est empêchée après le verrouillage. Vous ne pouvez plus installer de nouvelles applications ; les applications existantes continuent d'être mises à jour, pour des raisons de sécurité. Supprimez ou désactivez les applications dont vous ne voulez pas (laissez de préférence le Play Store en place, pour laisser passer les mises à jour). Vous pouvez ainsi composer un téléphone avec le strict nécessaire : appareil photo, calculatrice, agenda, cartes, transports en commun, Spotify, et plus rien d'autre."),
 
             ("h3", "Comment désactiver ou contourner drawbridge ? Autres limitations."),

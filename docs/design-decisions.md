@@ -477,6 +477,47 @@ feature after a De Morgen article that Firefox offered reader mode for and heral
 did not — that URL serves a consent interstitial first and only then redirects to
 the article, so the article itself was never checked.
 
+## The filter has a door in it, and Android Auto is what it is for
+
+`dns.excluded_packages` leaves named apps outside the tunnel. Every name in it
+is unfiltered — the app resolves through the system resolver and nothing checks
+what it asks for — so the field is a deliberate hole, and the reasoning for
+having one at all is worth keeping.
+
+**The problem is not that the tunnel blocks anything.** Only DNS is routed into
+it, and Android Auto over a cable works perfectly with the filter running. What
+fails is *wireless* projection, which refuses to start while a VPN is present
+and says so on the car's screen — "error 21, are you using a VPN?" — every time
+the phone comes into range. The phone is not being filtered out of Android Auto;
+Android Auto is declining to run on a phone with a VPN. There is nothing to fix
+at the routing layer because nothing was routed.
+
+**Excluding the app is what makes the VPN invisible to it.** A package passed to
+`addDisallowedApplication` is left out of the VPN's UID ranges, so its default
+network is the plain Wi-Fi or mobile one and `NET_CAPABILITY_NOT_VPN` holds for
+it: asked through `ConnectivityManager`, the phone answers that there is no VPN.
+That is why "split tunnelling" is the fix every VPN offers for this error, and
+it is also why the fix is not certain — an app that enumerates network
+interfaces looking for `tun0` would still find one, since interfaces are not
+per-app. The reported success of split tunnelling elsewhere is the evidence that
+Android Auto asks the first way rather than the second.
+
+**Why the cost is acceptable here, and would not be everywhere.** Android Auto
+is a projection surface, not a browser: the apps it displays are ordinary apps
+with their own network, and they stay filtered. It renders no arbitrary web
+content, so nothing a child can steer goes through the door. That reasoning does
+not survive being applied to a second app casually, which is why `docs/policy.md`
+carries four rules for adding one and why "never a browser" is the first.
+
+**And it is policy rather than a constant because drawbridge cannot update
+itself.** A hardcoded list would mean that the next app found incompatible with
+an always-on VPN needs a cable and someone holding the key. As a signed policy
+field it reaches a locked phone at its next poll, and the tunnel is rebuilt on
+any change to the `dns` block, so the fix lands without a reboot. Both parsers
+set `ignoreUnknownKeys`, so a policy carrying the field is still valid to a build
+that predates it — which matters when the alpha and dev run different versions
+of drawbridge against policies of the same lineage.
+
 ## A blocked iframe is denied, not given a block page
 
 `RequestInterceptor.onLoadRequest` fires for every document load, top-level and
@@ -726,18 +767,51 @@ It is a wrapper and not a subclass because `BrowserToolbar` is final.
 consequence worth knowing: the wrapper owns the toolbar's single edit listener,
 so anything else that wants `setOnEditListener` has to go through it.
 
-## Leaving reader view by the back button counts as dismissing it
+## Mono asks for reader view rather than imposing it
 
-`ReaderViewFeature.onBackPressed` hides reader view and reports that it handled
-the press. In mono that left a readerable page with reader view off — which is
-exactly the condition the automatic entry turns it back *on* for. The article
-returned immediately and the back button looked dead.
+Mono opened every page Gecko called readerable straight into reader view, from
+2026-08-17 to 2026-08-19, and it is gone. It was not working out in use: pages
+hung in loops, slow pages never got there because readability is decided on a
+document that has not finished arriving, and when it did work it was still the
+wrong answer often enough to be noticed. All three are the same weakness —
+**reader view is a judgement about a page, and a judgement can be wrong.** A
+feature that is right most of the time is fine when someone asked for it, and
+is friction of the wrong kind when it happens to you.
 
-The fix is not to special-case back but to treat it as what it is. The
-`dismissedForPage` flag that already stops automatic re-entry after an explicit
-toggle is now also set when back leaves reader view, so a dismissal is a
-dismissal however it is made. A second back press then goes back in history, and
-navigating anywhere clears the flag with the page it belonged to.
+Two mechanisms went with it, and both were expensive to build:
+
+- **The automatic entry**, and the `dismissedForPage` flag that stopped it
+  putting reader view straight back on after it was turned off.
+- **The two-step back press.** Showing reader view is a *navigation*, so an
+  article read in reader view occupies two history entries; when reader view was
+  something nobody had asked for, one press had to undo both, waiting for the
+  article's load to end before taking the second step. Back is now
+  `ReaderViewFeature.onBackPressed` and nothing else: it leaves reader view and
+  stops on the article, which is right for a reader who asked for it.
+
+**What is kept is the re-check**, which asks Gecko again after a page settles
+whether it is an article. That was built for the automatic entry, and it earns
+its place without it: in both editions it is what makes the reader-view menu
+entry appear on pages that *are* articles, which before it worked more or less
+by accident. See [reader-view-back.md](reader-view-back.md).
+
+**The replacement is a slower fling**, and the reason to prefer it is exactly
+what was wrong with reader view: it makes no judgement about the page. Mono's
+thesis is friction rather than stripping — the load pause is the same idea — and
+a page that is harder to throw is friction no page can fight and no Readability
+pass can get wrong. A flick moves about two and a half screens instead of five
+and a half. Dragging is deliberately untouched, so the page still tracks the
+finger exactly and only the reflex — the flick that carries a feed past several
+screens with no decision in between — pays.
+
+**The pref that does this is not the one it looks like.** `apz.fling_friction`
+belongs to Gecko's `GenericFlingAnimation`, which Android does not use; here the
+fling is Chrome's physics and `apz.android.chrome_fling_physics.friction` is what
+governs it. Both prefs exist in this GeckoView, both are given values in its own
+`geckoview-prefs.js`, and setting the wrong one **succeeds, reads back correctly
+and does nothing at all** — as does `apz.max_velocity_inches_per_ms`, which was
+measured at a fourteenth of its shipped value and changed the distance by two per
+cent. Measured values are in `components.EngineProvider.applySlowScrollingPrefs`.
 
 ## The pause in mono is felt, not enforced
 
@@ -768,10 +842,11 @@ the new page stalling rather than as the browser being deliberate.
 
 **Nothing ends a running hold except its own timer.** That rule sounds obvious
 and was arrived at the hard way, after the pause turned out to be cut short
-exactly when moving between two reader-view pages — the case mono makes most
-common. Reader view engages *during* the pause for the page being entered, and
-it trips two separate cancels: the suppression that stops it being paused for
-twice, and the moment its URL is a `moz-extension:` one, before
+exactly when moving between two reader-view pages — which mono made the common
+case for as long as it entered reader view by itself, and which a reader who
+asks for it still meets. Reader view engages *during* the pause for the page
+being entered, and it trips two separate cancels: the suppression that stops it
+being paused for twice, and the moment its URL is a `moz-extension:` one, before
 `ReaderViewMiddleware` rewrites it back to the article's own. Both used to call
 `hide()`. Each was individually reasonable and together they meant the hold
 survived on ordinary pages and collapsed on articles.
