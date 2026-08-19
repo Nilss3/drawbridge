@@ -116,8 +116,11 @@ name, at install, device-wide.**
 
 Two consequences follow, and both are lived with rather than fixed:
 
-- **drawbridge cannot update itself.** The Update screen exists, explains why, and
-  asks the parent to pause Play Protect for a minute. See
+- **drawbridge cannot update itself *unattended*.** The Update screen exists,
+  explains why, and asks the parent to pause Play Protect for a minute — and
+  that route works: the owner took the alpha from build 18 to build 41 with it
+  on 2026-08-19, no cable involved. What is still missing is an update that
+  needs nobody at the phone. See
   [next step 1](#1-get-drawbridge-able-to-update-itself-again).
 - **QR provisioning is closed**, because the wizard cannot install the DPC. The
   cable is the route: `tools/provision-adb.sh`, or the WebUSB installer page,
@@ -835,6 +838,21 @@ and still working, back leaving reader view in one press and stopping on the
 article, and the fling shortened on a first run with a fresh profile. How 0.05
 *feels* in the hand, over a day, is the open question, and the number is one
 constant to move.
+
+### 12b. Two small things on the configuration screen, reported 2026-08-19
+
+Neither is urgent and both are visual, from the owner running build 41:
+
+- **A band of empty space sits under the title bar** and stays there while the
+  rest scrolls, eating vertical space on a screen that has none to spare. It is
+  the first thing to look at on a small phone, which is where it will be worst.
+  Suspect the insets applied in `MainActivity.onCreate` via `applyScreenInsets`,
+  or the `ScrollView` padding above the first heading — the heading itself is
+  `SectionHeading.First`, which deliberately has no rule and 8dp of top padding,
+  so if it looks like more than that the space is coming from somewhere else.
+- **"Drawbridge Control" could be smaller.** It is the activity title in the
+  default action bar, set at runtime from `main_title`; nothing sizes it today,
+  so it takes whatever `textAppearanceTitleLarge` the Material theme gives it.
 
 ### 13. A copy pass over the app, then the website — the app half is done
 
