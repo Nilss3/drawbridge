@@ -380,11 +380,52 @@ second one is the sharper: a `-us` suffix on an existing entry is a statement th
 the service splits by region, and the other half does not announce itself. See
 [policy.md](policy.md#adding-a-service-to-a-domain-list-the-checklist).
 
-**Still unproven**: whether the EU domains are what fixes it. That needs the phone
-to pick up policy 52 and be watched. If TikTok Lite still plays after that, what
-remains is the documented gap — an app resolving through its own HTTPDNS to
-hardcoded IPs, which DNS filtering cannot see, and which the *package* block is
-the answer to.
+**Round three settled it, and the answer was not a domain.** Measured over adb on
+the alpha phone, 2026-08-18, with policy 52 applied:
+
+```
+example.com                    resolves -> 172.66.147.243     (control)
+instagram.com                  BLOCKED (no such host)
+tiktok.com                     BLOCKED (no such host)
+api.snssdk.com                 BLOCKED (no such host)
+tiktokv.eu                     BLOCKED (no such host)
+tiktokcdn-eu.com               BLOCKED (no such host)
+ibyteimg.com                   BLOCKED (no such host)
+ttlivecdn.com                  BLOCKED (no such host)
+p16-sign-va.tiktokcdn.com      BLOCKED (no such host)
+```
+
+**The filter is doing its job.** Every name is refused, a real subdomain included,
+and the control resolves. Then TikTok Lite was force-stopped, cold-started over
+adb, and scrolled — and it **played video**, with these connections open:
+
+```
+71.18.73.249     no PTR   -> whois: Bytedance Inc. (BYTED)
+71.18.129.228    no PTR   -> whois: Bytedance Inc. (BYTED)
+2.17.196-198.x            -> deploy.static.akamaitechnologies.com
+```
+
+**It reaches ByteDance's own IP space without asking a resolver**, so there is no
+lookup to refuse — hardcoded addresses, or its own HTTPDNS, which amounts to the
+same thing from here. No further domain will fix this, and the two rounds of
+domains are still correct: they stop the website and any app that does use DNS.
+
+**This falsifies a claim the README carried from the beginning**: that no
+mainstream app connects to hardcoded IPs. TikTok Lite does, and it is now written
+down as measured rather than assumed.
+
+**What actually stops it** is the app layer — `blocked_packages`, which uninstalls
+it, and on `dev` the store rule, which catches it by rating without anybody naming
+it. The package was deliberately taken *off* the alpha's list in policy 53 so the
+app could serve as the probe for exactly this test; **it should go back now that
+the test has answered.**
+
+**What would stop it at the network layer** is route-level blocking of named IP
+ranges. drawbridge routes only DNS into its tunnel by design, and the one place it
+already does IP work is black-holing known DoH resolvers by address. Extending
+that to a `blocked_ip_ranges` field is a real option and a real maintenance
+burden: ByteDance's prefixes move, and a wrong range breaks something invisible.
+Not built, and not obviously worth it while the package block exists.
 
 ---
 

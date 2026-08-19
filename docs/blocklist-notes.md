@@ -274,6 +274,13 @@ package list rather than duplicating it by accident.
 [policy.md](policy.md#adding-a-service-to-a-domain-list-the-checklist). What
 follows is the case that produced it.*
 
+**And the ending is worth knowing before you add a third round of domains: the
+app does not need DNS at all.** Measured on the alpha with every name here
+refused, TikTok Lite still played video, connected directly to `71.18.73.249` and
+`71.18.129.228` — `whois`: Bytedance Inc. — plus Akamai edge addresses. The
+domains below are still right, and they stop the website and anything that does
+resolve; they will not stop the app. That is `blocked_packages`' job.
+
 **Reported from the alpha on 2026-08-18: TikTok Lite served video on a phone
 where `tiktok.com`, `tiktokv.com`, `tiktokcdn.com`, `tiktokcdn-us.com`,
 `byteoversea.com` and `musical.ly` were all blocked.** Instagram Lite, installed

@@ -138,9 +138,21 @@ locking again, which re-takes the set. See
 
 ### Known gaps
 
-- **Connections to hardcoded IPs with no DNS lookup** bypass a DNS-level filter.
-  No mainstream app or site works this way; the well-known encrypted-DNS
-  resolvers that do are black-holed explicitly.
+- **Connections to hardcoded IPs with no DNS lookup** bypass a DNS-level filter,
+  and **TikTok Lite does exactly this**. This entry used to say no mainstream app
+  worked that way; that was measured and found false on 2026-08-18. On an alpha
+  phone with every TikTok and ByteDance name returning NXDOMAIN — `tiktok.com`,
+  `api.snssdk.com`, `tiktokv.eu`, `tiktokcdn-eu.com` and the rest, with
+  `example.com` resolving as the control — a cold-started TikTok Lite played video
+  while holding open connections to `71.18.73.249` and `71.18.129.228`, which
+  `whois` reports as **Bytedance Inc.**, plus Akamai edge addresses. It reaches
+  its own IP space without asking a resolver, so there is no lookup to refuse.
+
+  What still stops it is the *app* layer: `blocked_packages` removes it, and the
+  store rule catches it by rating. What would stop it at the network layer is
+  route-level blocking of named IP ranges, which drawbridge does not do — the
+  tunnel carries DNS only, by design. The well-known encrypted-DNS resolvers are
+  black-holed by name *and* IP, which is the one place this is already done.
 - **A factory reset removes everything, and nothing stops one.** Recovery mode or
   Settings, either works. Factory Reset Protection does *not* cover this: it is
   not armed on a fully managed device by default, tested on hardware on
