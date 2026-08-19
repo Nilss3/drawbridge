@@ -1,7 +1,7 @@
 {
-  "version": 83,
+  "version": 84,
   "issued_at": "2026-08-16T12:00:00Z",
-  "comment": "Podcast Republic, Microsoft 365, Kimi, GitHub, Anghami and Audiomack whitelisted; Comet allowed as a browser on this channel only, provisionally, until somebody has looked at what it does with DNS.",
+  "comment": "Via joins Comet as a browser to be tried on this channel. Both are provisional and neither is on main.",
   "dns": {
     "upstreams": [
       "94.140.14.15",
@@ -789,7 +789,8 @@
     "com.android.chrome",
     "org.mozilla.focus",
     "com.vivaldi.browser",
-    "ai.perplexity.comet"
+    "ai.perplexity.comet",
+    "mark.via.gp"
   ],
   "app_ratings": {
     "store_region": "BE",

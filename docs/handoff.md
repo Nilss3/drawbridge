@@ -854,10 +854,20 @@ Neither is urgent and both are visual, from the owner running build 41:
   default action bar, set at runtime from `main_title`; nothing sizes it today,
   so it takes whatever `textAppearanceTitleLarge` the Material theme gives it.
 
-### 12c. Comet is allowed on dev, provisionally, and somebody has to look at it
+### 12c. Two browsers are on trial on dev, and somebody has to look at them
 
-**Added to `allowed_browser_packages` on `dev` only, 2026-08-19, at the owner's
-request and with the checking still to do.** It is not on `main`.
+**Comet and Via were added to `allowed_browser_packages` on `dev` only,
+2026-08-19, at the owner's request and with the checking still to do.** Neither
+is on `main`. Both are PEGI 3, so the rating rule has no opinion on either and
+the browser list is the only thing deciding.
+
+**Via is the one with a reason to be there beyond curiosity.** It is what
+tech-minimalists put on a small light phone, which is exactly the household this
+project is for, and a phone whose owner chose Via is a phone whose owner might
+choose drawbridge. It is also the more likely of the two to pass: it is a
+WebView wrapper rather than its own engine, so it resolves through the system
+resolver and has no *Use secure DNS* of its own to turn on. Confirm that rather
+than assume it — a wrapper can still ship a proxy.
 
 Comet is Perplexity's browser. The rating rule has no opinion on it — the store
 says PEGI 3 — so the only thing that decides is the browser list, which is why
@@ -880,8 +890,15 @@ it fastest:
    intent, `isBrowser` will not see it and the browser list is not what governs
    it — check with `pm query-activities`.
 
-If it fails any of those, take it out of `allowed_browser_packages`; nothing else
-in the policy depends on it.
+If either fails any of those, take it out of `allowed_browser_packages`; nothing
+else in the policy depends on either of them.
+
+**The third question is the one that matters most for Via** and is worth putting
+first there: a browser that does not answer an `https://` intent is not seen by
+`isBrowser` at all, so it would survive on any phone whatever this list says —
+which would make allowing it here a formality and its *absence* from the list
+meaningless. That is worth knowing before trusting the browser rule to be
+complete.
 
 ### 13. A copy pass over the app, then the website — the app half is done
 
