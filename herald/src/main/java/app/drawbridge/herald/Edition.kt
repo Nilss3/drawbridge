@@ -45,14 +45,19 @@ object Edition {
     val loadDelayMillis: Long get() = if (isMono) 2_500L else 0L
 
     /**
-     * Pages open stripped to their article wherever Gecko says that is
-     * possible, without being asked.
+     * A flick throws the page a shorter way.
      *
-     * The same Readability pass reader view has always used, applied by default
-     * rather than on request: an article without its navigation, promos and
-     * sidebars is the reading equivalent of one page at a time. Turning reader
-     * view off on a page is remembered until you navigate away, so the choice
-     * still belongs to the reader.
+     * The same thesis as [loadDelayMillis]: friction rather than stripping. A
+     * fling is the scroll of a reflex — the flick that carries a feed past
+     * several screens without a decision being made in between — and slowing it
+     * costs a reader who is reading nothing, because dragging still tracks the
+     * finger exactly. See `components.EngineProvider.applySlowScrollingPrefs`
+     * for the one Gecko setting this is, and for the one it is not.
+     *
+     * It replaced always-on reader view, which tried to reach the same end by
+     * taking the page apart and depended on a Readability pass that either
+     * worked or left the reader worse off. Reader view is still in the menu,
+     * for the pages someone wants it on.
      */
-    val autoReaderView: Boolean get() = isMono
+    val slowScrolling: Boolean get() = isMono
 }

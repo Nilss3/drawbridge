@@ -77,21 +77,87 @@ object EngineProvider {
      * request produced. The pref makes links behave properly; the invariant is
      * what makes mono correct.
      */
-    @androidx.annotation.OptIn(markerClass = [ExperimentalGeckoViewApi::class])
     fun applySingleWindowPrefs() {
         if (Edition.hasTabs) return
 
-        val logger = Logger("herald-engine")
-        listOf(
+        setPrefs(
             "browser.link.open_newwindow" to 1,
             "browser.link.open_newwindow.restriction" to 0,
-        ).forEach { (pref, value) ->
-            GeckoPreferenceController
-                .setGeckoPref(pref, value, GeckoPreferenceController.PREF_BRANCH_USER)
-                .accept(
-                    { logger.info("$pref = $value") },
-                    { error -> logger.error("Could not set $pref", error) },
-                )
+        )
+    }
+
+    /**
+     * In mono, makes a flick throw the page a shorter way.
+     *
+     * This is what replaced always-on reader view, and it is the same thesis as
+     * the load pause: friction rather than stripping. What it slows is the
+     * *fling* — the throw a page keeps doing after the finger has left it, which
+     * is the scroll of a reflex rather than of a reader. Dragging is untouched
+     * and still tracks the finger exactly, because APZ takes a drag's
+     * displacement from the touch positions themselves and only the fling
+     * animation reads this.
+     *
+     * **`apz.fling_friction` is the wrong pref, and it is the one you will reach
+     * for.** It belongs to `GenericFlingAnimation`, which Android does not use:
+     * here the fling is Chrome's physics, and `apz.android.chrome_fling_physics.*`
+     * is what governs it. Both prefs exist, both are shipped with values in
+     * GeckoView's own `geckoview-prefs.js`, and setting the wrong one succeeds,
+     * reads back correctly and changes nothing at all. Measured on the API 36
+     * emulator, 2026-08-19, one scripted flick on a 40,000 px page, in CSS
+     * pixels scrolled — of which about 460 is the drag itself:
+     *
+     * | friction | scrolled | screenfuls |
+     * |---|---|---|
+     * | 0.015 (GeckoView's default) | 4,466 | 5.6 |
+     * | 0.03 | 2,832 | 3.5 |
+     * | [FLING_FRICTION] | 2,045 | 2.6 |
+     * | 0.08 | 1,594 | 2.0 |
+     * | 0.15 | 1,143 | 1.4 |
+     *
+     * `apz.max_velocity_inches_per_ms` was measured over the same run and is
+     * inert: at 0.005, a fourteenth of GeckoView's own value, the flick still
+     * travelled 4,382 px.
+     */
+    fun applySlowScrollingPrefs() {
+        if (!Edition.slowScrolling) return
+
+        setPrefs("apz.android.chrome_fling_physics.friction" to FLING_FRICTION)
+    }
+
+    /**
+     * How much friction a flung page meets, against GeckoView's 0.015.
+     *
+     * Chosen from the table above rather than argued for: it puts a hard flick
+     * at about two and a half screens instead of five and a half, which is a
+     * difference nobody has to be told about and still leaves a long page
+     * traversable. It is one number, and how it feels is a question for a phone.
+     *
+     * A float pref, which Gecko stores as a string — hence the quotes.
+     */
+    private const val FLING_FRICTION = "0.05"
+
+    /**
+     * Sets user-branch Gecko prefs, best-effort.
+     *
+     * `GeckoPreferenceController` takes a `String`, `Integer` or `Boolean`, so
+     * the value type here decides the pref type; a float pref is a string pref
+     * in Gecko and is set as one. A failure is logged rather than thrown for the
+     * reason in [applySingleWindowPrefs]: nothing above is load-bearing on its
+     * own, and an engine that ignored one of these is still a correct browser.
+     */
+    @androidx.annotation.OptIn(markerClass = [ExperimentalGeckoViewApi::class])
+    private fun setPrefs(vararg prefs: Pair<String, Any>) {
+        val logger = Logger("herald-engine")
+        val branch = GeckoPreferenceController.PREF_BRANCH_USER
+        prefs.forEach { (pref, value) ->
+            val result = when (value) {
+                is Int -> GeckoPreferenceController.setGeckoPref(pref, value, branch)
+                else -> GeckoPreferenceController.setGeckoPref(pref, value.toString(), branch)
+            }
+            result.accept(
+                { logger.info("$pref = $value") },
+                { error -> logger.error("Could not set $pref", error) },
+            )
         }
     }
 }

@@ -312,7 +312,6 @@ class BrowserFragment :
                 context = requireContext(),
                 engine = components.core.engine,
                 store = components.core.store,
-                sessionUseCases = components.useCases.sessionUseCases,
                 sessionId = sessionId,
                 controlsView = readerViewControls,
             ),
