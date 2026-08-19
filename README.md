@@ -9,7 +9,7 @@ Two apps in one repo:
 | | | |
 |---|---|---|
 | **herald** | `herald/` | A real browser (GeckoView) that enforces the blocklist on every page and subresource it loads, with uBlock Origin built in. Tabs, bookmarks with folders and import/export, searchable history, saved passwords, reader view, day/night. |
-| **herald mono** | `herald/` | The same browser, built for single-tasking: no tabs, every page in black and white, articles opened straight into reader view, and a deliberate pause before a page appears. A product flavour of herald, not a fork. |
+| **herald mono** | `herald/` | The same browser, built for single-tasking: no tabs, every page in black and white, a page that is harder to fling past, and a deliberate pause before a page appears. A product flavour of herald, not a fork. |
 | **drawbridge** | `dpc/` | The device policy controller: a device-wide DNS filter, app blocking, and the restrictions that stop the whole thing being switched off. One configuration screen — language, profile, options — and a key that seals it. English, Dutch and French. |
 | *policy* | `policy/` | Shared library: the signed policy document, blocklist compilation, and the update poller both apps use. |
 
@@ -24,8 +24,9 @@ stripped back, for a phone that should be dull to pick up:
 - **No colour.** Pages, images and video all render in black and white. A menu
   entry restores colour for the page you are on — for the graph or map that
   cannot be read without it — and it lapses the moment you navigate away.
-- **Reader view by default.** Any page Gecko can strip down to its article
-  opens that way. Turning it off on a page is remembered until you leave.
+- **A page that is harder to skim past.** A flick throws the page about half as
+  far as it would in any other browser, so a long feed takes deciding to keep
+  going. Dragging is untouched: the page still follows your finger exactly.
 - **A two-and-a-half-second pause** before a page appears, saying "Pause to
   think while loading" and naming where you are going. The page loads
   underneath, so nothing is actually slower; the friction is the point.
@@ -153,6 +154,18 @@ locking again, which re-takes the set. See
   route-level blocking of named IP ranges, which drawbridge does not do — the
   tunnel carries DNS only, by design. The well-known encrypted-DNS resolvers are
   black-holed by name *and* IP, which is the one place this is already done.
+
+  **A person cannot do by hand what the app does**, which is worth stating because
+  it is the obvious next question. Typing `https://179.60.195.174/` gets a
+  certificate error — measured 2026-08-18: *subjectAltName does not match ipv4
+  address*, because Instagram's certificate is issued to `*.instagram.com` and
+  certificates name hosts, not addresses. The same address with the hostname
+  supplied serves the site perfectly, and that is exactly the difference: an app
+  puts the hostname in SNI and `Host` while connecting to an address it already
+  knows, and a browser puts in whatever was typed. **That protection is the web's
+  design rather than drawbridge's** — herald matches its blocklist on hostname, so
+  an IP literal is on no list, and a site that did serve on a bare IP with a valid
+  certificate would go through.
 - **A factory reset removes everything, and nothing stops one.** Recovery mode or
   Settings, either works. Factory Reset Protection does *not* cover this: it is
   not armed on a fully managed device by default, tested on hardware on
