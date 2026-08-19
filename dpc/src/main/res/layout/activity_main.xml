@@ -26,7 +26,7 @@
         android:paddingBottom="32dp">
 
         <TextView
-            style="@style/TextAppearance.Drawbridge.SectionHeading"
+            style="@style/TextAppearance.Drawbridge.SectionHeading.First"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/language_heading" />
@@ -48,13 +48,17 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <!--
-            Shown whole rather than cropped to a band. The master is square and
-            composed as one picture: the reader on his bench at the bottom left
-            and the monsters at the bottom right are the point of it, and a
-            centre crop to a letterbox takes the spire tips off the top and the
-            feet off the bottom. wrap_content with adjustViewBounds lets the
-            height follow the width, which costs nothing but a little scrolling
-            on a phone screen.
+            Shown whole rather than cropped to a band. The master is composed as
+            one picture: the reader on his bench at the left and the monsters at
+            the right are the point of it, and a centre crop to a letterbox takes
+            the spire tips off the top and the feet off the bottom. wrap_content
+            with adjustViewBounds lets the height follow the width.
+
+            The master went from square to 16:9 on 2026-08-19 for what that costs
+            here: shown whole, a square picture filled the top of the screen and
+            pushed the language picker, the policy and the options below the
+            fold, so the first thing a parent saw was all illustration. Same
+            rule, half the height, nothing cropped.
         -->
         <com.google.android.material.imageview.ShapeableImageView
             android:layout_width="match_parent"

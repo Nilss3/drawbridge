@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
 #
-# Derives every image in the two apps from the four masters in art/.
+# Derives every image in the two apps, and the website's hero, from the masters
+# in art/.
 #
-# The masters are square illustrations meant to be seen whole, which is not what
-# an adaptive icon is: a launcher draws the 108dp layer and then masks it with a
+# The icon masters are square illustrations meant to be seen whole, which is not
+# what an adaptive icon is: a launcher draws the 108dp layer and then masks it with a
 # shape inscribed in the middle 72dp, so a third of the art would be thrown away
 # if it were simply stretched across the layer. Each icon is therefore drawn at
 # 72dp in the middle, where the mask is, and the 18dp of bleed around it is a
@@ -83,9 +84,7 @@ icon "$art/herald-mono-icon.webp" "$repo/herald/src/mono/res" trim-corners
 # resources with distinct names and not one name with a `-night` qualifier:
 # both have to be inlined into the same document.
 #
-# drawbridge takes the night one and only the night one. Its screen is read once,
-# by a parent, deciding something — the picture is doing a job there that has
-# nothing to do with what time it is.
+# drawbridge does not take either of them; it has its own picture, below.
 echo "block-page scenes (day and night)"
 mkdir -p "$repo/herald/src/main/res/raw"
 for when in day night; do
@@ -108,21 +107,45 @@ done
 # is warm enough for a light background and dark enough for a dark one, so one
 # resource covers both and the question stops needing an answer.
 #
-# That master is square, unlike the 3:2 pair, and the hero shows it **whole**:
-# the view is wrap_content with adjustViewBounds and fitCenter, not a fixed band
-# with centerCrop. The picture is composed as one — the reader on his bench at
-# the bottom left and the monsters at the bottom right are the point of it — and
-# a letterbox crop takes the spire tips off the top and the feet off the bottom.
-# On a phone screen the full square costs nothing but a little scrolling.
+# The hero shows it **whole**: the view is wrap_content with adjustViewBounds and
+# fitCenter, not a fixed band with centerCrop. The picture is composed as one —
+# the reader on his bench at the left and the monsters at the right are the point
+# of it — and a letterbox crop takes the spire tips off the top and the feet off
+# the bottom.
+#
+# The master was square until 2026-08-19 and is now 16:9, which is the whole
+# reason for the change: shown whole, a square picture ate the top of a phone
+# screen and pushed the thing the screen is actually for — the policy, the
+# options and the button — below the fold. Same picture, same "shown whole"
+# rule, about half the height.
 echo "welcome scene (dusk)"
 mkdir -p "$repo/dpc/src/main/res/drawable-nodpi"
 magick "$art/scene-dusk.webp" -resize 1400x \
   -strip -quality 88 -define webp:method=6 \
   "$repo/dpc/src/main/res/drawable-nodpi/welcome_scene.webp"
 
+# The website's hero is the same master again, and is written from here for the
+# reason every generated thing is: `site/assets/` is the one directory
+# `build-site.py` does *not* clear, so an image copied there by hand stays
+# correct only until somebody edits a master and forgets. It carried its own
+# `website-hero.webp` master until 2026-08-19, which had already drifted from
+# the app's.
+#
+# One image, both colour schemes. The page used to swap in the night scene under
+# a prefers-color-scheme query; dusk removes the need, and the title now sits
+# *on* the picture, where a second version would have meant a second set of text
+# colours to keep legible.
+echo "website hero (dusk)"
+mkdir -p "$repo/site/assets/img"
+magick "$art/scene-dusk.webp" -resize 1600x \
+  -strip -quality 86 -define webp:method=6 \
+  "$repo/site/assets/img/hero.webp"
+rm -f "$repo/site/assets/img/hero-night.webp"
+
 echo
 echo "written:"
 find "$repo/dpc/src/main/res" "$repo/herald/src/main/res" "$repo/herald/src/mono/res" \
+  "$repo/site/assets/img" \
   \( -name 'ic_launcher_foreground.webp' -o -name 'blocked_scene_*.webp' \
-     -o -name 'welcome_scene.webp' \) \
+     -o -name 'welcome_scene.webp' -o -name 'hero.webp' \) \
   | sort | sed "s|$repo/|  |"
