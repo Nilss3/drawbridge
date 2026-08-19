@@ -20,9 +20,16 @@ class Downloader(
     private val maxBytes: Long = 64L * 1024 * 1024,
 ) {
 
-    /** Fetches [url] as text. */
+    /**
+     * Fetches [url] as text.
+     *
+     * [noCache] asks intermediaries for a fresh copy rather than a cached one.
+     * It is off for the periodic poll, which runs every few hours and cannot
+     * care, and on when a person has pressed a button — see
+     * [PolicyManager.refresh].
+     */
     @Throws(IOException::class)
-    fun getText(url: String): String = open(url) { stream ->
+    fun getText(url: String, noCache: Boolean = false): String = open(url, noCache) { stream ->
         stream.readCappedBytes(maxBytes).toString(Charsets.UTF_8)
     }
 
@@ -59,7 +66,7 @@ class Downloader(
         return digest.digest().toHex()
     }
 
-    private fun <T> open(url: String, block: (InputStream) -> T): T {
+    private fun <T> open(url: String, noCache: Boolean = false, block: (InputStream) -> T): T {
         val parsed = URL(url)
         require(parsed.protocol.equals("https", ignoreCase = true)) {
             "Policy and blocklist URLs must be https, got '${parsed.protocol}'"
@@ -71,6 +78,21 @@ class Downloader(
             requestMethod = "GET"
             setRequestProperty("Accept-Encoding", "gzip")
             setRequestProperty("User-Agent", USER_AGENT)
+            if (noCache) {
+                // raw.githubusercontent.com answers with max-age=300, so for five
+                // minutes after a push an edge can hand back the previous
+                // document -- which on 2026-08-12 read as "the phone did not take
+                // policy 37" and cost a debugging round. The periodic poll does
+                // not care; a person who has just pressed "check for updates"
+                // does.
+                //
+                // Whether the CDN honours it is not guaranteed: some deliberately
+                // ignore request-side no-cache to stop cache-busting. This is a
+                // polite ask, not a mechanism, and it is worth watching on a
+                // device before anyone treats it as one.
+                setRequestProperty("Cache-Control", "no-cache")
+                setRequestProperty("Pragma", "no-cache")
+            }
         }
         try {
             val status = connection.responseCode

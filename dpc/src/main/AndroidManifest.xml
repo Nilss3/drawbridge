@@ -192,6 +192,27 @@
         </receiver>
 
         <!--
+            Woken by AlarmManager at each curfew boundary. Not exported: the only
+            thing that may start it is drawbridge's own PendingIntent, and an
+            exported receiver here would let any app on the phone announce that
+            the curfew had ended.
+        -->
+        <receiver
+            android:name=".curfew.CurfewReceiver"
+            android:exported="false" />
+
+        <!--
+            Woken by AlarmManager when a lock timer runs out. Not exported, and
+            here the reason is the whole feature: an exported receiver would let
+            any app on the phone announce that the lock had expired, which is a
+            one-intent unlock. The controller re-reads the stored deadline anyway,
+            so even a delivered broadcast proves nothing on its own.
+        -->
+        <receiver
+            android:name=".security.LockTimerReceiver"
+            android:exported="false" />
+
+        <!--
             Read-only, and exported on purpose: herald is a separate app and has
             no other way to learn what the parent chose. readPermission alone —
             no writePermission — because there is deliberately no way to write.

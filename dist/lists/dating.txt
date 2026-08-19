@@ -1,0 +1,61 @@
+# drawbridge — dating services
+#
+# Always on, no option behind it, pinned by SHA-256 in dist/policy.json.
+#
+# **The app side was covered twice and the web side not at all**, which is why
+# this file exists as of 2026-08-17. `blocked_packages` names the big apps, and
+# the store rule blocks Play's `DATING` category outright — but neither reaches a
+# browser, so tinder.com loaded on a locked phone. Every rule in this project has
+# to hold in the browser as well as in the launcher, which is the lesson policy
+# 55 recorded when Ecosia was dropped from the engine list but left reachable.
+#
+# **The category rule does not make this redundant, and Grindr is the proof.**
+# It is filed under `SOCIAL` on the Play Store rather than `DATING`, so a rule
+# keyed on the category misses it entirely. The same will be true of the next
+# one, because the category is chosen by the publisher.
+#
+# The popular set is small and this list covers it. The long tail is regional,
+# low-traffic and endless, and will stay leaky in the way games.txt is leaky —
+# that is a known property, not a defect to be fixed by adding a thousand names.
+#
+# Every domain below was fetched on 2026-08-17 and its page title had to be the
+# service it claims to be, which is the rule policy 59 established after
+# com.saylo.app resolved to a different app of the same name.
+
+# --- the international majors ---
+tinder.com
+bumble.com
+hinge.co
+badoo.com
+pof.com
+zoosk.com
+eharmony.com
+happn.com
+lovoo.com
+jaumo.com
+hily.com
+boo.world
+coffeemeetsbagel.com
+theinnercircle.co
+raya.app
+tantanapp.com
+feeld.co
+
+# --- filed as SOCIAL on the Play Store, so the category rule misses them ---
+grindr.com
+weareher.com
+
+# --- Benelux and French-language, which the international lists never carry ---
+meetic.be
+meetic.fr
+lexa.nl
+parship.be
+parship.com
+twoo.com
+
+# --- Behind bot protection, so the title could not be read.
+# Included anyway: each name is distinctive enough to belong to nothing else,
+# which is the same call made for hiwaifu.com in ai-companions.txt. ---
+okcupid.com
+match.com
+ashleymadison.com

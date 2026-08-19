@@ -9,11 +9,15 @@ inhoudsfilter als de browser.
 **Dit werkt op een gewone Android-telefoon die al in gebruik is.** Er is geen
 fabrieksreset nodig, en uw foto's, berichten en apps worden niet gewist.
 
-> **Eén ding verdwijnt wel: de apps die drawbridge blokkeert.** Zodra u
-> vergrendelt, worden alle apps die het beleid blokkeert van de telefoon
-> verwijderd, meteen. Een instelling achteraf weer aanzetten installeert ze niet
-> opnieuw. Op een telefoon die al in gebruik is, is dat een echte verandering —
-> bekijk [wat er geblokkeerd wordt](blocked-apps.md) voor u begint.
+> **Eén ding verdwijnt wel: de apps die drawbridge blokkeert.** Dat begint bij de
+> **installatie**, niet pas bij het vergrendelen: binnen enkele minuten worden alle
+> apps die het beleid nooit toelaat — sociale media, schadelijke games, browsers
+> die het niet toelaat — verwijderd, en wat alleen in zo'n app bewaard zat, gaat
+> mee. Zet eerst weg wat u wil bewaren: exporteer bladwijzers, haal foto's uit een
+> app die ze vasthoudt. Apps waar u nog over kan beslissen, zoals WhatsApp of
+> YouTube, blijven staan tot u vergrendelt. Op een telefoon die al in gebruik is,
+> is dat een echte verandering — bekijk
+> [wat er geblokkeerd wordt](blocked-apps.md) voor u begint.
 
 ---
 
@@ -42,6 +46,34 @@ aan.
 Een account verwijderen wist de mail, contacten en gesynchroniseerde gegevens van
 dat account **van de telefoon**. Er wordt niets uit uw Google-account zelf
 verwijderd, en alles komt terug zodra u zich opnieuw aanmeldt.
+
+**Elk account telt, niet alleen dat van Google.** Een telefoon met een
+wachtwoordbeheerder, een berichtenapp en drie bankapps werd net zo goed geweigerd.
+Alles wat op dat scherm staat, moet weg.
+
+---
+
+## Stap 1b — Verwijder de privéruimte, als de telefoon er een heeft
+
+**Instellingen → Beveiliging en privacy → Privéruimte → Privéruimte verwijderen**
+
+Android weigert dit niveau van controle zolang de telefoon een *tweede profiel*
+draagt, en op Android 15 en later is een privéruimte precies dat. Ze wordt vóór
+de accounts gecontroleerd, dus een telefoon met allebei wordt hierom als eerste
+geweigerd — wist u de accounts, dan krijgt u dezelfde weigering in andere
+woorden.
+
+**Het is makkelijk om niet te weten dat u er een hebt.** Een privéruimte staat
+niet in de gebruikerswissel, heeft een eigen pincode en verbergt haar apps in het
+startscherm. Op de telefoon waarvoor deze stap is geschreven, had de eigenaar er
+een en herinnerde zich niet ze te hebben aangemaakt.
+
+**Verwijderen wist alles wat erin zit**, dus kijk eerst. Raakt u er niet in — de
+pincode staat los van die van de telefoon — dan kan verwijderen nog steeds vanaf
+datzelfde scherm.
+
+Andere extra gebruikers staan in **Instellingen → Systeem → Meerdere gebruikers**
+en moeten er ook af.
 
 ---
 

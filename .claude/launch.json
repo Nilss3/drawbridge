@@ -1,0 +1,8 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    { "name": "site", "runtimeExecutable": "sh",
+      "runtimeArgs": ["-c", "cd '/Users/nils/Documents/GitHub/drawbridge/site' && exec python3 -m http.server 8811"],
+      "port": 8811 }
+  ]
+}

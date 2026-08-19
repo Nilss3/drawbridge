@@ -11,10 +11,15 @@ réinitialisation d'usine n'est nécessaire, et vos photos, messages et
 applications ne sont pas effacés.
 
 > **Une chose disparaît quand même : les applications que drawbridge bloque.**
-> Dès que vous verrouillez, toutes les applications bloquées par la politique
-> sont désinstallées du téléphone, immédiatement. Réactiver un réglage ensuite ne
-> les réinstalle pas. Sur un téléphone déjà utilisé, c'est un vrai changement —
-> regardez [ce qui est bloqué](blocked-apps.md) avant de commencer.
+> Cela commence dès l'**installation**, et non au verrouillage : en quelques
+> minutes, toutes les applications que la politique n'autorise jamais — réseaux
+> sociaux, jeux nocifs, navigateurs qu'elle ne sanctionne pas — sont désinstallées,
+> et ce qui n'était enregistré qu'à l'intérieur de l'une d'elles disparaît avec.
+> Mettez d'abord de côté ce que vous voulez garder : exportez vos favoris, sortez
+> les photos d'une application qui les détient. Les applications sur lesquelles
+> vous pouvez encore décider, comme WhatsApp ou YouTube, restent jusqu'au
+> verrouillage. Sur un téléphone déjà utilisé, c'est un vrai changement — regardez
+> [ce qui est bloqué](blocked-apps.md) avant de commencer.
 
 ---
 
@@ -45,6 +50,35 @@ reconnecterez à l'étape 4.
 Supprimer un compte efface les courriers, contacts et données synchronisées de ce
 compte **du téléphone**. Rien n'est supprimé de votre compte Google lui-même, et
 tout revient dès que vous vous reconnectez.
+
+**Tous les comptes comptent, pas seulement celui de Google.** Un téléphone dont
+les comptes étaient un gestionnaire de mots de passe, une messagerie et trois
+applications bancaires a été refusé tout autant. Tout ce qui figure sur cet écran
+doit partir.
+
+---
+
+## Étape 1b — Supprimez l'espace privé, si le téléphone en a un
+
+**Paramètres → Sécurité et confidentialité → Espace privé → Supprimer l'espace privé**
+
+Android refuse ce niveau de contrôle tant que le téléphone porte un *second
+profil*, et sur Android 15 et suivants un espace privé est exactement cela. Il est
+vérifié avant les comptes : un téléphone qui a les deux est donc refusé pour
+celui-ci d'abord, et retirer les comptes ne fait revenir le même refus en
+d'autres termes.
+
+**Il est facile de ne pas savoir qu'on en a un.** Un espace privé n'apparaît pas
+dans le sélecteur d'utilisateur, possède son propre code PIN et masque ses
+applications dans l'écran d'accueil. Sur le téléphone pour lequel cette étape a
+été écrite, le propriétaire en avait un et ne se souvenait pas de l'avoir créé.
+
+**Le supprimer efface tout ce qu'il contient**, alors regardez d'abord. Si vous
+n'y entrez pas — le code PIN est distinct de celui du téléphone — la suppression
+reste possible depuis ce même écran.
+
+Tout autre utilisateur supplémentaire se trouve dans **Paramètres → Système →
+Utilisateurs multiples** et doit partir également.
 
 ---
 

@@ -204,3 +204,133 @@ tocalifeworld.com
 simcitybuildit.com
 eveechoes.com
 eveonline.com
+
+# ============================================================================
+# Web games, added 2026-08-17 on the owner's list.
+#
+# The app side of games is covered by the store rule, which blocks Play's
+# GAME_* categories outright. This is the browser side, and it is a different
+# problem: a mini-game site needs no install, so nothing the app blocker does
+# reaches it. It will stay leaky in the way any domain list is leaky — the
+# long tail here is endless and mostly regional. That is a known property
+# rather than a defect to be fixed by adding a thousand names.
+#
+# Every domain below was fetched on 2026-08-17 and its page title had to be
+# the site it claims to be. Five are behind bot protection and could not be
+# read — newgrounds.com, speeleiland.nl, spelle.be, logicieleducatif.fr and
+# construct.net — and are included anyway on the hiwaifu.com precedent, each
+# name being distinctive enough to belong to nothing else.
+# ============================================================================
+
+# --- the big portals ---
+poki.com
+crazygames.com
+y8.com
+miniclip.com
+armorgames.com
+kongregate.com
+newgrounds.com
+kizi.com
+silvergames.com
+lagged.com
+addictinggames.com
+coolmathgames.com
+friv.com
+gamesgames.com
+jeux.fr
+nitrome.com
+arkadium.com
+plays.org
+htmlgames.com
+gamesnacks.com
+
+# --- chess: deliberately NOT blocked ---
+# Both were on the original list and both came straight back off it on the
+# owner's call of 2026-08-17. The argument for blocking them was the engagement
+# machinery — rating ladders, streaks, blitz timers — and the argument against
+# is simply that chess is not what this list is for.
+#
+# lichess.org came off with chess.com rather than being asked about separately:
+# it is the free, ad-free, open-source one, so blocking it while allowing the
+# commercial one would have been backwards.
+#
+# lichess.org
+# chess.com
+
+# --- Benelux portals, which no international list carries ---
+spelletjes.nl
+spele.nl
+speeleiland.nl
+funnygames.be
+kinderspelletjes.nl
+spelletjes.be
+321spelletjes.be
+1001spelletjes.be
+spelle.be
+spele.be
+spelletjes123.nl
+playbelgium.be
+elkspel.nl
+
+# --- educational games ---
+# Judgement call, and a real one: several of these are used by schools,
+# so a child told to do homework on topmarks.co.uk will find it blocked.
+# They are here because they are games with a curriculum attached, and
+# the owner's rule is that games go. Delete lines to disagree.
+abcya.com
+funbrain.com
+kids.nationalgeographic.com
+natgeokids.com
+coolmath4kids.com
+mathplayground.com
+topmarks.co.uk
+ictgames.com
+starfall.com
+education.com
+arcademics.com
+turtlediary.com
+primarygames.com
+lululataupe.com
+jeuxpedago.com
+logicieleducatif.fr
+wordwall.net
+
+# --- making games, not playing them ---
+# The awkward corner of this list. Scratch, Blockly, code.org, Construct
+# and Unity Play teach programming — and they also host thousands of
+# finished games playable in the browser, which is what puts them here.
+# The cost is real and is worth knowing before somebody hits it.
+scratch.mit.edu
+code.org
+blockly.games
+construct.net
+play.unity.com
+
+# --- indie hosts ---
+itch.io
+gamejolt.com
+
+# --- HELD BACK, deliberately not blocked -------------------------------------
+# These four were on the owner's list, were held back, and the hold was
+# **confirmed by the owner on 2026-08-17**: blocking them is not the point.
+#
+# DNS cannot see a path, so blocking a domain blocks all of it — and for these
+# the games are a small corner of something much larger. Verified 2026-08-17:
+#
+#   vrt.be                 the Flemish public broadcaster — VRT NWS and VRT MAX sit here
+#   ouders.ketnet.be       literally *Ketnet for parents*: a resource for the adult, not games
+#   bbc.co.uk              the whole BBC — News, iPlayer, World Service
+#   archive.org            the Internet Archive: a library, the Wayback Machine, books and audio
+#
+# Left commented rather than deleted so that nobody adds them back without
+# meeting the reason first. Including them costs the phone the BBC, the VRT, the
+# Internet Archive, and a page written for parents. herald's own
+# `blocked_url_patterns` is the tool that could reach only the games paths —
+# but it works in herald alone, which fails the rule policy 55 set when Ecosia
+# was dropped: an engine is only as forced as its weakest browser.
+#
+# vrt.be
+# ouders.ketnet.be
+# bbc.co.uk
+# archive.org
+

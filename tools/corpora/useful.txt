@@ -1,0 +1,62 @@
+# Apps a real phone needs. The rule must keep every one of these; anything it
+# would remove is a false positive and a reason to move a threshold.
+# Measured 2026-08-16 -- see docs/app-ratings.md.
+
+# banking and identity -- the category where a false positive is worst
+com.paypal.android.p2pmobile
+com.revolut.revolut
+com.wise.android
+be.belfius.directmobile.android
+com.kbc.mobile.android.phone.kbc
+be.argenta.bankieren
+be.bmid.itsme
+com.bnpp.easybanking
+be.keytradebank.phone
+
+# transport
+com.google.android.apps.maps
+com.ubercab
+be.delijn.mobileapp
+com.flixbus.app
+com.citymapper.app.release
+
+# office and productivity
+com.microsoft.office.word
+com.microsoft.office.excel
+com.microsoft.office.outlook
+com.google.android.apps.docs
+com.google.android.apps.docs.editors.docs
+com.dropbox.android
+com.adobe.reader
+com.microsoft.teams
+us.zoom.videomeetings
+com.todoist
+com.google.android.calendar
+com.google.android.gm
+com.notion.id
+
+# hobbies and health
+com.strava
+com.myfitnesspal.android
+com.komoot.android
+org.wikipedia
+com.duolingo
+com.fitbit.FitbitMobile
+com.withings.wiscale2
+com.tripadvisor.tripadvisor
+com.audible.application
+
+# tools
+com.google.android.apps.translate
+com.google.android.deskclock
+com.google.android.apps.photos
+com.lastpass.lpandroid
+com.google.android.apps.nbu.files
+com.x8bit.bitwarden
+
+# media and shopping -- mostly Parental guidance, so mostly 'neutral'
+com.spotify.music
+com.netflix.mediaclient
+be.vrt.vrtnws
+com.amazon.mShop.android.shopping
+com.ebay.mobile

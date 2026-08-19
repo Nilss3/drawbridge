@@ -4,13 +4,16 @@ import android.app.admin.DevicePolicyManager
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
+import android.content.pm.PackageManager
 import android.os.Build
 import android.os.UserManager
 import android.text.format.DateUtils
 import android.util.Log
 import app.drawbridge.dpc.BuildConfig
+import app.drawbridge.dpc.DrawbridgeApplication
 import app.drawbridge.dpc.R
+import app.drawbridge.dpc.apps.BrowserSettings
+import app.drawbridge.dpc.security.LockTimer
 import app.drawbridge.dpc.security.ParentKey
 
 /**
@@ -69,7 +72,7 @@ class DeviceOwnerManager(context: Context) {
         applyUserRestrictions()
         applyClockLock()
         enableAlwaysOnVpn(vpnPackage)
-        setDefaultBrowser()
+        releaseDefaultBrowser()
         updateLockScreenInfo()
     }
 
@@ -120,15 +123,33 @@ class DeviceOwnerManager(context: Context) {
      * a date the parent recognises is a far better thing to miss than a generic
      * notice nobody read in the first place. See docs/handoff.md.
      *
-     * Three states, and the distinction between the last two is the point:
+     * Four states, three sentences, and all of them are deliberately short. This
+     * text is set as one line under a clock on a keyguard, often truncated, and
+     * read in a second by somebody who did not come looking for it — so it says
+     * the one fact that state carries and stops. It used to open with *"Drawbridge
+     * is guarding this device and its owner"* every time, which spent the whole
+     * line before reaching anything that varies.
      *
      *  - **Never locked** — nothing is enforced yet, so nothing is claimed. The
      *    message is cleared and Android's default comes back. drawbridge does not
      *    say it is guarding a phone it has not started guarding.
-     *  - **Locked** — the full line, with the date.
-     *  - **Unlocked after having been locked** — still guarding, and truthfully
-     *    so: unlocking removes the key, not the restrictions or the filter. The
-     *    date comes off because it is the *lock* that is no longer in force.
+     *  - **Locked with a timer running** — *"drawbridge unlocks in 3 days"*. A
+     *    duration rather than a date, because it is read against nothing; the lock
+     *    date is still on drawbridge's own screen for anyone who wants it. This is
+     *    the line that makes an automatic unlock impossible to miss, and it earns
+     *    the whole message because of the code-forgotten door: that countdown can
+     *    be started by whoever is holding a locked phone, so a parent has to be
+     *    able to see it without unlocking anything.
+     *  - **Locked** — *"drawbridge locked since …"*, the date a caregiver checks.
+     *  - **Unlocked after having been locked** — *"drawbridge protecting"*.
+     *    Still true: unlocking removes the key, not the restrictions or the
+     *    filter. The date comes off because it is the *lock* that is no longer in
+     *    force.
+     *
+     * **The duration goes stale by construction**, since this is a stored string
+     * rather than something the system re-resolves. [LockTimerController.apply]
+     * rewrites it on every run — process start, boot, and hourly — so it is at
+     * worst an hour behind on a number measured in days.
      *
      * The text is a stored string rather than a resource the system re-resolves,
      * so it does not follow a later language change on its own. Every caller that
@@ -138,22 +159,42 @@ class DeviceOwnerManager(context: Context) {
         if (!isDeviceOwner) return
 
         val key = ParentKey(appContext)
+        val timer = LockTimer(appContext)
         val info = when {
             key.protectedSince == 0L -> null
+            key.isLocked && timer.isArmed -> appContext.getString(
+                R.string.lock_screen_info_timer,
+                remainingText(timer.remaining()),
+            )
             key.isLocked && key.lockedSince > 0 -> appContext.getString(
                 R.string.lock_screen_info_locked,
-                DateUtils.formatDateTime(
-                    appContext,
-                    key.lockedSince,
-                    DateUtils.FORMAT_SHOW_DATE or DateUtils.FORMAT_SHOW_YEAR or
-                        DateUtils.FORMAT_SHOW_TIME,
-                ),
+                moment(key.lockedSince),
             )
             else -> appContext.getString(R.string.lock_screen_info)
         }
 
         runCatching { dpm.setDeviceOwnerLockScreenInfo(admin, info) }
             .onFailure { Log.e(TAG, "Could not set the lock screen message", it) }
+    }
+
+    private fun moment(millis: Long): String = DateUtils.formatDateTime(
+        appContext,
+        millis,
+        DateUtils.FORMAT_SHOW_DATE or DateUtils.FORMAT_SHOW_YEAR or DateUtils.FORMAT_SHOW_TIME,
+    )
+
+    /**
+     * "3 days", "5 hours", "12 minutes" — a quantity string rather than a number
+     * and a noun glued together, because Dutch and French do not agree with
+     * English about which counts are plural.
+     */
+    private fun remainingText(remaining: LockTimer.Remaining): String {
+        val plural = when (remaining.unit) {
+            LockTimer.Remaining.Unit.DAYS -> R.plurals.duration_days
+            LockTimer.Remaining.Unit.HOURS -> R.plurals.duration_hours
+            LockTimer.Remaining.Unit.MINUTES -> R.plurals.duration_minutes
+        }
+        return appContext.resources.getQuantityString(plural, remaining.count, remaining.count)
     }
 
     /** Read back from the platform rather than from what we last wrote. */
@@ -242,11 +283,19 @@ class DeviceOwnerManager(context: Context) {
     }
 
     /**
-     * Pins the clock. Applied on every locked device, curfew or not.
+     * Pins the clock. **Applied here, but decided in
+     * [app.drawbridge.dpc.curfew.CurfewController.apply]**, which calls this or
+     * [clearClockLock] according to whether a curfew or a lock timer needs it —
+     * and which runs on every process start, so it has the last word over the
+     * unconditional call in [applyManagedDevicePolicy]. This comment used to claim
+     * the pin was applied on every locked device; that was never what the phone
+     * did. See docs/design-decisions.md.
      *
      * It began as curfew machinery — a wall-clock window is advisory if the
-     * clock can be edited — but a movable clock defeats two other things that
-     * have nothing to do with curfews:
+     * clock can be edited — and a lock timer needs it for a sharper version of
+     * the same reason: a deadline wound forward is a lock that ends early. Beyond
+     * both, a movable clock defeats two things that have nothing to do with
+     * either:
      *
      *  - **The protected-since date.** Wind the clock back a year, lock, wind it
      *    forward again, and the phone reports a year of continuous protection it
@@ -340,7 +389,10 @@ class DeviceOwnerManager(context: Context) {
         } else if (!locked) {
             Log.i(TAG, "Unlocked: leaving USB debugging available to the parent")
         }
-        return restrictionsFor(isLocked = locked, retainAdbAccess = BuildConfig.RETAIN_ADB_ACCESS)
+        return restrictionsFor(
+            isLocked = locked,
+            retainAdbAccess = BuildConfig.RETAIN_ADB_ACCESS,
+        )
     }
 
     fun clearUserRestrictions() {
@@ -367,49 +419,45 @@ class DeviceOwnerManager(context: Context) {
     }
 
     /**
-     * Makes herald the persistent handler for web links.
+     * Makes sure drawbridge is not holding the web-link default, so Android's
+     * own default-app machinery decides it.
      *
-     * Cosmetic only — enforcement is the DNS filter plus browser allowlisting.
-     * This just stops tapped links from bouncing through a disambiguation dialog
-     * for a browser that is about to be suspended anyway.
+     * **drawbridge used to pin herald here, and stopped on 2026-08-15.** The
+     * intention was only ever "herald is the recommendation" — but the sole
+     * Device Owner API for a default handler,
+     * `addPersistentPreferredActivity`, is documented to keep its activity as
+     * the default *"even if the intent preferences are reset"*. It is built to
+     * be un-overridable, which is the right tool for a kiosk and the wrong one
+     * for a recommendation: a parent who preferred Chrome for links could not
+     * say so anywhere on the phone.
+     *
+     * Working around that meant drawbridge growing its own default-browser
+     * picker, which is a second answer to a question Android already asks well.
+     * So it does not pin, and the platform behaves normally: the first tapped
+     * link brings up the chooser with every allowed browser in it, *always*
+     * makes one the default, and Settings → Default apps changes it later.
+     *
+     * This still runs on every policy application, because a phone updating from
+     * a build that *did* pin is carrying a preference nothing else will ever
+     * clear. Clearing it is cheap and idempotent; leaving it would strand those
+     * devices on a default they could not change, which is the whole complaint.
      */
-    fun setDefaultBrowser(browserPackage: String = BuildConfig.ALLOWED_BROWSER_PACKAGE) {
+    fun releaseDefaultBrowser() {
         if (!isDeviceOwner) return
 
-        val activity = resolveBrowserActivity(browserPackage) ?: run {
-            Log.w(TAG, "Browser $browserPackage is not installed; not setting a default handler")
-            return
-        }
-
-        val filter = IntentFilter(Intent.ACTION_VIEW).apply {
-            addCategory(Intent.CATEGORY_DEFAULT)
-            addCategory(Intent.CATEGORY_BROWSABLE)
-            addDataScheme("http")
-            addDataScheme("https")
-        }
-
-        runCatching {
-            dpm.clearPackagePersistentPreferredActivities(admin, browserPackage)
-            dpm.addPersistentPreferredActivity(admin, filter, activity)
-        }.onFailure { Log.e(TAG, "Could not set the default browser", it) }
+        val policy = DrawbridgeApplication.policy(appContext).policy.value
+        (policy.browserPackages + BuildConfig.ALLOWED_BROWSER_PACKAGE)
+            .distinct()
+            .forEach { clearDefaultBrowser(it) }
     }
 
+    /** Drops drawbridge's claim on web links for one package. */
     fun clearDefaultBrowser(browserPackage: String = BuildConfig.ALLOWED_BROWSER_PACKAGE) {
         if (!isDeviceOwner) return
         runCatching { dpm.clearPackagePersistentPreferredActivities(admin, browserPackage) }
             .onFailure { Log.e(TAG, "Could not clear the default browser", it) }
     }
 
-    private fun resolveBrowserActivity(browserPackage: String): ComponentName? {
-        val probe = Intent(Intent.ACTION_VIEW, android.net.Uri.parse("https://example.com")).apply {
-            addCategory(Intent.CATEGORY_BROWSABLE)
-        }
-        val match = appContext.packageManager
-            .queryIntentActivities(probe, 0)
-            .firstOrNull { it.activityInfo.packageName == browserPackage }
-            ?: return null
-        return ComponentName(match.activityInfo.packageName, match.activityInfo.name)
-    }
 
     /**
      * The sanctioned removal path: lifts every restriction and gives up Device
@@ -499,6 +547,11 @@ class DeviceOwnerManager(context: Context) {
          *
          * Note this does not switch USB debugging *on*. It stops the platform
          * refusing it; the developer options toggle is still a deliberate act.
+         *
+         * **[UserManager.DISALLOW_INSTALL_APPS] was briefly the second
+         * conditional entry, and it is gone** — see [RETIRED_RESTRICTIONS]. The
+         * install lock is carried entirely by the closed set in
+         * [app.drawbridge.dpc.apps.AppBlocker] now.
          */
         fun restrictionsFor(isLocked: Boolean, retainAdbAccess: Boolean): List<String> =
             if (!isLocked || retainAdbAccess) {
@@ -552,9 +605,41 @@ class DeviceOwnerManager(context: Context) {
          * [provisioning](../../../../../../../docs/provisioning.md) asks for the
          * parent's Google account and only theirs, and the protected-since date,
          * which makes a reset visible after the fact.
+         *
+         * **[UserManager.DISALLOW_INSTALL_APPS] joined it on 2026-08-16, one
+         * build after it was added, and the reason is measured rather than
+         * reasoned.** It was the install lock's prevention layer, and the open
+         * question written down beside it was whether the platform would let
+         * Play Store *updates* through. It does not. On the owner's Moto G15,
+         * build 29, an attempt to update Bitwarden from the Play Store was
+         * refused while the restriction was in force:
+         *
+         * ```
+         * 17:23:19  Changing user restriction no_install_apps to: true
+         * 17:24:58  com.android.vending/…MultiInstallActivity  START … finish 57ms  app-request
+         * 17:25:27  Changing user restriction no_install_apps to: false
+         * ```
+         *
+         * The restriction is checked in `PackageInstaller.createSession`, and an
+         * update is an ordinary session — the platform draws no distinction
+         * there between a new package and a replacement. So no AOSP user
+         * restriction can express *no new apps, updates fine*, and this one
+         * cannot deliver the promise at any setting. Blocking updates is worse
+         * than the feature is good: it freezes security patches for everything
+         * on the phone, and the app that found it was a password manager.
+         *
+         * **Retiring it rather than merely dropping it is the whole point.**
+         * Removing an entry from [MANAGED_RESTRICTIONS] stops it being *set* on
+         * new devices and does nothing for a device that already carries it,
+         * because [applyUserRestrictions] computes what to clear from that same
+         * list. Any phone that locked once under build 29 would have been left
+         * unable to update anything, permanently, with no way to reach it. Here
+         * it is cleared on every apply instead — which is every process start on
+         * a locked phone.
          */
         val RETIRED_RESTRICTIONS: List<String> = listOf(
             UserManager.DISALLOW_FACTORY_RESET,
+            UserManager.DISALLOW_INSTALL_APPS,
         )
     }
 }

@@ -62,9 +62,14 @@ that's expected, not a bug.
   machine-translate without review, and the content is expected to keep
   growing rather than settle into something worth maintaining in three
   languages.
-- **A night variant of the hero illustration.** `art/website-hero.webp` has
-  no dark-mode counterpart, so `site/assets/img/hero-night.webp` is still the
-  older `art/scene-night.webp`. The two don't quite match in composition.
+- ~~**A night variant of the hero illustration.**~~ **Closed on 2026-08-19**, by
+  removing the need for one. The hero is now `art/scene-dusk.webp` — the same
+  master drawbridge's own welcome screen uses — and it is a sunset, warm enough
+  to read on a light page and dark enough for a dark one. There is one hero
+  image, served to both colour schemes, and the mismatched night copy is gone.
+  It is written by `tools/make-artwork.sh` rather than copied by hand, because
+  `site/assets/` is the one directory `build-site.py` does not clear and a
+  hand-copied image drifts silently.
 
 ## A claim worth keeping an eye on
 

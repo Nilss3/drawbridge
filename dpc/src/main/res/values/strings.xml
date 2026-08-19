@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name" translatable="false">drawbridge</string>
+    <!-- The configuration screen's title bar. Separate from app_name, which
+         is the launcher label: MainActivity is the launcher activity, so an
+         android:label here would rename the icon too. Set at runtime. -->
+    <string name="main_title" translatable="false">Drawbridge Control</string>
     <string name="admin_label">drawbridge restrictions</string>
     <string name="admin_description">Keeps the content filter switched on and stops it from being removed without the key.</string>
     <string name="permission_read_selection">read the chosen drawbridge policy and options</string>
@@ -13,7 +17,7 @@
 
     <string name="welcome_title">Welcome to drawbridge</string>
     <string name="welcome_subtitle">Let\'s draw the bridge on the toxic addictive internet and keep our peace of mind.</string>
-    <string name="welcome_scene_description">A raised drawbridge at night, between a quiet moonlit park and a rocky shore where cartoon monsters are waiting.</string>
+    <string name="welcome_scene_description">A raised drawbridge at sunset, between an autumn park where somebody is reading on a bench and a rocky shore where cartoon monsters are waiting.</string>
 
     <!--
         The signed document calls these "profiles" — variants of one policy — but
@@ -28,16 +32,51 @@
     <string name="policy_applying_title">Applying policy</string>
     <string name="policy_applying_message">Downloading blocklists and checking installed apps…</string>
     <string name="policy_apply_failed">That policy is no longer in the document.</string>
+    <!-- Two messages since 2026-08-15, because the two controls no longer land at
+         the same moment. The policy's own list acts as soon as it is seen, so a
+         policy change has already happened by the time the toast appears. What an
+         option covers is the one thing that still waits for the lock, since the
+         parent may be mid-decision and an uninstall cannot be undone. -->
+    <string name="change_applied_at_lock">%1$s applied after lock.</string>
+    <string name="change_applied">%1$s applied.</string>
+    <string name="info_button_description">More about %1$s</string>
+    <string name="settings_take_effect_at_lock">This policy is always active, also when drawbridge is unlocked. The options underneath are further restrictions and are active only when locked.</string>
+
+    <!-- Browser choice. Promised on the website before it was built: a limited
+         list by default, herald mono alone for browsing addiction, or nothing. -->
+    <string name="browser_heading">Browser policy</string>
+    <string name="browser_all_name">Allow the browsers</string>
+    <string name="browser_all_description">Every browser that works properly with the web filter. We recommend herald: it is minimalist, it shows a clear page when something is blocked, and it follows drawbridge\'s policy.</string>
+    <string name="browser_mono_name">herald mono only</string>
+    <string name="browser_mono_description">A minimalist browser for those who surf too much: it\'s by default monochrome, it scrolls and clicks more slowly, and has only one tab.\n\nThey are not uninstalled: every other browser is suspended and hidden, and comes back with its bookmarks and logins intact if you allow it again. If you would rather it were really gone, uninstall it yourself before locking.</string>
+    <string name="browser_none_name">No browser at all</string>
+    <string name="browser_none_description">Leaves the phone with no browser you can open. Before locking this in, make sure all your apps are logged in, because some apps require a browser to sign in.\n\nAlso, know that some functionalities may break or not work, e.g. payments, QR codes, etc.\n\nThey are not uninstalled: every other browser is suspended and hidden, and comes back with its bookmarks and logins intact if you allow it again. If you would rather it were really gone, uninstall it yourself before locking.</string>
+    <string name="browser_icons_description">The browsers this choice allows</string>
+
+    <!-- The app-install lock. Promised on the website before it was built, and
+         off by default because it changes what the phone is rather than what it
+         filters. The wording has to carry the cost: an app you have not
+         installed yet, you cannot install. -->
+    <string name="install_lock_heading">App installs</string>
+    <string name="install_lock_name">No other apps</string>
+    <string name="install_lock_description">After the lock, no new app can be installed. The apps that are on the phone at that moment go on updating as normal.</string>
+    <string name="install_lock_info">Before locking, prune down your apps and keep only those you want to have on your phone. After locking, no new apps will be allowed. Updates of existing apps do come through, so keep the Play Store to update.\n\nherald and anything else the policy requires are the exception. drawbridge installs those itself, from the signed policy you chose, and they arrive whether the phone is locked or not.\n\nLeave this off if you are not sure. A blocked app can always be blocked later; an app nobody can install is a phone somebody has to come to you about.</string>
 
     <string name="options_heading">Options</string>
-    <string name="options_explanation">Allow the following services at own peril.</string>
+    <string name="options_explanation">drawbridge when unlocked allows all of the following. If you don\'t want some of these \u2018services\u2019, and rightfully so, disallow them and lock drawbridge.</string>
     <string name="options_none_available">This policy offers nothing to switch on.</string>
-    <string name="options_footnote">The policy is inspired by best practices in digital minimalism and is a good choice for anyone, including adults. The ages are a recommendation by pediatricians, psychologists and neurologists.</string>
-    <string name="option_recommended_age" translatable="false">%1$d+</string>
+    <string name="options_footnote">The policy is inspired by best practices in digital minimalism and is a good choice for anyone, including adults. The ages are a recommendation by pediatricians and neurologists, and are only relevant for caretakers setting up a device for a teen.</string>
     <string name="option_change_failed">That option is no longer in the policy.</string>
-    <string name="option_disable_confirm_title">Turn off %1$s?</string>
-    <string name="option_disable_confirm_message">Apps this option allowed are removed straight away. Switching it back on later does not reinstall them.</string>
-    <string name="option_disable_confirm_yes">Turn off</string>
+    <!-- The age used to trail the option's name in running text; it is a shield
+         now. The glyph and what a screen reader says about it are separate: the
+         shield is three characters, the description is a sentence. -->
+    <string name="option_age_shield" translatable="false">%1$d+</string>
+    <string name="option_recommended_age_description">Recommended from age %1$d</string>
+    <string name="option_various_ages_description">Various ages</string>
+    <!-- There was a "Turn off %1$s?" confirmation here. It warned that the
+         option's apps went straight away and did not come back, and both
+         halves had stopped being true: removal follows the lock, and switching
+         an option on unhides again. Toggling an option now just applies. -->
 
 
     <string name="action_lock">Lock drawbridge</string>
@@ -54,18 +93,19 @@
     <string name="diagnostics_copied" translatable="false">Copied</string>
 
     <string name="action_remove">Deactivate drawbridge restrictions</string>
+    <string name="action_forgot_key">Forgot the code</string>
 
     <string name="policy_refreshed">Policy updated (version %1$d)</string>
     <string name="policy_refresh_failed">Could not reach the policy server</string>
 
     <!-- Locking -->
     <string name="lock_confirm_title">Lock drawbridge?</string>
-    <string name="lock_confirm_message">This applies the policy, starts the content filter and seals this screen.\n\nAndroid will ask whether drawbridge may keep running in the background. <b>Allow it.</b> Declining does not stop the filter, but it lets the phone put the daily check for policy updates to sleep — so the phone would go on filtering against an out-of-date list without saying so.\n\nYou will be shown a key. It is the only way back in, it is shown once, and there is no reset — not by email, not by us, not by anyone.\n\nWrite it down, or decide on purpose not to.</string>
+    <string name="lock_confirm_message">Locking will apply the restrictions other than the default, for both websites and apps.\n\nYou will be shown a random key, one which is difficult to remember and changes every time you lock. The key is needed to unlock drawbridge (outside of the timer). Write the key down and hide it carefully. Alternatively, you may \u2018forget\u2019 the key on purpose, e.g. when you set an unlock timer or if you want your device to have the restrictions indefinitely.\n\nIf Android asks you if drawbridge should run in the background, allow it. Drawbridge works either way, but allowing it allows timely updates.</string>
     <string name="lock_confirm_yes">Lock and show the key</string>
     <string name="lock_needs_filter">The content filter has to be running before the phone can be locked.</string>
 
     <string name="lock_reveal_title">Write this down now</string>
-    <string name="lock_reveal_explanation">This key unlocks these settings. It is not stored anywhere you can read it again, and a new one is made every time you lock — so this one, on paper, is all there is.\n\nIf you would rather not be able to change your mind, that is a real choice. Close this without keeping the key and these settings can never be changed again — though the phone can still be factory reset, which removes drawbridge and everything else on it.</string>
+    <string name="lock_reveal_explanation">We remind you the key is different every time.</string>
     <string name="update_title">Update drawbridge</string>
     <string name="update_notice">A newer version of drawbridge is available.</string>
     <string name="update_action">Update</string>
@@ -82,18 +122,33 @@
     <string name="update_result_blocked">The phone refused the update, which is what Play Protect blocking it looks like. Pause Play Protect and try again.</string>
     <string name="update_result_failed">The update did not install: %1$s</string>
     <string name="update_turn_back_on">Turn Play Protect back on afterwards. It is the only thing on this phone watching for genuinely harmful apps, and it does not interfere with anything else drawbridge does.</string>
-    <string name="lock_screen_info">Drawbridge is guarding this device and its owner</string>
-    <string name="lock_screen_info_locked">Drawbridge is guarding this device and its owner - Locked since %1$s</string>
+    <!--
+         The keyguard, in three short sentences. One line under a clock, often
+         truncated, read by somebody who was not looking for it — so each state
+         says its one fact and stops.
+    -->
+    <string name="lock_screen_info">drawbridge protecting</string>
+    <string name="lock_screen_info_locked">drawbridge locked since %1$s</string>
+    <string name="lock_screen_info_timer">drawbridge unlocks in %1$s</string>
+
+    <plurals name="duration_days">
+        <item quantity="one">%d day</item>
+        <item quantity="other">%d days</item>
+    </plurals>
+    <plurals name="duration_hours">
+        <item quantity="one">%d hour</item>
+        <item quantity="other">%d hours</item>
+    </plurals>
+    <plurals name="duration_minutes">
+        <item quantity="one">%d minute</item>
+        <item quantity="other">%d minutes</item>
+    </plurals>
     <string name="lock_key_glyphs">A key never contains the letters O, I or L. A round character is a zero. If you write one down ambiguously, typing O, I or l back still works.</string>
-    <string name="lock_reveal_not_sealed_yet">These settings are not sealed until you tap Done. If you leave this screen before then, the key is forgotten and nothing is locked — the phone keeps filtering, and you can lock it again for a new key.</string>
-    <string name="lock_reveal_confirm">I have written down or printed this key</string>
+    <string name="lock_reveal_confirm">I have written down or saved the key, or forgot it on purpose.</string>
     <string name="lock_reveal_share">Print or save the key</string>
     <string name="lock_reveal_subject">drawbridge key</string>
     <string name="lock_reveal_body">drawbridge key: %1$s\n\nKeep this somewhere safe and offline. It unlocks the drawbridge settings on the phone.</string>
     <string name="lock_reveal_finish">Done</string>
-    <string name="lock_reveal_discard_title">Close without the key?</string>
-    <string name="lock_reveal_discard_message">The settings on this phone will stay exactly as they are, and nobody will be able to change them again — including you.\n\nThe phone is not stuck: a factory reset still works, from Settings or from recovery, and takes drawbridge with it. It also erases everything else on the device.</string>
-    <string name="lock_reveal_discard_yes">Close anyway</string>
 
     <string name="lock_challenge_title">drawbridge is locked</string>
     <string name="lock_challenge_explanation">Type the key you were given when this phone was locked. Dashes and capitals do not matter.</string>
@@ -103,6 +158,44 @@
     <string name="lock_since_protected">Protecting this phone since %1$s</string>
     <string name="lock_since_locked">Locked since %1$s</string>
     <string name="lock_since_hint">If that does not match what you remember, this phone has been unlocked or reset since.</string>
+
+    <!--
+         The lock timer. The wording holds one line everywhere it appears: the
+         key is not weakened, it is still made and still works, and the timer
+         only decides what happens if nobody ever uses it. A screen that let
+         anyone read this as "the lock is weaker now" would be describing a
+         different feature.
+    -->
+    <string name="lock_timer_name">Automatic unlock timer</string>
+    <string name="lock_timer_description">The lock ends on its own after the period you choose. You still get a key, and it still works.</string>
+    <string name="lock_timer_info">When no timer is put, drawbridge will stay locked until you put the key. Optionally, you can put a timer for drawbridge to automatically unlock.\n\nThere will still be a key to unlock before timer runs out, but many people would rather \u2018forget\u2019 the key and just use the timer to get some time off, e.g. \u201c4h of studying without internet\u201d, \u201ca weekend of camping offline\u201d, \u201c2 weeks without YouTube\u201d, \u201c3 weeks with a strict internet curfew\u201d.\n\nThe period is fixed at the moment you lock. It cannot be shortened, extended or switched off from a locked phone, and the phone\'s clock is held to network time so the date cannot be moved either.</string>
+    <string name="lock_timer_length_hint">Stays locked for</string>
+    <string name="lock_timer_applied">Locking will end by itself after %1$s.</string>
+    <string name="lock_timer_off_applied">Locking will last until you unlock it with the key.</string>
+    <string name="lock_confirm_timer">This lock ends by itself after %1$s. You still get a key and it still works — the timer is only what happens if nobody uses it.</string>
+    <string name="lock_timer_reveal">This phone unlocks itself %1$s after you tap Done, with or without this key. Until then the key is the only way in.</string>
+    <string name="lock_timer_running">Unlocks by itself on %1$s</string>
+    <string name="lock_timer_running_forgotten">Somebody on this phone said the code was lost, so it unlocks by itself on %1$s. If you still have the code, unlock and lock again to stop that.</string>
+
+    <string name="lock_timer_hours_2">2 hours</string>
+    <string name="lock_timer_hours_4">4 hours</string>
+    <string name="lock_timer_hours_8">8 hours</string>
+    <string name="lock_timer_hours_12">12 hours</string>
+    <string name="lock_timer_day_1">1 day</string>
+    <string name="lock_timer_days_2">2 days</string>
+    <string name="lock_timer_days_3">3 days</string>
+    <string name="lock_timer_week_1">1 week</string>
+    <string name="lock_timer_weeks_2">2 weeks</string>
+    <string name="lock_timer_weeks_3">3 weeks</string>
+    <string name="lock_timer_days_30">30 days</string>
+    <string name="lock_timer_days_40">40 days</string>
+
+    <!-- The code-forgotten door, on a locked phone. -->
+    <string name="forgot_key_title">Forgotten the code?</string>
+    <string name="forgot_key_message">If you forgot the key but need drawbridge unlocked to change the restrictions or do a factory reset, you can start in the next screen a timer of %1$s. Drawbridge will then unlock.\n\nThe timer is shown on the lock screen, so it will be obvious.</string>
+    <string name="forgot_key_start">Start the wait</string>
+    <string name="forgot_key_started">drawbridge unlocks itself on %1$s. Until then nothing changes: the phone stays locked, and the code still opens it.</string>
+    <string name="forgot_key_running">This phone already unlocks itself on %1$s, and that cannot be brought forward. Unlocking with the code before then ends it.</string>
 
     <!-- Removal -->
     <string name="remove_title">Deactivate drawbridge restrictions</string>
@@ -119,4 +212,25 @@
     <string name="filter_channel_name">Content filter</string>
     <string name="filter_notification_title">Content filter active</string>
     <string name="filter_notification_text">Filtering DNS for every app on this device</string>
+
+    <!-- Disconnect philosophy: whether the phone reaches the internet at all. -->
+    <string name="disconnect_heading">Disconnect philosophy</string>
+    <string name="disconnect_offline_name">Always blissfully offline</string>
+    <string name="disconnect_offline_description">After lock: No internet traffic possible. Only calls and SMS, as well as GPS reception and FM-radio when available.</string>
+    <string name="disconnect_online_name">Sadly always online</string>
+    <string name="disconnect_online_description">Default and always when unlocked.</string>
+    <string name="disconnect_curfew_name">Curfew for the internet</string>
+    <string name="disconnect_curfew_description">After lock: internet only between certain times. Recommended is at least a half hour per week to install updates.</string>
+    <string name="curfew_explanation">The phone is offline between these hours.</string>
+    <string name="curfew_weekdays">Monday to Friday</string>
+    <string name="curfew_weekend">Saturday and Sunday</string>
+    <string name="curfew_window">Offline from %1$s to %2$s</string>
+    <string name="curfew_pick_start">Offline from</string>
+    <string name="curfew_pick_end">Back online at</string>
+
+    <string name="lock_current_policy">Policy: %1$s</string>
+    <string name="lock_current_policy_unnamed">the document\'s own rules</string>
+    <string name="lock_current_offline">Internet: always offline</string>
+    <string name="lock_current_online">Internet: always allowed</string>
+    <string name="lock_current_curfew">Offline %1$s–%2$s on weekdays, %3$s–%4$s at weekends</string>
 </resources>

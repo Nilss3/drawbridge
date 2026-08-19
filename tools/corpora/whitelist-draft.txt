@@ -1,0 +1,87 @@
+# DRAFT default whitelist -- app_ratings.allowed_packages
+#
+# Every entry here is a package the rating rule would otherwise REMOVE (Parental
+# guidance, or PEGI 7+) that a household plausibly needs. Drafted 2026-08-17 from
+# the two corpus runs in this directory; see docs/app-ratings.md.
+#
+# Two standing rules, both checkable:
+#   1. Nothing here may appear in blocked_packages. The whitelist is evaluated
+#      BEFORE the blocklist, so an overlap silently unblocks a blocked app.
+#   2. Nothing here may be governed by an option. WhatsApp and Telegram are
+#      deliberately absent: whitelisting them would override the parent's switch
+#      and make the option a decoration.
+
+# --- private messengers (all Parental guidance: ungraded conversation) --------
+ch.threema.app
+network.loki.messenger
+chat.simplex.app
+
+# --- conferencing ------------------------------------------------------------
+us.zoom.videomeetings
+com.cisco.wx2.android
+
+# --- general-purpose AI assistants -------------------------------------------
+# Not blockable honestly -- every allowed browser reaches one through its search
+# box. See "Chatbots are not blocked" in docs/app-ratings.md. Companions are NOT
+# here and stay blocked.
+com.openai.chatgpt
+com.anthropic.claude
+com.google.android.apps.bard
+ai.perplexity.app.android
+com.deepseek.chat
+ai.mistral.chat
+
+# --- sport and fitness (community feeds make them ungraded) ------------------
+com.strava
+com.stt.android
+com.fitapp
+
+# --- recipes and food --------------------------------------------------------
+com.mufumbo.android.recipe.search
+com.recime.app
+com.foodient.whisk
+
+# --- nature and hobbies ------------------------------------------------------
+com.chirpbirding.birda
+com.apex.community.birdbrain.birdbrain
+
+# --- health and pharmacy (PEGI 18 because they sell medicines) ---------------
+# Regional. A household outside Belgium needs its own, which is what the
+# device-local half of the whitelist is for.
+app.newpharma.shop
+
+# --- music and audiobooks -----------------------------------------------------
+# Not video: long-form streaming has its own option, and this list must never
+# reach into a category a switch already governs. Every one of these is Parental
+# guidance — a music service carries user playlists, comments or podcasts, which
+# is ungraded content and therefore the band, whatever the music is.
+#
+# YouTube Music is deliberately absent and is the sharpest case in this file:
+# it is Parental guidance like the rest, and it is exempted by *Allow YouTube*.
+# Whitelisting it would override that switch, and policytool.py sign refuses the
+# document for exactly that reason — it also names blocked_packages, so the
+# refusal fires twice.
+com.spotify.music
+com.audible.application
+com.shazam.android
+com.aspiro.tidal                # TIDAL
+com.apple.android.music         # Apple Music
+com.qobuz.music                 # Qobuz
+deezer.android.app              # Deezer
+com.soundcloud.android          # SoundCloud
+com.amazon.mp3                  # Amazon Music
+com.bandcamp.android            # Bandcamp
+tunein.player                   # TuneIn radio
+
+# --- family photo sharing ----------------------------------------------------
+us.mitene
+
+# --- DELIBERATELY EXCLUDED, recorded so the absence reads as a decision -------
+# com.whatsapp             -- has an option
+# org.telegram.messenger   -- has an option
+# com.netflix.mediaclient  -- streaming option
+# com.facebook.orca        -- Messenger: social, not a private messenger
+# com.tencent.mm           -- WeChat: same
+# com.viber.voip           -- Viber: same
+# com.imo.android.imoim    -- imo: same
+# com.ebay.mobile          -- shopping; add locally if wanted

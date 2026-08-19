@@ -1,13 +1,27 @@
 # Reader view: back, and when a page is an article
 
-**Status: fixed, and confirmed on the phone.** Three bugs, all the same shape —
-state that cannot be believed yet. Back in mono's reader view stopped at the
-plain article; reader view often failed to trigger at all; and the fix for the
-second caused a third, where clicking a link put you back on the page you had
-just left.
+**Status: two of these three no longer exist, and the third still runs.** Three
+bugs, all the same shape — state that cannot be believed yet. Back in mono's
+reader view stopped at the plain article; reader view often failed to trigger at
+all; and the fix for the second caused a third, where clicking a link put you
+back on the page you had just left.
 
-Kept because three attempts were spent on the first one, and because the dead
-ends below are expensive to walk twice.
+**Read this before believing any of it of today's code.** Mono stopped entering
+reader view by itself on 2026-08-19 — the feature was wrong in use, and a slower
+fling replaced it; see
+[design-decisions](design-decisions.md#mono-asks-for-reader-view-rather-than-imposing-it).
+So:
+
+| | |
+|---|---|
+| **Back stopping at the plain article** | Gone with the feature. Back is `ReaderViewFeature.onBackPressed` again: it leaves reader view and stops on the article, which is what a reader who asked for reader view wants. `leavePageWhenArticleIsBack`, `ArticleReturn` and their tests are deleted. |
+| **Reader view not triggering** | **Still live, and still load-bearing.** The re-check is what makes the reader-view menu entry appear on pages that are articles, in both editions. `recheckWhenPagesFinishLoading` and `askWhetherItIsAnArticle`. |
+| **Being put back on the page you had just left** | Gone with the feature: nothing acts on a readability answer by itself any more. The *reason* it happened — the answer names no page — is unchanged and would bite anything that starts acting on one again. |
+
+Kept whole because three attempts were spent on the first one, because the dead
+ends below are expensive to walk twice, and because everything under
+[things that make adb-driven testing lie](#things-that-make-adb-driven-testing-lie)
+is about the phone rather than about this feature.
 
 ## What was wrong, and why
 
@@ -184,11 +198,17 @@ pages were articles and herald was asking at the wrong time.
 
 ## Where the code is
 
+What survives, after the 2026-08-19 removal:
+
 | | |
 |---|---|
-| `herald/src/main/java/app/drawbridge/herald/browser/ReaderViewIntegration.kt` | `onBackPressed`, `leavePageWhenArticleIsBack`, `ArticleReturn`, `askWhetherItIsAnArticle` |
-| `herald/src/test/java/app/drawbridge/herald/browser/ReaderViewIntegrationTest.kt` | the two timing rules, pinned |
+| `herald/src/main/java/app/drawbridge/herald/browser/ReaderViewIntegration.kt` | `askWhetherItIsAnArticle`, `recheckWhenPagesFinishLoading`, `LoadSnapshot` |
+| `herald/src/test/java/app/drawbridge/herald/browser/ReaderViewIntegrationTest.kt` | the re-check's timing rule, pinned |
 | `herald/src/main/java/app/drawbridge/herald/browser/BrowserFragment.kt` | `backHandlers` order — reader view runs before `sessionFeature` |
+
+`onBackPressed`, `leavePageWhenArticleIsBack` and `ArticleReturn` are in the
+history rather than the tree; `git log -- herald/.../ReaderViewIntegration.kt`
+has them.
 
 ## Verified
 

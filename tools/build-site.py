@@ -24,6 +24,16 @@ SITE_OUT = REPO_ROOT / "site"
 # · install.fr.md elsewhere in this repo.
 # ---------------------------------------------------------------------------
 
+# A non-production channel marks every page it renders. site-src/channel.txt
+# exists only on the dev branch; main has no such file and renders nothing extra,
+# so this costs the published site nothing.
+#
+# It is not decoration. dev.drawbridge-project.pages.dev and
+# drawbridge-project.pages.dev are the same site with different builds behind
+# them, one of which provisions phones people are relying on. A page that does
+# not say which one it is, is a page somebody will use to flash the wrong build.
+CHANNEL = (SITE_SRC / "channel.txt").read_text().strip() if (SITE_SRC / "channel.txt").exists() else ""
+
 LANGUAGES = ["en", "nl", "fr"]
 LANG_NAMES = {"en": "English", "nl": "Nederlands", "fr": "Français"}
 
@@ -48,6 +58,16 @@ FOOTER = {
     "fr": "Drawbridge est gratuit et open source (MIT).",
 }
 FOOTER_SOURCE = {"en": "Source on GitHub", "nl": "Broncode op GitHub", "fr": "Code source sur GitHub"}
+
+
+def channel_banner() -> str:
+    """A band across the top of every page on a non-production channel."""
+    if not CHANNEL:
+        return ""
+    return (
+        f'<div class="channel-banner">{CHANNEL.upper()} CHANNEL — test builds, '
+        "not the release. Do not use a phone you depend on.</div>\n"
+    )
 
 
 def render_page(
@@ -106,7 +126,7 @@ def render_page(
 <link rel="stylesheet" href="/assets/css/style.css" />
 </head>
 <body>
-<header class="site-header">
+{channel_banner()}<header class="site-header">
   <div class="wrap">
     <a class="brand" href="{home_href}">
       <img src="/assets/img/icon.webp" alt="" />
@@ -153,15 +173,26 @@ HOME = {
         title="drawbridge — protect your Android device from harmful content",
         description="A free, open-source, watertight content filter for Android. For yourself, or for a device you manage on someone else's behalf. No account, no backend, no telemetry.",
         beta="Slowly entering public beta. If it holds up, this site gets a real domain.",
+        hero_title="Drawbridge Project",
+        hero_tagline="Keeps the bad internet on the other side",
+        hero_art_alt="A raised drawbridge at sunset, between an autumn park where somebody is reading on a bench and a rocky shore where cartoon monsters are waiting.",
         h1="Welcome to the drawbridge project",
         lede="Drawbridge protects you and your Android device from harmful content, so you can keep your focus and sanity.",
         p1='Make your phone a drawbridge phone: a phone clear of social media and other harmful time-wasters. A drawbridge phone can be used for yourself, and/or for your teenager, as a free, better and low-maintenance alternative to parental controls. The protection is based on the best practices of digital minimalism and supported by neuroscience and parents\' organisations. Drawbridge is free, open source, no frills, watertight, and respects your privacy. No account is needed, and none of your data is ever uploaded.',
         p2='Drawbridge is a protection on your device which "raises the bridge" to harmful content and keeps it from entering your device, your life and your soul. It stops adult content, gambling, ads, algorithmic social media, AI companions, and exploitative games.',
         browser_teaser='The project also includes herald, a browser you can download and use on its own — <a href="#herald">see below</a>.',
+        use_cases_lead="Drawbridge aims to solve use cases like:",
+        use_cases=[
+            "“I need a phone without social media! It drives me crazy!”",
+            "“If only there was a phone with just maps, WhatsApp, my bank app, and nothing else!”",
+            "“My teen and I keep fighting over parental controls and I'm sick of it! Also, these parental controls for all these apps keep changing all the time!”",
+            "“Isn't there an offline phone without a browser for my kid?”",
+            "“Can't I have a device for just Spotify?”",
+        ],
         cta_primary="Get started",
         cta_secondary="See what's blocked, and why",
         how_h2="How it works",
-        how_p1='You connect the phone to a computer once, over USB, and run the installer. There is no factory reset, and nothing on the phone is erased. This will embed drawbridge on your device. Once installed, just start it. Locking it does uninstall the apps it blocks, so expect those to go. You\'ll get a random code to deactivate drawbridge. Alternatively, "forget" the code and have your protection indefinitely.',
+        how_p1='You connect the phone to a computer once, over USB, and run the installer. There is no factory reset, and nothing on the phone is erased. This will embed drawbridge on your device. Once installed, just start it. Installing it does uninstall the apps it blocks, so expect those to go — move anything you want to keep off the phone first. You\'ll get a random code to deactivate drawbridge. Alternatively, "forget" the code and have your protection indefinitely.',
         how_p2="Drawbridge relies on a web filter, a block list, and a custom browser. You don't need an account, and no data leaves your device. As opposed to parental controls or app blockers, there is little to no configuration, it already has everything there to protect you. There is also no workaround.",
         how_art_alt="A phone with a raised drawbridge across its screen: a calm green landscape inside, dark creatures shut out behind it.",
         how_cta_faq="Read the Q&amp;A",
@@ -185,7 +216,7 @@ HOME = {
         mono_intro='herald mono is another version of this browser, especially for people who find browsing the internet itself addictive (news, shopping, etc.). It is inspired by e-ink screens and the Firefox Focus browser to make browsing less enticing:',
         mono_bullets=[
             "It renders everything in black and white",
-            'It opens webpages by default in reader mode when possible<ul><li>You can still choose to see a specific page in normal mode or in color if you need for various reasons (e.g. you need to read a colorful graph in a news article)</li></ul>',
+            'Pages are harder to skim past: a flick throws the page about half as far as in any other browser, so scrolling on and on takes deciding to<ul><li>Dragging is unchanged — the page still follows your finger exactly. Reader mode and colour are both still there, a menu entry away, for the page that needs them</li></ul>',
             "There are no tabs. Single-tasking it is.",
             "There is a breathing pause every time you open a webpage.",
         ],
@@ -196,15 +227,26 @@ HOME = {
         title="drawbridge — bescherm je Android-toestel tegen schadelijke inhoud",
         description="Een gratis, open source, waterdichte contentfilter voor Android. Voor jezelf, of voor een toestel dat je voor iemand anders beheert. Geen account, geen backend, geen telemetrie.",
         beta="Bijna in publieke beta. Als het goed werkt, krijgt deze site een echt domein.",
+        hero_title="Drawbridge Project",
+        hero_tagline="Houdt het slechte internet aan de overkant",
+        hero_art_alt="Een opgehaalde ophaalbrug bij zonsondergang, tussen een herfstpark waar iemand op een bank zit te lezen en een rotsige oever waar tekenfilmmonsters staan te wachten.",
         h1="Welkom bij het drawbridge-project",
         lede="Drawbridge beschermt jou en je Android-toestel tegen schadelijke inhoud, zodat je je focus en gemoedsrust behoudt.",
         p1='Maak van je telefoon een drawbridge-telefoon: een telefoon vrij van social media en andere schadelijke tijdverspillers. Een drawbridge-telefoon kan gebruikt worden voor jezelf, en/of voor je tiener, als een gratis, betere en onderhoudsarme alternatief voor parental controls. De bescherming is gebaseerd op de beste praktijken van digitaal minimalisme en wordt ondersteund door neurowetenschap en ouderverenigingen. Drawbridge is gratis, open source, zonder franjes, waterdicht, en respecteert je privacy. Er is geen account nodig, en er wordt nooit data geüpload.',
         p2='Drawbridge is een bescherming op je toestel die "de brug ophaalt" voor schadelijke inhoud en verhindert dat die je toestel, je leven en je ziel binnendringt. Het houdt pornografie, gokken, advertenties, algoritmische social media, AI companions en uitbuitende games tegen.',
         browser_teaser='Het project omvat ook herald, een browser die je apart kan downloaden en gebruiken — <a href="#herald">zie hieronder</a>.',
+        use_cases_lead="Drawbridge wil situaties zoals deze oplossen:",
+        use_cases=[
+            "“Ik heb een telefoon zonder social media nodig! Ik word er gek van!”",
+            "“Was er maar een telefoon met alleen maps, WhatsApp, mijn bankapp, en verder niets!”",
+            "“Mijn tiener en ik maken constant ruzie over parental controls en ik ben het beu! En die parental controls van al die apps veranderen ook nog eens om de haverklap!”",
+            "“Bestaat er geen offline telefoon zonder browser voor mijn kind?”",
+            "“Kan ik geen toestel krijgen voor alleen Spotify?”",
+        ],
         cta_primary="Aan de slag",
         cta_secondary="Bekijk wat geblokkeerd wordt, en waarom",
         how_h2="Hoe het werkt",
-        how_p1='Je verbindt de telefoon één keer met een computer via USB en voert de installer uit. Er is geen factory reset nodig, en er wordt niets op de telefoon gewist. Dat installeert drawbridge op je toestel. Eenmaal geïnstalleerd, start je het gewoon op. Bij het vergrendelen verdwijnen wel de apps die drawbridge blokkeert. Je krijgt een willekeurige code om drawbridge te deactiveren. Je kan die code ook bewust "vergeten", zodat je bescherming voor onbepaalde tijd actief blijft.',
+        how_p1='Je verbindt de telefoon één keer met een computer via USB en voert de installer uit. Er is geen factory reset nodig, en er wordt niets op de telefoon gewist. Dat installeert drawbridge op je toestel. Eenmaal geïnstalleerd, start je het gewoon op. Bij het installeren verdwijnen wel de apps die drawbridge blokkeert — zet dus eerst weg wat je wil bewaren. Je krijgt een willekeurige code om drawbridge te deactiveren. Je kan die code ook bewust "vergeten", zodat je bescherming voor onbepaalde tijd actief blijft.',
         how_p2="Drawbridge steunt op een webfilter, een blocklist, en een eigen browser. Je hebt geen account nodig, en er wordt nooit data van je toestel verzonden. In tegenstelling tot parental controls of app blockers is er nauwelijks tot geen configuratie nodig — alles staat er al klaar om je te beschermen. Er is ook geen workaround.",
         how_art_alt="Een telefoon met een opgehaalde brug over het scherm: een rustig groen landschap binnenin, duistere wezens buitengesloten.",
         how_cta_faq="Lees de Q&amp;A",
@@ -228,7 +270,7 @@ HOME = {
         mono_intro='herald mono is een andere versie van deze browser, speciaal voor mensen die het surfen op internet zelf verslavend vinden (nieuws, online shoppen, enz.). Het is geïnspireerd op e-inktschermen en de Firefox Focus-browser, om browsen minder aanlokkelijk te maken:',
         mono_bullets=[
             "Toont alles in zwart-wit",
-            'Opent webpagina\'s standaard in leesmodus wanneer mogelijk<ul><li>Je kan nog steeds kiezen om een specifieke pagina in normale modus of in kleur te bekijken, indien nodig (bv. om een kleurrijke grafiek in een nieuwsartikel te lezen)</li></ul>',
+            'Pagina\'s zijn moeilijker weg te scrollen: een veeg werpt de pagina ongeveer half zo ver als in een andere browser, dus almaar doorscrollen wordt een keuze<ul><li>Slepen blijft ongewijzigd — de pagina volgt je vinger nog altijd precies. Leesmodus en kleur blijven allebei beschikbaar, één menu-item ver, voor de pagina die ze nodig heeft</li></ul>',
             "Er zijn geen tabbladen. Singletasking dus.",
             "Er is een ademhalingspauze telkens je een webpagina opent.",
         ],
@@ -239,15 +281,26 @@ HOME = {
         title="drawbridge — protégez votre appareil Android des contenus nuisibles",
         description="Un filtre de contenu gratuit, open source et étanche pour Android. Pour vous-même, ou pour un appareil que vous gérez pour quelqu'un d'autre. Pas de compte, pas de serveur, aucune télémétrie.",
         beta="En bêta publique progressive. Si tout se passe bien, ce site aura son propre nom de domaine.",
+        hero_title="Drawbridge Project",
+        hero_tagline="Garde le mauvais internet de l'autre côté",
+        hero_art_alt="Un pont-levis relevé au coucher du soleil, entre un parc d'automne où quelqu'un lit sur un banc et une rive rocheuse où attendent des monstres de dessin animé.",
         h1="Bienvenue sur le projet drawbridge",
         lede="Drawbridge protège votre appareil Android des contenus nuisibles, pour préserver votre concentration et votre équilibre.",
         p1='Faites de votre téléphone un téléphone drawbridge : un téléphone débarrassé des réseaux sociaux et autres pertes de temps nuisibles. Un téléphone drawbridge peut être utilisé pour vous-même, et/ou pour votre adolescent, comme alternative gratuite, meilleure et peu contraignante aux contrôles parentaux. La protection s\'appuie sur les meilleures pratiques du minimalisme numérique et est soutenue par les neurosciences et des associations de parents. Drawbridge est gratuit, open source, sans fioritures, étanche, et respecte votre vie privée. Aucun compte n\'est nécessaire, et aucune de vos données n\'est jamais transmise.',
         p2='Drawbridge est une protection sur votre appareil qui « relève le pont-levis » face aux contenus nuisibles et les empêche d\'entrer dans votre appareil, votre vie et votre âme. Elle bloque les contenus pour adultes, les jeux d\'argent, la publicité, les réseaux sociaux algorithmiques, les compagnons IA et les jeux d\'exploitation.',
         browser_teaser='Le projet comprend aussi herald, un navigateur que vous pouvez télécharger et utiliser séparément — <a href="#herald">voir plus bas</a>.',
+        use_cases_lead="Drawbridge cherche à répondre à des situations comme celles-ci :",
+        use_cases=[
+            "« J'ai besoin d'un téléphone sans réseaux sociaux ! Ça me rend dingue ! »",
+            "« Si seulement il existait un téléphone avec juste les cartes, WhatsApp, mon appli bancaire, et rien d'autre ! »",
+            "« Mon ado et moi n'arrêtons pas de nous disputer à propos des contrôles parentaux, j'en ai marre ! Et en plus, ces contrôles parentaux changent tout le temps dans toutes ces applis ! »",
+            "« Il n'existe pas un téléphone hors ligne, sans navigateur, pour mon enfant ? »",
+            "« Je ne peux pas avoir un appareil juste pour Spotify ? »",
+        ],
         cta_primary="Commencer",
         cta_secondary="Voir ce qui est bloqué, et pourquoi",
         how_h2="Comment ça marche",
-        how_p1="Vous reliez le téléphone à un ordinateur une seule fois, par USB, et vous lancez l'installeur. Il n'y a aucune réinitialisation, et rien n'est effacé sur le téléphone. Cela installe drawbridge sur votre appareil. Une fois installé, il suffit de le démarrer. Le verrouillage désinstalle en revanche les applications qu'il bloque. Vous recevrez un code aléatoire pour désactiver drawbridge. Vous pouvez aussi « oublier » ce code volontairement, pour que la protection reste active indéfiniment.",
+        how_p1="Vous reliez le téléphone à un ordinateur une seule fois, par USB, et vous lancez l'installeur. Il n'y a aucune réinitialisation, et rien n'est effacé sur le téléphone. Cela installe drawbridge sur votre appareil. Une fois installé, il suffit de le démarrer. L'installation désinstalle en revanche les applications qu'il bloque — mettez donc d'abord de côté ce que vous voulez garder. Vous recevrez un code aléatoire pour désactiver drawbridge. Vous pouvez aussi « oublier » ce code volontairement, pour que la protection reste active indéfiniment.",
         how_p2="Drawbridge s'appuie sur un filtre web, une liste de blocage, et un navigateur dédié. Aucun compte n'est nécessaire, et aucune donnée ne quitte votre appareil. Contrairement aux contrôles parentaux ou aux bloqueurs d'applications, il n'y a que peu, voire aucune configuration à faire — tout est déjà en place pour vous protéger. Il n'existe pas non plus de moyen de contournement.",
         how_art_alt="Un téléphone dont le pont-levis est relevé sur l'écran : un paysage vert et calme à l'intérieur, des créatures sombres tenues à l'écart.",
         how_cta_faq="Lire la Q&amp;A",
@@ -271,7 +324,7 @@ HOME = {
         mono_intro="herald mono est une autre version de ce navigateur, spécialement pour les personnes qui trouvent que naviguer sur internet est en soi addictif (actualités, achats en ligne, etc.). Il s'inspire des écrans à encre électronique et du navigateur Firefox Focus pour rendre la navigation moins attrayante :",
         mono_bullets=[
             "Il affiche tout en noir et blanc",
-            "Il ouvre les pages web par défaut en mode lecture, quand c'est possible<ul><li>Vous pouvez toujours choisir d'afficher une page précise en mode normal ou en couleur si besoin (par exemple pour lire un graphique coloré dans un article de presse)</li></ul>",
+            "Les pages sont plus difficiles à faire défiler d'un geste : une chiquenaude lance la page environ deux fois moins loin que dans un autre navigateur, si bien que continuer à faire défiler devient un choix<ul><li>Le glissement ne change pas — la page suit toujours votre doigt exactement. Le mode lecture et la couleur restent disponibles, à un élément de menu, pour la page qui en a besoin</li></ul>",
             "Il n'y a pas d'onglets. Une seule tâche à la fois.",
             "Il y a une pause de respiration à chaque ouverture d'une page web.",
         ],
@@ -290,19 +343,24 @@ def render_home(lang: str) -> str:
 
     herald_bullets_html = "\n".join(f"<li>{item}</li>" for item in c["herald_bullets"])
     mono_bullets_html = "\n".join(f"<li>{item}</li>" for item in c["mono_bullets"])
+    use_cases_html = "\n".join(f"        <li>{item}</li>" for item in c["use_cases"])
 
     body = f"""
   <section class="hero">
     <div class="wrap">
-      <span class="beta-note">{c['beta']}</span>
-      <h1>{c['h1']}</h1>
-      <p class="lede">{c['lede']}</p>
       <div class="hero-art">
-        <picture>
-          <source srcset="/assets/img/hero-night.webp" media="(prefers-color-scheme: dark)" />
-          <img src="/assets/img/hero.webp" alt="" />
-        </picture>
+        <img src="/assets/img/hero.webp" alt="{c['hero_art_alt']}" />
+        <div class="hero-art-title">
+          <h1>{c['hero_title']}</h1>
+          <p>{c['hero_tagline']}</p>
+        </div>
       </div>
+      <span class="beta-note">{c['beta']}</span>
+      <p class="lede">{c['lede']}</p>
+      <p class="voices-lead">{c['use_cases_lead']}</p>
+      <ul class="voices">
+{use_cases_html}
+      </ul>
       <p>{c['p1']}</p>
       <p>{c['p2']}</p>
       <p>{c['browser_teaser']}</p>
@@ -407,12 +465,13 @@ INSTALL = {
         lede="Install over USB from a computer. No factory reset, and nothing on the phone is erased.",
         alpha_warning="This is still in early alpha testing!!",
         alpha_detail="This public alpha has been tested on exactly one device: a Motorola G15, by the people who built it. It works there end to end. Nothing is known about how it behaves on any other phone. Don't use a device you depend on.",
-        caveat_title="Locking drawbridge uninstalls the apps it blocks.",
-        caveat_text="On a phone that is already in use, those apps are removed the moment you lock it, and switching a setting back on afterwards does not bring them back. Nothing else is erased: your photos, messages and other apps stay where they are.",
+        caveat_title="Installing drawbridge uninstalls the apps it blocks.",
+        caveat_text="On a phone that is already in use, apps that are never allowed — social media, harmful games, browsers the policy does not sanction — start disappearing within minutes of the install, and whatever was only inside them goes too. <strong>Move what you want to keep off the phone first</strong>: export bookmarks, save photos out of an app that holds them, write down what you are signed in to. Apps you can still choose about, like WhatsApp or YouTube, are left alone until you lock. Nothing else is erased: your photos, messages and other apps stay where they are.",
         usb_h2="Install over USB",
         usb_qualifier="For Google (regular) Android phones and also deGoogled open-source Android devices: install over USB using the flow below.",
         usb_steps=[
             "<strong>Remove every account from the phone.</strong> Settings → Passwords, passkeys &amp; accounts. Android only hands over this level of control to a phone with no account on it. You sign back in at step 4.",
+            "<strong>Delete the Private Space, if the phone has one.</strong> Settings → Security &amp; privacy → Private Space → Delete private space. Android refuses this level of control while any second profile exists, and a Private Space is hidden — it does not appear in the user switcher, and it needs its own PIN. Any other extra user is in Settings → System → Multiple users.",
             "Enable Developer Options (tap the build number in Settings → About phone several times) and turn on <strong>USB debugging</strong>.",
             "Connect the phone to a computer with a USB cable, and run the installer.",
             "Sign back in with a Google (or other) account.",
@@ -437,12 +496,13 @@ INSTALL = {
         lede="Installeer via USB vanaf een computer. Geen factory reset, en er wordt niets op de telefoon gewist.",
         alpha_warning="Dit zit nog volop in vroege alfatesting!!",
         alpha_detail="Deze publieke alfa is op precies één toestel getest: een Motorola G15, door de makers zelf. Daar werkt ze van begin tot eind. Over het gedrag op eender welke andere telefoon is niets bekend. Gebruik geen toestel waar je van afhangt.",
-        caveat_title="Bij het vergrendelen verwijdert drawbridge de apps die het blokkeert.",
-        caveat_text="Op een telefoon die al in gebruik is, verdwijnen die apps zodra je vergrendelt, en een instelling achteraf weer aanzetten brengt ze niet terug. Verder wordt er niets gewist: je foto's, berichten en andere apps blijven staan.",
+        caveat_title="Bij het installeren verwijdert drawbridge de apps die het blokkeert.",
+        caveat_text="Op een telefoon die al in gebruik is, verdwijnen apps die nooit toegelaten zijn — sociale media, schadelijke games, browsers die het beleid niet toelaat — binnen enkele minuten na de installatie, en wat er alleen in die apps zat, gaat mee. <strong>Zet eerst weg wat je wil bewaren</strong>: exporteer bladwijzers, haal foto's uit een app die ze vasthoudt, noteer waar je aangemeld bent. Apps waar je nog over kan kiezen, zoals WhatsApp of YouTube, blijven staan tot je vergrendelt. Verder wordt er niets gewist: je foto's, berichten en andere apps blijven staan.",
         usb_h2="Installeren via USB",
         usb_qualifier="Voor gewone Android-telefoons met Google én voor deGooglede open-source Android-toestellen: installeer via USB met de stappen hieronder.",
         usb_steps=[
             "<strong>Verwijder elk account van de telefoon.</strong> Instellingen → Wachtwoorden, toegangssleutels en accounts. Android geeft dit niveau van controle enkel weg aan een toestel waar geen account op staat. In stap 4 meld je je weer aan.",
+            "<strong>Verwijder de privéruimte, als de telefoon er een heeft.</strong> Instellingen → Beveiliging en privacy → Privéruimte → Privéruimte verwijderen. Android weigert dit niveau van controle zolang er een tweede profiel bestaat, en een privéruimte is verborgen — ze staat niet in de gebruikerswissel en heeft een eigen pincode. Andere extra gebruikers staan in Instellingen → Systeem → Meerdere gebruikers.",
             "Activeer Ontwikkelaarsopties (tik meerdere keren op het buildnummer in Instellingen → Over de telefoon) en schakel <strong>USB-debugging</strong> in.",
             "Verbind de telefoon met een computer via een USB-kabel, en voer de installer uit.",
             "Meld je weer aan met een Google-account (of een ander account).",
@@ -467,12 +527,13 @@ INSTALL = {
         lede="Installez par USB depuis un ordinateur. Aucune réinitialisation, et rien n'est effacé sur le téléphone.",
         alpha_warning="Ceci est encore en phase de test alpha !!",
         alpha_detail="Cette alpha publique a été testée sur exactement un appareil : un Motorola G15, par ceux qui l'ont construite. Elle y fonctionne de bout en bout. On ne sait rien de son comportement sur un autre téléphone. N'utilisez pas un appareil dont vous dépendez.",
-        caveat_title="Le verrouillage de drawbridge désinstalle les applications qu'il bloque.",
-        caveat_text="Sur un téléphone déjà utilisé, ces applications disparaissent dès que vous verrouillez, et réactiver un réglage ensuite ne les rétablit pas. Rien d'autre n'est effacé : vos photos, vos messages et vos autres applications restent en place.",
+        caveat_title="L'installation de drawbridge désinstalle les applications qu'il bloque.",
+        caveat_text="Sur un téléphone déjà utilisé, les applications qui ne sont jamais autorisées — réseaux sociaux, jeux nocifs, navigateurs que la politique ne sanctionne pas — disparaissent dans les minutes qui suivent l'installation, et ce qui n'existait qu'à l'intérieur d'elles disparaît avec. <strong>Mettez d'abord de côté ce que vous voulez garder</strong> : exportez vos favoris, sortez les photos d'une application qui les détient, notez où vous êtes connecté. Les applications sur lesquelles vous pouvez encore choisir, comme WhatsApp ou YouTube, restent jusqu'au verrouillage. Rien d'autre n'est effacé : vos photos, vos messages et vos autres applications restent en place.",
         usb_h2="Installer par USB",
         usb_qualifier="Pour les téléphones Android ordinaires avec Google comme pour les appareils Android open source dégooglisés : installez par USB en suivant les étapes ci-dessous.",
         usb_steps=[
             "<strong>Retirez tous les comptes du téléphone.</strong> Paramètres → Mots de passe, clés d'accès et comptes. Android n'accorde ce niveau de contrôle qu'à un téléphone ne portant aucun compte. Vous vous reconnecterez à l'étape 4.",
+            "<strong>Supprimez l'espace privé, si le téléphone en a un.</strong> Paramètres → Sécurité et confidentialité → Espace privé → Supprimer l'espace privé. Android refuse ce niveau de contrôle tant qu'un second profil existe, et un espace privé est masqué — il n'apparaît pas dans le sélecteur d'utilisateur et possède son propre code PIN. Les autres utilisateurs supplémentaires se trouvent dans Paramètres → Système → Utilisateurs multiples.",
             "Activez les options pour développeurs (tapez plusieurs fois sur le numéro de build dans Paramètres → À propos du téléphone) et activez le <strong>débogage USB</strong>.",
             "Connectez le téléphone à un ordinateur avec un câble USB, et lancez l'installeur.",
             "Reconnectez-vous avec un compte Google (ou un autre).",
@@ -567,6 +628,7 @@ USB_INSTALLER = {
         prep_h2="On the phone, first",
         prep_steps=[
             "<strong>Remove every account.</strong> Settings → Passwords, passkeys &amp; accounts. You sign back in at the end. Nothing else is erased.",
+            "<strong>Delete the Private Space, if there is one.</strong> Settings → Security &amp; privacy → Private Space. Android will not hand over the phone while a second profile exists, and this one is hidden from the user switcher. Deleting it removes what is inside it.",
             "Enable Developer Options: Settings → About phone, tap <strong>Build number</strong> seven times.",
             "Settings → System → Developer options → turn on <strong>USB debugging</strong>.",
             "Plug the phone into this computer.",
@@ -581,8 +643,8 @@ USB_INSTALLER = {
             "Install it",
             "Make drawbridge the owner",
         ],
-        caveat_title="Locking drawbridge uninstalls the apps it blocks.",
-        caveat_text="That happens later, on the phone, when you press Lock, not here. On a phone already in use those apps go and do not come back.",
+        caveat_title="Installing drawbridge uninstalls the apps it blocks.",
+        caveat_text="It starts within minutes of this install, not later on the phone. Move what you want to keep off it first — bookmarks, anything saved only inside an app. What a setting can still bring back waits until you lock.",
         update_detected="This phone is already managed by drawbridge ({version}). Updating it instead of provisioning. Nothing is reset, and the phone keeps everything on it.",
         update_done_h2="Now lock it again",
         update_done_steps=[
@@ -617,6 +679,7 @@ USB_INSTALLER = {
         prep_h2="Eerst op de telefoon",
         prep_steps=[
             "<strong>Verwijder elk account.</strong> Instellingen → Wachtwoorden, toegangssleutels en accounts. Op het einde meldt u zich weer aan. Verder wordt er niets gewist.",
+            "<strong>Verwijder de privéruimte, als die er is.</strong> Instellingen → Beveiliging en privacy → Privéruimte. Android geeft de telefoon niet uit handen zolang er een tweede profiel bestaat, en deze is verborgen in de gebruikerswissel. Wat erin zit, verdwijnt mee.",
             "Zet Ontwikkelaarsopties aan: Instellingen → Over de telefoon, tik zeven keer op <strong>Buildnummer</strong>.",
             "Instellingen → Systeem → Ontwikkelaarsopties → zet <strong>USB-foutopsporing</strong> aan.",
             "Sluit de telefoon aan op deze computer.",
@@ -631,8 +694,8 @@ USB_INSTALLER = {
             "Installeren",
             "drawbridge eigenaar maken",
         ],
-        caveat_title="Bij het vergrendelen verwijdert drawbridge de apps die het blokkeert.",
-        caveat_text="Dat gebeurt later, op de telefoon, wanneer u op Vergrendelen drukt, niet hier. Op een telefoon die al in gebruik is verdwijnen die apps en komen ze niet terug.",
+        caveat_title="Bij het installeren verwijdert drawbridge de apps die het blokkeert.",
+        caveat_text="Dat begint binnen enkele minuten na deze installatie, niet pas later op de telefoon. Zet eerst weg wat u wil bewaren — bladwijzers, en alles wat alleen in een app bewaard zit. Wat een instelling nog kan terugbrengen, wacht tot u vergrendelt.",
         update_detected="Deze telefoon wordt al beheerd door drawbridge ({version}). Hij wordt bijgewerkt in plaats van opnieuw ingericht. Er wordt niets teruggezet en alles op de telefoon blijft staan.",
         update_done_h2="Vergrendel hem opnieuw",
         update_done_steps=[
@@ -667,6 +730,7 @@ USB_INSTALLER = {
         prep_h2="D'abord, sur le téléphone",
         prep_steps=[
             "<strong>Retirez tous les comptes.</strong> Paramètres → Mots de passe, clés d'accès et comptes. Vous vous reconnecterez à la fin. Rien d'autre n'est effacé.",
+            "<strong>Supprimez l'espace privé, s'il y en a un.</strong> Paramètres → Sécurité et confidentialité → Espace privé. Android ne confie pas le téléphone tant qu'un second profil existe, et celui-ci est masqué dans le sélecteur d'utilisateur. Ce qu'il contient disparaît avec lui.",
             "Activez les options pour développeurs : Paramètres → À propos du téléphone, touchez sept fois <strong>Numéro de build</strong>.",
             "Paramètres → Système → Options pour développeurs → activez le <strong>débogage USB</strong>.",
             "Branchez le téléphone à cet ordinateur.",
@@ -681,8 +745,8 @@ USB_INSTALLER = {
             "L'installer",
             "Faire de drawbridge le propriétaire",
         ],
-        caveat_title="Le verrouillage de drawbridge désinstalle les applications qu'il bloque.",
-        caveat_text="Cela se produit plus tard, sur le téléphone, quand vous appuyez sur Verrouiller, pas ici. Sur un téléphone déjà utilisé, ces applications disparaissent et ne reviennent pas.",
+        caveat_title="L'installation de drawbridge désinstalle les applications qu'il bloque.",
+        caveat_text="Cela commence dans les minutes qui suivent cette installation, et non plus tard sur le téléphone. Mettez d'abord de côté ce que vous voulez garder — vos favoris, et tout ce qui n'est enregistré qu'à l'intérieur d'une application. Ce qu'un réglage peut encore rétablir attend le verrouillage.",
         update_detected="Ce téléphone est déjà géré par drawbridge ({version}). Il sera mis à jour plutôt que reconfiguré : rien n'est réinitialisé et tout ce qui s'y trouve est conservé.",
         update_done_h2="Verrouillez-le de nouveau",
         update_done_steps=[
@@ -793,186 +857,222 @@ init({{
 
 FAQ = {
     "en": dict(
-        title="Q&A — drawbridge",
-        description="Frequently asked questions about drawbridge: what's blocked, who it's for, and how it compares to ordinary parental controls.",
-        h1="Q&A",
+        title="Using drawbridge — drawbridge",
+        description="How drawbridge works: what it keeps out, what you can allow or restrict further, what locking does, and how to remove it again.",
+        h1="Using drawbridge",
         blocks=[
-            ("h2", "Which apps and websites are blocked?"),
-            ("p", 'To protect your wellbeing and your device, drawbridge blocks the following categories: porn, gambling, ads and trackers (which also covers malware, phishing and scam domains), algorithmic social media, AI companions, and games with addictive mechanics or grooming risk. Some social media is genuinely debatable: Reddit and Discord, for instance, have strong community moderation in places, but they also still host a lot of extreme gore content and toxic comments. Either way, sites like that are better visited on a PC. There is no reason to carry them around in your pocket.'),
-            ("p", 'Everything else works normally: tools, office apps, weather, banking, public transport, school, work, and so on.'),
-            ("p", 'Every social network, game and AI companion on that list has its own entry explaining what the evidence against it is, with sources: <a href="/why-blocked/">what is blocked, and why</a>. It covers the harms to adults as well as to teenagers.'),
-
             ("h2", "Who is drawbridge for?"),
-            ("p", "Drawbridge is for anyone who needs to carry a smartphone but doesn't want that phone to make room or time for harmful and addictive apps and websites. That can be an adult protecting themselves, or someone managing another person's device (a child, for instance)."),
+            ("p", "Drawbridge is for anyone who has to carry a smartphone for one reason or another, but does not want to give room or time to harmful and addictive apps and websites. That can be adults for themselves, or parents who have to hand a device to their teenager. For that second group, drawbridge carries age recommendations based on the precautionary principle and with input from paediatricians, neuroscientists and parents' organisations. If you use drawbridge as an adult you can of course ignore those; they are a tool for parents. The rest of this text also holds a few tips for parents."),
+            ("p", "Anyone with a drawbridge device makes a clear choice: not to carry the harmful internet in a trouser pocket or a handbag, but to keep it to a laptop or a desktop. Some social media genuinely are useful: Reddit and Discord have strong communities where moderation is sometimes strict, but a lot of extremely gory content and toxic comments remain available too. Either way, there is no reason at all to carry that around in your pocket."),
 
-            ("h2", "Can I use drawbridge together with Family Link?"),
-            ("p", "No. A drawbridge phone is a fully managed device, and Android does not let Family Link supervise one, and setting it up fails partway through. That is a limit of Android itself, not something drawbridge can lift."),
-            ("p", 'In practice the two barely overlap. Family Link supervises a child\'s account, and at 13, or whatever the age is where you live, the teenager can choose to end that supervision themselves; the parent is only told. drawbridge is built for the years after that, and for adults, and it does not depend on anyone\'s account at all.'),
-            ("p", 'If you would rather keep Family Link, install <a href="/#herald">herald</a> on its own instead: the browser without the device management, which is the gap Family Link leaves open.'),
+            ("h2", "Which apps and websites are kept out?"),
+            ("p", 'To protect your wellbeing and your device, drawbridge keeps out the following categories: porn, gambling, scams, algorithmic social media, AI companions, games, and dating. Some messenger apps are treated as social media: Facebook Messenger (always blocked), WhatsApp and Telegram (optional, and yours to switch off). Video streaming and YouTube can be switched off separately as well, see below. Note that as a rule every app without a PEGI rating of "all ages" is removed, though some tools are allowed (Strava, for instance). More information on <a href="/why-blocked/">this page</a>.'),
+            ("p", "Every other website and app works normally: tools, office, weather, banking, public transport, school, work, and so on. Most messengers work too: Signal, Threema, Briar, Session. Private mobile communication is, after all, one of the main purposes of a smartphone."),
+
+            ("h2", "How does the drawbridge app work?"),
+            ("p", 'As soon as drawbridge is installed, the device is <strong>irrevocably protected</strong> against the categories above, and <strong>the apps that are never allowed are removed</strong>: social media, games, dating, most of what is rated PEGI 7 or higher, and every browser except the allowed ones. That already happens at installation, and it holds until you remove drawbridge by factory-resetting the device. On top of that you can apply further restrictions: switch off WhatsApp, Telegram, YouTube and/or video streaming, set a curfew, go fully offline, have no browser at all, or allow only a handful of apps. Those restrictions take effect only once you "lock" drawbridge. Unlocking needs a code, or you can set a timer. For as long as drawbridge is locked there is no way to change the settings or to remove drawbridge.'),
+            ("p", "The drawbridge app is the control centre of drawbridge. It lets you allow certain apps and websites after all, restrict the internet even further, or turn the phone into something close to a dumbphone. These additional settings only take effect once you lock drawbridge."),
+
+            ("h3", "Locking"),
+            ("p", 'Drawbridge cannot be removed at all without a factory reset of the device: the default policy is irrevocable until a factory reset.<sup><a href="#beta">1</a></sup> This is drawbridge\'s baseline protection.'),
+            ("p", 'Once you lock drawbridge, the other settings take effect (see below). While locked, the settings can no longer be changed and drawbridge cannot be removed at all: even a factory reset is no longer possible!'),
+            ("p", "When you lock it, you are given a code first. This code is different every time, so write it down again each time! The code is what lifts the lock."),
+            ("ul", [
+                "<strong>Locking for good</strong>: the code is deliberately hard to remember. <strong>You can choose not to write the code down, and then the phone stays locked forever and ever!</strong>",
+                '<strong>Locking temporarily:</strong> you can have drawbridge unlock itself automatically after a period of 2 hours to 40 days, for things like "an afternoon offline to be able to study", "a weekend offline", "a week of camping", "two weeks without an argument about the curfew", a "fasting period" and so on. Drawbridge still shows the code, but here you will probably choose not to write it down.',
+            ]),
+
+            ("h3", 'Additional settings: stop allowing certain apps or services, by switching off the toggles below'),
+            ("p", "<strong>Allow long-form video streaming:</strong> this allows services such as Netflix, Disney+, Hulu and so on. YouTube does not fall under this (see below)."),
+            ("p", "<strong>Allow WhatsApp:</strong> WhatsApp increasingly resembles social media (channels, a chatbot). Because WhatsApp is a necessary evil for many people (in some countries people barely make ordinary phone calls anymore), you can choose to allow it after all. Other chat apps such as Signal, Threema, Session, Briar and so on are allowed, because encrypted communication is a human right. If you are handing the device to a child, know that children under 14 struggle a great deal with group chats, which very quickly turn into cyberbullying and drama."),
+            ("p", "<strong>Allow Telegram:</strong> for the same reason as WhatsApp, you can allow Telegram. Telegram is not encrypted, though, and it carries many channels with hardcore pornography, illegal substances and violence. Telegram is therefore recommended from 18."),
+            ("p", '<strong>Allow YouTube:</strong> YouTube is social media too. Although its content is strictly moderated against extremes such as nudity, gambling and violence, a lot of harmful or misleading content remains. YouTube serves everything in a highly addictive way, for which Google has already been convicted. The most harmful part of all is YouTube Shorts, which is very hard to tell apart from ordinary YouTube videos and cannot be filtered without either violating privacy or relying on error-prone AI. Because YouTube is so pervasive as a "video library" full of all kinds of useful information (while cooking, while doing DIY, instruction videos, and so on), you can allow it after all. The YouTube choice is all or nothing: it is technically very hard to allow YouTube Kids and YouTube Music but not YouTube Shorts. YouTube Kids is, incidentally, also often short-form video and harmful for a child.'),
+
+            ("h3", "Additional settings: disconnecting, a curfew, or offline for good"),
+            ("p", "Disconnecting is a human right, and drawbridge comes with two options to help you (next to the 'always online' option):"),
+            ("p", '<strong>Blissfully offline, always:</strong> this effectively turns your smartphone into an offline device. A phone without internet, which can still make calls and send SMS, but not RCS or MMS, so picture messages and group messages do not go through. GPS keeps working, so <strong>you can use offline maps and share your location offline by text message</strong>. For that we recommend apps such as Organic Maps or Maps.ME. FM radio, where present, keeps working too. Spotify with offline playlists, AntennaPod with offline podcasts, MP3 player apps: all of that is fine. Bluetooth earbuds work as well, of course.'),
+            ("p", "<strong>A curfew for the internet:</strong> the phone goes offline between set hours, configurable separately for weekdays and the weekend. Do always go online for at least half an hour, so that all updates can come through. That is also useful for updating your Spotify playlist, for instance."),
+
+            ("h3", "Additional settings: allowing only certain apps, removing browsers, dumbphone-ification"),
+            ("p", "<strong>Browser choice:</strong> by default drawbridge allows a limited list of browsers that work well with the web filter. We recommend <strong>herald</strong>, because it is a minimalist browser that shows a clear page when something is blocked and follows drawbridge's policy. You can also choose to use <strong>herald mono only</strong>: a browser that browses in black and white by default, has only one tab, and is deliberately harder to scroll on and on in. That is a good choice for people with a general browsing addiction (news sites and the like). Finally, you can choose to have <strong>no browser</strong> at all. Bear in mind that certain apps need a browser to work properly and to log in, for instance. So make sure you are already logged in everywhere before you use this option."),
+            ("p", "<strong>Allowing only certain apps:</strong> if you choose this option, app installation is prevented after locking. You can no longer install new apps; existing apps do still get updated, for security. Remove or disable the apps you do not want (preferably leave the Play Store in place, so updates can come through). That way you can build a phone with only the basics: camera, calculator, calendar, maps, public transport, Spotify, and nothing else allowed."),
+
+            ("h3", "How can I switch off or bypass drawbridge? Other limitations."),
+            ("h4", "Limitations"),
+            ("p", "Drawbridge has both a network filter and an on-device filter, and is therefore about as watertight as it gets. Even so, there are still websites and apps that will occasionally show something harmful, or that can get around a network filter. Do not hesitate to report it."),
+            ("p", "A consequence of this filter is that you cannot use VPNs or pick your own DNS (the DNS that is used is encrypted and privacy-focused). You also cannot configure other users, use the private space, or create a guest account. For those same reasons you cannot use parental control apps, not even Google Family Link (which, incidentally, only goes up to 13 anyway). Screen time settings on the device do remain possible. Finally, while locked, you cannot use developer settings."),
+            ("h4", "Removing it"),
+            ("p", 'The only way to remove drawbridge is a factory reset. That resets the whole device and loses your data with it. It is effectively the same as buying a new device, but without the money. <strong>The factory reset is also only possible while drawbridge is unlocked. A locked drawbridge cannot be removed.</strong><sup><a href="#beta">1</a></sup>'),
+            ("p", "If you have locked drawbridge without a timer and no longer know the code, or have lost it, there is still one way out: in the menu of a locked drawbridge you can choose 'forgot the code'. There you can start a timer of 30 days, after which drawbridge unlocks. This exists to stop anyone accidentally ending up with a worthless device that can no longer be passed on or sold. That is not the intention. The wait cannot be shortened, the unlock date is shown on the phone's lock screen for the whole period, and unlocking with the code before then cancels it: so anyone in the household can start it, and the person holding the code stays in charge."),
+            ("h4", "Checking the time"),
+            ("p", 'Parents who use drawbridge for their children have one extra check, to see whether drawbridge has been unlocked or the phone has perhaps even been reset: at the bottom of the phone\'s lock screen it says that the phone is protected by drawbridge, with the time it was last locked. You can find the same thing in the drawbridge app itself. That time has to match the moment you locked drawbridge for your teenager. If a timer is running, the lock screen counts down instead ("drawbridge unlocks in 3 days") and the lock time is then in the app.'),
 
             ("h2", "Why not just use parental controls or an app blocker?"),
             ("p", "Parental controls have a lot of downsides:"),
             ("ul", [
                 "They are hard to configure, and there is always some new adjustment to make.",
                 "You have to build up expertise in everything that is harmful and everything that can be configured. That is just wasted time.",
-                "They are easy to bypass, even when well configured.",
+                "They are easy to bypass and to remove, even when well configured.",
                 "They lead to arguments and conflict, between parent and child, or within yourself.",
                 "They spy on the user and may collect data.",
                 "They are often not free.",
+                "They often have no options such as 'always offline'.",
             ]),
-            ("p", 'Drawbridge does not use parental controls at all; it is a device policy controller, the kind used for company phones and kiosks. Unlike parental controls, drawbridge ships out of the box with non-configurable protection that already gives very broad coverage. Social media and harmful games are always blocked, no argument about it. That creates an environment of calm without extra overhead. Be aware that drawbridge alone is not enough as "online guidance for a child". A lot more goes into that, and one best practice remains using the internet on a shared screen, where everyone can see and talk about what is happening (not for private conversations, of course).'),
-
-            ("h2", "How can I turn off or bypass drawbridge?"),
-            ("p", "Drawbridge has both a network filter and an on-device filter, and is therefore about as watertight as it gets. Still, there are plenty of websites and apps that will occasionally show something harmful. Don't hesitate to report it. The classic back door, the browser, is sealed too, and drawbridge offers its own take on browsing (see below)."),
-            ("p", "After setting up drawbridge, a code is shown that lifts the filter and can remove drawbridge. The code is random and too long to memorise at a glance. The choice is yours: write it down and keep it somewhere safe, or don't write it down and forget it, in which case drawbridge stays active forever."),
-            ("p", "The only other way out, which is also true for ordinary app blockers, is of course a factory reset. That resets the entire device and loses your data with it, effectively the same as buying a new phone. Nothing can prevent that, and you should not believe any tool that says otherwise. What drawbridge gives you instead is noticing: the lock screen states that drawbridge is guarding the device and since when, so you can check a phone without unlocking it and without touching it. A device that has been reset and set up again stops showing a date you recognise."),
-
-            ("h2", "What about WhatsApp and other chat apps?"),
-            ("p", 'Facebook Messenger and Telegram are blocked. WhatsApp is blocked by default too, since it increasingly resembles social media (channels, a chatbot). Because WhatsApp is a practical necessity for many people (in some countries people barely make ordinary phone calls anymore), you can choose to allow it anyway. Other chat apps such as Signal, Threema, Session, Briar and so on are allowed, because encrypted communication is a human right. If you are handing the device to a child, know that children under 14 struggle a great deal with group chats, which very quickly turn into cyberbullying and drama.'),
-
-            ("h2", "What about YouTube?"),
-            ("p", 'YouTube is, in effect, social media. Although its content is strictly moderated against extremes like nudity, gambling and violence, a lot of harmful or misleading content remains. YouTube serves everything in a highly addictive way, for which Google has already been held accountable in court. The most harmful part of all is YouTube Shorts, which is very hard to distinguish from ordinary YouTube videos and cannot be filtered without either violating privacy or relying on error-prone AI. Because YouTube is so pervasive as a "video library" full of genuinely useful information (cooking, DIY, and so on), a toggle similar to the WhatsApp one is being considered, though nothing is decided yet.'),
+            ("p", 'Drawbridge does not use parental controls at all; it is a device policy controller, the kind used for company phones and kiosks. Unlike parental controls, drawbridge comes out of the box with non-configurable protection (the network filter) that already gives very broad coverage. Social media and harmful games are always blocked, no argument about it. That creates an environment of calm without extra overhead. Be aware that drawbridge alone is not enough as "online guidance for a child". A lot more goes into that, and one best practice remains using the internet on a shared screen, where everyone can see and talk about what is happening (not for private conversations, of course).'),
 
             ("h2", "Why aren't chatbots blocked?"),
-            ("p", "Regular chatbots such as ChatGPT, Claude or Gemini can indeed have harmful effects on the brain with excessive use and by replacing cognitively demanding tasks. They are not built with addictive mechanisms, and, much like search engines, increasingly strict guardrails are appearing for certain kinds of questions. The bigger problem, though, is how pervasive chatbots have become: nearly every website or service now has some kind of \"assistant\" you can ask almost anything. If you don't want that, the honest answer is not to use the internet at all."),
+            ("p", 'Regular chatbots such as ChatGPT, Claude or Gemini can indeed have harmful effects on the brain with excessive use and by replacing cognitively demanding tasks. It is not that addictive mechanisms are deliberately built into them, and, much like search engines, increasingly strict guardrails are appearing for certain kinds of questions. The bigger problem is how pervasive chatbots have become: nearly every website or service (and search engine!) now has some kind of "assistant" you can ask almost anything. If you would rather not use chatbots, you can choose to have no browser and to allow only certain apps.'),
 
-            ("h2", "What about the browser?"),
-            ("p", "The browser is traditionally the back door through which harmful content reaches your device and your life. A number of browsers and extensions are able to set up a proxy or VPN specifically to bypass the device's settings (often for perfectly good reasons elsewhere, but not here). Drawbridge therefore refuses every browser except herald. Herald is a browser built specifically for drawbridge, though it can also be downloaded on its own, and it blocks the same content as drawbridge by default, out of the box, no configuration needed. A variant, herald mono, is a browser built specifically for digital minimalism: it shows every website in black and white, has no tabs (single-tasking only), and opens everything in reader mode when available. That second browser is especially useful for people who feel they lose too much time to, say, news sites or online shopping."),
-            ("p", "Under consideration, though not decided, is adding more browsers to the allowed list, ideally including a Chromium-based one for sites that don't work well in Firefox. Another route being considered is letting users run no browser at all, with the risk that some apps simply won't work because they rely on web pages internally."),
+            ("h2", "Why does my phone say it is 'managed by my organisation' or by an 'IT admin'?"),
+            ("p", "Drawbridge is a device policy controller, and those are normally used for company phones and kiosks. You can ignore these messages."),
 
-            ("h2", "How will drawbridge keep changing?"),
-            ("p", "Depending on time, resources and technical obstacles, the following features are on the list:"),
-            ("ul", [
-                "Allowing YouTube, possibly with a filter",
-                "Curfew: blocking internet access between set hours",
-                "Blocking all video streaming (Netflix, Disney+, Prime, Veoh, ...)",
-                "Whitelisting other browsers",
-                "Blocking browsers entirely",
-                "Allowing Telegram",
-                "\"Dumbphone-ification\": only specific apps allowed. This can only work on selected devices, since every smartphone ships with different default apps.",
-            ]),
+            ("note", '<p><strong>1.</strong> During beta testing this is more relaxed. For safety reasons, because of possible unexpected bugs, and because a beta tester probably does not want drawbridge forever:</p><ul><li>a factory reset is always possible, even while locked</li><li>while unlocked, drawbridge can also simply be switched off and removed from the phone without a factory reset</li></ul>'),
         ],
     ),
     "nl": dict(
-        title="Q&A — drawbridge",
-        description="Veelgestelde vragen over drawbridge: wat wordt tegengehouden, voor wie is het, en hoe verhoudt het zich tot gewone parental controls.",
-        h1="Q&A",
+        title="Gebruik van drawbridge — drawbridge",
+        description="Hoe drawbridge werkt: wat wordt tegengehouden, wat je kan verruimen of verder beperken, wat vergrendelen doet, en hoe je het weer verwijdert.",
+        h1="Gebruik van drawbridge",
         blocks=[
-            ("h2", "Welke apps en websites worden tegengehouden?"),
-            ("p", "Voor het beschermen van je mentaal welzijn en je toestel, houdt drawbridge de volgende categorieën tegen: porno, gokken, advertenties en trackers (waaronder ook malware, phishing en oplichterij), algoritmische social media, AI companions, games met verslavende mechanismen of gevaar voor grooming. Over sommige social media bestaat discussie: bv. Reddit en Discord hebben een sterke communitywerking waar soms streng gemodereerd wordt, maar er blijft ook veel extreem gore content beschikbaar en toxische commentaren. In elk geval worden zo'n websites beter op een pc bezocht, er is geen enkele reden waarom je die moet meedragen in je zak."),
-            ("p", "Alle andere websites en apps werken gewoon: tools, office, weerbericht, banking, publiek transport, school, werk, etc."),
-            ("p", 'Elk sociaal netwerk, spel en AI-companion op die lijst heeft een eigen bespreking met bronnen: <a href="/why-blocked/">wat wordt geblokkeerd, en waarom</a> (in het Engels). Het gaat ook over de schade bij volwassenen, niet alleen bij tieners.'),
-
             ("h2", "Voor wie is drawbridge?"),
-            ("p", "Drawbridge is er voor iedereen die om een of andere reden een smartphone moet bijhebben maar geen ruimte of tijd wil geven aan schadelijke en verslavende apps en websites. Dat kunnen volwassenen zijn voor zichzelf, of om het toestel van een andere persoon beheren (bv. een ouder voor een kind)."),
+            ("p", "Drawbridge is er voor iedereen die om een of andere reden een smartphone moet hebben maar geen ruimte of tijd wil geven aan schadelijke en verslavende apps en websites. Dat kunnen volwassenen zijn voor zichzelf, of bv. ouders die een toestel aan hun tiener moeten geven. Voor deze laatste categorie bevat drawbridge leeftijdsaanwijzingen gebaseerd op het voorzorgsprincipe en met input van pediaters, neurowetenschappers en ouderverenigingen. Als je drawbridge gebruikt als volwassene kan je deze uiteraard negeren, het is een hulpmiddel voor ouders. Ook de rest van de tekst bevat wat tips voor ouders."),
+            ("p", "Wie een toestel met drawbridge heeft, maakt de duidelijke keuze om het schadelijke internet niet mee te nemen in de broekzak of handtas, maar het te beperken tot een laptop of desktop. Inderdaad zijn sommige social media nuttig: Reddit en Discord hebben een sterke communitywerking waar soms streng gemodereerd wordt, maar er blijft ook veel extreem gore content beschikbaar en toxische commentaren. In elk geval is er geen enkele reden waarom je die moet meedragen in je zak."),
 
-            ("h2", "Kan ik drawbridge samen met Family Link gebruiken?"),
-            ("p", "Nee. Een drawbridge-telefoon is een volledig beheerd toestel, en Android laat Family Link zo'n toestel niet mee beheren: het instellen loopt halverwege vast. Dat is een beperking van Android zelf, niet iets wat drawbridge kan opheffen."),
-            ("p", 'In de praktijk overlappen de twee nauwelijks. Family Link houdt toezicht op het account van een kind, en vanaf 13 jaar, of welke leeftijd bij jou geldt, kan de tiener dat toezicht zelf beëindigen; de ouder krijgt daar enkel bericht van. drawbridge is gemaakt voor de jaren daarna, en voor volwassenen, en hangt van geen enkel account af.'),
-            ("p", 'Wil je Family Link liever houden, installeer dan enkel <a href="/nl/#herald">herald</a>: de browser zonder het toestelbeheer, en net dat is het gat dat Family Link openlaat.'),
+            ("h2", "Welke apps en websites worden tegengehouden?"),
+            ("p", 'Voor het beschermen van je welzijn en je toestel, houdt drawbridge de volgende categorieën tegen: porno, gokken, oplichterij, algoritmische social media, AI companions, games, en dating. Sommige messenger apps worden beschouwd als social media: Facebook Messenger (altijd geblokkeerd), WhatsApp en Telegram (optioneel uit te zetten). Videostreaming en YouTube kan men ook apart uitzetten, zie verder. Let op: over het algemeen worden alle apps verwijderd die geen PEGI rating "alle leeftijden" hebben, maar bepaalde tools hebben we toegestaan (zoals Strava). Meer informatie op <a href="/why-blocked/">deze pagina</a> (in het Engels).'),
+            ("p", "Alle andere websites en apps werken gewoon: tools, office, weerbericht, banking, publiek transport, school, werk, etc. Ook werken de meeste messengers: Signal, Threema, Briar, Session. Private mobiele communicatie is namelijk een hoofddoel van een smartphone."),
+
+            ("h2", "Hoe werkt de drawbridge app?"),
+            ("p", "Van zodra drawbridge geïnstalleerd is, wordt het toestel <strong>onherroepelijk beschermd</strong> tegen bovenstaande categorieën, en <strong>worden de apps die nooit toegelaten zijn verwijderd</strong>: sociale media, games, dating, de meeste PEGI-7 of hoger, en alle browsers behalve de toegestane. Dat gebeurt reeds bij de installatie, en is geldig tot je drawbridge verwijdert door een factory reset van je toestel. Je kan daarbovenop verdere restricties toepassen: WhatsApp, Telegram, YouTube en/of videostreaming uitschakelen, een avondklok instellen, helemaal offline gaan, geen browser hebben, of slechts enkele apps toestaan. Deze restricties gaan pas in bij het 'vergrendelen' van drawbridge. Voor het ontgrendelen heb je een code nodig, of je kan een timer instellen. Zolang drawbridge vergrendeld is, is er geen manier om de instellingen te veranderen of drawbridge te verwijderen."),
+            ("p", "De drawbridge app is het controlecentrum van drawbridge en laat de gebruiker toe bepaalde apps en websites toch te gebruiken, het internet juist nog meer te beperken of de telefoon bijna helemaal een dumbphone te maken. Deze bijkomende instellingen gaan pas van kracht als men drawbridge vergrendelt."),
+
+            ("h3", "Vergrendelen"),
+            ("p", 'Drawbridge kan sowieso niet worden verwijderd zonder een factory reset van het toestel: de standaard policy is onherroepelijk tot factory reset.<sup><a href="#beta">1</a></sup> Dit is de basisbescherming van drawbridge.'),
+            ("p", "Als men drawbridge vergrendelt, dan gaan de andere instellingen van kracht (zie onder). Wanneer vergrendeld kunnen de instellingen niet meer wijzigen en kan drawbridge ook helemaal niet worden verwijderd, zelfs een factory reset is niet meer mogelijk!"),
+            ("p", "Bij vergrendeling krijgt men eerst een code. Deze code is elke keer anders, schrijf die dus telkens opnieuw op! De code is nodig om de vergrendeling op te heffen."),
+            ("ul", [
+                "<strong>Definitief vergrendelen</strong>: de code is opzettelijk moeilijk te onthouden. <strong>Je kan ervoor kiezen de code niet op te schrijven en dan blijft de telefoon vergrendeld voor eeuwig en altijd!</strong>",
+                '<strong>Tijdelijk vergrendelen:</strong> je kan ervoor kiezen dat drawbridge automatisch ontgrendelt na een periode van 2 uur tot 40 dagen, dit voor dingen als "een namiddag offline om te kunnen studeren", "weekendje offline", "weekje kamperen", "twee weken geen discussie over de avondklok", een "vastenperiode" etc. Drawbridge toont nog steeds de code, maar hier zal je die waarschijnlijk opzettelijk niet opschrijven.',
+            ]),
+
+            ("h3", "Bijkomende instellingen: bepaalde apps of services niet meer toestaan door de schakelaars hieronder uit te zetten"),
+            ("p", "<strong>Long-form video streaming toestaan:</strong> dit staat diensten toe zoals Netflix, Disney+, Hulu etc. YouTube valt hier niet onder (zie verder)."),
+            ("p", "<strong>WhatsApp toestaan:</strong> WhatsApp lijkt steeds meer op social media (kanalen, chatbot). Omdat WhatsApp voor veel mensen een noodzakelijk kwaad is (in sommige landen wordt er zelfs niet meer conventioneel gebeld), kan je WhatsApp eventueel toch toestaan. Andere chatapps zoals Signal, Threema, Session, Briar etc. worden toegestaan, omdat versleutelde communicatie een mensenrecht is. Indien je het toestel geeft aan een kind, weet dat kinderen tot 14 jaar heel moeilijk om kunnen met groepschats en die zeer snel ontaarden in cyberpesten en drama."),
+            ("p", "<strong>Telegram toestaan:</strong> om dezelfde reden als WhatsApp kan je Telegram toestaan. Telegram is echter niet versleuteld en bevat vele kanalen met harde pornografie, verboden middelen en geweld. Telegram is daarom aanbevolen vanaf 18 jaar."),
+            ("p", '<strong>YouTube toestaan:</strong> YouTube is ook social media. Hoewel de inhoud streng gemodereerd wordt op uitwassen zoals naakt, gokken en geweld, blijft er veel schadelijke of misleidende inhoud over. YouTube serveert alles op een zeer verslavende wijze, waarvoor Google reeds veroordeeld is. Het schadelijkst van al zijn de YouTube Shorts, die men zeer moeilijk kan onderscheiden van de andere YouTube-filmpjes en waarop men niet kan filteren zonder privacyschending of foutgevoelige AI. Wegens de alomtegenwoordigheid van YouTube als "videotheek" met allerhande nuttige informatie (bv. tijdens het koken, het doe-het-zelven, instructiefilmpjes, ...) kan je het toch toestaan. De YouTube keuze is alles of niets: het is technisch zeer moeilijk om bv. wel YouTube Kids en YouTube Music toe te staan maar dan niet YouTube Shorts. YouTube Kids is overigens ook vaak short-form video en schadelijk voor een kind.'),
+
+            ("h3", "Bijkomende instellingen: deconnecteren, avondklok of definitief offline"),
+            ("p", "Deconnecteren is een mensenrecht en drawbridge voorziet standaard twee opties om je te helpen (naast de optie 'altijd online'):"),
+            ("p", "<strong>Altijd zalig offline:</strong> dit verandert je smartphone effectief in een offline toestel. Een telefoon zonder internet waarmee je wel nog kan bellen en sms'en, maar geen RCS of MMS, dus foto's en groepsberichten komen niet door. GPS zal nog steeds werken, dus <strong>je kan offline maps gebruiken en offline je locatie delen via sms</strong>. Hiervoor raden we apps aan als Organic Maps of Maps.ME. Ook FM-radio, wanneer aanwezig, blijft werken. Spotify met offline playlists, AntennaPod met offline podcasts, MP3-spelerapps, dat kan allemaal. Bluetooth-oortjes werken uiteraard ook."),
+            ("p", "<strong>Avondklok voor het internet:</strong> de telefoon gaat offline tussen bepaalde uren, apart te configureren voor de week en het weekend. Ga wel altijd minstens een half uur online om alle updates te laten doorkomen. Dit is ook nuttig om eens je Spotify-playlist te updaten, bv."),
+
+            ("h3", "Bijkomende instellingen: enkel bepaalde apps toestaan, browsers verwijderen, dumbphone-ificatie"),
+            ("p", "<strong>Browserkeuze:</strong> standaard staat drawbridge een beperkte lijst browsers toe die goed werken met de webfilter. We raden <strong>herald</strong> aan omdat dit een minimalistische browser is die een duidelijke pagina toont bij blokkeren en het beleid van drawbridge volgt. Men kan ook kiezen om <strong>enkel herald mono</strong> te gebruiken: een browser die standaard browst in het zwart-wit, slechts één tab heeft, en waarin doorscrollen bewust moeilijker gaat. Dit is een goede keuze voor mensen met een algemene browseverslaving (nieuwswebsites e.d.). Tenslotte kan men kiezen om <strong>geen browser</strong> te hebben. Hou er rekening mee dat bepaalde apps een browser vereisen om goed te werken en bv. in te loggen. Maak dus dat je alvast overal ingelogd bent voor je deze optie gebruikt."),
+            ("p", "<strong>Enkel bepaalde apps toestaan:</strong> als je kiest voor deze optie, worden na vergrendeling appinstallaties voorkomen. Je kan dan geen nieuwe apps installeren, bestaande apps worden wel nog geüpdatet wegens veiligheid. Verwijder of deactiveer de apps die je niet wilt (laat liefst wel de Play Store staan om updates te laten doorkomen). Zo kan men bv. een telefoon maken met enkel de basis: camera, rekenmachine, kalender, maps, openbaar vervoer, Spotify, en dan voor de rest niks meer toestaan."),
+
+            ("h3", "Hoe kan ik drawbridge uitschakelen of omzeilen? Andere beperkingen."),
+            ("h4", "Beperkingen"),
+            ("p", "Drawbridge heeft zowel een netwerkfilter als on-device filter en is daarom zo goed als waterdicht. Toch zijn er nog websites en apps die af en toe iets schadelijks zullen tonen of een netwerkfilter kunnen omzeilen. Aarzel niet om dit te melden."),
+            ("p", "Het gevolg van deze filter is dat men geen VPN's kan gebruiken of zelf een DNS kan kiezen (de gekozen DNS is wel versleuteld en privacygericht). Men kan ook geen andere gebruikers configureren, de private space gebruiken of een gastaccount maken. Wegens deze zelfde redenen kan men geen parental control apps gebruiken, zelfs niet Google Family Link (deze laatste is overigens toch maar tot 13 jaar). Schermtijd-instellingen op het toestel blijven wel mogelijk. Tenslotte kan men, wanneer vergrendeld, geen developer settings gebruiken."),
+            ("h4", "Verwijderen"),
+            ("p", 'De enige manier om drawbridge te verwijderen is een factory reset. Daarmee reset je het hele toestel en ben je ook je data kwijt. Het staat eigenlijk gelijk aan een nieuw toestel kopen maar zonder de monetaire kost. <strong>De factory reset is bovendien enkel mogelijk wanneer drawbridge ontgrendeld is. Een vergrendelde drawbridge kan niet worden verwijderd.</strong><sup><a href="#beta">1</a></sup>'),
+            ("p", "Indien je drawbridge hebt vergrendeld zonder timer en de code niet meer weet of bent kwijtgespeeld, dan is er nog één manier: in het menu van een vergrendelde drawbridge kan je kiezen voor 'code vergeten'. Daar kan je een timer starten van 30 dagen, waarna drawbridge wordt ontgrendeld. Dit is om te voorkomen dat iemand per ongeluk een waardeloos toestel zou krijgen dat men dan niet meer kan doorgeven of verkopen. Dat is niet de bedoeling. De wachttijd kan niet ingekort worden, de datum staat de hele periode op het vergrendelscherm van de telefoon, en ontgrendelen met de code stopt ze: iedereen in het gezin kan ze dus starten, en wie de code heeft, houdt de controle."),
+            ("h4", "Controle op tijdstip"),
+            ("p", "Ouders die drawbridge gebruiken voor hun kinderen, hebben een extra controle om na te gaan of drawbridge niet werd ontgrendeld of de telefoon misschien zelfs werd gereset: op het lockscreen van de telefoon staat er onderaan dat de telefoon wordt beschermd door drawbridge, met het tijdstip van laatste vergrendeling. Dit kan je ook terugvinden in de drawbridge app zelf. Dit tijdstip moet overeenkomen met wanneer jij voor je tiener drawbridge hebt vergrendeld. Loopt er een timer, dan telt het lockscreen in plaats daarvan af (\"drawbridge ontgrendelt over 3 dagen\") en staat het tijdstip van vergrendeling in de app."),
 
             ("h2", "Waarom niet gewoon parental controls of een app blocker gebruiken?"),
             ("p", "Parental controls hebben veel nadelen:"),
             ("ul", [
-                "Ze zijn moeilijk te configureren, en elke dag is er wel opnieuw werk aan om iets aan te passen",
+                "Ze zijn moeilijk te configureren, en elke dag is er wel opnieuw werk aan om iets aan te passen.",
                 "Je moet expertise opbouwen in alles wat schadelijk is en alles wat kan geconfigureerd worden. Dat is gewoon tijdverlies.",
-                "Ze zijn makkelijk te omzeilen, zelfs indien goed geconfigureerd.",
+                "Ze zijn makkelijk te omzeilen en te verwijderen, zelfs indien goed geconfigureerd.",
                 "Het leidt tot discussie en conflict tussen ouder en kind, of in jezelf.",
                 "Ze bespioneren de gebruiker en verzamelen mogelijks data.",
                 "Ze zijn vaak niet gratis.",
+                "Ze hebben vaak geen opties zoals 'altijd offline'.",
             ]),
-            ("p", 'Drawbridge maakt geen gebruik van parental controls maar is een device policy controller, zoals gebruikt voor bedrijfstelefoons en kiosken. In tegenstelling tot parental controls komt drawbridge out-of-the-box met een niet-configureerbare bescherming die reeds een zeer brede dekking geeft. Sociale media en schadelijke games worden altijd tegengehouden, geen discussie. Dat zorgt voor een omgeving met rust en zonder extra overhead. Besef dat drawbridge alleen niet voldoende is als "begeleiding van een kind online". Daar komt nog veel bij kijken, en bv. een best practice blijft het gebruik van internet op een gedeeld scherm, waar iedereen kan meekijken en discussiëren (niet voor privéconversaties, uiteraard).'),
-
-            ("h2", "Hoe kan ik drawbridge uitschakelen of omzeilen?"),
-            ("p", "Drawbridge heeft zowel een netwerkfilter als on-device filter en is daarom zo goed als waterdicht. Toch zijn er nog legio websites en apps die af en toe iets schadelijks zullen tonen. Aarzel niet om dit te melden. Het achterpoortje bij uitstek, de browser, is ook gedicht en drawbridge biedt een unieke ervaring aan om te browsen (zie verder)."),
-            ("p", "Na het configureren van drawbridge wordt er een code getoond om de filter op te heffen en eventueel drawbridge te verwijderen. De code is random en te lang om zomaar op zicht te onthouden. De keuze is aan jou: schrijf de code op en steek ze veilig weg, of schrijf ze niet op en vergeet ze. Drawbridge blijft dan eeuwig actief."),
-            ("p", "De enige andere manier, die ook geldig is voor doorsnee app blockers, is uiteraard een factory reset. Daarmee reset je het hele toestel en ben je ook je data kwijt. Het staat eigenlijk gelijk aan een nieuw toestel kopen. Niets kan dat tegenhouden, en geloof geen enkel hulpmiddel dat het tegendeel beweert. Wat drawbridge je wel geeft, is het merken: op het vergrendelscherm staat dat drawbridge het toestel bewaakt en sinds wanneer. Zo controleer je een telefoon zonder hem te ontgrendelen en zonder hem aan te raken. Een toestel dat gereset en opnieuw ingesteld is, toont geen datum meer die je herkent."),
-
-            ("h2", "Wat met WhatsApp en andere chatapps?"),
-            ("p", "Facebook Messenger en Telegram worden geblokkeerd. WhatsApp standaard ook, want die lijkt steeds meer op social media (kanalen, chatbot). Omdat WhatsApp voor veel mensen een noodzakelijk kwaad is (in sommige landen wordt zelfs niet meer conventioneel gebeld), kan je WhatsApp eventueel toch toestaan. Andere chatapps zoals Signal, Threema, Session, Briar etc. worden toegestaan, omdat versleutelde communicatie een mensenrecht is. Indien je het toestel geeft aan een kind, weet dat kinderen tot 14 jaar heel moeilijk om kunnen met groepschats en die zeer snel ontaarden in cyberpesten en drama."),
-
-            ("h2", "Wat met YouTube?"),
-            ("p", 'YouTube is eigenlijk social media. Hoewel de inhoud streng gemodereerd wordt op uitwassen zoals naaktheid, gokken en geweld, blijft er veel schadelijke of misleidende inhoud over. YouTube serveert alles op een zeer verslavende wijze, waarvoor Google reeds voor de rechtbank veroordeeld werd. Het schadelijkst van al zijn de YouTube Shorts, die men zeer moeilijk kan onderscheiden van de andere YouTube-filmpjes en waarop men niet kan filteren zonder privacyschending of foutgevoelige AI. Wegens de alomtegenwoordigheid van YouTube als "videotheek" met allerhande nuttige informatie (bv. tijdens het koken, het doe-het-zelven, ...) wordt er overwogen een toggle te maken zoals voor WhatsApp, onder voorbehoud.'),
+            ("p", 'Drawbridge maakt geen gebruik van parental controls maar is een device policy controller, zoals gebruikt voor bedrijfstelefoons en kiosken. In tegenstelling tot parental controls komt drawbridge out-of-the-box met een niet-configureerbare bescherming (de netwerkfilter) die reeds een zeer brede dekking geeft. Sociale media en schadelijke games worden altijd tegengehouden, geen discussie. Dat zorgt voor een omgeving met rust en zonder extra overhead. Besef dat drawbridge alleen niet voldoende is als "begeleiding van een kind online". Daar komt nog veel bij kijken, en bv. een best practice blijft het gebruik van internet op een gedeeld scherm, waar iedereen kan meekijken en discussiëren (niet voor privéconversaties, uiteraard).'),
 
             ("h2", "Waarom worden chatbots niet geblokkeerd?"),
-            ("p", 'Reguliere chatbots, zoals ChatGPT, Claude of Gemini, kunnen inderdaad schadelijke effecten hebben op het brein bij overmatig gebruik en het vervangen van cognitief zware taken. Het is niet zo dat er verslavende mechanismen ingebouwd zijn, en net zoals met zoekmachines komen er steeds strengere guardrails wat te doen bij sommige soorten vragen. Het grootste probleem is echter de alomtegenwoordigheid van de chatbots: elke website of dienst heeft tegenwoordig wel een "assistent" waar je eigenlijk gelijk wat aan kan vragen. Indien je dit niet wil, dan gebruik je beter geen internet.'),
+            ("p", 'Reguliere chatbots, zoals ChatGPT, Claude of Gemini, kunnen inderdaad schadelijke effecten hebben op het brein bij overmatig gebruik en het vervangen van cognitief zware taken. Het is niet zo dat er opzettelijk verslavende mechanismen ingebouwd zijn, en net zoals met zoekmachines komen er steeds strengere guardrails wat te doen bij sommige soorten vragen. Het grootste probleem is echter de alomtegenwoordigheid van de chatbots: elke website of dienst (en zoekmachine!) heeft tegenwoordig wel een "assistent" waar je eigenlijk gelijk wat aan kan vragen. Indien je geen chatbots wilt gebruiken, dan kan je kiezen om geen browser te hebben en enkel bepaalde apps toe te staan.'),
 
-            ("h2", "Hoe zit het met de browser?"),
-            ("p", 'De browser is traditioneel een achterpoortje waarlangs schadelijke inhoud je toestel en leven komt verzieken. Een aantal browsers of extensies zijn in staat een proxy of vpn om te zetten om zo de instellingen van het toestel (vaak met goede reden) te omzeilen. Drawbridge weigert daarom alle browsers behalve "herald". Herald is een browser speciaal gemaakt voor drawbridge maar die je ook apart kan downloaden, en blokkeert standaard dezelfde inhoud als drawbridge, out of the box, geen configuratie nodig. Een variatie, "herald mono", is een browser speciaal gemaakt voor digitaal minimalisme: het toont alle websites in zwart-wit, heeft geen tabs (singletasking), en opent alles in reader mode wanneer beschikbaar. Die laatste browser is vooral interessant voor mensen die vinden dat ze te veel tijd verliezen aan bv. nieuwswebsites of online shopping.'),
-            ("p", "Onder voorbehoud is het idee om nog meer browsers op te nemen in de toegestane lijst, bij voorkeur ook een chromium-browser voor websites die op Firefox niet goed werken. Een andere piste is om gebruikers toe te staan helemaal geen browser te gebruiken, met de risico's dat bepaalde apps helemaal niet zullen werken omdat ze gebruikmaken van webpagina's."),
+            ("h2", "Waarom zegt mijn telefoon dat het wordt 'beheerd door mijn organisatie' of door een 'IT-admin'?"),
+            ("p", "Drawbridge is een device policy controller, en die worden normaal gebruikt voor bedrijfstelefoons en kiosken. Je mag deze teksten negeren."),
 
-            ("h2", "Hoe gaat drawbridge nog veranderen in de toekomst?"),
-            ("p", "Onder voorbehoud van tijd, middelen en technische obstakels, staan de volgende features op de lijst:"),
-            ("ul", [
-                "Toestaan van YouTube, eventueel met een filter",
-                "Avondklok: blokkeren van internet tussen bepaalde uren",
-                "Blokkeren van alle video streaming (Netflix, Disney+, Prime, Veoh, ...)",
-                "Andere browsers whitelisten",
-                "Browsers helemaal blokkeren",
-                "Toestaan van Telegram",
-                "Dumbphone-ificatie: enkel bepaalde apps worden toegestaan. Dit kan enkel werken bij geselecteerde toestellen, want elke smartphone komt met andere default apps.",
-            ]),
+            ("note", '<p><strong>1.</strong> Tijdens de beta-testing is dit soepeler. Om veiligheidsredenen, wegens eventuele onverwachte bugs, en omdat een beta-tester waarschijnlijk niet voor altijd drawbridge wil:</p><ul><li>een factory reset is altijd mogelijk, zelfs wanneer vergrendeld</li><li>wanneer ontgrendeld kan drawbridge ook gewoon worden uitgeschakeld en van de telefoon verwijderd zonder factory reset</li></ul>'),
         ],
     ),
     "fr": dict(
-        title="Q&A — drawbridge",
-        description="Questions fréquentes sur drawbridge : ce qui est bloqué, pour qui c'est fait, et en quoi cela diffère des contrôles parentaux classiques.",
-        h1="Q&A",
+        title="Utiliser drawbridge — drawbridge",
+        description="Comment fonctionne drawbridge : ce qui est tenu à l'écart, ce que vous pouvez autoriser ou restreindre davantage, ce que fait le verrouillage, et comment le retirer.",
+        h1="Utiliser drawbridge",
         blocks=[
-            ("h2", "Quelles applications et quels sites sont bloqués ?"),
-            ("p", "Pour protéger votre bien-être et votre appareil, drawbridge bloque les catégories suivantes : pornographie, jeux d'argent, publicité et traceurs (ce qui couvre aussi les domaines de logiciels malveillants, d'hameçonnage et d'arnaque), réseaux sociaux algorithmiques, compagnons IA, et jeux aux mécanismes addictifs ou présentant un risque de grooming. Certains réseaux sociaux font débat : Reddit et Discord, par exemple, ont par endroits une forte modération communautaire, mais ils hébergent aussi encore beaucoup de contenu extrêmement violent et de commentaires toxiques. Dans tous les cas, ce genre de site se visite mieux sur un PC. Rien ne justifie de le transporter dans sa poche."),
-            ("p", "Tout le reste fonctionne normalement : outils, bureautique, météo, banque, transports en commun, école, travail, etc."),
-            ("p", 'Chaque réseau social, jeu et compagnon IA de cette liste a sa propre notice, avec ses sources : <a href="/why-blocked/">ce qui est bloqué, et pourquoi</a> (en anglais). Elle traite aussi des effets sur les adultes, pas seulement sur les adolescents.'),
-
             ("h2", "Pour qui est drawbridge ?"),
-            ("p", "Drawbridge s'adresse à toute personne qui doit, pour une raison ou une autre, avoir un smartphone sur soi, mais qui ne veut pas que ce téléphone laisse de la place ou du temps à des applications et des sites nuisibles et addictifs. Cela peut être un adulte qui se protège lui-même, ou une personne qui gère l'appareil de quelqu'un d'autre (un enfant, par exemple)."),
+            ("p", "Drawbridge s'adresse à toute personne qui, pour une raison ou une autre, doit avoir un smartphone, mais ne veut pas laisser de place ni de temps à des applications et des sites nuisibles et addictifs. Ce sont des adultes pour eux-mêmes, ou par exemple des parents qui doivent confier un appareil à leur adolescent. Pour cette seconde catégorie, drawbridge propose des indications d'âge fondées sur le principe de précaution, établies avec l'apport de pédiatres, de neuroscientifiques et d'associations de parents. Si vous utilisez drawbridge en tant qu'adulte, vous pouvez évidemment les ignorer : c'est un outil destiné aux parents. La suite de ce texte contient également quelques conseils pour eux."),
+            ("p", "Qui possède un appareil avec drawbridge fait un choix clair : ne pas emporter l'internet nuisible dans sa poche ou son sac, mais le réserver à un ordinateur portable ou de bureau. Certains réseaux sociaux sont effectivement utiles : Reddit et Discord ont une vie communautaire forte, parfois strictement modérée, mais il y reste aussi beaucoup de contenu extrêmement violent et de commentaires toxiques. Dans tous les cas, rien ne justifie de transporter cela dans sa poche."),
 
-            ("h2", "Puis-je utiliser drawbridge en même temps que Family Link ?"),
-            ("p", "Non. Un téléphone drawbridge est un appareil entièrement géré, et Android ne permet pas à Family Link d'en assurer la supervision : la configuration échoue en cours de route. C'est une limite d'Android lui-même, que drawbridge ne peut pas lever."),
-            ("p", "En pratique, les deux ne se recouvrent guère. Family Link supervise le compte d'un enfant, et à 13 ans, ou l'âge en vigueur chez vous, l'adolescent peut mettre fin lui-même à cette supervision ; le parent en est seulement informé. drawbridge est fait pour les années suivantes, et pour les adultes, et ne dépend du compte de personne."),
-            ("p", 'Si vous préférez garder Family Link, installez plutôt <a href="/fr/#herald">herald</a> seul : c\'est le navigateur sans la gestion de l\'appareil, et le navigateur est précisément la faille que Family Link laisse ouverte.'),
+            ("h2", "Quelles applications et quels sites sont tenus à l'écart ?"),
+            ("p", 'Pour protéger votre bien-être et votre appareil, drawbridge tient à l\'écart les catégories suivantes : pornographie, jeux d\'argent, arnaques, réseaux sociaux algorithmiques, compagnons IA, jeux, et rencontres. Certaines messageries sont considérées comme des réseaux sociaux : Facebook Messenger (toujours bloqué), WhatsApp et Telegram (optionnels, c\'est vous qui les désactivez). Le streaming vidéo et YouTube peuvent aussi être désactivés séparément, voir plus loin. Notez qu\'en règle générale toute application dépourvue de la classification PEGI « tous âges » est supprimée, même si certains outils restent autorisés (Strava, par exemple). Plus d\'informations sur <a href="/why-blocked/">cette page</a> (en anglais).'),
+            ("p", "Tous les autres sites et applications fonctionnent normalement : outils, bureautique, météo, banque, transports en commun, école, travail, etc. La plupart des messageries fonctionnent aussi : Signal, Threema, Briar, Session. La communication mobile privée est en effet l'un des buts premiers d'un smartphone."),
+
+            ("h2", "Comment fonctionne l'application drawbridge ?"),
+            ("p", "Dès que drawbridge est installé, l'appareil est <strong>protégé de façon irrévocable</strong> contre les catégories ci-dessus, et <strong>les applications qui ne sont jamais autorisées sont supprimées</strong> : réseaux sociaux, jeux, rencontres, la plupart des contenus classés PEGI 7 ou plus, et tous les navigateurs sauf ceux qui sont autorisés. Cela se produit dès l'installation, et vaut jusqu'à ce que vous retiriez drawbridge par une réinitialisation d'usine de l'appareil. Vous pouvez y ajouter d'autres restrictions : désactiver WhatsApp, Telegram, YouTube et/ou le streaming vidéo, instaurer un couvre-feu, passer entièrement hors ligne, n'avoir aucun navigateur, ou n'autoriser que quelques applications. Ces restrictions ne prennent effet qu'au moment où vous « verrouillez » drawbridge. Le déverrouillage demande un code, ou vous pouvez régler une minuterie. Tant que drawbridge est verrouillé, il n'y a aucun moyen de modifier les réglages ni de retirer drawbridge."),
+            ("p", "L'application drawbridge est le centre de contrôle de drawbridge : elle permet d'autoriser malgré tout certaines applications et certains sites, de restreindre encore davantage l'internet, ou de transformer le téléphone en quasi-dumbphone. Ces réglages supplémentaires ne prennent effet qu'au moment où vous verrouillez drawbridge."),
+
+            ("h3", "Verrouiller"),
+            ("p", 'Drawbridge ne peut de toute façon pas être retiré sans une réinitialisation d\'usine de l\'appareil : la politique par défaut est irrévocable jusqu\'à cette réinitialisation.<sup><a href="#beta">1</a></sup> C\'est la protection de base de drawbridge.'),
+            ("p", "Lorsque vous verrouillez drawbridge, les autres réglages prennent effet (voir plus bas). Une fois verrouillé, les réglages ne peuvent plus être modifiés et drawbridge ne peut plus du tout être retiré : même une réinitialisation d'usine n'est plus possible !"),
+            ("p", "Au moment du verrouillage, vous recevez d'abord un code. Ce code est différent à chaque fois, notez-le donc à nouveau chaque fois ! Le code est nécessaire pour lever le verrouillage."),
+            ("ul", [
+                "<strong>Verrouiller définitivement</strong> : le code est volontairement difficile à retenir. <strong>Vous pouvez choisir de ne pas le noter, et le téléphone reste alors verrouillé pour toujours !</strong>",
+                "<strong>Verrouiller temporairement :</strong> vous pouvez choisir que drawbridge se déverrouille automatiquement après une période de 2 heures à 40 jours, pour des choses comme « un après-midi hors ligne pour pouvoir étudier », « un week-end hors ligne », « une semaine de camping », « deux semaines sans discussion sur le couvre-feu », une « période de jeûne », etc. Drawbridge affiche toujours le code, mais ici vous choisirez sans doute délibérément de ne pas le noter.",
+            ]),
+
+            ("h3", 'Réglages supplémentaires : ne plus autoriser certaines applications ou certains services, en désactivant les interrupteurs ci-dessous'),
+            ("p", "<strong>Autoriser le streaming vidéo long format :</strong> cela autorise des services comme Netflix, Disney+, Hulu, etc. YouTube n'entre pas dans cette catégorie (voir plus loin)."),
+            ("p", "<strong>Autoriser WhatsApp :</strong> WhatsApp ressemble de plus en plus à un réseau social (chaînes, chatbot). Comme WhatsApp est, pour beaucoup de gens, un mal nécessaire (dans certains pays, on ne s'appelle quasiment plus de façon classique), vous pouvez malgré tout choisir de l'autoriser. D'autres applications de discussion comme Signal, Threema, Session, Briar, etc. sont autorisées, car la communication chiffrée est un droit humain. Si vous confiez l'appareil à un enfant, sachez que les enfants de moins de 14 ans gèrent très difficilement les discussions de groupe, qui dégénèrent très vite en cyberharcèlement et en drames."),
+            ("p", "<strong>Autoriser Telegram :</strong> pour la même raison que WhatsApp, vous pouvez autoriser Telegram. Telegram n'est cependant pas chiffré et comporte de nombreuses chaînes de pornographie dure, de substances illicites et de violence. Telegram est donc conseillé à partir de 18 ans."),
+            ("p", '<strong>Autoriser YouTube :</strong> YouTube est aussi un réseau social. Bien que le contenu soit strictement modéré sur les excès comme la nudité, les jeux d\'argent et la violence, il reste beaucoup de contenu nuisible ou trompeur. YouTube sert tout cela d\'une manière très addictive, ce pour quoi Google a déjà été condamné. Le plus nuisible de tout, ce sont les YouTube Shorts, très difficiles à distinguer des autres vidéos YouTube et impossibles à filtrer sans violation de la vie privée ou recours à une IA faillible. En raison de l\'omniprésence de YouTube comme « vidéothèque » remplie d\'informations utiles en tout genre (pendant la cuisine, le bricolage, les tutoriels, etc.), vous pouvez malgré tout l\'autoriser. Le choix YouTube est tout ou rien : il est techniquement très difficile d\'autoriser YouTube Kids et YouTube Music sans autoriser les YouTube Shorts. YouTube Kids est d\'ailleurs souvent de la vidéo au format court, elle aussi, et nuisible pour un enfant.'),
+
+            ("h3", "Réglages supplémentaires : se déconnecter, couvre-feu ou hors ligne définitif"),
+            ("p", "Se déconnecter est un droit humain, et drawbridge prévoit par défaut deux options pour vous y aider (à côté de l'option « toujours en ligne ») :"),
+            ("p", "<strong>Toujours hors ligne, et tant mieux :</strong> cela transforme effectivement votre smartphone en appareil hors ligne. Un téléphone sans internet, avec lequel vous pouvez encore appeler et envoyer des SMS, mais ni RCS ni MMS, donc les photos et les messages de groupe ne passent pas. Le GPS continue de fonctionner, donc <strong>vous pouvez utiliser des cartes hors ligne et partager votre position hors ligne par SMS</strong>. Pour cela, nous recommandons des applications comme Organic Maps ou Maps.ME. La radio FM, lorsqu'elle est présente, continue elle aussi de fonctionner. Spotify avec des playlists hors ligne, AntennaPod avec des podcasts hors ligne, des lecteurs MP3 : tout cela reste possible. Les écouteurs Bluetooth fonctionnent évidemment aussi."),
+            ("p", "<strong>Un couvre-feu pour l'internet :</strong> le téléphone passe hors ligne entre certaines heures, à configurer séparément pour la semaine et le week-end. Prévoyez toujours au moins une demi-heure en ligne, pour laisser passer toutes les mises à jour. C'est aussi utile pour mettre à jour votre playlist Spotify, par exemple."),
+
+            ("h3", "Réglages supplémentaires : n'autoriser que certaines applications, supprimer les navigateurs, dumbphone-ification"),
+            ("p", "<strong>Choix du navigateur :</strong> par défaut, drawbridge autorise une liste restreinte de navigateurs qui fonctionnent bien avec le filtre web. Nous recommandons <strong>herald</strong>, parce que c'est un navigateur minimaliste qui affiche une page claire en cas de blocage et qui suit la politique de drawbridge. Vous pouvez aussi choisir de n'utiliser <strong>que herald mono</strong> : un navigateur qui navigue par défaut en noir et blanc, qui n'a qu'un seul onglet, et dans lequel faire défiler sans fin est délibérément plus difficile. C'est un bon choix pour les personnes qui souffrent d'une addiction générale à la navigation (sites d'actualité et autres). Enfin, vous pouvez choisir de n'avoir <strong>aucun navigateur</strong>. Tenez compte du fait que certaines applications ont besoin d'un navigateur pour bien fonctionner, et pour s'y connecter par exemple. Veillez donc à être déjà connecté partout avant d'utiliser cette option."),
+            ("p", "<strong>N'autoriser que certaines applications :</strong> si vous choisissez cette option, l'installation d'applications est empêchée après le verrouillage. Vous ne pouvez plus installer de nouvelles applications ; les applications existantes continuent d'être mises à jour, pour des raisons de sécurité. Supprimez ou désactivez les applications dont vous ne voulez pas (laissez de préférence le Play Store en place, pour laisser passer les mises à jour). Vous pouvez ainsi composer un téléphone avec le strict nécessaire : appareil photo, calculatrice, agenda, cartes, transports en commun, Spotify, et plus rien d'autre."),
+
+            ("h3", "Comment désactiver ou contourner drawbridge ? Autres limitations."),
+            ("h4", "Limitations"),
+            ("p", "Drawbridge combine un filtre réseau et un filtre sur l'appareil, et est donc à peu près aussi étanche que possible. Il reste néanmoins des sites et des applications qui montreront de temps à autre quelque chose de nuisible, ou qui parviennent à contourner un filtre réseau. N'hésitez pas à le signaler."),
+            ("p", "La conséquence de ce filtre est que vous ne pouvez pas utiliser de VPN ni choisir vous-même un DNS (le DNS utilisé est chiffré et respectueux de la vie privée). Vous ne pouvez pas non plus configurer d'autres utilisateurs, utiliser l'espace privé ou créer un compte invité. Pour ces mêmes raisons, vous ne pouvez pas utiliser d'applications de contrôle parental, pas même Google Family Link (qui, de toute façon, ne va que jusqu'à 13 ans). Les réglages de temps d'écran sur l'appareil restent possibles. Enfin, une fois verrouillé, vous ne pouvez plus utiliser les options pour développeurs."),
+            ("h4", "Retirer drawbridge"),
+            ("p", 'La seule manière de retirer drawbridge est une réinitialisation d\'usine. Elle réinitialise l\'appareil entier et vous fait perdre vos données. Cela revient en pratique à acheter un nouvel appareil, mais sans le coût. <strong>La réinitialisation d\'usine n\'est en outre possible que lorsque drawbridge est déverrouillé. Un drawbridge verrouillé ne peut pas être retiré.</strong><sup><a href="#beta">1</a></sup>'),
+            ("p", "Si vous avez verrouillé drawbridge sans minuterie et que vous ne connaissez plus le code ou que vous l'avez perdu, il reste une possibilité : dans le menu d'un drawbridge verrouillé, vous pouvez choisir « code oublié ». Vous pouvez y lancer une minuterie de 30 jours, au terme de laquelle drawbridge se déverrouille. Cela évite que quelqu'un se retrouve par accident avec un appareil sans valeur, qu'il ne pourrait plus transmettre ni revendre. Ce n'est pas le but. L'attente ne peut pas être raccourcie, la date de déverrouillage reste affichée sur l'écran de verrouillage du téléphone pendant toute la période, et déverrouiller avec le code y met fin : n'importe qui dans le foyer peut donc la lancer, et celui qui détient le code garde la main."),
+            ("h4", "Contrôle de l'heure"),
+            ("p", "Les parents qui utilisent drawbridge pour leurs enfants disposent d'un contrôle supplémentaire, pour vérifier si drawbridge n'a pas été déverrouillé, ou si le téléphone a peut-être même été réinitialisé : en bas de l'écran de verrouillage du téléphone, il est indiqué que le téléphone est protégé par drawbridge, avec l'heure du dernier verrouillage. Vous retrouvez la même information dans l'application drawbridge elle-même. Cette heure doit correspondre au moment où vous avez verrouillé drawbridge pour votre adolescent. Si une minuterie est en cours, l'écran de verrouillage affiche plutôt un compte à rebours (« drawbridge se déverrouille dans 3 jours ») et l'heure du verrouillage se trouve alors dans l'application."),
 
             ("h2", "Pourquoi ne pas simplement utiliser un contrôle parental ou un bloqueur d'applications ?"),
             ("p", "Les contrôles parentaux ont beaucoup d'inconvénients :"),
             ("ul", [
                 "Ils sont difficiles à configurer, et il y a chaque jour un ajustement à refaire.",
                 "Il faut se constituer une expertise sur tout ce qui est nuisible et sur tout ce qui peut être configuré. C'est simplement une perte de temps.",
-                "Ils sont faciles à contourner, même bien configurés.",
+                "Ils sont faciles à contourner et à supprimer, même bien configurés.",
                 "Ils mènent à la discussion et au conflit, entre parent et enfant, ou avec soi-même.",
                 "Ils espionnent l'utilisateur et peuvent collecter des données.",
                 "Ils ne sont souvent pas gratuits.",
+                "Ils n'ont souvent pas d'options comme « toujours hors ligne ».",
             ]),
-            ("p", "Drawbridge n'utilise pas de contrôle parental, mais un device policy controller, comme ceux utilisés pour les téléphones d'entreprise et les bornes en libre-service. Contrairement aux contrôles parentaux, drawbridge offre d'emblée une protection non configurable qui couvre déjà un très large périmètre. Les réseaux sociaux et les jeux nuisibles sont toujours bloqués, sans discussion possible. Cela crée un environnement calme, sans charge de gestion supplémentaire. Sachez que drawbridge seul ne suffit pas comme « accompagnement d'un enfant en ligne » : cela demande bien plus, et une bonne pratique reste d'utiliser internet sur un écran partagé, où chacun peut voir et en discuter (pas pour les conversations privées, bien entendu)."),
-
-            ("h2", "Comment désactiver ou contourner drawbridge ?"),
-            ("p", "Drawbridge combine un filtre réseau et un filtre sur l'appareil, et est donc à peu près aussi étanche que possible. Il reste néanmoins de nombreux sites et applications qui montreront occasionnellement quelque chose de nuisible. N'hésitez pas à le signaler. La porte dérobée classique, le navigateur, est elle aussi verrouillée, et drawbridge propose sa propre manière de naviguer (voir plus loin)."),
-            ("p", "Après la configuration de drawbridge, un code s'affiche pour lever le filtre et, le cas échéant, désinstaller drawbridge. Ce code est aléatoire et trop long pour être mémorisé d'un coup d'œil. Le choix vous appartient : notez-le et rangez-le en lieu sûr, ou ne le notez pas et oubliez-le, auquel cas drawbridge reste actif indéfiniment."),
-            ("p", "L'autre seule issue, également valable pour les bloqueurs d'applications classiques, est bien sûr une réinitialisation aux paramètres d'usine. Cela réinitialise l'appareil entier et fait perdre vos données avec, ce qui revient en pratique à acheter un nouveau téléphone. Rien ne peut l'empêcher, et méfiez-vous de tout outil qui prétend le contraire. Ce que drawbridge vous donne, c'est de le remarquer : l'écran de verrouillage indique que drawbridge protège l'appareil et depuis quand, ce qui vous permet de vérifier un téléphone sans le déverrouiller et sans même y toucher. Un appareil réinitialisé puis reconfiguré cesse d'afficher une date que vous reconnaissez."),
-
-            ("h2", "Qu'en est-il de WhatsApp et des autres applications de discussion ?"),
-            ("p", "Facebook Messenger et Telegram sont bloqués. WhatsApp l'est aussi par défaut, car elle ressemble de plus en plus à un réseau social (chaînes, chatbot). Comme WhatsApp est, pour beaucoup de gens, un mal nécessaire (dans certains pays, on ne s'appelle quasiment plus de façon classique), vous pouvez malgré tout choisir de l'autoriser. D'autres applications de discussion comme Signal, Threema, Session, Briar, etc. sont autorisées, car la communication chiffrée est un droit humain. Si vous confiez l'appareil à un enfant, sachez que les enfants de moins de 14 ans gèrent très difficilement les discussions de groupe, qui dégénèrent très vite en cyberharcèlement et en drames."),
-
-            ("h2", "Qu'en est-il de YouTube ?"),
-            ("p", "YouTube est, dans les faits, un réseau social. Bien que son contenu soit strictement modéré contre les excès comme la nudité, les jeux d'argent et la violence, il reste beaucoup de contenu nuisible ou trompeur. YouTube diffuse tout d'une manière hautement addictive, ce pour quoi Google a déjà été condamné en justice. Le plus nuisible de tous reste YouTube Shorts, très difficile à distinguer des autres vidéos YouTube et impossible à filtrer sans porter atteinte à la vie privée ou recourir à une IA sujette à erreur. En raison de l'omniprésence de YouTube comme « vidéothèque » regorgeant d'informations réellement utiles (par exemple pour cuisiner ou bricoler), l'ajout d'un interrupteur similaire à celui de WhatsApp est envisagé, sans que ce soit décidé."),
+            ("p", "Drawbridge n'utilise pas de contrôle parental, mais un device policy controller, comme ceux utilisés pour les téléphones d'entreprise et les bornes en libre-service. Contrairement aux contrôles parentaux, drawbridge offre d'emblée une protection non configurable (le filtre réseau) qui couvre déjà un très large périmètre. Les réseaux sociaux et les jeux nuisibles sont toujours bloqués, sans discussion possible. Cela crée un environnement calme, sans charge de gestion supplémentaire. Sachez que drawbridge seul ne suffit pas comme « accompagnement d'un enfant en ligne » : cela demande bien plus, et une bonne pratique reste d'utiliser internet sur un écran partagé, où chacun peut voir et en discuter (pas pour les conversations privées, bien entendu)."),
 
             ("h2", "Pourquoi les chatbots ne sont-ils pas bloqués ?"),
-            ("p", "Les chatbots classiques, comme ChatGPT, Claude ou Gemini, peuvent effectivement avoir des effets nuisibles sur le cerveau en cas d'usage excessif et en remplaçant des tâches cognitivement exigeantes. Ils ne comportent pas de mécanismes construits pour rendre dépendant, et, tout comme pour les moteurs de recherche, des garde-fous de plus en plus stricts apparaissent pour certains types de questions. Le problème principal est plutôt l'omniprésence des chatbots : presque chaque site ou service dispose aujourd'hui d'un « assistant » à qui l'on peut à peu près tout demander. Si vous ne le voulez pas, la réponse honnête est de ne pas utiliser internet du tout."),
+            ("p", "Les chatbots classiques, comme ChatGPT, Claude ou Gemini, peuvent effectivement avoir des effets nuisibles sur le cerveau en cas d'usage excessif et lorsqu'ils remplacent des tâches cognitivement exigeantes. Ce n'est pas qu'ils intègrent délibérément des mécanismes addictifs, et, comme pour les moteurs de recherche, des garde-fous de plus en plus stricts apparaissent pour certains types de questions. Le plus gros problème est cependant l'omniprésence des chatbots : presque chaque site ou service (et moteur de recherche !) dispose aujourd'hui d'un « assistant » auquel on peut demander à peu près n'importe quoi. Si vous préférez ne pas utiliser de chatbots, vous pouvez choisir de n'avoir aucun navigateur et de n'autoriser que certaines applications."),
 
-            ("h2", "Qu'en est-il du navigateur ?"),
-            ("p", "Le navigateur est traditionnellement la porte dérobée par laquelle le contenu nuisible s'invite sur votre appareil et dans votre vie. Certains navigateurs ou extensions sont capables de configurer un proxy ou un VPN, précisément pour contourner les réglages de l'appareil (souvent pour de bonnes raisons ailleurs, mais pas ici). Drawbridge refuse donc tous les navigateurs sauf « herald ». Herald est un navigateur conçu spécialement pour drawbridge, mais peut aussi être téléchargé séparément, et bloque par défaut le même contenu que drawbridge, d'emblée, sans configuration nécessaire. Une variante, « herald mono », est un navigateur conçu spécialement pour le minimalisme numérique : il affiche tous les sites en noir et blanc, n'a pas d'onglets (une seule tâche à la fois), et ouvre tout en mode lecture lorsque c'est possible. Ce second navigateur intéresse surtout les personnes qui estiment perdre trop de temps sur, par exemple, les sites d'actualité ou les achats en ligne."),
-            ("p", "L'ajout d'autres navigateurs à la liste autorisée est envisagé, sans être décidé, idéalement avec un navigateur basé sur Chromium pour les sites qui fonctionnent mal sous Firefox. Une autre piste envisagée est de permettre aux utilisateurs de n'utiliser aucun navigateur du tout, au risque que certaines applications ne fonctionnent plus du tout parce qu'elles s'appuient en interne sur des pages web."),
+            ("h2", "Pourquoi mon téléphone dit-il qu'il est « géré par mon organisation » ou par un « administrateur informatique » ?"),
+            ("p", "Drawbridge est un device policy controller, et ceux-ci sont normalement utilisés pour les téléphones d'entreprise et les bornes en libre-service. Vous pouvez ignorer ces messages."),
 
-            ("h2", "Comment drawbridge va-t-il encore évoluer ?"),
-            ("p", "Selon le temps, les moyens et les obstacles techniques disponibles, les fonctionnalités suivantes sont envisagées :"),
-            ("ul", [
-                "Autoriser YouTube, éventuellement avec un filtre",
-                "Couvre-feu : blocage d'internet entre certaines heures",
-                "Blocage de tout le streaming vidéo (Netflix, Disney+, Prime, Veoh, ...)",
-                "Autoriser d'autres navigateurs (liste blanche)",
-                "Bloquer complètement les navigateurs",
-                "Autoriser Telegram",
-                "« Dumbphone-ification » : seules certaines applications seraient autorisées. Cela ne peut fonctionner que sur des appareils sélectionnés, car chaque smartphone est livré avec des applications par défaut différentes.",
-            ]),
+            ("note", '<p><strong>1.</strong> Pendant la phase de bêta-test, c\'est plus souple. Pour des raisons de sécurité, en raison d\'éventuels bugs inattendus, et parce qu\'un bêta-testeur ne veut probablement pas garder drawbridge pour toujours :</p><ul><li>une réinitialisation d\'usine est toujours possible, même lorsque drawbridge est verrouillé</li><li>lorsqu\'il est déverrouillé, drawbridge peut aussi être simplement désactivé et retiré du téléphone sans réinitialisation d\'usine</li></ul>'),
         ],
     ),
 }
@@ -982,13 +1082,20 @@ def render_faq(lang: str) -> str:
     c = FAQ[lang]
     parts = []
     for kind, payload in c["blocks"]:
-        if kind == "h2":
-            parts.append(f"<h2>{payload}</h2>")
+        if kind in ("h2", "h3", "h4"):
+            parts.append(f"<{kind}>{payload}</{kind}>")
         elif kind == "p":
             parts.append(f"<p>{payload}</p>")
         elif kind == "ul":
             items = "\n".join(f"<li>{item}</li>" for item in payload)
             parts.append(f"<ul>\n{items}\n</ul>")
+        elif kind == "note":
+            # The beta caveat that both footnote markers in the text point at.
+            parts.append(f'<aside class="callout" id="beta">{payload}</aside>')
+        else:
+            # A kind nobody handles used to vanish silently, which on a page
+            # this long is a paragraph nobody would miss until a reader did.
+            raise SystemExit(f"render_faq: unknown block kind {kind!r} in {lang}")
     body = f"""
   <section class="section">
     <div class="wrap">
@@ -1021,16 +1128,22 @@ WHY_DESCRIPTION = "The evidence behind every category and app drawbridge blocks:
 # to drift between the two.
 WHY_INTRO = {
     "en": [
-        "Drawbridge blocks six categories: pornography, gambling, ads and trackers (which also covers malware, phishing and scam domains), algorithmic social media, AI companions, and games with addictive mechanics or grooming risk. Everything else keeps working normally: tools, office software, weather, banking, public transport, school and work. The list is not configurable, and that is the point, because any setting you can change yourself is also a setting you can argue about.",
-        "The pornography, gambling, ads and tracker categories come from large public blocklists maintained by others (Block List Project and HaGeZi), refreshed daily. The social media, AI companion and game lists are drawbridge's own, and every entry on them rests on public sources: official age ratings (PEGI, ESRB), independent reviews such as Common Sense Media, regulator findings from bodies like the Belgian Gaming Commission, the European Commission and Australia's eSafety Commissioner, and guidance from medical and child-psychiatric organisations such as AACAP, the APA and the WHO. The pattern that recurs most: the store's age label often sits years below what independent reviewers advise, and says nothing at all about chat with strangers or paid random rewards.",
+        'This page is written and kept up to date by a large language model, because the list it describes moves faster than anyone wants to hand-write. Every claim below is meant to carry a source you can check, and if you find one that does not, that is a mistake worth reporting. It also means the prose has more em-dashes in it than a person would use, for which we apologise.',
+        'Drawbridge blocks seven categories: pornography, gambling, ads and trackers (which also covers malware, phishing and scam domains), algorithmic social media, AI companions, all games, and dating. Everything else keeps working normally: tools, office software, weather, banking, public transport, school and work. The list is not configurable, and that is the point, because any setting you can change yourself is also a setting you can argue about.',
+        "The pornography, gambling, ads and tracker categories come from large public blocklists maintained by others (Block List Project and HaGeZi), refreshed daily. The social media, AI companion, dating and game lists are drawbridge's own, and every entry on them rests on public sources: official age ratings (PEGI, ESRB), independent reviews such as Common Sense Media, regulator findings from bodies like the Belgian Gaming Commission, the European Commission and Australia's eSafety Commissioner, and guidance from medical and child-psychiatric organisations such as AACAP, the APA and the WHO. The pattern that recurs most: the store's age label often sits years below what independent reviewers advise, and says nothing at all about chat with strangers or paid random rewards.",
+        'No blocklist is ever finished, so the gaps are closed from the other side as well: an app is removed unless the store rates it <strong>PEGI 3</strong> (or the local equivalent), whatever any list does or does not say about it. That single rule catches the app nobody has written down yet. The exceptions are named one by one, and they are tools rather than entertainment: the music, messaging, recipe, sport and assistant apps listed at the end of this page.',
     ],
     "nl": [
-        "Drawbridge houdt zes categorieën tegen: pornografie, gokken, advertenties en trackers (waaronder ook malware, phishing en oplichterij), algoritmische social media, AI companions, en games met verslavende mechanismen of een risico op grooming. Al de rest blijft gewoon werken: gereedschap, kantoorsoftware, weerbericht, bankieren, openbaar vervoer, school en werk. De lijst is niet configureerbaar: dat is precies het punt, want elke instelling die je zelf kan aanpassen is er ook één waarover discussie mogelijk is.",
-        "De categorieën pornografie, gokken, advertenties en trackers komen uit grote publieke blocklists die door anderen worden onderhouden (Block List Project en HaGeZi) en dagelijks worden ververst. De lijsten voor social media, AI companions en games zijn die van drawbridge zelf, en elke keuze daarop steunt op openbare bronnen: officiële leeftijdslabels (PEGI, ESRB), onafhankelijke beoordelingen zoals Common Sense Media, uitspraken van toezichthouders zoals de Belgische Kansspelcommissie, de Europese Commissie en de Australische eSafety Commissioner, en richtlijnen van medische en kinderpsychiatrische organisaties zoals AACAP, de APA en de WHO. Wat daarbij het vaakst terugkomt: het officiële leeftijdslabel in de winkel ligt vaak jaren lager dan wat onafhankelijke beoordelaars aanraden, en het label zegt bovendien niets over chatfuncties met vreemden of over betaalde willekeurige beloningen.",
+        'Deze pagina wordt geschreven en bijgehouden door een taalmodel, omdat de lijst die ze beschrijft sneller verandert dan iemand met de hand kan bijhouden. Elke bewering hieronder hoort een bron te hebben die je zelf kan nakijken; vind je er een zonder, dan is dat een fout die het melden waard is. Het betekent ook dat er meer gedachtestreepjes in de tekst staan dan een mens zou gebruiken, waarvoor onze excuses.',
+        'Drawbridge houdt zeven categorieën tegen: pornografie, gokken, advertenties en trackers (waaronder ook malware, phishing en oplichterij), algoritmische social media, AI companions, alle games, en dating. Al de rest blijft gewoon werken: gereedschap, kantoorsoftware, weerbericht, bankieren, openbaar vervoer, school en werk. De lijst is niet configureerbaar: dat is precies het punt, want elke instelling die je zelf kan aanpassen is er ook één waarover discussie mogelijk is.',
+        'De categorieën pornografie, gokken, advertenties en trackers komen uit grote publieke blocklists die door anderen worden onderhouden (Block List Project en HaGeZi) en dagelijks worden ververst. De lijsten voor social media, AI companions, dating en games zijn die van drawbridge zelf, en elke keuze daarop steunt op openbare bronnen: officiële leeftijdslabels (PEGI, ESRB), onafhankelijke beoordelingen zoals Common Sense Media, uitspraken van toezichthouders zoals de Belgische Kansspelcommissie, de Europese Commissie en de Australische eSafety Commissioner, en richtlijnen van medische en kinderpsychiatrische organisaties zoals AACAP, de APA en de WHO. Wat daarbij het vaakst terugkomt: het officiële leeftijdslabel in de winkel ligt vaak jaren lager dan wat onafhankelijke beoordelaars aanraden, en het label zegt bovendien niets over chatfuncties met vreemden of over betaalde willekeurige beloningen.',
+        'Geen enkele blocklist is ooit af, dus de gaten worden ook van de andere kant gedicht: een app wordt verwijderd tenzij de winkel ze <strong>PEGI 3</strong> geeft (of het lokale equivalent), wat een lijst er ook over zegt. Die ene regel vangt net de app op die nog niemand heeft opgeschreven. De uitzonderingen worden stuk voor stuk benoemd, en het zijn werktuigen eerder dan vermaak: de muziek-, berichten-, recepten-, sport- en assistent-apps die achteraan deze pagina staan.',
     ],
     "fr": [
-        "Drawbridge bloque six catégories : la pornographie, les jeux d'argent, la publicité et les traceurs (ce qui couvre aussi les domaines de logiciels malveillants, d'hameçonnage et d'arnaque), les réseaux sociaux algorithmiques, les compagnons IA, et les jeux aux mécanismes addictifs ou présentant un risque de grooming. Tout le reste continue de fonctionner normalement : outils, bureautique, météo, banque, transports en commun, école et travail. La liste n'est pas configurable, et c'est précisément l'intérêt : tout réglage que l'on peut modifier soi-même est aussi un réglage dont on peut débattre.",
-        "Les catégories pornographie, jeux d'argent, publicité et traceurs proviennent de grandes listes de blocage publiques maintenues par des tiers (Block List Project et HaGeZi), actualisées quotidiennement. Les listes des réseaux sociaux, des compagnons IA et des jeux sont propres à drawbridge, et chacune de leurs entrées s'appuie sur des sources publiques : les classifications officielles par âge (PEGI, ESRB), des évaluations indépendantes comme Common Sense Media, des décisions de régulateurs comme la Commission belge des jeux de hasard, la Commission européenne et l'eSafety Commissioner australien, ainsi que les recommandations d'organisations médicales et pédopsychiatriques comme l'AACAP, l'APA et l'OMS. Le constat qui revient le plus souvent : l'âge affiché sur la boutique est souvent inférieur de plusieurs années à ce que recommandent les évaluateurs indépendants, et il ne dit rien des fonctions de discussion avec des inconnus ni des récompenses aléatoires payantes.",
+        "Cette page est rédigée et tenue à jour par un modèle de langage, car la liste qu'elle décrit évolue plus vite que ce que l'on peut écrire à la main. Chaque affirmation ci-dessous est censée s'appuyer sur une source vérifiable ; si vous en trouvez une qui n'en a pas, cela vaut la peine de le signaler. Cela veut dire aussi que le texte contient plus de tirets cadratins qu'une personne n'en emploierait, ce dont nous nous excusons.",
+        "Drawbridge bloque sept catégories : la pornographie, les jeux d'argent, la publicité et les traceurs (ce qui couvre aussi les domaines de logiciels malveillants, d'hameçonnage et d'arnaque), les réseaux sociaux algorithmiques, les compagnons IA, tous les jeux, et les rencontres. Tout le reste continue de fonctionner normalement : outils, bureautique, météo, banque, transports en commun, école et travail. La liste n'est pas configurable, et c'est précisément l'intérêt : tout réglage que l'on peut modifier soi-même est aussi un réglage dont on peut débattre.",
+        "Les catégories pornographie, jeux d'argent, publicité et traceurs proviennent de grandes listes de blocage publiques maintenues par des tiers (Block List Project et HaGeZi), actualisées quotidiennement. Les listes des réseaux sociaux, des compagnons IA, des rencontres et des jeux sont propres à drawbridge, et chacune de leurs entrées s'appuie sur des sources publiques : les classifications officielles par âge (PEGI, ESRB), des évaluations indépendantes comme Common Sense Media, des décisions de régulateurs comme la Commission belge des jeux de hasard, la Commission européenne et l'eSafety Commissioner australien, ainsi que les recommandations d'organisations médicales et pédopsychiatriques comme l'AACAP, l'APA et l'OMS. Le constat qui revient le plus souvent : l'âge affiché sur la boutique est souvent inférieur de plusieurs années à ce que recommandent les évaluateurs indépendants, et il ne dit rien des fonctions de discussion avec des inconnus ni des récompenses aléatoires payantes.",
+        "Aucune liste de blocage n'est jamais complète, si bien que les trous sont aussi comblés par l'autre bout : une application est supprimée à moins que la boutique ne la classe <strong>PEGI 3</strong> (ou l'équivalent local), quoi qu'en dise ou n'en dise aucune liste. Cette seule règle attrape l'application que personne n'a encore répertoriée. Les exceptions sont nommées une par une, et ce sont des outils plutôt que des divertissements : les applications de musique, de messagerie, de cuisine, de sport et d'assistance listées en fin de page.",
     ],
 }
 

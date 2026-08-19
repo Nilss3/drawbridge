@@ -1,19 +1,14 @@
 package app.drawbridge.herald.browser
 
 import android.content.Context
-import android.view.View
-import app.drawbridge.herald.Edition
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withTimeoutOrNull
 import mozilla.components.browser.state.action.ReaderAction
 import mozilla.components.browser.state.selector.findTab
 import mozilla.components.browser.state.selector.selectedTab
@@ -21,7 +16,6 @@ import mozilla.components.browser.state.state.TabSessionState
 import mozilla.components.browser.state.store.BrowserStore
 import mozilla.components.concept.engine.Engine
 import mozilla.components.feature.readerview.ReaderViewFeature
-import mozilla.components.feature.session.SessionUseCases
 import mozilla.components.feature.readerview.view.ReaderViewControlsView
 import mozilla.components.lib.state.ext.flow
 import mozilla.components.support.base.feature.LifecycleAwareFeature
@@ -36,14 +30,16 @@ import mozilla.components.support.base.feature.UserInteractionHandler
  * page already loaded, so it fetches nothing and reaches nothing the filter has
  * not already allowed through.
  *
- * In the mono edition it also enters itself, wherever Gecko reports a page as
- * readerable — see [Edition.autoReaderView].
+ * It is asked for, in both editions. Mono used to enter it by itself on every
+ * page Gecko called readerable, and that is gone — see
+ * [app.drawbridge.herald.Edition.slowScrolling] for what replaced it, and
+ * `docs/reader-view-back.md` for what it cost. What is left here is the toggle
+ * the menu calls, and the re-check that makes the menu offer it at all.
  */
 class ReaderViewIntegration(
     context: Context,
     engine: Engine,
     private val store: BrowserStore,
-    private val sessionUseCases: SessionUseCases,
     private val sessionId: String? = null,
     private val controlsView: ReaderViewControlsView,
 ) : LifecycleAwareFeature, UserInteractionHandler {
@@ -52,22 +48,12 @@ class ReaderViewIntegration(
 
     private var scope: CoroutineScope? = null
 
-    /**
-     * Set when the reader turns reader view *off* on a page, so mono's
-     * automatic entry does not immediately put it back. Cleared on navigation:
-     * the refusal belongs to the page it was made on, not to the browser.
-     */
-    private var dismissedForPage = false
-
     override fun start() {
         feature.start()
         toggle = this::toggle
         showControls = feature::showControls
 
-        scope = MainScope().also { scope ->
-            scope.launch { recheckWhenPagesFinishLoading() }
-            if (Edition.autoReaderView) scope.launch { enterOnReaderablePages() }
-        }
+        scope = MainScope().also { scope -> scope.launch { recheckWhenPagesFinishLoading() } }
     }
 
     override fun stop() {
@@ -79,130 +65,23 @@ class ReaderViewIntegration(
     }
 
     /**
-     * Back goes back, and in mono that means leaving the page rather than
-     * leaving reader view.
+     * Back leaves reader view, and the page it was showing stays put.
      *
-     * `ReaderViewFeature.onBackPressed` hides reader view and reports the press
-     * handled. That is right where reader view was asked for — it undoes the
-     * thing you just did — and wrong in mono, where nobody asked for it: reader
-     * view is simply how pages look, so peeling it off costs a press that
-     * appears to do nothing and leaves you where you already were.
+     * That is `ReaderViewFeature.onBackPressed`, unchanged: it closes the
+     * controls panel if it is open, otherwise it hides reader view and reports
+     * the press handled. Undoing the thing you just did is the right answer
+     * wherever reader view was asked for, which since 2026-08-19 is everywhere.
      *
-     * Skipping it is not enough either, because showing reader view is a
-     * *navigation*: the article and the reader's rendering of it are two history
-     * entries, so a plain back lands on the article and the automatic entry puts
-     * the reader straight back on. One press therefore has to undo both, which
-     * is what [leavePageWhenArticleIsBack] finishes — `hideReaderView` steps out
-     * of the reader's own entry, and the second step leaves the article.
-     *
-     * The controls panel is the exception. It *is* something the reader opened,
-     * so back closes it and means nothing else.
+     * It was not always. While mono entered reader view by itself, hiding it
+     * left the reader on a page they had not chosen to be on and the automatic
+     * entry put the article straight back, so one press had to undo the
+     * article's *two* history entries — reader view being a navigation of its
+     * own. That mechanism went with the feature it was propping up; it is
+     * written up in `docs/reader-view-back.md`, and the trap underneath it —
+     * `goBack.invoke(null)` silently doing nothing — is worth keeping in mind
+     * anywhere else.
      */
-    override fun onBackPressed(): Boolean {
-        if (controlsVisible()) return feature.onBackPressed()
-
-        val tab = tab() ?: return false
-        if (!tab.readerState.active) return false
-
-        if (Edition.autoReaderView) {
-            // Set before hiding: hiding flips the state this watches, and the
-            // collector must not read a stale flag and re-enter reader view.
-            dismissedForPage = true
-            val article = tab.content.url
-            feature.hideReaderView(tab)
-            scope?.launch { leavePageWhenArticleIsBack(article) }
-            return true
-        }
-
-        val handled = feature.onBackPressed()
-        // Remember the dismissal, or automatic entry would put it straight back.
-        if (handled) dismissedForPage = true
-        return handled
-    }
-
-    /**
-     * The second half of a back press out of reader view: once the browser is
-     * back on the plain article, step off that too.
-     *
-     * Two things had to be right, and the earlier attempt at this had neither.
-     *
-     * **The step goes to a named tab.** `GoBackUseCase.invoke` defaults its tab
-     * to the selected one, but an explicit `null` — which is what [sessionId] is
-     * outside a custom tab — makes it return without dispatching anything. So
-     * the previous attempt's second step was never taken in any ordinary
-     * session, however correctly the rest of the mechanism ran. It is the whole
-     * of "back goes to the plain page and stops there".
-     *
-     * **And it waits for the load, not for the position.** Stepping out of the
-     * reader's entry moves the history index and reports `canGoForward` about
-     * four hundred milliseconds before the article is actually back. `loading`
-     * turning false is the point where a second step is reliably taken —
-     * measured at roughly 700 ms after the press, and accepted first time in
-     * every run once the tab was named.
-     *
-     * The cost is that the plain article shows for that moment on the way past.
-     * A flicker is worth more than a wrong destination, and anything earlier is
-     * a race of the kind this bug has already been "fixed" by twice.
-     *
-     * Bounded three ways, because a step this delayed must not fire into a page
-     * the reader has since asked for: it gives up after [RETREAT_TIMEOUT_MS], it
-     * only acts while the URL is still the article's, and it takes no step where
-     * there is nothing behind the article — a page opened from another app has
-     * no history to leave, and stopping on it is then right rather than a
-     * failure.
-     */
-    private suspend fun leavePageWhenArticleIsBack(article: String) {
-        val watch = ArticleReturn(article)
-        val landed = withTimeoutOrNull(RETREAT_TIMEOUT_MS) {
-            store.flow()
-                .mapNotNull { state -> currentTab(state.selectedTabId) }
-                .first(watch::isSettledOn)
-        } ?: return
-
-        if (landed.content.canGoBack) sessionUseCases.goBack.invoke(landed.id)
-    }
-
-    private fun controlsVisible(): Boolean = controlsView.asView().visibility == View.VISIBLE
-
-    /**
-     * Enters reader view by itself once Gecko reports the page as readerable.
-     *
-     * `readerable` is not known at load time — it is the answer to a check that
-     * runs over the finished DOM and comes back over native messaging — so this
-     * waits for it rather than trying at navigation.
-     */
-    private suspend fun enterOnReaderablePages() {
-        store.flow()
-            .map { state -> currentTab(state.selectedTabId)?.let(::ReaderSnapshot) }
-            .distinctUntilChanged()
-            .collect { snapshot -> onReaderStateChanged(snapshot) }
-    }
-
-    private fun onReaderStateChanged(snapshot: ReaderSnapshot?) {
-        if (snapshot == null || !snapshot.url.isPage()) return
-
-        if (snapshot.url != lastUrl) {
-            lastUrl = snapshot.url
-            dismissedForPage = false
-        }
-
-        // Not while a navigation is in flight. The readability answer names no
-        // page — it is a bare boolean against the tab — so one that arrives
-        // during a load is an answer about the page being left, and entering
-        // reader view on it is itself a navigation: it loads the old article's
-        // reader page over the one that was asked for, and the reader is pulled
-        // back to where they just were. The re-check below makes late answers
-        // ordinary, so this guard is what keeps them harmless.
-        if (!snapshot.readerable || snapshot.active || snapshot.loading || dismissedForPage) return
-
-        val tab = tab() ?: return
-        // Entering reader view loads the extension's article page. That is not
-        // a page the reader asked for, so it does not get its own pause.
-        LoadPauseIntegration.current?.skipImminentPause()
-        feature.showReaderView(tab)
-    }
-
-    private var lastUrl: String? = null
+    override fun onBackPressed(): Boolean = feature.onBackPressed()
 
     /**
      * Asks Gecko again, once a page has settled, whether it is an article.
@@ -222,7 +101,7 @@ class ReaderViewIntegration(
      * readerable, one of them every time and the other about half the time,
      * entirely according to how fast the page came out of the cache.
      *
-     * Both now enter reader view, on the second or third asking — see
+     * Both are now offered reader view, on the second or third asking — see
      * [askWhetherItIsAnArticle] for why one more question is not enough.
      */
     private suspend fun recheckWhenPagesFinishLoading() {
@@ -339,40 +218,10 @@ class ReaderViewIntegration(
         // rather than the SessionState the custom-tab selectors return.
         val tab = tab() ?: return
         if (tab.readerState.active) {
-            // Remember the refusal, or mono would turn it straight back on.
-            dismissedForPage = true
             feature.hideReaderView(tab)
         } else {
             LoadPauseIntegration.current?.skipImminentPause()
             feature.showReaderView(tab)
-        }
-    }
-
-    /**
-     * Watches the browser come back to an article after reader view has been
-     * told to close on it.
-     *
-     * The state it keeps is one bit, and that bit is the point.
-     * `hideReaderView` clears the reader flags *before* it asks the engine to
-     * step out of the reader's history entry, so the moment this starts
-     * watching, the tab already looks exactly like the article settled and
-     * ready — right URL, reader off, nothing loading. Acting on that would put
-     * the second step back where the previous attempt had it, milliseconds
-     * after the press and against a traversal that has not begun. Waiting for a
-     * load to have started first is what makes "settled" mean the article
-     * rather than the reader page it is still standing on.
-     */
-    internal class ArticleReturn(private val article: String) {
-
-        private var loadStarted = false
-
-        fun isSettledOn(tab: TabSessionState): Boolean {
-            if (tab.content.loading) loadStarted = true
-
-            return loadStarted &&
-                !tab.content.loading &&
-                !tab.readerState.active &&
-                tab.content.url == article
         }
     }
 
@@ -383,16 +232,6 @@ class ReaderViewIntegration(
 
         var showControls: (() -> Unit)? = null
             private set
-
-        /**
-         * How long the second half of a back press waits for the article to
-         * come back before giving up on it.
-         *
-         * Generous, because it is waiting on a page load, and harmless if
-         * exceeded: the press has already left reader view, so giving up leaves
-         * the reader on the plain article rather than anywhere unexpected.
-         */
-        private const val RETREAT_TIMEOUT_MS = 5_000L
 
         /**
          * How many times a settled page is asked whether it is an article, and
@@ -409,9 +248,8 @@ class ReaderViewIntegration(
  * browser's own.
  *
  * Reader view's rendering of an article is a `moz-extension:` page that the URL
- * briefly points at on the way in, and it is neither something to offer reader
- * view for — that would load the reader inside itself — nor something to measure
- * a dismissal against. Readability declines anything but http and https for the
- * same reason, so this only ever refuses what it would have refused anyway.
+ * briefly points at on the way in, and offering reader view for it would load
+ * the reader inside itself. Readability declines anything but http and https for
+ * the same reason, so this only ever refuses what it would have refused anyway.
  */
 internal fun String.isPage(): Boolean = startsWith("http", ignoreCase = true)

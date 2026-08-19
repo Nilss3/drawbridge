@@ -12,6 +12,11 @@
     Removal is deliberately absent: it lives behind the key, on the screen this
     one guards. Diagnostics is not, because a locked phone is the normal state
     and a screen for troubleshooting one is useless if it needs the key first.
+
+    "Forgot the code" is the one item here that changes anything, and it is here
+    rather than behind the key because a key that is gone is the whole reason
+    somebody would look for it. It cannot be a bypass: what it offers is a
+    thirty-day wait, in plain view on the keyguard for every one of those days.
 -->
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
@@ -19,6 +24,11 @@
     <item
         android:id="@+id/actionRefresh"
         android:title="@string/action_refresh"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/actionForgotKey"
+        android:title="@string/action_forgot_key"
         app:showAsAction="never" />
 
     <item

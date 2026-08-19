@@ -131,8 +131,8 @@ android {
                 .map { "$it.selection" }
                 .getOrElse("app.drawbridge.dpc.selection")
         targetSdk = 36
-        versionCode = 18
-        versionName = "0.2.7"
+        versionCode = 41
+        versionName = "0.2.16"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -144,6 +144,27 @@ android {
         // Empty in any build that does not configure one, which compiles the
         // second-key check down to a constant-false.
         buildConfigField("String", "EMERGENCY_KEY_SHA256", "\"$emergencyKeyHash\"")
+
+        /**
+         * Where this build fetches its signed policy from.
+         *
+         * Defaults to `main`, which is what every published release polls, so a
+         * build with nothing configured behaves exactly as it always has. The
+         * `dev` branch sets `drawbridgePolicyUrl` in gradle.properties to its own
+         * copy, which is what makes a development channel possible at all: until
+         * this existed, a dev build polled the *alpha's* live document, so policy
+         * changes could not be tested without publishing them to every phone.
+         *
+         * The document is signed either way — a different URL is not a way round
+         * the signature, only a way to have a second one.
+         */
+        buildConfigField(
+            "String",
+            "POLICY_URL",
+            "\"" + (providers.gradleProperty("drawbridgePolicyUrl").getOrElse(
+                "https://raw.githubusercontent.com/Nilss3/drawbridge/main/dist/policy.signed.json"
+            )) + "\"",
+        )
     }
 
     signingConfigs {

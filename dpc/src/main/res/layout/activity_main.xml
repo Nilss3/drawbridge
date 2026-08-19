@@ -26,7 +26,7 @@
         android:paddingBottom="32dp">
 
         <TextView
-            style="@style/TextAppearance.Drawbridge.SectionHeading"
+            style="@style/TextAppearance.Drawbridge.SectionHeading.First"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/language_heading" />
@@ -48,13 +48,17 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <!--
-            Shown whole rather than cropped to a band. The master is square and
-            composed as one picture: the reader on his bench at the bottom left
-            and the monsters at the bottom right are the point of it, and a
-            centre crop to a letterbox takes the spire tips off the top and the
-            feet off the bottom. wrap_content with adjustViewBounds lets the
-            height follow the width, which costs nothing but a little scrolling
-            on a phone screen.
+            Shown whole rather than cropped to a band. The master is composed as
+            one picture: the reader on his bench at the left and the monsters at
+            the right are the point of it, and a centre crop to a letterbox takes
+            the spire tips off the top and the feet off the bottom. wrap_content
+            with adjustViewBounds lets the height follow the width.
+
+            The master went from square to 16:9 on 2026-08-19 for what that costs
+            here: shown whole, a square picture filled the top of the screen and
+            pushed the language picker, the policy and the options below the
+            fold, so the first thing a parent saw was all illustration. Same
+            rule, half the height, nothing cropped.
         -->
         <com.google.android.material.imageview.ShapeableImageView
             android:layout_width="match_parent"
@@ -79,10 +83,22 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="24dp"
-            android:paddingBottom="28dp"
+            android:paddingBottom="20dp"
             android:text="@string/welcome_subtitle"
             android:textAppearance="?attr/textAppearanceBodyMedium" />
 
+        <!--
+            **The policy comes first, as of 2026-08-15, and the sentence under it
+            is why.** It used to sit below the disconnect philosophy, on the
+            reasoning that whether the phone reaches the web at all is the larger
+            question — true, and it left the line about the filter stranded at the
+            top describing controls three sections away.
+
+            The policy is also the one thing on this screen that acts
+            immediately. Putting it first lets the sentence beneath it say two
+            things in the right order: this part is already running, everything
+            below waits for the lock. Read top to bottom it now explains itself.
+        -->
         <TextView
             style="@style/TextAppearance.Drawbridge.SectionHeading"
             android:layout_width="match_parent"
@@ -93,9 +109,155 @@
             android:id="@+id/policyContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="24dp" />
+
+        <!--
+            Directly under the policy it describes. It used to be at the very top
+            and had to name every section it covered; now it points at what is
+            just above it and what is just below, and needs no list.
+        -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="24dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="28dp"
+            android:text="@string/settings_take_effect_at_lock"
+            android:textAppearance="?attr/textAppearanceBodyMedium"
+            android:textColor="?attr/colorPrimary" />
+
+        <TextView
+            style="@style/TextAppearance.Drawbridge.SectionHeading"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/disconnect_heading" />
+
+        <LinearLayout
+            android:id="@+id/disconnectContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="24dp" />
+
+        <!-- Shown only while the curfew is the chosen philosophy. -->
+        <LinearLayout
+            android:id="@+id/curfewSchedule"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="28dp"
+            android:orientation="vertical"
+            android:paddingHorizontal="24dp"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="4dp"
+                android:paddingBottom="12dp"
+                android:text="@string/curfew_explanation"
+                android:textAppearance="?attr/textAppearanceBodySmall" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/curfew_weekdays"
+                android:textAppearance="?attr/textAppearanceTitleSmall" />
+
+            <Button
+                android:id="@+id/curfewWeekdayButton"
+                style="@style/Widget.Material3.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/curfew_weekend"
+                android:textAppearance="?attr/textAppearanceTitleSmall" />
+
+            <Button
+                android:id="@+id/curfewWeekendButton"
+                style="@style/Widget.Material3.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <!--
+            Between the disconnect philosophy and the options on purpose. It is
+            the same shape of question as the philosophy above it — how much of a
+            thing this phone has, answered once — and it lands at the lock like
+            the options below it.
+        -->
+        <TextView
+            style="@style/TextAppearance.Drawbridge.SectionHeading"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/browser_heading" />
+
+        <LinearLayout
+            android:id="@+id/browserContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:layout_marginBottom="28dp"
             android:orientation="vertical"
             android:paddingHorizontal="24dp" />
+
+        <!--
+            The third "how much of a thing does this phone have" question, after
+            the disconnect philosophy and the browser policy and before the
+            per-service switches. Not inflated from a list like those two: there
+            is exactly one of it, and it comes from the device rather than from
+            the signed document.
+
+            **It keeps its explanation on the card**, like the three disconnect
+            philosophies and unlike the policy and the options. The name alone
+            does not carry the meaning — "only the apps already on this phone"
+            does not say that updates still arrive, which is the half that makes
+            it livable — and the ⓘ carries what it costs, which is a paragraph.
+        -->
+        <TextView
+            style="@style/TextAppearance.Drawbridge.SectionHeading"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/install_lock_heading" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingHorizontal="24dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/install_lock_name"
+                android:textAppearance="?attr/textAppearanceTitleSmall" />
+
+            <ImageButton
+                android:id="@+id/installLockInfo"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:scaleType="center"
+                android:src="@drawable/ic_info" />
+
+            <com.google.android.material.materialswitch.MaterialSwitch
+                android:id="@+id/installLockSwitch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="24dp"
+            android:layout_marginBottom="28dp"
+            android:text="@string/install_lock_description"
+            android:textAppearance="?attr/textAppearanceBodySmall" />
 
         <TextView
             style="@style/TextAppearance.Drawbridge.SectionHeading"
@@ -165,6 +327,64 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/action_lock" />
+
+            <!--
+                Under the button, not up with the other settings, because it is
+                not a setting about the phone — it is a qualifier on the act the
+                button performs. "Lock, and let go again in two weeks" is one
+                decision, and this is the second half of the sentence.
+            -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingTop="12dp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/lock_timer_name"
+                    android:textAppearance="?attr/textAppearanceTitleSmall" />
+
+                <ImageButton
+                    android:id="@+id/lockTimerInfo"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:scaleType="center"
+                    android:src="@drawable/ic_info" />
+
+                <com.google.android.material.materialswitch.MaterialSwitch
+                    android:id="@+id/lockTimerSwitch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/lock_timer_description"
+                android:textAppearance="?attr/textAppearanceBodySmall" />
+
+            <!-- Only while the switch is on: a period with nothing to apply it to
+                 is a control that answers a question nobody asked. -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/lockTimerLength"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:hint="@string/lock_timer_length_hint"
+                android:visibility="gone">
+
+                <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                    android:id="@+id/lockTimerField"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="none" />
+            </com.google.android.material.textfield.TextInputLayout>
         </LinearLayout>
     </LinearLayout>
 </ScrollView>

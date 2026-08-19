@@ -68,6 +68,7 @@ class HeraldApplication : Application() {
         components.core.engine.warmUp()
         // After warmUp: the prefs go to a running Gecko.
         EngineProvider.applySingleWindowPrefs()
+        EngineProvider.applySlowScrollingPrefs()
         components.filter.install(components.core.engine)
         components.contentBlocker.install(components.core.engine)
 

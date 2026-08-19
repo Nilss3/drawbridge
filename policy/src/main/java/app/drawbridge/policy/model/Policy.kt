@@ -129,6 +129,14 @@ data class Policy(
      */
     @SerialName("required_apps")
     val requiredApps: List<AppUpdate> = emptyList(),
+
+    /**
+     * Admitting apps by the store's own rating and category, rather than only by
+     * a hand-written list of package names. Null on a document that predates it,
+     * which disables the rule rather than defaulting it — see [AppRatings].
+     */
+    @SerialName("app_ratings")
+    val appRatings: AppRatings? = null,
 ) {
     /**
      * Every browser this policy permits, with [allowedBrowserPackage] always a
@@ -249,6 +257,28 @@ data class PolicyOption(
     @SerialName("recommended_age")
     val recommendedAge: Int? = null,
 
+    /**
+     * Marks an option that carries no single age because its content is not
+     * sorted by one. The screen shows *various ages* on its shield instead of a
+     * number.
+     *
+     * The streaming catalogue is the case it exists for: one switch covers fifty
+     * services, and a service carries children's films and adult drama through
+     * the same app. Any number printed on that would be a number somebody made
+     * up.
+     *
+     * **The wording is deliberate and was changed on the way in.** The first
+     * draft said *parental advisory*, which is a phrase the RIAA has a
+     * registered mark on and a look people recognise; borrowing either the
+     * words or the black-label styling invites a confusion nobody here wants,
+     * and "various ages" says the true thing more plainly anyway.
+     *
+     * Ignored when [recommendedAge] is set, since an age is the more specific
+     * statement of the two.
+     */
+    @SerialName("various_ages")
+    val variousAges: Boolean = false,
+
     /** Whether this is on before anyone has been asked. */
     @SerialName("default_enabled")
     val defaultEnabled: Boolean = false,
@@ -311,6 +341,18 @@ data class Profile(
 
     /** The paragraph under both, spelling out what the profile actually does. */
     val description: String = "",
+
+    /**
+     * The age this profile is usually reckoned suitable from, shown on a shield
+     * beside its name — the same shield an option carries, for the same reason.
+     *
+     * It used to be written into [subtitle] as "(+14)", in three languages, which
+     * meant the one number a parent compares profiles by was buried in the middle
+     * of a sentence and spelled differently in each of them. Advice rather than
+     * enforcement, exactly as [PolicyOption.recommendedAge] is.
+     */
+    @SerialName("recommended_age")
+    val recommendedAge: Int? = null,
 
     /**
      * Translations of [name], keyed by two-letter language code.
@@ -425,6 +467,31 @@ data class DnsPolicy(
     /** TTL, in seconds, applied to synthesised NXDOMAIN/blocked answers. */
     @SerialName("blocked_response_ttl_seconds")
     val blockedResponseTtlSeconds: Int = 60,
+
+    /**
+     * Packages left outside the tunnel entirely, because the tunnel stops them
+     * working at all.
+     *
+     * **Every name here is a hole in the filter**, and a deliberate one: an
+     * excluded app resolves through the system resolver, so nothing it looks up
+     * is checked against the blocklist. That is the whole cost, and it is why
+     * this list is short, is spelled out in `docs/policy.md`, and should never
+     * grow to hold a browser or anything that renders arbitrary web content.
+     *
+     * The default is Android Auto, which refuses to start wirelessly while a VPN
+     * is present and says so — *"error 21, are you using a VPN?"* — on a car's
+     * screen, every time the phone comes into range. It reaches nothing a child
+     * can steer: it is a projection surface for other apps, which keep their own
+     * network and stay filtered.
+     *
+     * **It is policy rather than a constant because drawbridge cannot update
+     * itself** (see the handoff on Play Protect). An app that turns out to be
+     * incompatible with an always-on VPN can be added to a signed policy and
+     * reach a locked phone at its next poll; the same fix built into the DPC
+     * needs a cable and somebody holding the key.
+     */
+    @SerialName("excluded_packages")
+    val excludedPackages: List<String> = listOf("com.google.android.projection.gearhead"),
 )
 
 @Serializable
@@ -444,17 +511,23 @@ data class BrowserPolicy(
      * engine's hostname at the DNS layer, and only Google, Bing and DuckDuckGo
      * publish a hostname to rewrite to. The rest serve image results from their
      * own CDN, which no domain blocklist covers, which is why Yandex and Baidu
-     * are absent rather than merely unselected.
+     * are absent rather than merely unselected. Kagi is here because it filters
+     * when logged out and offers nothing to turn that off.
+     *
+     * **This default had gone stale, and it fails in the dangerous direction.**
+     * It still named Brave Search, Qwant and Startpage — dropped on 2026-08-10
+     * for safe search that cannot be forced — and Ecosia, dropped on 2026-08-15
+     * because its parameter only ever worked inside herald. `SearchEngineCatalogue`
+     * *hides* every engine this list does not name, so a stale name here is not
+     * inert: on a phone whose policy omits the field, a locale that bundles one
+     * of those four would have kept it, unforced. The four were removed from
+     * every other list at the time and this one was missed both times.
      */
     @SerialName("search_engines")
     val searchEngines: List<String> = listOf(
         "DuckDuckGo",
         "Google",
         "Bing",
-        "Brave Search",
-        "Qwant",
-        "Ecosia",
-        "Startpage",
         "Kagi",
     ),
 

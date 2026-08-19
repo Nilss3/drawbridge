@@ -12,7 +12,7 @@
 
     <string name="welcome_title">Bienvenue dans drawbridge</string>
     <string name="welcome_subtitle">Levons le pont face à l\'internet toxique et addictif, et gardons notre tranquillité d\'esprit.</string>
-    <string name="welcome_scene_description">Un pont-levis relevé la nuit, entre un parc paisible éclairé par la lune et une rive rocheuse où attendent des monstres de dessin animé.</string>
+    <string name="welcome_scene_description">Un pont-levis relevé au coucher du soleil, entre un parc d\'automne où quelqu\'un lit sur un banc et une rive rocheuse où attendent des monstres de dessin animé.</string>
 
     <string name="policy_heading">Politique</string>
     <string name="policy_none_available">Ce document de politique ne propose aucun choix.</string>
@@ -22,32 +22,50 @@
     <string name="policy_applying_title">Application de la politique</string>
     <string name="policy_applying_message">Téléchargement des listes de blocage et vérification des applications installées…</string>
     <string name="policy_apply_failed">Cette politique ne figure plus dans le document.</string>
+    <string name="change_applied_at_lock">%1$s appliqué après le verrouillage.</string>
+    <string name="change_applied">%1$s appliqué.</string>
+    <string name="info_button_description">En savoir plus sur %1$s</string>
+    <string name="settings_take_effect_at_lock">Cette politique est toujours active, même lorsque drawbridge est déverrouillé. Les options ci-dessous sont des restrictions supplémentaires et ne s\'appliquent que lorsque drawbridge est verrouillé.</string>
+
+    <string name="browser_heading">Politique de navigateur</string>
+    <string name="browser_all_name">Autoriser les navigateurs</string>
+    <string name="browser_all_description">Tous les navigateurs qui fonctionnent bien avec le filtre web. Nous recommandons herald : minimaliste, il affiche une page claire lorsqu\'un site est bloqué et il suit la politique de drawbridge.</string>
+    <string name="browser_mono_name">herald mono uniquement</string>
+    <string name="browser_mono_description">Un navigateur minimaliste pour qui navigue trop : monochrome par défaut, il défile et réagit plus lentement, et n\'a qu\'un seul onglet.\n\nIls ne sont pas désinstallés : tous les autres navigateurs sont suspendus et masqués, et reviennent avec leurs favoris et leurs connexions intacts si vous les réautorisez. Si vous préférez qu\'un navigateur disparaisse vraiment, désinstallez-le vous-même avant de verrouiller.</string>
+    <string name="browser_none_name">Aucun navigateur</string>
+    <string name="browser_none_description">Laisse le téléphone sans navigateur que vous puissiez ouvrir. Avant de verrouiller ce choix, assurez-vous d\'être connecté dans toutes vos applications, car certaines exigent un navigateur pour s\'y connecter.\n\nSachez aussi que certaines fonctions peuvent mal fonctionner ou ne plus fonctionner du tout, par exemple les paiements, les codes QR, etc.\n\nIls ne sont pas désinstallés : tous les autres navigateurs sont suspendus et masqués, et reviennent avec leurs favoris et leurs connexions intacts si vous les réautorisez. Si vous préférez qu\'un navigateur disparaisse vraiment, désinstallez-le vous-même avant de verrouiller.</string>
+    <string name="browser_icons_description">Les navigateurs que ce choix autorise</string>
+
+    <string name="install_lock_heading">Installation d\'applications</string>
+    <string name="install_lock_name">Aucune autre application</string>
+    <string name="install_lock_description">Après le verrouillage, aucune nouvelle application ne peut être installée. Celles qui se trouvent sur le téléphone à ce moment-là continuent de se mettre à jour normalement.</string>
+    <string name="install_lock_info">Avant de verrouiller, faites le tri dans vos applications et ne gardez que celles que vous voulez sur le téléphone. Après le verrouillage, aucune nouvelle application ne sera autorisée. Les mises à jour des applications existantes passent toujours : gardez donc le Play Store pour les mettre à jour.\n\nherald et tout ce que la politique exige par ailleurs font exception. drawbridge les installe lui-même, depuis la politique signée que vous avez choisie, que le téléphone soit verrouillé ou non.\n\nLaissez ceci désactivé en cas de doute. Bloquer une application reste possible plus tard ; un téléphone sur lequel personne ne peut rien installer est un téléphone pour lequel on devra venir vous trouver.</string>
 
     <string name="options_heading">Options</string>
-    <string name="options_explanation">Autorisez les services suivants à vos propres risques.</string>
+    <string name="options_explanation">Lorsqu\'il est déverrouillé, drawbridge autorise tout ce qui suit. Si vous ne voulez pas de certains de ces ‘services’, et à juste titre, interdisez-les et verrouillez drawbridge.</string>
     <string name="options_none_available">Cette politique ne propose rien à activer.</string>
-    <string name="options_footnote">La politique s\'inspire des bonnes pratiques du minimalisme numérique et constitue un bon choix pour tout le monde, adultes compris. Les âges sont une recommandation de pédiatres, de psychologues et de neurologues.</string>
+    <string name="options_footnote">La politique s\'inspire des bonnes pratiques du minimalisme numérique et constitue un bon choix pour tout le monde, adultes compris. Les âges sont une recommandation de pédiatres et de neurologues, et ne concernent que les personnes qui configurent un appareil pour un adolescent.</string>
     <string name="option_change_failed">Cette option ne figure plus dans la politique.</string>
-    <string name="option_disable_confirm_title">Désactiver %1$s ?</string>
-    <string name="option_disable_confirm_message">Les applications que cette option autorisait sont retirées immédiatement. La réactiver plus tard ne les réinstalle pas.</string>
-    <string name="option_disable_confirm_yes">Désactiver</string>
+    <string name="option_recommended_age_description">Recommandé à partir de %1$d ans</string>
+    <string name="option_various_ages_description">Âges variés</string>
 
 
     <string name="action_lock">Verrouiller drawbridge</string>
     <string name="action_refresh">Rechercher des mises à jour de politique</string>
     <string name="action_remove">Désactiver les restrictions drawbridge</string>
+    <string name="action_forgot_key">Code oublié</string>
 
     <string name="policy_refreshed">Politique mise à jour (version %1$d)</string>
     <string name="policy_refresh_failed">Le serveur de politique est injoignable</string>
 
     <!-- Verrouillage -->
     <string name="lock_confirm_title">Verrouiller drawbridge ?</string>
-    <string name="lock_confirm_message">Ceci applique la politique, démarre le filtre de contenu et scelle cet écran.\n\nAndroid demandera si drawbridge peut continuer à fonctionner en arrière-plan. <b>Acceptez.</b> Refuser n\'arrête pas le filtre, mais laisse le téléphone endormir la vérification quotidienne des mises à jour de politique — l\'appareil continuerait alors à filtrer sur une liste périmée sans le signaler.\n\nUne clé vous sera montrée. C\'est le seul moyen de revenir, elle n\'est affichée qu\'une fois, et il n\'y a aucune réinitialisation — ni par e-mail, ni par nous, ni par personne.\n\nNotez-la, ou décidez sciemment de ne pas le faire.</string>
+    <string name="lock_confirm_message">Le verrouillage appliquera les restrictions autres que celles par défaut, pour les sites web comme pour les applications.\n\nUne clé aléatoire vous sera montrée, difficile à retenir et différente à chaque verrouillage. Cette clé est nécessaire pour déverrouiller drawbridge (en dehors de la minuterie). Notez-la et cachez-la soigneusement. Vous pouvez aussi ‘oublier’ la clé volontairement, par exemple si vous réglez une minuterie ou si vous voulez que l\'appareil garde ces restrictions indéfiniment.\n\nSi Android demande si drawbridge peut fonctionner en arrière-plan, autorisez-le. drawbridge fonctionne dans les deux cas, mais les mises à jour arrivent ainsi à temps.</string>
     <string name="lock_confirm_yes">Verrouiller et montrer la clé</string>
     <string name="lock_needs_filter">Le filtre de contenu doit fonctionner avant que le téléphone puisse être verrouillé.</string>
 
     <string name="lock_reveal_title">Notez ceci maintenant</string>
-    <string name="lock_reveal_explanation">Cette clé déverrouille ces réglages. Elle n\'est stockée nulle part où vous pourriez la relire, et une nouvelle est créée à chaque verrouillage — donc celle-ci, sur papier, est tout ce qui existe.\n\nSi vous préférez ne pas pouvoir changer d\'avis, c\'est un choix légitime. Fermez sans garder la clé et ces réglages ne pourront plus jamais être modifiés — le téléphone peut toutefois toujours être réinitialisé, ce qui supprime drawbridge et tout le reste.</string>
+    <string name="lock_reveal_explanation">Nous vous rappelons que la clé est différente à chaque fois.</string>
     <string name="update_title">Mettre drawbridge à jour</string>
     <string name="update_notice">Une version plus récente de drawbridge est disponible.</string>
     <string name="update_action">Mettre à jour</string>
@@ -64,18 +82,28 @@
     <string name="update_result_blocked">Le téléphone a refusé la mise à jour, ce qui correspond à un blocage par Play Protect. Suspendez Play Protect et réessayez.</string>
     <string name="update_result_failed">La mise à jour n\'a pas été installée : %1$s</string>
     <string name="update_turn_back_on">Réactivez Play Protect ensuite. C\'est la seule chose sur ce téléphone qui surveille les applications réellement nuisibles, et elle ne gêne rien d\'autre dans drawbridge.</string>
-    <string name="lock_screen_info">Drawbridge veille sur cet appareil et sur son propriétaire</string>
-    <string name="lock_screen_info_locked">Drawbridge veille sur cet appareil et sur son propriétaire - Verrouillé depuis %1$s</string>
+    <string name="lock_screen_info">drawbridge protège</string>
+    <string name="lock_screen_info_locked">drawbridge verrouillé depuis %1$s</string>
+    <string name="lock_screen_info_timer">drawbridge se déverrouille dans %1$s</string>
+
+    <plurals name="duration_days">
+        <item quantity="one">%d jour</item>
+        <item quantity="other">%d jours</item>
+    </plurals>
+    <plurals name="duration_hours">
+        <item quantity="one">%d heure</item>
+        <item quantity="other">%d heures</item>
+    </plurals>
+    <plurals name="duration_minutes">
+        <item quantity="one">%d minute</item>
+        <item quantity="other">%d minutes</item>
+    </plurals>
     <string name="lock_key_glyphs">Une clé ne contient jamais les lettres O, I ni L. Un caractère rond est un zéro. Si votre écriture est ambiguë, taper O, I ou l fonctionne quand même.</string>
-    <string name="lock_reveal_not_sealed_yet">Ces réglages ne sont scellés qu\'au moment où vous touchez Terminé. Si vous quittez cet écran avant, la clé est oubliée et rien n\'est verrouillé — le téléphone continue de filtrer, et vous pouvez verrouiller à nouveau pour obtenir une nouvelle clé.</string>
-    <string name="lock_reveal_confirm">J\'ai noté ou imprimé cette clé</string>
+    <string name="lock_reveal_confirm">J\'ai noté ou enregistré la clé, ou je l\'ai oubliée volontairement.</string>
     <string name="lock_reveal_share">Imprimer ou enregistrer la clé</string>
     <string name="lock_reveal_subject">clé drawbridge</string>
     <string name="lock_reveal_body">Clé drawbridge : %1$s\n\nConservez-la en lieu sûr et hors ligne. Elle déverrouille les réglages drawbridge sur le téléphone.</string>
     <string name="lock_reveal_finish">Terminé</string>
-    <string name="lock_reveal_discard_title">Fermer sans la clé ?</string>
-    <string name="lock_reveal_discard_message">Les réglages de ce téléphone resteront exactement tels quels, et plus personne ne pourra les modifier — vous non plus.\n\nLe téléphone n\'est pas bloqué : une réinitialisation d\'usine fonctionne toujours, depuis les réglages ou depuis le mode recovery, et emporte drawbridge avec elle. Elle efface aussi tout le reste de l\'appareil.</string>
-    <string name="lock_reveal_discard_yes">Fermer quand même</string>
 
     <string name="lock_challenge_title">drawbridge est verrouillé</string>
     <string name="lock_challenge_explanation">Tapez la clé reçue au moment du verrouillage. Les tirets et les majuscules n\'ont pas d\'importance.</string>
@@ -85,6 +113,38 @@
     <string name="lock_since_protected">Protège ce téléphone depuis le %1$s</string>
     <string name="lock_since_locked">Verrouillé depuis le %1$s</string>
     <string name="lock_since_hint">Si cela ne correspond pas à vos souvenirs, ce téléphone a été déverrouillé ou réinitialisé depuis.</string>
+
+    <!-- La minuterie du verrouillage -->
+    <string name="lock_timer_name">Minuterie de déverrouillage automatique</string>
+    <string name="lock_timer_description">Le verrouillage prend fin de lui-même après la période choisie. Vous recevez toujours une clé, et elle fonctionne toujours.</string>
+    <string name="lock_timer_info">Sans minuterie, drawbridge reste verrouillé jusqu\'à ce que vous saisissiez la clé. Vous pouvez aussi régler une minuterie au bout de laquelle drawbridge se déverrouille tout seul.\n\nLa clé permet toujours de déverrouiller avant l\'échéance, mais beaucoup préfèrent ‘oublier’ la clé volontairement et se servir de la minuterie pour s\'accorder une pause, par exemple « 4 h d\'étude sans internet », « un week-end de camping hors ligne », « 2 semaines sans YouTube », « 3 semaines avec un couvre-feu internet strict ».\n\nLa durée est fixée au moment du verrouillage. Elle ne peut être ni raccourcie, ni prolongée, ni annulée depuis un téléphone verrouillé, et l\'horloge du téléphone suit l\'heure du réseau, si bien que la date ne peut pas être déplacée non plus.</string>
+    <string name="lock_timer_length_hint">Reste verrouillé pendant</string>
+    <string name="lock_timer_applied">Le verrouillage prendra fin de lui-même après %1$s.</string>
+    <string name="lock_timer_off_applied">Le verrouillage durera jusqu\'à ce que vous le leviez avec la clé.</string>
+    <string name="lock_confirm_timer">Ce verrouillage prend fin de lui-même après %1$s. Vous recevez toujours une clé et elle fonctionne toujours — la minuterie n\'est que ce qui se passe si personne ne l\'utilise.</string>
+    <string name="lock_timer_reveal">Ce téléphone se déverrouille de lui-même %1$s après votre appui sur Terminé, avec ou sans cette clé. D\'ici là, la clé est la seule entrée.</string>
+    <string name="lock_timer_running">Se déverrouille de lui-même le %1$s</string>
+    <string name="lock_timer_running_forgotten">Quelqu\'un a indiqué sur ce téléphone que le code était perdu : il se déverrouille donc de lui-même le %1$s. Si vous avez encore le code, déverrouillez puis verrouillez à nouveau pour l\'arrêter.</string>
+
+    <string name="lock_timer_hours_2">2 heures</string>
+    <string name="lock_timer_hours_4">4 heures</string>
+    <string name="lock_timer_hours_8">8 heures</string>
+    <string name="lock_timer_hours_12">12 heures</string>
+    <string name="lock_timer_day_1">1 jour</string>
+    <string name="lock_timer_days_2">2 jours</string>
+    <string name="lock_timer_days_3">3 jours</string>
+    <string name="lock_timer_week_1">1 semaine</string>
+    <string name="lock_timer_weeks_2">2 semaines</string>
+    <string name="lock_timer_weeks_3">3 semaines</string>
+    <string name="lock_timer_days_30">30 jours</string>
+    <string name="lock_timer_days_40">40 jours</string>
+
+    <!-- Code oublié, sur un téléphone verrouillé -->
+    <string name="forgot_key_title">Code oublié ?</string>
+    <string name="forgot_key_message">Si vous avez oublié la clé mais que vous avez besoin de déverrouiller drawbridge pour modifier les restrictions ou réinitialiser l\'appareil, vous pouvez lancer à l\'écran suivant une minuterie de %1$s. Drawbridge se déverrouillera ensuite.\n\nLa minuterie est affichée sur l\'écran de verrouillage : cela ne passera donc pas inaperçu.</string>
+    <string name="forgot_key_start">Lancer l\'attente</string>
+    <string name="forgot_key_started">drawbridge se déverrouille de lui-même le %1$s. D\'ici là rien ne change : le téléphone reste verrouillé et le code l\'ouvre toujours.</string>
+    <string name="forgot_key_running">Ce téléphone se déverrouille déjà de lui-même le %1$s, et cela ne peut pas être avancé. Déverrouiller avec le code avant cette date y met fin.</string>
 
     <!-- Retrait -->
     <string name="remove_title">Désactiver les restrictions drawbridge</string>
@@ -101,4 +161,24 @@
     <string name="filter_channel_name">Filtre de contenu</string>
     <string name="filter_notification_title">Filtre de contenu actif</string>
     <string name="filter_notification_text">Filtre le DNS de toutes les applications de cet appareil</string>
+
+    <string name="disconnect_heading">Philosophie de déconnexion</string>
+    <string name="disconnect_offline_name">Toujours délicieusement hors ligne</string>
+    <string name="disconnect_offline_description">Après le verrouillage : aucun trafic internet possible. Uniquement les appels et les SMS, ainsi que la réception GPS et la radio FM lorsqu\'elles sont disponibles.</string>
+    <string name="disconnect_online_name">Hélas toujours en ligne</string>
+    <string name="disconnect_online_description">Par défaut, et toujours lorsque drawbridge est déverrouillé.</string>
+    <string name="disconnect_curfew_name">Couvre-feu pour internet</string>
+    <string name="disconnect_curfew_description">Après le verrouillage : internet uniquement entre certaines heures. Nous recommandons au moins une demi-heure par semaine pour installer les mises à jour.</string>
+    <string name="curfew_explanation">Le téléphone est hors ligne entre ces heures.</string>
+    <string name="curfew_weekdays">Du lundi au vendredi</string>
+    <string name="curfew_weekend">Samedi et dimanche</string>
+    <string name="curfew_window">Hors ligne de %1$s à %2$s</string>
+    <string name="curfew_pick_start">Hors ligne à partir de</string>
+    <string name="curfew_pick_end">De nouveau en ligne à</string>
+
+    <string name="lock_current_policy">Politique : %1$s</string>
+    <string name="lock_current_policy_unnamed">les règles du document lui-même</string>
+    <string name="lock_current_offline">Internet : toujours hors ligne</string>
+    <string name="lock_current_online">Internet : toujours autorisé</string>
+    <string name="lock_current_curfew">Hors ligne %1$s–%2$s en semaine, %3$s–%4$s le week-end</string>
 </resources>

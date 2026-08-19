@@ -21,7 +21,8 @@ hold, which is what makes replaying an old, permissive policy fail.
     "upstreams": ["94.140.14.15", "94.140.15.16"],
     "enforce_safe_search": true,
     "strip_https_records": true,
-    "block_encrypted_dns": true
+    "block_encrypted_dns": true,
+    "excluded_packages": ["com.google.android.projection.gearhead"]
   },
   "blocklists": [
     { "id": "adult", "url": "https://...", "format": "hosts", "category": "adult" }
@@ -42,6 +43,7 @@ hold, which is what makes replaying an old, permissive policy fail.
 |---|---|
 | `dns.encrypted_upstream` | Where queries actually go, over DNS-over-TLS. Encrypts the hop, so the local network cannot read the lookups or forge answers. Mullvad's `all` profile also blocks adult, gambling, social, ads and trackers at their end. |
 | `dns.upstreams` | Plain-DNS fallback. Bootstraps the encrypted upstream's hostname and takes over if it is unreachable — keep it a *filtering* resolver so the failure mode is a narrower filter, not an open one. |
+| `dns.excluded_packages` | Apps left outside the tunnel, **and therefore outside the filter**. For apps an always-on VPN stops working; see below before adding one. Defaults to Android Auto. |
 | `blocklists` | Domain lists downloaded and compiled on device. `format` is `hosts` or `domains`; Adblock-style `\|\|domain^` lines are tolerated in either. |
 | `blocked_domains` | Extra domains on top of the lists. Suffix matching: `example.com` covers `www.example.com`. |
 | `allowed_domains` | Wins over everything else, in the DNS filter and in herald alike. Use it to carve an exception out of a bulk list — and see the note below, because it is also what keeps the filter able to update itself. |
@@ -55,6 +57,101 @@ hold, which is what makes replaying an old, permissive policy fail.
 | `browser.blocked_url_patterns` | Regexes matched against the full URL — path-level rules DNS cannot express. herald only. |
 | `browser.default_search_engine` | Selected until someone picks another in herald's settings, after which the choice is theirs. Matched loosely, so `duckduckgo` finds `ddg`. |
 | `browser.search_engines` | The engines herald offers at all. Anything not named is hidden, including whatever the phone's locale would otherwise add; anything named that Mozilla's catalogue lacks is added by herald. |
+
+### Adding a service to a domain list: the checklist
+
+**Blocking a brand does not block its app.** TikTok Lite proved it on 2026-08-18:
+`tiktok.com`, `tiktokv.com`, `tiktokcdn.com`, `tiktokcdn-us.com`,
+`byteoversea.com` and `musical.ly` were all blocked, and the app played video.
+It talks to `api.snssdk.com` and fetches media from `ibytedtos.com` — ByteDance's
+own names, not TikTok's. Instagram Lite, on the same phone at the same time,
+showed nothing, because Meta serves its Lite build from `instagram.com` and
+`fbcdn.net` like everything else it runs.
+
+So the brand domains are the *start* of an entry, never the end. For each service
+added or reviewed:
+
+1. **Name the parent company and find its infrastructure.** The pattern to look
+   for is a company whose apps talk to company-named hosts rather than
+   product-named ones. ByteDance is the worst offender in this list; a service
+   whose website works and whose app does not is the symptom in reverse, and a
+   service whose *app* works while the site is blocked is this bug.
+2. **Cross-check against a maintained upstream list** for that service — the
+   drawbridge lists are curated and pinned precisely because they are small, so
+   borrowing somebody else's enumeration and then *reviewing* it is the cheap
+   half. `blocklistproject/Lists` has a per-service file that is a reasonable
+   starting set.
+3. **Look for regional variants of every name already on the list.** This is the
+   step that was missing on 2026-08-18, and it cost a second round on the same
+   phone: the list carried `tiktokcdn-us.com` with no `-eu` counterpart, and a
+   Belgian handset kept playing video after eighteen ByteDance domains had been
+   added. A `-us`, `-eu`, `.us` or `.eu` suffix on an entry is a statement that
+   the service splits by region, and the other half of the split is not going to
+   announce itself.
+4. **Check every candidate resolves before adding it**, with `dig +short <domain>
+   NS`. A missing apex `A` record is normal and not a reason to leave a domain
+   out — these are CDN parents whose traffic rides on subdomains, and matching is
+   suffix-based. A missing **NS** record means the domain is dead: `musemuse.cn`
+   sits in upstream TikTok lists and no longer resolves at all.
+5. **Ask what else is on those domains before taking them.** A shared CDN is the
+   one way a domain entry does real damage — see
+   [a wrong domain is not free](blocklist-notes.md#a-wrong-domain-is-not-free-unlike-a-wrong-package).
+   Company-specific CDNs (`ibytedtos.com`, `fbcdn.net`) are safe to take whole;
+   `googlevideo.com` is not, which is why separating YouTube Music from YouTube
+   turned out to be impossible.
+6. **Stop at the product, not the company.** ByteDance's other apps — Toutiao,
+   Xigua, TopBuzz, Ulike — and its ad-tech are a different argument from *this
+   teenager should not have TikTok*. A social-media list that quietly becomes a
+   company blocklist is harder to defend and harder to review.
+7. **Then do the package side, which is a separate list with the same trap.**
+   A service usually ships more than one package: `com.zhiliaoapp.musically` and
+   `com.zhiliaoapp.musically.go`, `com.instagram.android` and
+   `com.instagram.lite`. Play sometimes carries **two listings of one app** —
+   `com.tiktok.lite.go` and `com.zhiliaoapp.musically.go` are both *TikTok Lite -
+   Faster TikTok* — so finding one is not finding them all. Check each with
+   `python3 tools/app-ratings.py check <package>`; a `404` means delisted, and a
+   dead package on the list only makes it harder to read.
+8. **Verify on a phone if there is one to hand.** Install the app, open it, and
+   see whether content loads. That is the only step that catches what this
+   checklist was written for, and it is the step that found it.
+
+### An app outside the tunnel is an app outside the filter
+
+`dns.excluded_packages` is the one field here that *removes* protection, and it
+exists because an always-on VPN breaks some apps outright. Everything named in
+it resolves through the system resolver, so nothing it looks up is checked
+against the blocklist and nothing it reaches is recorded anywhere. Adding a name
+is a decision to trust that app with the open internet.
+
+**The rules that keep it small:**
+
+1. **Never a browser**, and never anything that renders arbitrary web pages —
+   a webview-shaped app on this list is a way around the whole product.
+2. **Only for an app that does not work at all**, not one that works badly.
+   A hole is not a performance fix.
+3. **The narrowest package that fixes it.** `com.google.android.gms` is the
+   tempting one and is close to excluding the phone; reach for the specific app
+   first and only widen if the specific app is provably not enough.
+4. **Say what it is for** in the commit that adds it, because the reason will
+   not be obvious to whoever reads the list next.
+
+**Android Auto is the default entry**, and the case it was written for. Wireless
+projection refuses to start while the phone has a VPN and puts *"error 21, are
+you using a VPN?"* on the car's screen every time the phone comes into range —
+over a cable it is fine, which is the tell that this is about the VPN existing
+rather than about anything crossing it. Excluding the app is what every VPN
+calls split tunnelling, and it works because a disallowed app's default network
+is the plain Wi-Fi or mobile one, so the phone answers "no VPN" when Android
+Auto asks. The app itself is a projection surface: the apps it shows keep their
+own network and stay filtered.
+
+**This is policy rather than a constant on purpose.** drawbridge cannot update
+itself on a locked phone, so an app that turns out to be incompatible with an
+always-on VPN would otherwise need a cable and the key. As a policy field it
+reaches a locked phone at the next poll, and the tunnel rebuilds itself when the
+`dns` block changes without so much as a reboot. Older builds ignore the field
+rather than reject the document — both parsers set `ignoreUnknownKeys` — so
+adding it costs nothing on a phone too old to use it.
 
 ### A filter that blocks its own updates stops being a filter
 
@@ -210,13 +307,50 @@ or not.
 | `allowed_packages` | Added to the allowed set, but **only** when the running profile is already in allowlist mode. An option cannot switch allowlisting on. |
 | `allowed_domains` | Must resolve while the option is on. Wins over blocklists, as allow rules always do. |
 
-Switching an option **on** applies immediately — nothing is downloaded, and
-nothing can get stricter. Switching one **off** is asked about first, because
-taking an app back means uninstalling it, and switching the option on again does
-not reinstall it.
+Switching an option **on or off** applies immediately, in both directions.
+Turning one off used to ask first, on the grounds that it uninstalled the apps
+the option had allowed; removal follows the lock now and the configuration
+screen only exists while the phone is unlocked, so there was nothing left for
+the dialog to warn about and it was deleted. The toast says where the change
+lands.
 
 A stored option id the policy no longer offers is dropped, so a relaxation cannot
 outlive the option that justified it.
+
+### An option can cover a whole category
+
+`streaming` is the first option that stands in front of a **list** rather than a
+handful of names: `dist/lists/streaming.txt` holds the domains of around fifty
+subscription video services, `blocked_packages` holds seventy of their app ids,
+and one switch restores all of it.
+
+The shape has a trap the smaller options do not. `allowed_domains` has to repeat
+every domain in the list, because allow beats block per domain and there is no
+"unblock this category" instruction — so a domain added to the list and not to
+the option is a service the switch silently fails to bring back, on a screen
+that reports success. **`policytool.py sign` refuses to sign when the two
+disagree**, naming the domains that are missing. That check is the only thing
+standing between an edit and a switch that half works.
+
+Two decisions inside the category are worth keeping straight:
+
+- **YouTube is not in it.** It stays in `social.txt` under its own option,
+  because a recommendation feed and a Short are not the same thing as a film
+  somebody sat down to watch, and a parent should be able to allow one without
+  the other.
+- **Four broadcasters bring their newsroom with them.** ITV, TV4 and both TV 2s
+  publish news on the same registrable domain as their streaming service, and
+  DNS cannot see a path. Blocking only the streaming host leaves the service
+  reachable at the parent; blocking the parent takes the news site too. Both are
+  listed, in their own section at the end of the file, so the decision can be
+  reversed by deleting lines rather than by unpicking the list.
+
+The package ids in a category this size are the fragile part: a wrong one is
+invisible, since nothing looks for an app that does not exist. Every id was
+checked against its Play Store listing, and the four whose listings are
+region-locked were confirmed against APKMirror with the developer name matching.
+Blim TV was on the requested list and is not in the policy: it was dissolved in
+2023 and folded into ViX, and its domain stopped resolving with it.
 
 ### Search engines are a filtering decision
 
@@ -227,9 +361,22 @@ covers — its safe-search setting is a cookie the user controls, not something
 this system can enforce.
 
 That is why the default is DuckDuckGo and why the shipped list is **Google, Bing,
-DuckDuckGo, Ecosia and Kagi**. Narrowing `search_engines` to the first three is
-the strict setting; adding an engine to that list is a decision to trust its own
+DuckDuckGo and Kagi**. Narrowing `search_engines` to the first three is the
+strict setting; adding an engine to that list is a decision to trust its own
 safe search.
+
+**Ecosia was dropped on 2026-08-15, and its reason is the one worth
+generalising.** Nothing was wrong with the engine: it honours `safesearch=2`,
+and herald's `SafeSearch` put that parameter back on every load, so inside
+herald it was genuinely forced. It was dropped because that is *all* it was.
+herald is not the only browser the policy allows — Chrome, Firefox Focus and
+Vivaldi are on the phone too — and in any of them ecosia.org was unfiltered
+search with nothing to rewrite it. **An engine is only as forced as its weakest
+browser**, which is why the rule above is about a safe *hostname* rather than a
+safe parameter: a DNS rewrite reaches every browser on the device, and a URL
+parameter reaches the one browser that writes it. `ecosia.org` is on the search
+list, `com.ecosia.android` left `allowed_browser_packages` and is blocked by
+name like every other browser that is not allowed.
 
 **Brave Search, Qwant and Startpage were dropped on 2026-08-10**, having been
 shipped until then. Brave can only be forced with a `safesearch` cookie, and the
@@ -351,7 +498,52 @@ python3 tools/policytool.py verify
 git add dist/ && git commit -m "policy: block ..." && git push
 ```
 
-Devices pick it up within a day.
+Devices pick it up within three hours, on the periodic poll.
+
+**But not for the first five minutes, however hard you ask.**
+`raw.githubusercontent.com` serves the policy with `cache-control: max-age=300`,
+so for five minutes after a push an edge can still hand back the previous
+document. A phone checked inside that window reports the *old* version and says
+it succeeded, because it did — it fetched a document, and the document was stale.
+
+This cost a debugging round on 2026-08-12, when policy 37 was pushed and a phone
+went on reporting 36 in both apps. Nothing was wrong. Two things came out of it:
+the manual check now sends `Cache-Control: no-cache` (the scheduled poll does
+not, since it runs hourly-ish and cannot care), and Diagnostics now prints
+`policy checked`, `policy succeeded`, `policy error` and the policy URL, so the
+next person can tell a failure from a stale success without a cable.
+
+Note the no-cache header is a request, not a guarantee: some CDNs deliberately
+ignore request-side no-cache. If a phone still reports the old version inside
+five minutes, wait rather than debug.
+
+### Cutting a release without disturbing the alpha
+
+**The rule that matters: `required_apps` resolves herald through
+`/releases/latest/download/`.** Whichever GitHub release carries the **latest**
+flag is what every phone on `main` installs. So a herald release can change the
+alpha even when drawbridge does not move at all.
+
+A dev-channel release therefore goes:
+
+1. Build herald, then drawbridge. Order matters — see below.
+2. `tools/stage-release.sh`.
+3. `gh release create <tag> --prerelease --latest=false --target dev`, then
+   **upload the assets one at a time** with `gh release upload`. Creating a
+   release with seven assets attached failed mid-upload on 2026-08-13 with a
+   404, and `gh` rolled the whole release back; uploading individually costs one
+   file instead of all of them, and can be retried.
+4. Pin the new APKs in `required_apps` at their **versioned** URLs, never
+   `/latest/`, and re-sign.
+
+`v0.2.5` holds `latest` and should keep it until a herald build is meant to reach
+the alpha. That is the single flag standing between the dev channel and every
+tester's phone.
+
+**Two fields never travel between branches.** `app_update` and `required_apps`
+name builds, and signing does not rewrite them the way it rewrites blocklist
+URLs. Porting policy *content* from `dev` to `main` means copying everything else
+and leaving those two alone.
 
 ## The signing key
 
@@ -413,6 +605,21 @@ tools/stage-release.sh                       #    again, now that dpc exists
 gh release create vX.Y.Z dist/release/*.apk dist/release/SHA256SUMS
 ```
 
+**The `cp` is not optional and its position is the whole trick**: the bundled
+copy is what a phone runs on before it has ever polled, and it must be
+*yesterday's* signed document — copied **before** the dpc build, never after.
+Copying afterwards would embed a document that pins the very APK being built,
+which cannot be hashed until it exists. That ordering is also what makes the
+bundled `app_update` harmless: it names the previous build, and
+`AppInstaller.availableSelfUpdate` compares `<=`, so a build never offers to
+update to something older than itself.
+
+A dpc-only release is the same recipe with step 1 skipped and the herald pins
+left exactly as they are.
+
+**Skipping the `cp` cost a feature for thirty-three policies** — see
+[what ships inside the APK](#the-bundled-copy-is-what-a-fresh-install-runs-on).
+
 `assembleRelease` builds **both editions** — six herald APKs, since the mono
 flavour was added. `tools/stage-release.sh` is what keeps the standard edition's
 published filenames stable, because `required_apps` pins them by URL and a
@@ -423,12 +630,13 @@ CI still runs tests and lint on every push, which is what it is good for.
 
 ## Curfew: an evening with no internet
 
-> **Drafted, not enforced.** The schema below parses, the window arithmetic is
-> tested, and the Device Owner calls exist — but nothing invokes them on a live
-> device and no published policy carries a `curfew`. Writing one into
-> `dist/policy.json` today does nothing. Turning it on means calling
-> `CurfewController.apply` from `BootReceiver`, after a policy refresh, and
-> registering `CurfewReceiver` in the manifest.
+> **The curfew is enforced as of 2026-08-12, but not from here.** It is chosen on
+> the phone, under *Disconnect philosophy* on the configuration screen, and
+> stored in the device's own preferences — because the hours belong to one
+> household and this document is signed for everybody. `Policy.curfew` still
+> parses and is still a reasonable place to *suggest* a default; nothing reads it
+> for enforcement. The schema below is therefore the shape of the setting, and
+> the field remains available if a profile ever wants to propose one.
 
 ```jsonc
 {
@@ -524,6 +732,8 @@ copy only applies until the first network poll.
 
 ## What ships inside the APK
 
+### The bundled copy is what a fresh install runs on
+
 Each build embeds a signed copy of the policy and a ~250-domain seed blocklist,
 so a freshly provisioned device filters before it has ever reached the network.
 The bundled copy is verified through exactly the same path as a downloaded one.
@@ -532,3 +742,21 @@ Regenerate it after changing the policy:
 ```bash
 cp dist/policy.signed.json policy/src/main/assets/drawbridge/default-policy.json
 ```
+
+**This step had not been run in thirty-three policies, and it cost a feature.**
+The bundled document sat at version 37 while the live one reached 70 — and
+`app_ratings`, the whole store rule, arrived in policy 62. So a freshly installed
+drawbridge had **no store rule at all** until its first successful poll: not a
+stale rule, an absent one. Nobody noticed because removal used to wait for the
+lock, by which time a document had long since been fetched. Removal starting at
+installation is what turned a harmless staleness into a hole, on exactly the
+phone the rule is for — the one whose junk was preloaded at the factory.
+
+Refreshed to policy 70 in build 36. **Treat it as part of cutting a release
+rather than an optional tidy-up**, and note the ordering that makes it safe: the
+bundled copy pins the *previous* build in its `app_update`, which is correct —
+`AppInstaller.availableSelfUpdate` compares `<=`, so a build carrying a document
+that names itself or anything older offers no update at all.
+
+A build's bundled copy is its own channel's document. A `dev` build bundles the
+dev policy, which says `DEV CHANNEL ONLY` in its comment; `main` bundles main's.

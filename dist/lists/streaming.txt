@@ -1,0 +1,249 @@
+# drawbridge — long-form video streaming domains
+#
+# Curated and pinned by SHA-256 in dist/policy.json, unlike the large upstream
+# lists which rotate daily. Entries cover the parent domain only; matching is
+# suffix-based, so `netflix.com` also blocks `www.netflix.com`.
+#
+# This is the *deliberate* half of the streaming category: services people pay
+# for, which are blocked by default and can be switched back on in one move with
+# the "Allow long-form video streaming" option. The option's allowed_domains
+# mirror this file exactly, and policytool.py sign fails if the two drift, since
+# allow beats block and a domain listed here but missing there would be one the
+# toggle silently fails to restore.
+#
+# YouTube is NOT here. It lives in social.txt under its own option, because a
+# recommendation feed and a Short are a different thing from a film somebody sat
+# down to watch. Keeping them apart is what lets a parent allow one and not the
+# other.
+#
+# Every domain below resolved when it was added, and every package id in the
+# policy's blocked_packages was checked against its Play Store listing rather
+# than guessed. Blim TV was on the requested list and is not here: it was
+# dissolved in March 2023 and folded into ViX, and its domain no longer resolves.
+
+# --- Global services ---------------------------------------------------------
+
+# Netflix. nflxvideo.net is the CDN, the rest are API and image hosts.
+netflix.com
+nflximg.net
+nflxvideo.net
+nflxext.com
+nflxso.net
+
+# Amazon Prime Video. Only the video-specific names: amazon.com itself stays
+# reachable, because a shop and a streaming service are not the same thing.
+primevideo.com
+amazonvideo.com
+aiv-cdn.net
+aiv-delivery.net
+atv-ps.amazon.com
+
+# Disney+. bamgrid.com and dssott.com are BAMTech, the playback backend.
+disneyplus.com
+disney-plus.net
+disneystreaming.com
+bamgrid.com
+dssott.com
+
+# Hulu
+hulu.com
+hulustream.com
+huluim.com
+
+# HBO Max. max.com redirects to hbomax.com; both are listed because a redirect
+# is resolved after DNS, not before it.
+max.com
+hbomax.com
+hbomaxcdn.com
+hbo.com
+
+# Apple TV. The host only — apple.com carries the App Store, iCloud, Find My and
+# activation, and suffix matching would take all of it with the parent domain.
+tv.apple.com
+
+# Paramount+
+paramountplus.com
+cbsivideo.com
+cbsaavideo.com
+
+# SkyShowtime
+skyshowtime.com
+
+# Peacock
+peacocktv.com
+
+# Crunchyroll
+crunchyroll.com
+crunchyroll.net
+vrv.co
+
+# DAZN
+dazn.com
+
+# Rakuten TV
+rakuten.tv
+
+# CuriosityStream
+curiositystream.com
+
+# Nebula
+nebula.tv
+watchnebula.com
+
+# Odysee
+odysee.com
+
+# PeerTube. These are the project's own hosts. The federation is thousands of
+# independent instances on their own domains, so this is the app and the front
+# door rather than the network — see the note in policy.md.
+joinpeertube.org
+framatube.org
+
+# --- Asia --------------------------------------------------------------------
+
+# JioHotstar
+hotstar.com
+jiohotstar.com
+
+# Tencent Video. The video hosts only: qq.com is also QQ Mail and the messenger.
+v.qq.com
+video.qq.com
+
+# iQIYI, mainland and international
+iqiyi.com
+iq.com
+qiyipic.com
+
+# Youku
+youku.com
+youku.tv
+ykimg.com
+
+# bilibili
+bilibili.com
+bilibili.tv
+biliapi.net
+bilivideo.com
+
+# SonyLIV
+sonyliv.com
+
+# Vidio
+vidio.com
+
+# iflix
+iflix.com
+
+# Viu
+viu.com
+viu.tv
+
+# --- Middle East and Africa --------------------------------------------------
+
+# Shahid. The host under mbc.net, so MBC's news channels stay reachable.
+shahid.net
+shahid.mbc.net
+
+# OSN
+osn.com
+osnplus.com
+
+# WATCH IT
+watchit.com
+
+# beIN, including TOD
+beinsports.com
+bein.com
+beinconnect.com
+tod.tv
+
+# Showmax
+showmax.com
+
+# StarTimes
+startimestv.com
+startimes.com
+
+# DStv
+dstv.com
+
+# --- Latin America -----------------------------------------------------------
+
+# Globoplay. The host, not globo.com, which is one of Brazil's largest news
+# sites and is not what this option is about.
+globoplay.globo.com
+globoplay.com
+
+# ViX
+vix.com
+
+# Claro video
+clarovideo.com
+
+# --- Europe ------------------------------------------------------------------
+
+# CANAL+
+canalplus.com
+canal-plus.com
+mycanal.fr
+
+# Movistar Plus+
+movistarplus.es
+
+# atresplayer
+atresplayer.com
+
+# RTL+
+rtlplus.com
+plus.rtl.de
+tvnow.de
+
+# Joyn
+joyn.de
+
+# Videoland
+videoland.com
+
+# Streamz
+streamz.be
+
+# OCS
+ocs.fr
+
+# TIMVISION
+timvision.it
+
+# Polsat Box Go
+polsatboxgo.pl
+
+# Viaplay
+viaplay.com
+viaplay.tv
+
+# MEGOGO
+megogo.net
+
+# Kinopoisk
+kinopoisk.ru
+
+# ivi
+ivi.ru
+
+# BritBox
+britbox.com
+britbox.co.uk
+
+# --- Broadcasters whose streaming service shares a domain with their news -----
+#
+# These four are public-facing broadcasters as well as streaming platforms, and
+# DNS cannot see a path. Blocking the streaming host alone leaves the service
+# reachable at the parent (itv.com/watch, tv4.se/play); blocking the parent takes
+# the newsroom with it. Both are listed, deliberately and separately, so that
+# whoever disagrees can delete four lines rather than unpick the file.
+itvx.com
+itv.com
+tv4play.se
+tv4.se
+play.tv2.no
+tv2.no
+tv2.dk

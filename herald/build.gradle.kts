@@ -36,11 +36,30 @@ android {
     compileSdk = 36
 
     defaultConfig {
+        /**
+         * The signed policy this build polls, which has to be the *same channel*
+         * drawbridge is on.
+         *
+         * herald read `PolicyConfig`'s default until 2026-08-13, which is main's
+         * URL, so a dev-channel phone ran two apps against two different
+         * documents: drawbridge on dev's policy and herald on the alpha's. The
+         * owner found it the honest way, with herald 0.1.10 reporting policy 50
+         * while the phone's drawbridge was on 49. Split-brain is the worst shape
+         * this could take -- one app unblocking what the other still blocks.
+         *
+         * Empty means "whatever PolicyConfig defaults to", which is main.
+         */
+        buildConfigField(
+            "String",
+            "POLICY_URL",
+            "\"${providers.gradleProperty("drawbridgePolicyUrl").getOrElse("")}\"",
+        )
+
         applicationId = "app.drawbridge.herald"
         minSdk = 28
         targetSdk = 36
-        versionCode = 9
-        versionName = "0.1.9"
+        versionCode = 14
+        versionName = "0.1.14"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

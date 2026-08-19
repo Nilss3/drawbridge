@@ -74,4 +74,46 @@
     <!-- The site's dark primary button uses a near-black label rather than white. -->
     <color name="green_on_primary_night">#201914</color>
     <color name="white">#ffffff</color>
+
+    <!--
+        The age shield on each option, in three bands.
+
+        **Deliberately not PEGI, Kijkwijzer or the Parental Advisory label.**
+        Those are licensed marks, and borrowing one would claim something this
+        app cannot: PEGI rates games submitted to it, and nothing here has been
+        near it. The screen's own footnote says where these ages come from —
+        pediatricians, psychologists and neurologists — and a borrowed mark would
+        quietly contradict it. So the shield is drawn here: same job, same
+        instant read, nobody else's badge.
+
+        The same reasoning renamed the streaming shield. It read *parental
+        advisory* first, which is both a registered mark and a look people
+        recognise; it reads **various ages** now, which is the true thing said
+        plainly and cannot be mistaken for anyone's label.
+
+        A shield rather than a circle because this app is named after a castle
+        gate, and because it keeps every shield in one family.
+
+        The ramp runs yellow → orange → purple-pink. **There is no red, and its
+        absence is the point**: red against purple-pink was two dark warm shields
+        that looked alike at a glance, which is all a shield gets, so the middle
+        band moved to orange and the gap between the three opened up. `various`
+        takes the same orange as 16 — they are told apart by the glyph, a number
+        against an exclamation mark, rather than by hue.
+
+        **The label colour is per band, and yellow is why.** A yellow dark enough
+        to carry white text is a mustard, which is not the colour anyone means by
+        yellow. So the yellow shield takes near-black text and the other three
+        take white, which is also what every rating system that uses a yellow
+        does. Measured rather than eyeballed: near-black on yellow is 9.9:1, and
+        against white the other light fills are 4.6:1 (orange) and 7.4:1
+        (purple-pink).
+    -->
+    <color name="rating_low">#f2c200</color>
+    <color name="rating_mid">#c25400</color>
+    <color name="rating_high">#9b1b78</color>
+    <color name="rating_label">#ffffff</color>
+    <!-- Always dark, in both themes: it only ever sits on the yellow, which does
+         not change between them. -->
+    <color name="rating_label_dark">#2a2100</color>
 </resources>

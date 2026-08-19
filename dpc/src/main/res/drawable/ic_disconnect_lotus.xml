@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Blissfully offline: a lotus.
+
+    **Third attempt, and the first two failed the same way — they read as a
+    sprout.** Both drew the outer shapes as broad leaf blades sweeping outward
+    and *downward* from a stem, which is exactly what foliage looks like. What
+    makes a lotus a lotus is a fan of narrow petals, each pointed at the tip,
+    all the same length, all radiating from one point and all tipped *upward*.
+
+    So it is one petal drawn once and rotated five times about the base, which
+    also guarantees the symmetry that was being eyeballed before. The angles stop
+    at 72° because a petal laid flatter than that runs out of viewport.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24"
+    android:tint="?attr/colorPrimary">
+
+    <group android:pivotX="12" android:pivotY="19" android:rotation="-72">
+        <path android:fillColor="@android:color/white"
+            android:pathData="M12,19c-1.3,-1.8 -1.8,-4.2 -1.8,-6.2 0,-1.8 0.7,-3.4 1.8,-4.8 1.1,1.4 1.8,3 1.8,4.8 0,2 -0.5,4.4 -1.8,6.2z" />
+    </group>
+    <group android:pivotX="12" android:pivotY="19" android:rotation="-40">
+        <path android:fillColor="@android:color/white"
+            android:pathData="M12,19c-1.3,-1.8 -1.8,-4.2 -1.8,-6.2 0,-1.8 0.7,-3.4 1.8,-4.8 1.1,1.4 1.8,3 1.8,4.8 0,2 -0.5,4.4 -1.8,6.2z" />
+    </group>
+    <group android:pivotX="12" android:pivotY="19" android:rotation="0">
+        <path android:fillColor="@android:color/white"
+            android:pathData="M12,19c-1.3,-1.8 -1.8,-4.2 -1.8,-6.2 0,-1.8 0.7,-3.4 1.8,-4.8 1.1,1.4 1.8,3 1.8,4.8 0,2 -0.5,4.4 -1.8,6.2z" />
+    </group>
+    <group android:pivotX="12" android:pivotY="19" android:rotation="40">
+        <path android:fillColor="@android:color/white"
+            android:pathData="M12,19c-1.3,-1.8 -1.8,-4.2 -1.8,-6.2 0,-1.8 0.7,-3.4 1.8,-4.8 1.1,1.4 1.8,3 1.8,4.8 0,2 -0.5,4.4 -1.8,6.2z" />
+    </group>
+    <group android:pivotX="12" android:pivotY="19" android:rotation="72">
+        <path android:fillColor="@android:color/white"
+            android:pathData="M12,19c-1.3,-1.8 -1.8,-4.2 -1.8,-6.2 0,-1.8 0.7,-3.4 1.8,-4.8 1.1,1.4 1.8,3 1.8,4.8 0,2 -0.5,4.4 -1.8,6.2z" />
+    </group>
+
+    <!-- The water it floats on. -->
+    <path
+        android:fillColor="@android:color/white"
+        android:pathData="M4,20.1h16a0.9,0.9 0 0,1 0,1.8h-16a0.9,0.9 0 0,1 0,-1.8z" />
+</vector>

@@ -7,6 +7,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.PowerManager
 import android.provider.Settings
+import android.text.format.DateUtils
 import android.view.View
 import android.widget.Button
 import android.widget.TextView
@@ -17,7 +18,13 @@ import app.drawbridge.dpc.DrawbridgeApplication
 import app.drawbridge.dpc.R
 import app.drawbridge.dpc.admin.DeviceOwnerManager
 import app.drawbridge.dpc.admin.ProvisioningLog
+import app.drawbridge.dpc.apps.AppBlocker
+import app.drawbridge.dpc.apps.InstallLockSettings
+import app.drawbridge.dpc.apps.store.StoreCatalogue
+import app.drawbridge.dpc.curfew.DisconnectSettings
+import app.drawbridge.dpc.security.LockTimer
 import app.drawbridge.dpc.vpn.DnsFilterService
+import java.time.LocalDateTime
 
 /**
  * What this phone actually did, in a form someone can paste into a bug report.
@@ -86,6 +93,14 @@ class DiagnosticsActivity : AppCompatActivity() {
             // protection, and "it should be there" is not the same as seeing it.
             appendLine("lock screen says:  ${deviceOwner.lockScreenInfo() ?: "(nothing set)"}")
             appendLine("filter running:    ${DnsFilterService.isRunning}")
+            // Every name here is outside the tunnel and therefore unfiltered,
+            // which is the one thing about this device nothing else would show.
+            // It is also the only way to tell, from the phone, whether a policy
+            // written to make Android Auto work has actually reached it.
+            appendLine(
+                "outside the filter: " +
+                    policy.dns.excludedPackages.joinToString().ifEmpty { "(nothing)" },
+            )
             // Denying the battery-optimisation prompt at lock time does not stop
             // the filter -- that is an always-on foreground VpnService and the
             // platform restarts it. What it stops is the *polling*: Doze can
@@ -95,8 +110,109 @@ class DiagnosticsActivity : AppCompatActivity() {
             // exactly why it belongs here.
             appendLine("battery exempt:    ${isIgnoringBatteryOptimisations()}")
             appendLine("policy version:    ${policy.version}")
+            // Why the version is what it is, which the version alone never says.
+            // On 2026-08-12 a phone sat on policy 36 after 37 was published and
+            // there was no way to tell from the device whether the refresh had
+            // failed, had not run, or had succeeded against a stale CDN copy --
+            // the manual check's toast is transient and binary, and all three
+            // look identical afterwards. The state has been written on every
+            // refresh since the beginning; it was simply never shown.
+            val state = DrawbridgeApplication.policy(this@DiagnosticsActivity).state()
+            appendLine("policy checked:    ${timestamp(state.lastCheckMillis)}")
+            appendLine("policy succeeded:  ${timestamp(state.lastSuccessMillis)}")
+            appendLine("policy error:      ${state.lastError ?: "(none)"}")
+            appendLine("policy url:        ${DrawbridgeApplication.policyConfig.policyUrl}")
+
+            // Connectivity, for the same reason the policy lines above exist: on
+            // 2026-08-12 a phone went offline at its curfew boundary and did not
+            // come back, and nothing on the device could say whether the alarm
+            // had fired, what the schedule was, or what state the controller
+            // believed it was in. "next boundary" is the line that answers it —
+            // a missing one is an alarm that was never set.
+            val disconnect = DisconnectSettings(this@DiagnosticsActivity)
+            val now = LocalDateTime.now()
+            appendLine("disconnect mode:   ${disconnect.mode}")
+            appendLine(
+                "curfew weekdays:   ${disconnect.weekdayWindow.start}-${disconnect.weekdayWindow.end}",
+            )
+            appendLine(
+                "curfew weekend:    ${disconnect.weekendWindow.start}-${disconnect.weekendWindow.end}",
+            )
+            appendLine("should be offline: ${disconnect.isOfflineAt(now)}")
+            appendLine("next boundary:     ${disconnect.nextChangeAfter(now) ?: "(none)"}")
+
+            // The lock timer, in full, because it is the one piece of state on
+            // this phone that can end the lock without anybody typing anything —
+            // and because it is the escape hatch for a lost key, which means the
+            // person who needs to read it is holding a phone they cannot open.
+            // Every stored field is printed rather than a summary: "armed" and
+            // "due" are computed from these three numbers, and a timer that will
+            // never fire looks identical to a working one unless you can see them.
+            val lockTimer = LockTimer(this@DiagnosticsActivity)
+            appendLine("timer next lock:   ${lockTimer.isEnabled} (${lockTimer.length})")
+            appendLine("timer armed:       ${timestamp(lockTimer.armedAt)}")
+            appendLine("timer expires:     ${timestamp(lockTimer.expiresAt)}")
+            appendLine("timer length:      ${lockTimer.armedLength}")
+            appendLine("timer reason:      ${lockTimer.reason ?: "(none)"}")
+            appendLine("timer due now:     ${lockTimer.isDue()}")
             appendLine("blocked packages:  ${policy.blockedPackages.size}")
             appendLine("browsers allowed:  ${policy.browserPackages.joinToString()}")
+
+            // The install lock, and specifically its snapshot, because a wrong
+            // one is invisible from every other angle. A phone that removes an
+            // app the parent installed during an unlock and a phone that lets a
+            // new one stay look identical from the outside; the size of the set
+            // and when it was taken are what tell them apart. "(never taken)"
+            // with the lock on is the failure — the rule is inert, and no line
+            // above says so.
+            val installLock = InstallLockSettings(this@DiagnosticsActivity)
+            // The store catalogue, and specifically the failures, because
+            // fail-open is only a deliberate choice while somebody can see how
+            // much of it is happening. A phone quietly unable to reach
+            // play.google.com keeps every app on it and looks identical to one
+            // where the rule is working — `store unverified` is the only line
+            // that tells the two apart.
+            val store = StoreCatalogue(this@DiagnosticsActivity).stats()
+            appendLine("store rule:        ${policy.appRatings?.let { "on, ${it.storeRegion}" } ?: "(policy has none)"}")
+            appendLine("store cached:      ${store.known} (${store.usable} usable)")
+            appendLine("store unverified:  ${store.failed}")
+            appendLine("store last fetch:  ${timestamp(store.newestFetchMillis)}")
+            // How much of the catch-up pass is left. Zero with the rule on means
+            // the phone has been asked about; a number that never falls means the
+            // scan is waiting for Wi-Fi it is not getting, which is a phone
+            // enforcing nothing and looking exactly like one that has finished.
+            appendLine("store to scan:     ${AppBlocker(this@DiagnosticsActivity).packagesWantingStoreAnswer().size}")
+
+            appendLine("install lock:      ${installLock.isEnabled}")
+            appendLine(
+                "installed set:     " +
+                    (installLock.snapshot?.let { "${it.size} packages" } ?: "(never taken)"),
+            )
+            appendLine("set taken:         ${timestamp(installLock.snapshotTakenAt)}")
+
+            // What became of the blocklist on *this* phone, which no other line
+            // here or anywhere else on the device could say. On 2026-08-14 the
+            // owner reported the YouTube app still installed after its option was
+            // switched off and the phone locked, and answering "did the rule
+            // decline it, did the platform refuse it, or did something put it
+            // back" took a new build, a cable and an evening. `still usable`
+            // names it in one line.
+            //
+            // One caveat belongs with it: this screen only opens while the phone
+            // is unlocked, and an app installed during an unlock is legitimately
+            // still usable until the next lock. A *blocked* app listed here after
+            // a lock is the failure.
+            val standings = AppBlocker(this@DiagnosticsActivity).standings()
+            val counts = AppBlocker.Standing.entries.associateWith { standing ->
+                standings.values.count { it == standing }
+            }
+            appendLine(
+                "blocklist state:   " +
+                    counts.entries.joinToString { "${it.value} ${it.key.name.lowercase()}" },
+            )
+            val usable = standings.filterValues { it == AppBlocker.Standing.PRESENT }.keys
+            appendLine("still usable:      ${if (usable.isEmpty()) "(none)" else usable.size}")
+            usable.forEach { appendLine("  $it") }
             appendLine()
             appendLine("restrictions in force:")
             val restrictions = deviceOwner.activeRestrictions()
@@ -110,6 +226,18 @@ class DiagnosticsActivity : AppCompatActivity() {
             appendLine(ProvisioningLog.read(this@DiagnosticsActivity) ?: "  (nothing recorded)")
         }
     }
+
+    /** Absolute rather than "3 hours ago": this is pasted into bug reports. */
+    private fun timestamp(millis: Long): String =
+        if (millis == 0L) {
+            "(never)"
+        } else {
+            DateUtils.formatDateTime(
+                this,
+                millis,
+                DateUtils.FORMAT_SHOW_DATE or DateUtils.FORMAT_SHOW_YEAR or DateUtils.FORMAT_SHOW_TIME,
+            )
+        }
 
     private fun isIgnoringBatteryOptimisations(): Boolean =
         getSystemService(PowerManager::class.java).isIgnoringBatteryOptimizations(packageName)

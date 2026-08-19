@@ -1,97 +1,26 @@
 package app.drawbridge.herald.browser
 
-import app.drawbridge.herald.browser.ReaderViewIntegration.ArticleReturn
 import app.drawbridge.herald.browser.ReaderViewIntegration.LoadSnapshot
-import mozilla.components.browser.state.state.ContentState
-import mozilla.components.browser.state.state.ReaderState
-import mozilla.components.browser.state.state.TabSessionState
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
 /**
- * The two timing rules behind reader view in mono, both of which have been got
- * wrong in a shipped build.
+ * When a page can be asked whether it is an article, which has been got wrong
+ * in a shipped build.
  *
- * Neither is a rule about reader view as such. They are both about *when* the
- * browser's state can be believed — after `hideReaderView` has cleared the
- * reader flags but not yet moved, and after a URL has changed but before the
- * page it names exists.
+ * It is not a rule about reader view as such. It is about *when* the browser's
+ * state can be believed: a URL changes before the page it names exists, so the
+ * readability question has to wait for the load it belongs to and stop being
+ * asked the moment that page starts being left.
+ *
+ * The mono edition's other timing rule — the second step of a back press out of
+ * reader view — was pinned here too, and went with always-on reader view on
+ * 2026-08-19. See `docs/reader-view-back.md`.
  */
 class ReaderViewIntegrationTest {
 
     private val article = "https://example.org/article"
-
-    private fun tab(
-        url: String = article,
-        loading: Boolean = false,
-        readerActive: Boolean = false,
-    ) = TabSessionState(
-        id = "tab",
-        content = ContentState(url = url, loading = loading),
-        readerState = ReaderState(active = readerActive),
-    )
-
-    // ArticleReturn: the second half of a back press out of reader view.
-
-    /**
-     * The trap the previous attempt fell into, in one test.
-     *
-     * `hideReaderView` dispatches its reader-off actions before it asks the
-     * engine to step back, so the first state this sees is the article's URL,
-     * reader off and nothing loading — indistinguishable from the article
-     * already being back, except that it is not.
-     */
-    @Test
-    fun `does not report the article back before the step out has begun`() {
-        val watch = ArticleReturn(article)
-
-        assertFalse(watch.isSettledOn(tab()))
-    }
-
-    @Test
-    fun `does not report the article back while the step out is loading`() {
-        val watch = ArticleReturn(article)
-        watch.isSettledOn(tab())
-
-        assertFalse(watch.isSettledOn(tab(loading = true)))
-    }
-
-    @Test
-    fun `reports the article back once its load has finished`() {
-        val watch = ArticleReturn(article)
-        watch.isSettledOn(tab())
-        watch.isSettledOn(tab(loading = true))
-
-        assertTrue(watch.isSettledOn(tab()))
-    }
-
-    /**
-     * Reader view closing is what the step out is waiting for; a load that ends
-     * with it still showing is some other load.
-     */
-    @Test
-    fun `does not report the article back while reader view is still showing`() {
-        val watch = ArticleReturn(article)
-        watch.isSettledOn(tab(loading = true, readerActive = true))
-
-        assertFalse(watch.isSettledOn(tab(readerActive = true)))
-    }
-
-    /**
-     * The step is taken up to five seconds after the press, and in that time the
-     * reader may have asked for something else. Leaving *that* page would be a
-     * worse bug than the one being fixed.
-     */
-    @Test
-    fun `does not report the article back once the reader has gone elsewhere`() {
-        val watch = ArticleReturn(article)
-        watch.isSettledOn(tab(url = "https://example.net/", loading = true))
-
-        assertFalse(watch.isSettledOn(tab(url = "https://example.net/")))
-    }
-
-    // LoadSnapshot: asking Gecko again whether a settled page is an article.
 
     @Test
     fun `a load ending is worth asking about again`() {

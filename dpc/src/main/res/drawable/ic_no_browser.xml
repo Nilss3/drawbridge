@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    The *no browser* choice, where the other two show the icons of the browsers
+    they allow.
+
+    A plain prohibition sign rather than a crossed-out browser: there is no one
+    browser being refused, which is the point of the option, and a struck-through
+    herald would say the opposite of what it means.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="28dp"
+    android:height="28dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24"
+    android:tint="?attr/colorError">
+
+    <path
+        android:fillColor="@android:color/white"
+        android:fillType="evenOdd"
+        android:pathData="M12,2a10,10 0 1,0 0,20a10,10 0 1,0 0,-20zM12,4c1.85,0 3.55,0.63 4.9,1.69L5.69,16.9A7.95,7.95 0 0,1 4,12c0,-4.41 3.59,-8 8,-8zM12,20c-1.85,0 -3.55,-0.63 -4.9,-1.69L18.31,7.1A7.95,7.95 0 0,1 20,12c0,4.41 -3.59,8 -8,8z" />
+</vector>

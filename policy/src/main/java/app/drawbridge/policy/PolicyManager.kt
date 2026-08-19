@@ -107,7 +107,13 @@ class PolicyManager private constructor(
      * and swaps everything in. Safe to call concurrently; overlapping calls are
      * serialised.
      */
-    suspend fun refresh(): RefreshOutcome = withContext(Dispatchers.IO) {
+    /**
+     * @param userInitiated true when a person pressed a button, which asks
+     *   intermediaries to skip their cache. The scheduled poll leaves it false:
+     *   it runs every few hours, so a five-minute-stale document costs nothing,
+     *   and defeating the cache on every device on every poll would not.
+     */
+    suspend fun refresh(userInitiated: Boolean = false): RefreshOutcome = withContext(Dispatchers.IO) {
         refreshMutex.withLock {
             val downloader = Downloader(
                 connectTimeoutMillis = config.connectTimeoutMillis,
@@ -118,7 +124,7 @@ class PolicyManager private constructor(
             val previous = store.readState()
 
             try {
-                val envelopeJson = downloader.getText(config.policyUrl)
+                val envelopeJson = downloader.getText(config.policyUrl, noCache = userInitiated)
                 val currentVersion = _policy.value.version
 
                 // Verify the signature first, then decide about the version, so

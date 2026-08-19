@@ -6,6 +6,9 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.util.Log
 import app.drawbridge.dpc.DrawbridgeApplication
+import app.drawbridge.dpc.admin.DeviceOwnerManager
+import app.drawbridge.dpc.apps.BrowserSettings
+import app.drawbridge.dpc.apps.InstallLockSettings
 import app.drawbridge.policy.model.AppUpdate
 import app.drawbridge.policy.net.Downloader
 import kotlinx.coroutines.Dispatchers
@@ -80,11 +83,28 @@ class AppInstaller(context: Context) {
      * left with no way to browse at all.
      */
     suspend fun installMissingRequiredApps(): Map<String, Result> = withContext(Dispatchers.IO) {
-        DrawbridgeApplication.policy(appContext).policy.value.requiredApps
+        val policy = DrawbridgeApplication.policy(appContext).policy.value
+        val allowedBrowsers =
+            BrowserSettings.allowedBrowsers(policy, BrowserSettings(appContext).choice)
+
+        policy.requiredApps
             .filter { it.matchesThisDevice() }
             // The per-ABI splits of one app all declare the same package name,
             // and only the device's own ABI survives the filter above.
             .distinctBy { it.packageName }
+            // **A browser the browser choice has narrowed away is not installed,
+            // and without this the phone would loop.** `required_apps` names
+            // herald, and herald is user-installed, so *no browser* uninstalls
+            // it at the lock — and then the next poll finds it missing and
+            // fetches 230 MB to put it back, for the lock after that to remove
+            // again. The choice has to be honoured at both ends or at neither.
+            //
+            // It also saves the download outright for a parent who picks *no
+            // browser* before their first lock, which is the point at which
+            // required apps are normally fetched.
+            .filterNot {
+                it.packageName in policy.browserPackages && it.packageName !in allowedBrowsers
+            }
             .filter { it.versionCode > versionCodeOf(it.packageName) }
             .associate { required ->
                 Log.i(TAG, "Installing required app ${required.packageName}")
@@ -95,13 +115,60 @@ class AppInstaller(context: Context) {
     private fun AppUpdate.matchesThisDevice(): Boolean =
         abi == null || Build.SUPPORTED_ABIS.any { it.equals(abi, ignoreCase = true) }
 
+    /**
+     * The installed version of [packageName], or 0 when the phone does not have
+     * it at all.
+     *
+     * **`MATCH_UNINSTALLED_PACKAGES` is what stops a hidden app being downloaded
+     * again.** Since 2026-08-19 a browser the chooser narrowed away is hidden
+     * rather than uninstalled, so that switching back keeps its bookmarks — and
+     * hiding a package is implemented by clearing its installed flag for the
+     * user, so a plain `getPackageInfo` throws for it exactly as it does for an
+     * app that was never here. Without the flag, the first poll after herald
+     * came back into the allowed set would fetch 230 MB to replace an app that
+     * is already on the disk.
+     *
+     * The flag also matches a package uninstalled with its data kept, which this
+     * would then decline to reinstall. Nothing here does that: `uninstall` is
+     * called without `DELETE_KEEP_DATA`, and the reversible removals that keep
+     * data are precisely the ones that hide.
+     */
     private fun versionCodeOf(packageName: String): Int = try {
-        appContext.packageManager.getPackageInfo(packageName, 0).longVersionCode.toInt()
+        appContext.packageManager
+            .getPackageInfo(packageName, PackageManager.MATCH_UNINSTALLED_PACKAGES)
+            .longVersionCode.toInt()
     } catch (e: Exception) {
         // Not installed — for a required app, exactly the case to act on.
         0
     }
 
+    /**
+     * Downloads, checks and installs one APK the signed policy names.
+     *
+     * **The package joins the install lock's closed set before a single byte is
+     * committed**, or the set would remove the app moments after it arrived.
+     * herald is user-installed, so it is uninstalled rather than hidden, and a
+     * phone that fetches 230 MB only to sweep it away at the next pass is the
+     * loop the browser choice already had to be guarded against.
+     *
+     * Written **before** the session rather than on success, because success is
+     * a broadcast and `ACTION_PACKAGE_ADDED` can beat it:
+     * [app.drawbridge.dpc.apps.PackageWatcher] would then evaluate a package
+     * that was not yet in the set. Adding a name for an install that later fails
+     * costs nothing — the set is only ever read as *not in*, and a name with no
+     * app behind it answers nothing.
+     *
+     * The in-flight mark is the second half, and it guards a different window:
+     * a lock landing mid-download would otherwise re-take the snapshot from the
+     * packages actually on the phone and write this one straight back out. See
+     * [InstallLockSettings.ownInstallsInFlight].
+     *
+     * There used to be a third step here — standing `DISALLOW_INSTALL_APPS`
+     * down for the length of the install, in case the platform refused a Device
+     * Owner's own session. That restriction is retired: it refused Play Store
+     * *updates* on real hardware, so it never shipped past build 29. See
+     * [DeviceOwnerManager.RETIRED_RESTRICTIONS].
+     */
     private fun install(update: AppUpdate): Result {
         val staged = File(appContext.cacheDir, "${update.packageName}-${update.versionCode}.apk")
         try {
@@ -117,6 +184,12 @@ class AppInstaller(context: Context) {
             if (!digest.equalsIgnoringCase(update.sha256)) {
                 return Result.Failed("checksum mismatch: expected ${update.sha256}, got $digest")
             }
+
+            // Both before the session. The set entry is meant to be permanent;
+            // the in-flight mark is cleared by InstallResultReceiver when the
+            // platform reports back, whatever the verdict.
+            InstallLockSettings(appContext).allow(update.packageName)
+            InstallLockSettings.beginOwnInstall(update.packageName)
 
             val installer = appContext.packageManager.packageInstaller
             val params = PackageInstaller.SessionParams(
@@ -148,6 +221,11 @@ class AppInstaller(context: Context) {
             return Result.Started
         } catch (e: Exception) {
             Log.e(TAG, "Install of ${update.packageName} failed", e)
+            // Nothing was committed, so no verdict is coming and
+            // InstallResultReceiver will never clear the in-flight mark. Harmless
+            // for the failures that happen before it was set at all — the call
+            // removes nothing.
+            InstallLockSettings.endOwnInstall(update.packageName)
             return Result.Failed(e.message ?: e.javaClass.simpleName)
         } finally {
             staged.delete()

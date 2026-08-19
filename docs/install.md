@@ -9,11 +9,14 @@ filter and the browser.
 **This works on an ordinary Android phone that is already in use.** It does not
 need a factory reset, and it does not erase your photos, messages or apps.
 
-> **One thing does get removed: the apps drawbridge blocks.** When you lock it,
-> every app the policy blocks is uninstalled from the phone, straight away.
-> Switching a setting back on afterwards does not reinstall them. On a phone
-> already in use that is a real change — check
-> [what is blocked](blocked-apps.md) before you start.
+> **One thing does get removed: the apps drawbridge blocks.** This starts at
+> **installation**, not when you lock: within minutes, every app the policy never
+> allows — social media, harmful games, browsers it does not sanction — is
+> uninstalled, and anything saved only inside one of them goes with it. Move what
+> you want to keep off the phone first: export bookmarks, save photos out of an
+> app that holds them. Apps you can still decide about, like WhatsApp or YouTube,
+> are left alone until you lock. On a phone already in use this is a real change —
+> check [what is blocked](blocked-apps.md) before you start.
 
 ---
 
@@ -41,6 +44,33 @@ phone. You do not have to. You sign back in at step 4.
 Removing an account deletes that account's mail, contacts and synced data *from
 the phone*. Nothing is deleted from your Google account itself, and it all comes
 back when you sign in again.
+
+**Every account counts, not only Google ones.** A phone whose accounts were a
+password manager, a messaging app and three banking apps was refused just the
+same. Whatever appears on that screen has to go.
+
+---
+
+## Step 1b — Delete the Private Space, if the phone has one
+
+**Settings → Security & privacy → Private Space → Delete private space**
+
+Android refuses this level of control while the phone carries a *second profile*,
+and on Android 15 and later a Private Space is exactly that. It is checked before
+the accounts are, so a phone with both is refused for this first — clear the
+accounts and you get the same refusal in different words.
+
+**It is easy not to know you have one.** A Private Space does not appear in the
+user switcher, has its own PIN, and hides its apps from the launcher. On the
+phone this step was written for, the owner had one and did not remember setting
+it up.
+
+**Deleting it removes everything inside it**, so look before you delete. If you
+cannot get in — the PIN is separate from the phone's — deleting is still
+possible from that same screen.
+
+Any other extra user lives in **Settings → System → Multiple users** and has to
+go as well.
 
 ---
 

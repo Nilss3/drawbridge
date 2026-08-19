@@ -10,11 +10,12 @@
 # unreachable: it is still a website, and typing its name into the address bar
 # reaches it unfiltered. This list is the other half of that decision.
 #
-# What stays reachable, deliberately: DuckDuckGo, Google, Bing (all three
-# rewritten to their safe hostnames by DnsFilter), Ecosia and Kagi. Nothing
-# here may block `safe.duckduckgo.com`, `strict.bing.com` or
-# `forcesafesearch.google.com` — those are the rewrite targets, and blocking one
-# would take the engine down rather than filter it.
+# What stays reachable, deliberately: DuckDuckGo, Google and Bing (all three
+# rewritten to their safe hostnames by DnsFilter) and Kagi, which filters when
+# logged out and offers nothing to turn that off. Nothing here may block
+# `safe.duckduckgo.com`, `strict.bing.com` or `forcesafesearch.google.com` —
+# those are the rewrite targets, and blocking one would take the engine down
+# rather than filter it.
 #
 # **What this list cannot do**, stated here so nobody later mistakes it for a
 # wall: the set of search engines is open. Anyone can run a SearXNG instance on
@@ -34,6 +35,25 @@
 search.brave.com
 startpage.com
 qwant.com
+
+# Ecosia, dropped on 2026-08-15, and the reason is the one this whole list is
+# about rather than anything wrong with the engine.
+#
+# Its safe search is honoured, but only as a URL parameter — there is no safe
+# hostname to rewrite, so the only thing that ever forced it was herald putting
+# `safesearch=2` back on every load. herald is not the only browser on the
+# phone: Chrome, Firefox Focus and Vivaldi are allowed too, and in any of them
+# ecosia.org is unfiltered search. An engine that is safe in one of four
+# browsers is a hole in the other three, and the parameter is one address-bar
+# edit away even in herald.
+#
+# So it goes the same way Brave, Startpage and Qwant went: out of herald's
+# engine list, out of `browser.search_engines`, and blocked here — because
+# dropping an engine from the browser never made it unreachable. The app
+# `com.ecosia.android` left `allowed_browser_packages` in the same policy and
+# is blocked by name; this entry is also what stops that app working, since it
+# talks to api.ecosia.org and suffix matching covers it.
+ecosia.org
 
 # Yandex, which was never offered. Each country domain is its own registrable
 # name, so suffix matching does not cover them from one entry. Yandex Images is

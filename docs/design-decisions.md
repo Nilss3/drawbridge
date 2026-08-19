@@ -30,9 +30,139 @@ built on NetGuard or RethinkDNS rather than from scratch.
 
 ## The curfew is that same lockdown, used on purpose
 
-*Drafted, not enabled.* The model, the window arithmetic and the Device Owner
-calls exist and are tested; nothing reads a curfew on a live device and no
-published policy carries one.
+**Enabled 2026-08-12**, as one of three *disconnect philosophies* the parent
+chooses on the configuration screen, above the policy: always offline, always
+online, or a curfew. The mechanism below is unchanged; what changed is that
+something now calls it.
+
+### The philosophy is the parent's, so it is not in the policy
+
+The signed document says what the *web* may contain. Whether this phone reaches
+the web at all, and between which hours, is a property of one household — a
+document signed by this project's key cannot carry "offline at nine on
+weeknights" for somebody else's teenager. So `DisconnectSettings` lives in the
+device's own preferences, next to the chosen profile and options, and
+`Policy.curfew` becomes a default a document may suggest rather than the thing
+enforced.
+
+The schedule is two windows, weekdays and weekend, because that is the split
+households actually run and because a full seven-day editor is a lot of screen
+for two answers. Each is stored as the evening it *starts*, which is what makes
+Friday 21:00–08:00 cover Saturday morning without Saturday being named.
+
+### Offline means offline, and unlocking is what lifts it
+
+Two rules, and the first is what makes the second unnecessary.
+
+**Nothing is exempt from the lockdown, including drawbridge.** The first version
+of this kept the DPC's own package out of it so the phone could still poll,
+reasoning that a phone with no internet cannot hear about the setting that would
+give it some back. That reasoning belonged to a design where the schedule came
+from the signed document — and it did not survive the schedule becoming
+device-local, which happened in the same commit. The way back online is a parent
+unlocking and changing the setting, and that needs no network at all. Keeping the
+exemption would have been a hole justified by a problem that no longer existed.
+
+So the promise on screen — *this device cannot connect to the internet* — is
+literally true, which is worth more than a background poll.
+
+**The policy goes stale on a permanently offline phone, and that is fine.** The
+blocklists exist to filter traffic, and there is none. A phone on a curfew polls
+during its online hours like any other, and the moment it comes back online — at
+the morning boundary, or when a parent unlocks — drawbridge asks for a refresh
+rather than waiting up to three hours for the next scheduled one.
+
+**And the curfew follows the lock, not the protection.** An unlocked drawbridge
+is a parent working on the phone, and everything they unlocked to do — install
+something, move data off, try a browser — needs a network. This is the same rule
+as the app blocker, for the same reason: unlocking costs the key, and whoever
+holds the key can remove drawbridge outright. It goes dark again at the next
+lock.
+
+What stays keyed on protection is the clock lock, because a wall-clock window is
+only as trustworthy as the clock and a child does not stop being able to wind it
+forward because a parent is halfway through changing a setting.
+
+### It covers Bluetooth tethering, and cannot spare USB ethernet
+
+Lockdown is a rule about the *user*, not about a network: every packet from every
+app must go through the tunnel. So it covers Wi-Fi, mobile data, Bluetooth
+tethering from a second phone and USB ethernet alike, without naming any of them
+— which is the right shape, since a list of transports would be a list to forget
+something from.
+
+**That is also why "always allow ethernet over USB" is not offered.** The
+exemption `setAlwaysOnVpnPackage` accepts is a set of *package names*; there is
+no per-transport carve-out anywhere in the Device Owner API. The nearest
+expressible thing is exempting particular apps, which is not the same request and
+would leak on every transport rather than one. Asked for on 2026-08-12 and not
+built, because it cannot be.
+
+### What survives it: calls and SMS, and that is the whole list
+
+The lockdown is a rule about IP traffic leaving an app, so **what survives is
+what never enters Android's IP stack at all.**
+
+- **Voice calls survive.** Circuit-switched calls never touch it, and VoLTE runs
+  in the modem's IMS stack on its own bearer rather than as an app socket.
+- **SMS survives**, for the same reason: it rides the signalling channel, or IMS
+  when the carrier does SMS-over-IMS. Either way the Android networking stack
+  never sees it, so neither does the tunnel.
+- **RCS does not.** It is SIP and HTTP over the ordinary data connection, from an
+  ordinary app UID — nothing about it is carrier signalling. With no route out it
+  cannot even register, so the phone reports RCS as unavailable and Google
+  Messages falls back to SMS or MMS.
+- **MMS does not either**, and this is the one that surprises people. MMS goes
+  over a dedicated APN, which sounds like an exemption and is not: it is still IP
+  through the Android stack from an app UID, and the only exemption
+  `setAlwaysOnVpnPackage` accepts is a list of package names. So picture messages
+  and **group messages** — which are MMS, not SMS — do not go through.
+
+The last one is worth saying out loud because it compounds: the RCS fallback for
+exactly those messages *is* MMS, so both halves are gone rather than one
+degrading into the other. It is a smaller loss than it looks — MMS is being sunset
+in market after market as RCS replaces it — but a parent should hear it before
+choosing the mode rather than discover it from a photo that never arrives.
+
+**Verified and not.** The first two are mechanism, not observation, and match
+what every always-on VPN does. The MMS claim is reasoning from the same
+mechanism: Android's DPC documentation names no telephony carve-out from
+lockdown, and the package allowlist is the only documented bypass — but **it has
+not been tried on a handset**, and the emulator has no carrier to try it with.
+One photo sent during a curfew settles it.
+
+**One thing may survive that arguably should not: Wi-Fi calling.** VoWiFi builds
+its own IPsec tunnel to the carrier's ePDG, and it is reported to bypass Android
+VPNs rather than ride inside them. If that holds here, a phone with poor cell
+coverage can still make calls over Wi-Fi while offline — which supports the
+promise on screen rather than undermining it, since the promise is about the
+internet rather than about the telephone. Also unverified.
+
+### The radios stay on, and the reason is asymmetry
+
+**Raised and rejected on 2026-08-12.** The suggestion was to switch Wi-Fi and
+mobile data *off* while offline, and lock those settings — on the good reasoning
+that apps behave better seeing no network than seeing a network that fails every
+connection.
+
+What Android actually offers is lopsided:
+
+| | Available to a Device Owner? |
+|---|---|
+| Turn Wi-Fi off | Probably. `setWifiEnabled` always fails for ordinary apps from API 29, and Device Owners are documented as exempt. **Unverified here** — this project has been wrong about four such carve-outs already. |
+| Turn mobile data off | **No.** The only API is `@SystemApi` behind `MODIFY_PHONE_STATE`, which a sideloaded DPC cannot hold. |
+| Stop either being *changed* | Yes — `DISALLOW_CONFIG_WIFI`, `DISALLOW_CHANGE_WIFI_STATE`, `DISALLOW_CONFIG_MOBILE_NETWORKS`. But that freezes the switch, it does not turn it off. |
+
+So the buildable version is Wi-Fi dark and mobile data connected-but-failing,
+which is half the benefit and a new inconsistency — **the owner's call was that a
+half-working version reads as buggy, and a phone that looks broken in one place
+and fine in another is worse than one that is honestly offline everywhere.** It
+also costs a parent the ability to join a network without unlocking.
+
+Worth knowing before anyone revisits this: the lockdown already fails Android's
+connectivity check, so the network is marked unvalidated and shows *No internet*.
+Apps that read `NET_CAPABILITY_VALIDATED` therefore do see the phone is offline,
+which is some of what switching the radios off was meant to buy.
 
 The bug above is the feature. "Every non-DNS packet dropped, every `connect()`
 failing with EPERM, in every app" is a broken phone as a permanent state and an
@@ -74,7 +204,7 @@ the protected-since date be forged (wind back a year, lock, wind forward, and th
 phone reports a year of protection it never had), and it is the standard way
 round screen-time limits in Family Link and similar tools a parent may have
 layered on top. drawbridge cannot enforce those, but it can stop the phone lying
-to them. See [the clock is locked on every device](#the-clock-is-locked-on-every-device-not-only-for-curfews).
+to them. See [the clock is locked on every device](#the-clock-is-locked-for-a-curfew-and-for-a-lock-timer-and-this-section-used-to-claim-more).
 
 Locking is not sufficient on its own, because forbidding edits only freezes
 whatever the clock already said — a device whose clock was wrong when the
@@ -213,8 +343,40 @@ Two consequences worth knowing:
   herald's strips are always the dark toolbar colour, drawbridge's always follow
   day/night. `windowLightStatusBar` and `windowLightNavigationBar` are set
   explicitly rather than inherited.
-- **Fullscreen video needs no special case.** The insets go to zero while the
-  bars are hidden, so the padding collapses on its own.
+- **Fullscreen video needed one special case after all, and the camera hole is
+  why.** A hidden bar reports no inset, so that half of the padding does collapse
+  on its own. A **display cutout is not a bar**: it is a hole in the panel, it is
+  still there when everything is hidden, and its inset is reported the whole
+  time. `enterImmersiveMode` compounds it rather than helping — it sets
+  `FLAG_LAYOUT_NO_LIMITS` and cutout mode `SHORT_EDGES`, stretching the window
+  underneath the hole on purpose. So a fullscreen video on a phone with a
+  punch-hole camera kept a strip of toolbar colour across the top of the screen,
+  which is the one place a video is meant to be.
+
+  herald asks for the cutout only while the status bar is showing. The cutout is
+  in that list to keep the *toolbar* clear of the hole — in landscape it sits
+  beside the toolbar rather than inside the status bar, so the bar's own inset
+  does not cover it — and once the bars are hidden there is no toolbar to keep
+  clear. Keyed on bar visibility rather than on a fullscreen flag of herald's
+  own, so the padding follows the window it is being computed for instead of
+  what the browser believes about itself.
+
+  **A phone found it, but an emulator could have.** The insets work was verified
+  on the API 36 emulator in both orientations, and an emulator has no cutout by
+  default — so the inset the bug turns on was zero every time anybody looked. It
+  will grow one on request, which is worth knowing before the next change to this
+  code:
+
+  ```bash
+  adb shell cmd overlay enable com.android.internal.display.cutout.emulation.hole
+  ```
+
+  That is a punch-hole camera, the shape the bug was reported on; `corner`,
+  `double`, `tall` and `waterfall` are the other four. The display then reports
+  `cutout DisplayCutout{insets=Rect(0, 136 - 0, 0)}` and the white strip appears
+  exactly as described. Disable it again the same way. `InsetsExtTest` covers the
+  same state without a device: insets carrying a cutout with the bars hidden,
+  asserting the padding is nothing at all.
 
 ## herald's chrome is four colours, and some of them belong to Mozilla
 
@@ -271,10 +433,10 @@ choice is theirs and the policy stops overriding it.
 ## The policy names the engines; the user picks among them
 
 `browser.search_engines` decides which engines exist, and herald hides everything
-else — including whatever the phone's locale brought in. Engines Mozilla does not
-bundle (Brave, Startpage, Kagi) or bundles only for some locales (Ecosia, Qwant)
-are added by herald as custom engines with their own URL templates, so the list
-does not change when the phone travels.
+else — including whatever the phone's locale brought in. An engine Mozilla does
+not bundle — Kagi is the only one left on the list — is added by herald as a
+custom engine with its own URL template, so the list does not change when the
+phone travels.
 
 There is deliberately no in-app "add a search engine" button. It would be a way
 to reach an unfiltered engine from inside the browser, which is the same reason
@@ -314,6 +476,84 @@ appears on some pages and not others. It was found by reading the decompiled
 feature after a De Morgen article that Firefox offered reader mode for and herald
 did not — that URL serves a consent interstitial first and only then redirects to
 the article, so the article itself was never checked.
+
+## A removal a switch can undo hides the app instead of uninstalling it
+
+Until 2026-08-19 the choice between hiding and uninstalling was made on one
+question: can the platform uninstall this at all? System apps like Chrome cannot
+be, so they were hidden; everything else was uninstalled. That is right for what
+the policy never allows, and wrong for everything a control on the configuration
+screen governs.
+
+**Two things went wrong in use, and they are the same thing.** Switching the
+browser chooser back and forth uninstalled herald and re-downloaded it from the
+release, a quarter of a gigabyte each way. And switching *Allow WhatsApp* off and
+then on again lost the chat history, because an uninstall is permanent and
+nothing reinstalls a user-installed app: `restoreNowAllowed` can unhide, it
+cannot resurrect.
+
+So the question is no longer only *can this be uninstalled* but also *is this
+removal one somebody is expected to reverse*. `Removal.reversible` carries the
+answer, and it is exactly the set `deferred` already computed for a different
+purpose — what an option covers, and a browser the chooser narrowed away. Those
+hide. Their data sits untouched underneath, and the switch going the other way
+brings the app back with its bookmarks, logins and messages.
+
+**The install lock deliberately does not qualify**, though it waits for the lock
+like the others. "No other apps" is a statement about what the phone carries, not
+a preference to flip back and forth, and an app kept on disk in case the lock is
+ever lifted would be a phone quietly full of things it says it does not have.
+That is why `reversible` is a separate field from `waitsForLock` rather than the
+same one read twice.
+
+**One consequence had to be fixed at the other end.** Hiding a package is
+implemented by clearing its installed flag for the user, so `getPackageInfo`
+throws for a hidden app exactly as it does for an absent one — and `AppInstaller`
+reads that to decide whether a required app needs fetching. Without
+`MATCH_UNINSTALLED_PACKAGES` there, the first poll after herald came back into
+the allowed set would have downloaded it again to replace the copy already on the
+disk, which is the bug this whole change exists to stop.
+
+## The filter has a door in it, and Android Auto is what it is for
+
+`dns.excluded_packages` leaves named apps outside the tunnel. Every name in it
+is unfiltered — the app resolves through the system resolver and nothing checks
+what it asks for — so the field is a deliberate hole, and the reasoning for
+having one at all is worth keeping.
+
+**The problem is not that the tunnel blocks anything.** Only DNS is routed into
+it, and Android Auto over a cable works perfectly with the filter running. What
+fails is *wireless* projection, which refuses to start while a VPN is present
+and says so on the car's screen — "error 21, are you using a VPN?" — every time
+the phone comes into range. The phone is not being filtered out of Android Auto;
+Android Auto is declining to run on a phone with a VPN. There is nothing to fix
+at the routing layer because nothing was routed.
+
+**Excluding the app is what makes the VPN invisible to it.** A package passed to
+`addDisallowedApplication` is left out of the VPN's UID ranges, so its default
+network is the plain Wi-Fi or mobile one and `NET_CAPABILITY_NOT_VPN` holds for
+it: asked through `ConnectivityManager`, the phone answers that there is no VPN.
+That is why "split tunnelling" is the fix every VPN offers for this error, and
+it is also why the fix is not certain — an app that enumerates network
+interfaces looking for `tun0` would still find one, since interfaces are not
+per-app. The reported success of split tunnelling elsewhere is the evidence that
+Android Auto asks the first way rather than the second.
+
+**Why the cost is acceptable here, and would not be everywhere.** Android Auto
+is a projection surface, not a browser: the apps it displays are ordinary apps
+with their own network, and they stay filtered. It renders no arbitrary web
+content, so nothing a child can steer goes through the door. That reasoning does
+not survive being applied to a second app casually, which is why `docs/policy.md`
+carries four rules for adding one and why "never a browser" is the first.
+
+**And it is policy rather than a constant because drawbridge cannot update
+itself.** A hardcoded list would mean that the next app found incompatible with
+an always-on VPN needs a cable and someone holding the key. As a signed policy
+field it reaches a locked phone at its next poll, and the tunnel is rebuilt on
+any change to the `dns` block, so the fix lands without a reboot. Both parsers
+set `ignoreUnknownKeys`, so a policy carrying the field is still valid to a build
+that predates it — which matters when the alpha and dev run different versions
+of drawbridge against policies of the same lineage.
 
 ## A blocked iframe is denied, not given a block page
 
@@ -564,18 +804,51 @@ It is a wrapper and not a subclass because `BrowserToolbar` is final.
 consequence worth knowing: the wrapper owns the toolbar's single edit listener,
 so anything else that wants `setOnEditListener` has to go through it.
 
-## Leaving reader view by the back button counts as dismissing it
+## Mono asks for reader view rather than imposing it
 
-`ReaderViewFeature.onBackPressed` hides reader view and reports that it handled
-the press. In mono that left a readerable page with reader view off — which is
-exactly the condition the automatic entry turns it back *on* for. The article
-returned immediately and the back button looked dead.
+Mono opened every page Gecko called readerable straight into reader view, from
+2026-08-17 to 2026-08-19, and it is gone. It was not working out in use: pages
+hung in loops, slow pages never got there because readability is decided on a
+document that has not finished arriving, and when it did work it was still the
+wrong answer often enough to be noticed. All three are the same weakness —
+**reader view is a judgement about a page, and a judgement can be wrong.** A
+feature that is right most of the time is fine when someone asked for it, and
+is friction of the wrong kind when it happens to you.
 
-The fix is not to special-case back but to treat it as what it is. The
-`dismissedForPage` flag that already stops automatic re-entry after an explicit
-toggle is now also set when back leaves reader view, so a dismissal is a
-dismissal however it is made. A second back press then goes back in history, and
-navigating anywhere clears the flag with the page it belonged to.
+Two mechanisms went with it, and both were expensive to build:
+
+- **The automatic entry**, and the `dismissedForPage` flag that stopped it
+  putting reader view straight back on after it was turned off.
+- **The two-step back press.** Showing reader view is a *navigation*, so an
+  article read in reader view occupies two history entries; when reader view was
+  something nobody had asked for, one press had to undo both, waiting for the
+  article's load to end before taking the second step. Back is now
+  `ReaderViewFeature.onBackPressed` and nothing else: it leaves reader view and
+  stops on the article, which is right for a reader who asked for it.
+
+**What is kept is the re-check**, which asks Gecko again after a page settles
+whether it is an article. That was built for the automatic entry, and it earns
+its place without it: in both editions it is what makes the reader-view menu
+entry appear on pages that *are* articles, which before it worked more or less
+by accident. See [reader-view-back.md](reader-view-back.md).
+
+**The replacement is a slower fling**, and the reason to prefer it is exactly
+what was wrong with reader view: it makes no judgement about the page. Mono's
+thesis is friction rather than stripping — the load pause is the same idea — and
+a page that is harder to throw is friction no page can fight and no Readability
+pass can get wrong. A flick moves about two and a half screens instead of five
+and a half. Dragging is deliberately untouched, so the page still tracks the
+finger exactly and only the reflex — the flick that carries a feed past several
+screens with no decision in between — pays.
+
+**The pref that does this is not the one it looks like.** `apz.fling_friction`
+belongs to Gecko's `GenericFlingAnimation`, which Android does not use; here the
+fling is Chrome's physics and `apz.android.chrome_fling_physics.friction` is what
+governs it. Both prefs exist in this GeckoView, both are given values in its own
+`geckoview-prefs.js`, and setting the wrong one **succeeds, reads back correctly
+and does nothing at all** — as does `apz.max_velocity_inches_per_ms`, which was
+measured at a fourteenth of its shipped value and changed the distance by two per
+cent. Measured values are in `components.EngineProvider.applySlowScrollingPrefs`.
 
 ## The pause in mono is felt, not enforced
 
@@ -606,10 +879,11 @@ the new page stalling rather than as the browser being deliberate.
 
 **Nothing ends a running hold except its own timer.** That rule sounds obvious
 and was arrived at the hard way, after the pause turned out to be cut short
-exactly when moving between two reader-view pages — the case mono makes most
-common. Reader view engages *during* the pause for the page being entered, and
-it trips two separate cancels: the suppression that stops it being paused for
-twice, and the moment its URL is a `moz-extension:` one, before
+exactly when moving between two reader-view pages — which mono made the common
+case for as long as it entered reader view by itself, and which a reader who
+asks for it still meets. Reader view engages *during* the pause for the page
+being entered, and it trips two separate cancels: the suppression that stops it
+being paused for twice, and the moment its URL is a `moz-extension:` one, before
 `ReaderViewMiddleware` rewrites it back to the article's own. Both used to call
 `hide()`. Each was individually reasonable and together they meant the hold
 survived on ordinary pages and collapsed on articles.
@@ -664,11 +938,38 @@ Two consequences worth stating:
   up. Now that whole screen is behind the key, so asking again at the removal
   screen would be asking the same question twice.
 
-There is still no reset, by design, and now the consequence is blunter: lose the
-key and the settings are frozen as they stand. The reveal screen says so, and
-lets the parent close it without keeping the key — deliberately making the
-configuration permanent is a legitimate thing to want, and the second dialog is
-there so it cannot happen by accident.
+There is still no reset, by design. **What answers a lost key since 2026-08-17 is
+a clock rather than a credential** — a timer chosen before the lock, or the
+thirty-day code-forgotten door on the lock screen; see
+[Losing the key](#losing-the-key-a-delay-not-a-back-door). Neither is a second
+secret, which is the property this section is about: there is still exactly one
+thing that opens a phone on demand, and it is the key.
+
+A parent who keeps no copy and sets no timer still freezes the settings as they
+stand. The reveal screen says so, and lets them close it without keeping the key —
+deliberately making the configuration permanent is a legitimate thing to want, and
+the checkbox is there so it cannot happen by accident.
+
+## Both apps must read the same document, not merely the same shape of one
+
+**herald and drawbridge poll the policy independently**, each with its own store,
+its own cache and its own version. That is deliberate — herald ships standalone,
+with no drawbridge behind it, and has to work anyway.
+
+The cost is that they can disagree, and on 2026-08-13 they did. herald read
+`PolicyConfig`'s default URL, which is `main`'s, while drawbridge read whichever
+channel it was built for. A dev phone therefore ran herald against the alpha's
+policy and drawbridge against dev's: one app unblocking what the other still
+blocked, with nothing on the device to say so. It was found because herald
+reported policy 50 on a phone whose drawbridge was on 49.
+
+Both now take the same `drawbridgePolicyUrl` build property and fall back to
+`main` when it is absent, so a released build is unchanged by construction.
+
+**The general rule worth keeping:** anything that decides *which* document an app
+obeys has to be set for both apps or neither. Anything that decides what to do
+*with* that document can differ, and does — herald acts on the browser fields,
+drawbridge on the package ones.
 
 ## herald reads drawbridge's selection, or it enforces a different policy
 
@@ -742,14 +1043,191 @@ appears when drawbridge is *not* device owner. If the parent declines it, the
 phone is deliberately **not** locked — sealing the screen would turn "locked
 means filtered" into a promise they could no longer check.
 
-## Nothing is enforced until the phone is locked
+## A browser is not one more blocked app
 
-Locking is not only the moment the screen is sealed. It is the moment drawbridge
-starts doing anything at all. Before it, a provisioned phone has no restrictions,
-no filter, no app removal and no browser download — at provisioning, at first
-launch, and on the daily poll alike. `DeviceOwnerManager.reapplyIfProtected` is
-what every automatic caller goes through, and it is a no-op until then; the lock
-button is the only place the lockdown is applied unconditionally.
+**Decided 2026-08-12, and it is the one exception to the rule below.** Browsers
+are removed whether the phone is locked or not. Everything else waits for the
+lock.
+
+The filter is DNS-only. That is a deliberate trade — no TLS interception, no
+certificate on a child's phone — and its price is that anything which tunnels
+over 443 to a host the blocklists do not name walks straight past it. Several
+browsers now ship exactly that under the name *VPN*: Opera's is an in-browser
+proxy, not an Android `VpnService`, so `DISALLOW_CONFIG_VPN` does not touch it and
+being second in line behind drawbridge's tunnel does not either.
+
+So an unapproved browser surviving an unlock is not one more app the parent
+chose to keep. It is the filter switched off, on a phone that still says it is
+protected. That asymmetry is why the two rules differ: **migrating data does not
+require a browser**, so keeping the unlock window open for everything else costs
+nothing here.
+
+### What is allowed, and why Firefox is not
+
+`allowed_browser_packages` names herald, herald mono, **Chrome** and **Firefox
+Focus**. One browser was never going to be enough — some sites do not render on
+Gecko at all, which is the reason a Chromium engine is on the list rather than a
+preference about it.
+
+Firefox is deliberately absent: it offers a VPN. Focus does not. Chrome has no
+extensions on Android and no proxy of its own.
+
+**"Secure DNS" is a smaller problem than it looks, and not for the reason it is
+usually given.** Three separate things stop browser-level DoH here, and only two
+of them are ours: the `encrypted-dns` blocklist, so those hostnames do not
+resolve; `DnsFilterService.ENCRYPTED_DNS_BLACKHOLE`, twelve well-known resolver
+IPs routed into the tunnel and dropped; and Chromium's own choice to disable DoH
+when it detects enterprise management. That last one is a heuristic inside code
+this project does not control, re-decided at every browser update — so *"secure
+DNS does not work on a managed device"* should be read as "not today, on the
+browsers we checked, for the endpoints we know".
+
+### The class is wider than browsers, and the perimeter knows it
+
+`AppBlocker.isBrowser` asks the package manager which apps answer an `https://`
+VIEW intent. An app that proxies without declaring one — Orbot, Psiphon in
+browser-only mode, Outline — is not a browser by that test and is caught only by
+name. Policy 41 therefore names thirty proxy, Tor, VPN and DNS-changer packages,
+every id checked against the Play Store rather than written from memory, because
+a wrong package id is invisible: the blocker simply never matches it.
+
+**Consumer VPN apps do not work on a managed device, and that is tested rather
+than reasoned** — the owner tried them on 2026-08-12: they cannot change the VPN,
+because `DISALLOW_CONFIG_VPN` stops a second one being configured and Android
+runs one at a time regardless. So their entries on the blocklist are defence in
+depth, not the mechanism. **The ones that do the work are the apps that proxy
+inside themselves**, which no restriction covers, and those are the reason the
+list exists at all.
+
+### herald is the default, and the default cannot be changed
+
+With five browsers allowed, which one a tapped link opens in stopped being a
+detail. `setDefaultBrowser` makes herald the persistent handler through
+`addPersistentPreferredActivity` — a Device Owner API, so **Settings cannot
+override it**. The others remain installed and open normally when somebody
+launches them; they simply do not inherit links.
+
+That is the shape asked for: herald recommended by default, the alternatives
+available for the sites it cannot render. It is worth being clear that
+"recommended" here means "chosen for you and not changeable", which is stronger
+than the word suggests.
+
+**The package now comes from the policy.** `allowed_browser_package` has been in
+the document since the beginning and nothing read it — the DPC used a
+`BuildConfig` constant with the same value, so editing the document changed
+nothing and said otherwise. It is read now, with the constant as the fallback for
+a device that has not fetched a document yet.
+
+### Hiding has to be reversible, and now is
+
+A preinstalled browser cannot be uninstalled, so it is hidden instead — and until
+2026-08-12 nothing ever unhid it except complete removal. Adding Chrome to the
+allowed list would have left every phone that had already hidden it hidden
+forever. `AppBlocker.restoreNowAllowed` now brings back what the policy names
+explicitly: the allowed browsers and the exempt packages, minus anything still
+blocked.
+
+It is restricted to those lists on purpose. The general rule — unhide whatever
+would no longer be removed — cannot be written safely, because a hidden app
+answers no intent queries, so asking whether it is a browser requires unhiding
+it, which would hide it again on the next sweep. Every fifteen minutes, forever.
+
+## What waits for the lock, and what stopped waiting
+
+**This heading has moved twice, and each move gave something up.** It read
+*"nothing is enforced until the phone is locked"* until 2026-08-12, when herald
+began installing at provisioning and the filter began running from it. It then
+read *"nothing is **taken away** until the phone is locked"* until 2026-08-17,
+when app removal stopped waiting too.
+
+What waits now is **the restrictions**, and **the removals a switch on the
+configuration screen still governs** — WhatsApp, Telegram, YouTube, streaming, a
+browser the *chooser* narrowed away. Everything else acts from installation.
+
+### Why removal stopped waiting for the lock
+
+**The owner's call, 2026-08-17, and the reasoning is about who this is for:
+not everybody is going to lock.** A phone that filters the web and drops social
+media, undoable only by a factory reset, is already most of what drawbridge
+offers — and a version of that which quietly does nothing until somebody presses a
+button is a version that fails the person who never presses it. The lock is for
+sealing the *choices*; it should not have been the thing that switched the
+product on.
+
+The Moto is what made it concrete, twice in one day: a preloaded game that no
+rule had ever been asked about, and a phone whose owner had every reason to
+believe it was already protecting them.
+
+**What it costs is paid before anybody has agreed to anything**, and that is not
+a small thing. On a phone already in use, apps start disappearing minutes after
+the install, and whatever lived only inside them goes too. The old design bought
+that consent with the lock button. The new one has to buy it earlier, which is why
+the warning moved to **before the install** — the website's install pages, the
+USB installer, and `docs/install*.md` all say it ahead of the cable now, rather
+than beside a button the person has not reached yet.
+
+**One rule had to be hardened for this to be safe.** The browser rule removes what
+is *not* named, and `Policy(version = 0)` — what `PolicyManager` holds before it
+has read anything — names herald alone. A sweep racing the load would have
+answered *"this phone allows no browser but herald"* and uninstalled Chrome,
+Firefox and Vivaldi on the strength of a document nobody had opened. That race was
+survivable while nothing was removed before the first lock; it is not survivable
+when the first sweep runs minutes after installation.
+
+**The fix is to wait, not to skip**, and the difference is not academic.
+`PackageWatcher` does one *full* sweep on start and thereafter asks the platform
+only which packages **changed** — so an app passed over in that first sweep has
+not changed, is never revisited, and sits there until the process next starts.
+Declining for want of a document would therefore have traded one bug for a
+quieter one. Both the initial sweep and the install broadcast now await
+`ensureLoaded()`, which reads what is on disk or the copy bundled in the APK,
+costs milliseconds once, and is free afterwards. `StoreScanWorker` already did
+this; the sweep was the odd one out.
+
+`AppBlocker.browserRuleApplies` stays as the last resort, for the case where even
+that yields nothing readable — `ensureLoaded` logs *"No usable policy"* and
+carries on with version 0 rather than throwing. It is pure and tested. Every
+other branch fails safe on an empty document.
+
+### The filter does not wait, and the old rule was inconsistent
+
+The owner's observation, from a Nothing Phone that sat provisioned and unfiltered
+until somebody pressed Lock: a web filter is protection rather than confiscation,
+and the deliberate act is *installing drawbridge*.
+
+The argument that settled it is about consistency rather than urgency. If "not
+locked" meant "not filtered", then **unlocking would have to un-filter the phone**
+— it is the same state. It never did. The filter was keyed on `protectedSince`
+and survived an unlock, while the pre-lock window had no filter at all, so the
+same visible state behaved two different ways depending on history nobody could
+see. Starting the filter at provisioning removes the seam instead of documenting
+it.
+
+Three of the four reasons for the old behaviour had expired anyway. The wizard
+failure was the QR path, which is retired. The first-launch failure was about
+removals and restrictions. And starting `DnsFilterService` also starts
+`PackageWatcher`, so the filter used to drag app removal with it — which stopped
+being true when removal became keyed on the lock, days earlier, without anyone
+noticing the consequence.
+
+What is kept: the filter still never starts while the setup wizard is running.
+That guard costs nothing and encodes the one failure that actually happened.
+
+**A phone that should have no web filter belongs in a policy that says so** — a
+profile choice somebody makes, rather than a state reached by leaving a button
+unpressed. Not built; noted as the right shape.
+
+### And the restrictions still wait
+
+Before the lock, a provisioned phone has no restrictions — at provisioning, at
+first launch, and on the daily poll alike. `DeviceOwnerManager.reapplyIfProtected`
+is what every automatic caller goes through, and it is a no-op until then; the
+lock button is the only place the lockdown is applied unconditionally.
+
+**App removal used to be in this paragraph and is not any more** — see above. The
+reasoning below is about the *restrictions*, and it survives the change intact:
+what the pre-lock window is for is adding a Google account and setting a screen
+lock, neither of which app removal touches.
 
 The rule was learned twice, from opposite directions.
 
@@ -773,18 +1251,207 @@ the backstop that makes a recovery-mode wipe useless to a child. Both must be
 done by hand, and both are impossible once the restrictions land, as is enabling
 USB debugging on an unfamiliar handset.
 
-`ParentKey.protectedSince` is the signal, not `isLocked`. It survives unlocking,
-so a parent who unlocks to change a setting has not withdrawn their protection
-and the phone stays locked down while they do it. Only removal clears it, which
-is right: removal is the off switch.
+`ParentKey.protectedSince` is the signal for the *restrictions and the filter*,
+not `isLocked`. It survives unlocking, so a parent who unlocks to change a
+setting has not withdrawn their protection and the phone stays filtered while
+they do it. Only removal clears it, which is right: removal is the off switch.
 
-The same rule governs the configuration screen. Choosing a policy or ticking an
-option records the choice and touches nothing until the phone is locked —
-otherwise a parent comparing two policies before deciding would have apps
-uninstalled out from under them by the act of looking. (The confirmation dialog
-in front of policy selection still describes the old behaviour, and wants
-rewording rather than deleting: it is false before the first lock and true after
-it.)
+### Except the removals a switch governs, which follow the lock
+
+**Changed 2026-08-12, after the owner found it on a real phone, and narrowed on
+2026-08-17.** The rule below was written when *all* app removal followed the lock.
+Only half of it does now: what a control on the configuration screen still governs
+waits, and what nothing can bring back does not. The argument is unchanged for the
+half it still covers, and it is the argument that decides which half is which — an
+unlock has to be a window somebody can work in.
+
+USB debugging is keyed on the lock for the same reason. Everything else — the DNS
+filter, the multi-user restrictions, safe boot — stays on through an unlock,
+because dropping those would leave an unlocked phone unfiltered rather than merely
+open.
+
+The bug was that removal followed *nothing at all*. `AppBlocker.evaluate` had no
+gate; `PackageWatcher` lives inside the always-on filter service, which keeps
+running after an unlock by design, so apps went on being uninstalled from an
+unlocked phone. The one gate that existed was on the configuration screen and
+asked `protectedSince != 0` — which reads as *has ever been locked* and stays
+true forever, so unlocking never reopened anything.
+
+**What that cost is the point of unlocking.** A parent unlocks to move data off
+the phone, to migrate an account, to try a second browser before deciding — and
+each of those needs an app to survive longer than the fifteen-minute sweep. An
+unlock that reopens Settings but still deletes what you install is not a window,
+it is a taunt.
+
+It gives nothing away, for exactly the reason USB debugging is keyed there:
+unlocking costs the parent's key, and an unlocked drawbridge already offers
+complete removal from its own overflow menu. Whoever reaches this state can undo
+everything anyway.
+
+**The cost, said plainly.** Every other browser is removed because a browser with
+its own encrypted DNS routes around a DNS-only filter. While the phone is
+unlocked that protection is off, so an unlocked phone carrying a second browser
+is filtered less than it looks. `LockActivity.sealWithKey` runs a full sweep the
+moment the key is committed, which is what makes the window close properly rather
+than fifteen minutes later — and it cannot be left to the watcher, whose own
+startup sweep runs from `lockDevice`, on a phone that is not locked yet.
+
+## The browser choice narrows the policy, and can only narrow it
+
+**Built 2026-08-15, having been promised on the website first.** Three choices:
+every browser the policy sanctions, herald mono alone, or none at all.
+
+**Device-local, like the disconnect philosophy and for the same reason.** The
+signed document says which browsers are *safe* — the ones carrying no in-browser
+proxy and no secure DNS of their own — and this says how many of the safe ones a
+household wants. A document signed by this project's key cannot know that
+somebody is struggling with browsing itself.
+
+`BrowserSettings.allowedBrowsers` **intersects** with the document rather than
+naming packages outright, so the two compose instead of competing: if a policy
+ever stopped sanctioning herald mono, *only herald mono* would allow nothing
+rather than quietly out-ranking the document. Narrowing is the only direction
+available.
+
+### The icons are the description, and they are the policy's list rather than the phone's
+
+Each choice shows the icons of the browsers it allows. That is not decoration
+standing in for a sentence — it *is* the sentence, and a better one: "all the
+allowed browsers" is a claim to take on trust, five icons somebody recognises is
+the same claim, checkable at a glance.
+
+**They come from the policy's list, not from what happens to be installed**,
+which was the first version and was wrong. The row answers *what does this choice
+allow* — a question about the document — and a phone without Vivaldi on it does
+not make Vivaldi any less allowed. Reading only installed apps made the same
+choice look different on two phones, and look *smaller* than it is on a phone
+whose browsers the choice above had just removed.
+
+So each icon resolves in descending order of how true it is: the installed app's
+own launcher icon, then a bundled copy, then a globe. The third rung matters
+because the map is keyed by package name while the allowed list is a signed
+document that changes without an app update — a browser added tomorrow gets the
+globe rather than leaving a hole in a row whose whole job is being complete.
+
+**On the bundled third-party marks.** They identify the products they belong to,
+which is what any browser picker does, and it is a different act from the rating
+shields — those are drawn in-house precisely *because* borrowing PEGI's mark
+would have asserted that PEGI graded something. Naming Chrome with Chrome's icon
+asserts only that this is Chrome. Provenance is recorded beside the map in
+`MainActivity`: Chrome, Firefox Focus and Vivaldi logos from Wikimedia Commons,
+CC BY where the file carries a licence, each a trademark of its owner; herald's
+two are this project's own, downscaled from `site/assets/img/`. Five files,
+about 15 KB in total.
+
+### It waits for the lock, and a browser the policy never allowed does not
+
+The rule is not "browsers wait too". A browser the **policy** never sanctioned —
+Opera, with its in-browser proxy over 443 — is a hole in a DNS-only filter and
+goes whether the phone is locked or not. A browser the **parent** narrowed away
+with this chooser is a reversible preference, and it lands at the lock like an
+option's apps do, for the same reason: they may be mid-decision, and for a
+user-installed browser an uninstall is permanent.
+
+Coming back works the way it does for options. A preinstalled browser is
+*hidden*, so widening the choice unhides it — immediately, since restoring only
+ever adds. herald is user-installed and therefore *uninstalled*, so it comes back
+the way it arrived: `required_apps` fetches it at the next lock.
+
+**That last part needed a guard, and without it the phone would loop.**
+`required_apps` names herald; *no browser* uninstalls it at the lock; the next
+poll finds it missing and pulls 230 MB to put it back, for the following lock to
+remove again. `AppInstaller.installMissingRequiredApps` now skips a required app
+that is a browser the current choice excludes. The choice has to be honoured at
+both ends or at neither.
+
+### drawbridge does not decide the default browser at all
+
+The first build of this pinned herald as the web-link handler with
+`addPersistentPreferredActivity`, and grew its own default-browser picker to let
+a parent change it. Both are gone.
+
+**The API is the wrong tool for a recommendation.** It is documented to keep its
+activity as the default *"even if the intent preferences are reset"* — built to
+be un-overridable, which is right for a kiosk and wrong here. The intention was
+only ever "herald is what we suggest"; what it produced was a phone whose link
+handler could not be changed from Settings, and then a second question-asking
+control inside drawbridge to work around drawbridge.
+
+So the platform behaves normally: the first tapped link brings up Android's own
+chooser with every allowed browser in it, *always* makes one the default, and
+Settings → Default apps changes it later. `releaseDefaultBrowser` runs on every
+policy application and clears any claim — which matters for phones updating from
+a build that pinned, since nothing else would ever release it.
+
+**The cost, stated plainly:** herald is not pre-selected. It is one entry in the
+chooser rather than the answer. Under *herald mono only* and *no browser* this
+is moot, because there is nothing to choose between.
+
+**One bug found and fixed on the way, then made moot.** `resolveBrowserActivity`
+used a plain `queryIntentActivities`, and a persistent preferred activity makes
+the platform answer that filter with the preferred activity alone — so the
+method could only ever resolve the browser that was *already* the default, and
+changing it failed silently with "Browser … is not installed" in the log. It had
+been that way since it was written and was never exercised, because herald was
+the only answer anything asked for. The method is deleted along with the pinning;
+the shape of the mistake is the part worth keeping.
+
+### Narrowed on 2026-08-15: only what a switch could change waits
+
+**The rule above said "everything except browsers waits for the lock", and that
+was too much.** Its reasoning — an unlock is a window, and a window that deletes
+what you put in it is not a window — is right about the things a parent is still
+deciding on. It is wrong about the rest, and the cost showed as a phone that
+slowly refilled, during every unlock, with precisely the apps drawbridge had been
+installed to remove. Somebody installs this *because* they want social media off
+the phone. There is no second question there to leave open.
+
+So removal now splits three ways rather than two:
+
+| | Removed while unlocked? |
+|---|---|
+| Browsers | **Yes** — a browser is a way around a DNS-only filter, not one more app |
+| Anything an **option** covers — WhatsApp, Telegram, YouTube, the streaming catalogue | **No.** Waits for the lock |
+| Everything else the policy blocks | **Yes**, as of 2026-08-15 |
+
+**Why an option is the line, and not, say, "user-installed".** An option is a
+question the parent answers with a switch, and they may not have answered it
+yet — the phone arrives with every option off. Taking an app away from somebody
+halfway through deciding to allow it is the same taunt the window exists to
+prevent, and it is worse than it sounds because it is not symmetrical:
+`restoreNowAllowed` can unhide a *preinstalled* app when the option comes on, but
+nothing reinstalls one that was uninstalled. The policy's own list carries no
+such question, so it needs no such grace.
+
+`AppBlocker.optionGoverned` reads the packages from **every** option rather than
+the enabled ones, which looks wrong and is not: an option that is *on* never
+reaches the rule, because its packages are exempt and `isProtected` declines them
+first. The set is only ever consulted for options that are off — the ones a
+parent might still switch on.
+
+**The window before the first lock is untouched.** That is a separate gate, and
+it is what lets a parent move bookmarks and data across; it is the reason
+drawbridge does not need a factory reset. Nothing is removed before the first
+lock, browsers included.
+
+The configuration screen no longer follows from the rule for free. It only exists
+while the phone is unlocked, so it used to be able to say one thing about
+everything on it — that changes land at the lock. Now a policy change removes
+apps as it is made and an option change does not, so the line above the controls
+says which is which, and the two toasts differ.
+
+**The confirmation in front of switching an *option* off is gone**, deleted
+rather than reworded, because rewording left it with nothing to say. It warned
+that the option's apps went straight away and that switching back on would not
+return them; removal follows the lock, so the first half describes something
+this screen cannot do, and `restoreNowAllowed` unhides what the policy names, so
+the second half is wrong in the other direction. A dialog whose whole content
+has become untrue is not a safeguard, and a parent who reads it and believes it
+is worse off than one who never saw it. Both directions of an option now apply
+as the switch moves, and the toast says where the change lands. (The dialog in
+front of *policy* selection carries the same two stale sentences and is still
+there: swapping a profile changes the resolver and every blocklist with it, so
+it has something to confirm and wants rewording rather than deleting.)
 
 One wrinkle worth knowing. `lockDevice` triggers the policy fetch and the
 required-app install *before* it mints the key, because everything needing the
@@ -815,6 +1482,151 @@ herald arriving after the browser it should have inherited from has been removed
 It still requires Device Owner — these are silent `PackageInstaller` sessions —
 and an unrequested run still waits for an unmetered network, because 235 MiB per
 browser on somebody's mobile data is its own kind of surprise.
+
+## The install lock is a closed set, not a date and not a flag
+
+**Built 2026-08-16, and it is the answer to a problem the blocklist cannot
+solve.** Policy 59 added twenty-two AI companion apps by hand, every id fetched
+from its Play listing and checked; the category had been carried almost entirely
+by a domain list, and a domain list cannot hold it — nobody reaches these by
+typing a hostname, they are found by name in the Play Store and installed with
+one tap. New ones appear weekly with fresh package ids. A signed document updated
+by hand will always trail them.
+
+So the fix is upstream of the list: **after the lock, this phone installs nothing
+new, and the apps already on it go on updating.**
+
+### Why a set, and why that makes updates free
+
+That sentence has three plausible encodings and only one of them works.
+
+- **A date.** "Anything installed after the lock." It reads well and it is wrong
+  the first time an app updates: `lastUpdateTime` moves, and the phone removes an
+  app nobody installed. It is also exactly the trap the Moto's YouTube laid on
+  2026-08-14, where `firstInstallTime` had been rewritten by an OEM preload
+  service.
+- **`EXTRA_REPLACING`.** The platform hands over a boolean saying *new package*
+  or *update of one already here*, which is genuinely the question. It is
+  unavailable to the half of the enforcement that matters most: the
+  fifteen-minute sweep has no broadcast to read a flag from, and the receiver
+  only fires while the filter service is alive, so an app installed during a
+  restart would never be seen.
+- **A set** — the packages the phone carried at the last lock. This is what
+  drawbridge does, and updates then need **no special case at all**: an update
+  never adds a package name that was not already there, so it is in the set by
+  construction and the rule cannot fire on it. Nothing in the app reads
+  `EXTRA_REPLACING`, compares versions, or looks at a timestamp.
+
+`PackageWatcher` still evaluates replacing broadcasts, as it has since
+2026-08-15, and it can go on doing so. The set answers the question, not the flag.
+
+### An absent snapshot is not an empty one
+
+`InstallLockSettings.snapshot` is **nullable**, and that is load-bearing rather
+than fastidious. An empty set means *this phone carries nothing*, which would
+make every package on the device a newcomer and hand the blocker a rule that
+takes the phone apart. A snapshot that has never been taken has to answer "I
+cannot say". This is the same shape of mistake as keying enforcement on
+`protectedSince`, which reads as *is protected* and means *has ever been locked*
+— the bug that cost 2026-08-12.
+
+### It is limited to user-installed apps, like allowlist mode
+
+This is the second rule in `AppBlocker` that removes what is *not* named rather
+than what is, and that shape is the one that can take a phone apart. A snapshot
+is the worse of the two: it is generated rather than written, so nobody ever
+reads it, and it cannot know about a package that does not exist yet. An Android
+version upgrade legitimately adds system apps — a snapshot taken on 15 has never
+heard of what 16 ships — and hiding those would be an OTA quietly subtracting
+from the phone, with nothing able to restore them because `restoreNowAllowed`
+only brings back what the *policy* names.
+
+Nothing is lost by the limit. This setting exists because of the Play Store, and
+a preinstalled app was on the phone when the parent locked it.
+
+### There is no prevention layer, and the platform is the reason
+
+It shipped with one for exactly one build. `DISALLOW_INSTALL_APPS` in
+`DeviceOwnerManager.restrictionsFor`, keyed on the lock like
+`DISALLOW_DEBUGGING_FEATURES`, was to stop a new app arriving at all — with the
+closed set behind it, deliberately built to give the promised semantics whatever
+the restriction turned out to do.
+
+**It turned out to block Play Store updates as well, and that killed it.**
+Measured on the owner's Moto G15 on 2026-08-16: with the restriction in force, an
+attempt to update Bitwarden was refused, Play's install activity opening and
+closing again in 57 milliseconds. The restriction is checked in
+`PackageInstaller.createSession`, and an update is an ordinary session there — the
+platform draws no distinction at that point between a new package and a
+replacement. **No AOSP user restriction expresses *no new apps, updates fine*.**
+
+Blocking updates is worse than the prevention was good, which is what made this a
+same-day fix rather than a parameter to tune: it freezes security patches for
+every app on the phone, and the app that surfaced it was a password manager.
+
+So the closed set carries the feature alone. A Play install succeeds, then
+`PackageWatcher` uninstalls anything outside the snapshot within seconds, with the
+fifteen-minute sweep as the backstop. What is lost is only the difference between
+*refused* and *removed a moment later*.
+
+**`DISALLOW_INSTALL_UNKNOWN_SOURCES` was considered and declined.** The snapshot
+catches a sideloaded package exactly as it catches a Play install, so it would
+change *when* rather than *whether* — and adding a second restriction on an
+untested assumption, immediately after the neighbouring one behaved differently
+from the assumption made about it, is the mistake this section exists to record.
+
+The gap that leaves, stated rather than closed: Android requires a matching
+signature to *update* an installed app, but nothing stops uninstalling one and
+sideloading a differently-signed build under the same package name, which the
+snapshot allows because the name is in the set. That is an adversary with an
+APK-patching toolchain rather than a child.
+
+**The retirement mattered as much as the removal.** `applyUserRestrictions`
+computes what to *clear* from `MANAGED_RESTRICTIONS`, so dropping an entry from
+that list stops it being set on new devices and never takes it off one that
+already carries it. The restriction moved to `RETIRED_RESTRICTIONS` instead —
+the same mechanism that un-did `DISALLOW_FACTORY_RESET` — or every phone that
+locked once under build 29 would have been left unable to update anything, for
+good, with nothing on the device able to reach it.
+
+### drawbridge's own installs are the half that can strand a phone
+
+`required_apps` names herald. herald is user-installed, so a browser-policy change
+*uninstalls* it rather than hiding it, and the next poll fetches 230 MB to put it
+back. Three separate things had to be right or the phone would loop, or lose its
+browser for good:
+
+1. **It joins the set before the session is committed**, not on success —
+   `ACTION_PACKAGE_ADDED` can beat the install-result broadcast, and
+   `PackageWatcher` would evaluate a package that was not yet in the set.
+2. **A package still downloading counts as present.** herald takes minutes, and
+   *choose the allowed browsers, then lock* puts the lock in the middle of that:
+   the lock re-takes the snapshot from the packages actually on the phone, does
+   not find herald, and writes the name straight back out. `closeTheInstalledSet`
+   unions the installed packages with whatever drawbridge has in flight.
+3. ~~**The restriction stands down for the length of the install.**~~ Gone with
+   the restriction itself, one build later. It existed because a Device Owner was
+   only *expected* to be exempt from `DISALLOW_INSTALL_APPS`, and the thing
+   depending on that was a browser that could not otherwise come back. The
+   in-flight set it was built on survives, because point 2 above needs it.
+
+Belt and braces on top of all three: herald is an *allowed browser*, so
+`isProtected` declines it before the install-lock branch is reached at all. The
+machinery above is what makes the rule right for **any** required app, including
+ones no policy names yet.
+
+### The switch defaults off, and the wording carries the cost
+
+Unlike the four policy options, this changes what the phone *is* rather than what
+it filters, so nobody should get it by leaving a button unpressed. The cost is
+not obvious until it bites and a parent should meet the sentence before the
+situation: **an app you have not installed yet, you cannot install** — no new
+bank app, no train ticket app, no app a school asks for in March — without
+unlocking with the key.
+
+Which is also the whole way in, and it is the one drawbridge already uses for
+everything else: unlock, install, lock again. The lock re-takes the snapshot, so
+whatever is on the phone at that moment is what it keeps.
 
 ## drawbridge does not prevent a factory reset
 
@@ -853,7 +1665,11 @@ lost the key.
 
 ## Losing the key: a delay, not a back door
 
-*Considered and deferred. Nothing is implemented.*
+**Built 2026-08-17, and as an automatic *unlock* rather than the self-removal
+proposed here.** The note below is what was written before it existed and is
+preserved for its reasoning; ["What was built, and where it departs from the note
+above"](#what-was-built-and-where-it-departs-from-the-note-above) at the end of
+this section says what the code actually does.
 
 The key is shown once and stored only as a hash, so a parent who loses it cannot
 get back into the settings. Since drawbridge stopped preventing factory reset
@@ -921,14 +1737,104 @@ parent from a determined teenager with a convincing story.
 That converts a tool into a service, which is the one thing this project set out
 not to be.
 
-## The clock is locked on every device, not only for curfews
+### What was built, and where it departs from the note above
+
+**An unlock, not a removal**, and that is the largest departure. `LockTimer` ends
+the *lock*: the key is dropped, the configuration screen opens again, the phone
+comes back online, USB debugging returns. Everything keyed on
+`protectedSince` — the filter, the always-on VPN, the restriction set — stays
+exactly as it was, which is precisely what a parent unlocking to change a setting
+already gets.
+
+It answers the same problem for one reason: **removal lives behind the lock.**
+`RemoveActivity` is in the unlocked screen's overflow menu, so a phone that
+unlocks itself is a phone whose owner can then remove drawbridge, keep it and
+re-lock, or hand it on. The timer therefore did not need to implement a teardown
+of its own — the teardown was already written, and pointing a clock at the *lock*
+rather than at the app is both smaller and reversible. A timer that removed
+drawbridge outright would also be strictly worse for the ordinary case, which is
+not a lost key at all: it is a weekend offline, and nobody wants their filter
+uninstalled on Sunday night.
+
+**Two doors, one deadline.** A period chosen on the configuration screen before
+locking (2 hours to 40 days, armed in `LockActivity.sealWithKey`), and a
+thirty-day one that `Forgot the code` starts from a phone that is already locked.
+Both write the same three numbers and both are read by the same controller, so
+there is one mechanism to get right rather than two. The picker's longest entry is
+forty days; the code-forgotten door is thirty and is not configurable, because a
+dial on that would be a dial on how long a bypass takes.
+
+**Of the note's three requirements, two are met as written and one is met
+differently:**
+
+- *The clock is the attack* — `DISALLOW_CONFIG_DATE_TIME` with network time, for
+  as long as a deadline is armed. The decision lives in `CurfewController.apply`
+  and nowhere else, because two writers of one restriction means whichever runs
+  last wins; see the section below.
+- *Ambiguity fails locked* — `LockTimer.hasExpired` is a pure function of three
+  numbers and refuses to fire on any state it cannot make sense of: a
+  half-written deadline, a deadline at or before its own arming, or a clock now
+  reading earlier than the arming. Nine unit tests cover it, because the
+  alternative is checking a fortnight-long rule by holding a handset.
+- *Impossible to miss* — **the keyguard and the lock screen, not an ongoing
+  notification.** The keyguard counts down in words — *"drawbridge unlocks in 3
+  days"* — which is the surface a parent is already told to check and the one
+  nobody can swipe away. A duration rather than a date, because it is read
+  against nothing; the trade is that a stored string goes stale, so
+  `LockTimerController.apply` rewrites it on every run, hourly at worst. The lock
+  date stays on drawbridge's own screen, which is where somebody comparing it
+  against a memory is already looking. A notification would mostly be seen by whoever started the
+  countdown, and its visibility is not something this build can promise:
+  `POST_NOTIFICATIONS` is declared in the manifest but nothing asks for it and
+  nothing grants it, so on Android 13+ it may simply not appear. The
+  code-forgotten line is coloured as an error and says in words that somebody on
+  the phone declared the code lost, since that is the one countdown a parent may
+  not have started.
+
+**It does not buy back `DISALLOW_FACTORY_RESET`, and no build should assume it
+did.** The argument above holds — an escape that is "ask and wait" makes the
+restriction survivable again — but the property that note flags as lost is now
+real: this escape runs *inside* drawbridge. A crash loop or a bad update takes it
+with it, where a factory reset never involved drawbridge at all. Reinstating the
+restriction is still [step 9 in the handoff](handoff.md#9-lock-factory-reset--last-and-only-with-the-timer),
+still after everything above it, and still the most safety-critical release this
+project would cut. What has changed is only that the prerequisite exists.
+
+**The residual risk is unchanged and cannot be designed away**: somebody starts
+the thirty days, nobody picks the phone up, and it lifts. The length is the only
+dial, and it is set where a child cannot reach it.
+
+## The clock is locked for a curfew and for a lock timer, and this section used to claim more
+
+**Corrected 2026-08-17, while the lock timer was being built.** The heading here
+used to read *"on every device, not only for curfews"* and the paragraph under it
+said the clock pin was part of the standard lockdown. That is what
+`DeviceOwnerManager.applyClockLock`'s own comment still says, and it is not what
+the phone does: `applyManagedDevicePolicy` does apply the pin, and then
+`CurfewController.apply` — which runs immediately afterwards on every process
+start, every boot, both ends of a lock and every fifteen minutes — clears it again
+unless something needs it. Two writers, and the second one wins.
+
+So the rule as built is: **the clock is pinned while a curfew is in force, and
+while a lock timer is counting down.** The timer half is new and is not optional —
+a deadline is a wall-clock instant, and `SystemClock.elapsedRealtime` resets at
+boot, so a phone that can be wound forward forty days is a phone whose forty-day
+lock ends this afternoon. The decision is computed in one place, in
+`CurfewController.apply`, from both inputs at once, because that is the component
+that already runs on every trigger either answer depends on.
+
+**Whether to make the wider claim true was asked and declined, 2026-08-18.** The
+two reasons below are real and have nothing to do with curfews, which is an
+argument for pinning the clock on any locked phone and deleting the condition.
+The owner's answer was no: pin it only where something needs it. Taking manual
+clock setting away from every phone that has neither a curfew nor a timer is a
+real cost, paid to close an attack that only exists where a wall-clock deadline
+does. The condition stays.
 
 `DISALLOW_CONFIG_DATE_TIME`, with `setAutoTimeEnabled` and
-`setAutoTimeZoneEnabled` where the API exists, is part of the standard lockdown
-rather than something a curfew switches on.
-
-It was written for the curfew, where a wall-clock window is advisory if the clock
-can be edited. But the same edit defeats two things that exist without one:
+`setAutoTimeZoneEnabled` where the API exists, was written for the curfew, where a
+wall-clock window is advisory if the clock can be edited. But the same edit
+defeats two things that exist without one:
 
 - **The protected-since date.** Wind the clock back a year, lock, wind it
   forward: the phone now reports a year of continuous protection it never had.
@@ -939,10 +1845,10 @@ can be edited. But the same edit defeats two things that exist without one:
   does not implement those and cannot enforce them, but it can stop the phone
   lying to them.
 
-The cost is that nobody can set the clock by hand on a locked device. Network
-time and network time zone are forced on instead, which is right on a phone that
-is on a network by definition, and travel is handled by the time zone following
-the network rather than the user.
+The cost is that nobody can set the clock by hand on a phone with a curfew or a
+running timer. Network time and network time zone are forced on instead, which is
+right on a phone that is on a network by definition, and travel is handled by the
+time zone following the network rather than the user.
 
 ## The protected-since date is the cheap tamper check
 

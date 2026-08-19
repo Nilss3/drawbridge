@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-    One policy in the picker: title, the line that says who it is for, and the
-    paragraph that says what it actually does.
+    One policy in the picker: title, the line that says who it is for, and an
+    info button holding the paragraph that says what it actually does.
 
     (The signed document calls these "profiles" — variants of one policy
     document. The screen says "policy", because that is the word for it from the
@@ -10,6 +10,12 @@
     A card rather than a list row because this is a decision with consequences —
     switching to a stricter one uninstalls apps and does not put them back — and
     it deserves more room than a radio button in a dialog gave it.
+
+    **The description moved behind the button on 2026-08-15.** The paragraphs are
+    worth reading once and worth having, but every policy and every option
+    carried one, and together they made a screen a parent had to scroll several
+    times to reach the button they came for. What stays on the card is what tells
+    them apart at a glance: the name and who it is for.
 -->
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -24,8 +30,12 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:padding="16dp">
+        android:paddingStart="16dp"
+        android:paddingTop="16dp"
+        android:paddingEnd="4dp"
+        android:paddingBottom="16dp">
 
         <!-- The card is what is tapped; this only reports which one is chosen,
              so it takes no touches of its own. -->
@@ -38,8 +48,9 @@
             android:focusable="false" />
 
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:orientation="vertical">
 
             <TextView
@@ -54,13 +65,42 @@
                 android:layout_height="wrap_content"
                 android:textAppearance="?attr/textAppearanceBodyMedium"
                 android:textColor="?attr/colorPrimary" />
+        </LinearLayout>
+
+        <!-- The same shield an option carries. See item_option.xml. -->
+        <FrameLayout
+            android:id="@+id/policyRating"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginStart="8dp">
+
+            <ImageView
+                android:id="@+id/policyRatingShield"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:importantForAccessibility="no"
+                android:src="@drawable/ic_rating_shield" />
 
             <TextView
-                android:id="@+id/policyDescription"
+                android:id="@+id/policyRatingText"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingTop="6dp"
-                android:textAppearance="?attr/textAppearanceBodySmall" />
-        </LinearLayout>
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:importantForAccessibility="no"
+                android:paddingBottom="3dp"
+                android:textColor="@color/rating_label"
+                android:textSize="10sp"
+                android:textStyle="bold" />
+        </FrameLayout>
+
+        <!-- Its own click listener, which is what keeps it from selecting the
+             policy: the button consumes the touch before the card sees it. -->
+        <ImageButton
+            android:id="@+id/policyInfo"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:scaleType="center"
+            android:src="@drawable/ic_info" />
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

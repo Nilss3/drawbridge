@@ -276,6 +276,8 @@ class DnsFilterService : VpnService() {
         runCatching { builder.addDisallowedApplication(packageName) }
             .onFailure { Log.e(TAG, "Could not exclude drawbridge from the tunnel", it) }
 
+        excludePackagesTheTunnelBreaks(builder, policy.policy.value.dns.excludedPackages)
+
         builder.setConfigureIntent(
             PendingIntent.getActivity(
                 this,
@@ -288,6 +290,37 @@ class DnsFilterService : VpnService() {
         return runCatching { builder.establish() }
             .onFailure { Log.e(TAG, "establish() failed", it) }
             .getOrNull()
+    }
+
+    /**
+     * Leaves the policy's [DnsPolicy.excludedPackages] outside the tunnel.
+     *
+     * These are apps an always-on VPN stops working, and the one the list ships
+     * with is Android Auto. Wireless projection refuses to start while a VPN is
+     * present and puts *"error 21, are you using a VPN?"* on the car's screen
+     * every time the phone comes into range — a wired connection is unaffected,
+     * which is the tell that this is about the VPN's presence rather than about
+     * anything crossing it. Nothing does cross it: only DNS is routed here.
+     *
+     * **Excluding an app is what makes the VPN invisible to it**, not merely
+     * unused by it. A disallowed app's default network is the underlying Wi-Fi
+     * or mobile one, so `NET_CAPABILITY_NOT_VPN` is set for it and a check
+     * through `ConnectivityManager` finds no VPN — which is why "split
+     * tunnelling" is the fix every VPN offers for this error, and why it works
+     * whether Android Auto is blocked by the tunnel or merely offended by it.
+     * The residual risk is an app that looks for a `tun` interface instead,
+     * which is process-independent and would see one anyway; if that is what
+     * Android Auto does, no exclusion here can help it.
+     *
+     * A missing package is the ordinary case, not an error: the list is written
+     * once for every phone, and most phones will not have all of it.
+     */
+    private fun excludePackagesTheTunnelBreaks(builder: Builder, packages: List<String>) {
+        for (excluded in packages) {
+            runCatching { builder.addDisallowedApplication(excluded) }
+                .onSuccess { Log.i(TAG, "Outside the tunnel, and so unfiltered: $excluded") }
+                .onFailure { Log.i(TAG, "Not installed, nothing to exclude: $excluded") }
+        }
     }
 
     private fun runTunnelLoop(descriptor: ParcelFileDescriptor) {

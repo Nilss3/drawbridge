@@ -55,12 +55,31 @@
 
     <!-- The configuration screen is one long column of sections, and this is what
          separates them: the same heading with the same space around it, in every
-         one. Not in values-night, because nothing here is a colour. -->
+         one.
+
+         It used to be titleMedium in the body colour, which on a screen where
+         every card also carries a title read as one more line of text — "Policy"
+         looked like a label for the cards rather than the start of a section.
+         Four things now say "new section" together: the rule above it, the space
+         that rule sits in, the weight, and the accent colour. The colour is a
+         theme attribute, so it still needs no values-night of its own. -->
     <style name="TextAppearance.Drawbridge.SectionHeading" parent="">
-        <item name="android:textAppearance">?attr/textAppearanceTitleMedium</item>
+        <item name="android:textAppearance">?attr/textAppearanceTitleLarge</item>
+        <item name="android:textColor">?attr/colorPrimary</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:background">@drawable/section_rule</item>
         <item name="android:paddingStart">24dp</item>
         <item name="android:paddingEnd">24dp</item>
+        <item name="android:paddingTop">24dp</item>
         <item name="android:paddingBottom">12dp</item>
+    </style>
+
+    <!-- The first heading on the screen, which has nothing above it to be
+         separated from: a rule directly under the title bar reads as a stray
+         line rather than as a boundary. Same heading otherwise. -->
+    <style name="TextAppearance.Drawbridge.SectionHeading.First" parent="TextAppearance.Drawbridge.SectionHeading">
+        <item name="android:background">@null</item>
+        <item name="android:paddingTop">8dp</item>
     </style>
 
     <!-- Rounds the illustration to match the cards under it. -->
