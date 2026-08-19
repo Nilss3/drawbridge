@@ -1,7 +1,7 @@
 {
-  "version": 54,
+  "version": 55,
   "issued_at": "2026-08-13T18:00:00Z",
-  "comment": "Policy 54, the alpha. Puts com.zhiliaoapp.musically.go (TikTok Lite) back on blocked_packages. It came off in 53 so the app could be the probe for one question -- whether the DNS filter stops TikTok's traffic -- and the answer, measured over adb on 2026-08-18, is that the filter refuses every TikTok and ByteDance name while the app plays video anyway, connected straight to 71.18.73.249 and 71.18.129.228 (whois: Bytedance Inc.) and to Akamai. It does not ask a resolver, so no domain list can stop it and the package list is what does. The domains stay: they stop the website and every app that does resolve.",
+  "comment": "Policy 55, the alpha. Takes com.instagram.lite off blocked_packages so it stays on the phone as the live control. It is the app that showed nothing while TikTok Lite played video with the same domains blocked, which is what made that a finding rather than a gap, and it is worth keeping installed to re-check after any change to the social list. Instagram proper (com.instagram.android) stays blocked, and instagram.com and cdninstagram.com stay on the social list, so the Lite app has nothing to reach.",
   "dns": {
     "upstreams": [
       "94.140.14.15",
@@ -179,7 +179,6 @@
     "com.innersloth.spacemafia",
     "com.instagram.android",
     "com.instagram.barcelona",
-    "com.instagram.lite",
     "com.instagram.moonshot",
     "com.ismaker.android.simsimi",
     "com.jds.batds",
