@@ -355,6 +355,14 @@ feed, recipes, sport tracking, video calls for school and work, and the general-
 None of them has an algorithmic feed of strangers' content, which is the line this list is drawn
 on.
 
+**One entry is rated PEGI 18 rather than Parental guidance, and that is deliberate.** Newpharma is a
+pharmacy: it sells medicine, so it is rated for adults, and that is the right rating for what it
+does. It is on this list because a household that needs its pharmacy app should be able to have it.
+The rating is also a good illustration of why this list has to exist at all — Multipharma and
+Farmaline are the same business in the same country and come back PEGI 3, so a pharmacy's rating
+says nothing about pharmacies and everything about which self-declaration questionnaire that
+publisher filled in.
+
 | App | Play rating (BE) | Package |
 |---|---|---|
 | Amazon Music: Songs & Podcasts | Parental guidance | `com.amazon.mp3` |
