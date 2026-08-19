@@ -12,7 +12,7 @@
 
     <string name="welcome_title">Welkom bij drawbridge</string>
     <string name="welcome_subtitle">Laten we de brug ophalen voor het toxische, verslavende internet en onze gemoedsrust bewaren.</string>
-    <string name="welcome_scene_description">Een opgehaalde ophaalbrug bij nacht, tussen een rustig maanverlicht park en een rotsige oever waar tekenfilmmonsters staan te wachten.</string>
+    <string name="welcome_scene_description">Een opgehaalde ophaalbrug bij zonsondergang, tussen een herfstpark waar iemand op een bank zit te lezen en een rotsige oever waar tekenfilmmonsters staan te wachten.</string>
 
     <string name="policy_heading">Beleid</string>
     <string name="policy_none_available">Dit beleidsdocument biedt niets om uit te kiezen.</string>
@@ -25,24 +25,24 @@
     <string name="change_applied_at_lock">%1$s toegepast na vergrendeling.</string>
     <string name="change_applied">%1$s toegepast.</string>
     <string name="info_button_description">Meer over %1$s</string>
-    <string name="settings_take_effect_at_lock">De webfilter draait al, en apps die dit beleid niet toelaat worden verwijderd zodra ze verschijnen. De andere opties hieronder gaan pas van kracht na de vergrendeling.</string>
+    <string name="settings_take_effect_at_lock">Dit beleid is altijd actief, ook wanneer drawbridge ontgrendeld is. De opties hieronder zijn bijkomende beperkingen en gelden alleen wanneer drawbridge vergrendeld is.</string>
 
     <string name="browser_heading">Browserbeleid</string>
-    <string name="browser_all_name">De toegestane browsers</string>
-    <string name="browser_all_description">Elke browser die goed werkt met de webfilter. We raden herald aan: minimalistisch, toont een duidelijke pagina bij blokkeren, en volgt het beleid van drawbridge. Weblinks openen in herald, tenzij je hieronder iets anders kiest.</string>
+    <string name="browser_all_name">De browsers toestaan</string>
+    <string name="browser_all_description">Elke browser die goed werkt met de webfilter. We raden herald aan: minimalistisch, toont een duidelijke pagina bij blokkeren, en volgt het beleid van drawbridge.</string>
     <string name="browser_mono_name">Enkel herald mono</string>
-    <string name="browser_mono_description">Eén browser, en met opzet een saaie: standaard zwart-wit, leesmodus, slechts één tab. Een goede keuze voor wie het surfen zelf verslavend vindt (nieuwssites, online shoppen en dergelijke) eerder dan één bepaalde website. Elke andere browser wordt verwijderd.</string>
+    <string name="browser_mono_description">Een minimalistische browser voor wie te veel surft: standaard zwart-wit, hij scrolt en klikt trager, en heeft slechts één tab. Elke andere browser wordt verwijderd.</string>
     <string name="browser_none_name">Helemaal geen browser</string>
-    <string name="browser_none_description">De telefoon heeft geen enkele browser.\n\nLog overal in voor je dit kiest. Sommige apps sturen je naar een browser om aan te melden, en op een telefoon zonder browser lukt dat niet. Wat niet al ingelogd is, blijft uitgelogd, en daar is niets aan te doen zonder drawbridge te ontgrendelen.</string>
+    <string name="browser_none_description">Verwijdert alle browsers. Zorg dat al je apps ingelogd zijn voor je dit vastzet, want sommige apps hebben een browser nodig om aan te melden.\n\nHou er ook rekening mee dat bepaalde functies kunnen haperen of niet werken, bv. betalingen, QR-codes, enz.</string>
     <string name="browser_icons_description">De browsers die deze keuze toelaat</string>
 
     <string name="install_lock_heading">App-installaties</string>
-    <string name="install_lock_name">Enkel de apps die al op deze telefoon staan</string>
+    <string name="install_lock_name">Geen andere apps</string>
     <string name="install_lock_description">Na de vergrendeling kan geen enkele nieuwe app geïnstalleerd worden. De apps die op dat moment op de telefoon staan blijven gewoon updaten.</string>
-    <string name="install_lock_info">De telefoon gaat dicht bij de vergrendeling. Alles wat erop staat blijft werken en blijft updaten, en de Play Store werkt die apps ook nog bij — maar een app die er nog niet op staat, kan er niet meer bij.\n\nDat is meteen de bedoeling ervan én het hele bezwaar: geen nieuwe bankapp, geen app voor treintickets, geen app die de school in maart vraagt, tenzij je drawbridge eerst ontgrendelt met de sleutel. Ontgrendelen, installeren wat nodig is, en opnieuw vergrendelen — wat er op dat moment op staat, is wat de telefoon houdt.\n\nherald en alles wat het beleid verder vereist zijn de uitzondering. Die installeert drawbridge zelf, vanuit het ondertekende beleid dat je gekozen hebt, vergrendeld of niet.\n\nLaat dit uit als je twijfelt. Een app blokkeren kan later altijd nog; een telefoon waarop niemand iets kan installeren is een telefoon waarvoor men bij jou moet aankloppen.</string>
+    <string name="install_lock_info">Snoei je apps voor je vergrendelt en hou enkel de apps die je op je telefoon wil. Na de vergrendeling worden geen nieuwe apps meer toegelaten. Updates van bestaande apps komen wel door, dus hou de Play Store om bij te werken.\n\nherald en alles wat het beleid verder vereist zijn de uitzondering. Die installeert drawbridge zelf, vanuit het ondertekende beleid dat je gekozen hebt, vergrendeld of niet.\n\nLaat dit uit als je twijfelt. Een app blokkeren kan later altijd nog; een telefoon waarop niemand iets kan installeren is een telefoon waarvoor men bij jou moet aankloppen.</string>
 
     <string name="options_heading">Opties</string>
-    <string name="options_explanation">Sta de volgende diensten toe op eigen risico.</string>
+    <string name="options_explanation">drawbridge laat, wanneer het ontgrendeld is, alles hieronder toe. Wil je sommige van deze ‘diensten’ niet, en terecht, verbied ze dan en vergrendel drawbridge.</string>
     <string name="options_none_available">Dit beleid biedt niets om aan te zetten.</string>
     <string name="options_footnote">Het beleid is geïnspireerd op de beste praktijken uit het digitale minimalisme en is een goede keuze voor iedereen, ook voor volwassenen. De leeftijden zijn een aanbeveling van kinderartsen en neurologen, en zijn enkel relevant voor verzorgers die een toestel instellen voor een tiener.</string>
     <string name="option_change_failed">Die optie staat niet meer in het beleid.</string>
@@ -60,12 +60,12 @@
 
     <!-- Vergrendelen -->
     <string name="lock_confirm_title">drawbridge vergrendelen?</string>
-    <string name="lock_confirm_message">Vergrendelen past de instellingen van dit scherm toe: de apps die je toch wilde toestaan verdwijnen als je ze uit liet staan, en de verbindingsfilosofie gaat van kracht. Apps die nooit toegelaten zijn, zijn al bij de installatie verdwenen.\n\nAls Android vraagt of drawbridge op de achtergrond mag draaien, sta dat toe. Drawbridge werkt hoe dan ook, maar zo kan het de webfilter bijwerken.\n\nJe krijgt een sleutel te zien. Het is de enige manier om te ontgrendelen, behalve door het toestel terug te zetten naar de fabrieksinstellingen. De sleutel wordt maar één keer getoond. Schrijf hem op of houd je toestel voor altijd zoals het is — dat is jouw keuze.</string>
+    <string name="lock_confirm_message">Vergrendelen past de beperkingen toe die van de standaard afwijken, voor websites en apps.\n\nJe krijgt een willekeurige sleutel te zien, moeilijk te onthouden en elke vergrendeling anders. Die sleutel heb je nodig om drawbridge te ontgrendelen (buiten de timer om). Schrijf ze op en verstop ze zorgvuldig. Je mag de sleutel ook met opzet ‘vergeten’, bv. wanneer je een ontgrendeltimer zet of wanneer je wil dat je toestel de beperkingen voorgoed houdt.\n\nAls Android vraagt of drawbridge op de achtergrond mag draaien, sta dat toe. drawbridge werkt hoe dan ook, maar zo komen updates op tijd door.</string>
     <string name="lock_confirm_yes">Vergrendel en toon de sleutel</string>
     <string name="lock_needs_filter">De inhoudsfilter moet draaien voor de telefoon vergrendeld kan worden.</string>
 
     <string name="lock_reveal_title">Schrijf dit nu op</string>
-    <string name="lock_reveal_explanation">Deze sleutel ontgrendelt deze instellingen. Hij wordt nergens bewaard waar je hem nog kunt lezen, en bij elke vergrendeling wordt een nieuwe gemaakt — dus deze, op papier, is alles wat er is.\n\nAls je liever niet meer van gedacht kunt veranderen, is dat een echte keuze: tik op Klaar zonder de sleutel op te schrijven, en deze instellingen kunnen nooit meer gewijzigd worden — al kan de telefoon nog altijd teruggezet worden naar fabrieksinstellingen, wat drawbridge en al de rest erop wist.</string>
+    <string name="lock_reveal_explanation">We herinneren je eraan dat de sleutel elke keer anders is.</string>
     <string name="update_title">drawbridge bijwerken</string>
     <string name="update_notice">Er is een nieuwere versie van drawbridge beschikbaar.</string>
     <string name="update_action">Bijwerken</string>
@@ -99,8 +99,7 @@
         <item quantity="other">%d minuten</item>
     </plurals>
     <string name="lock_key_glyphs">Een sleutel bevat nooit de letters O, I of L. Een rond teken is een nul. Schrijf je er een dubbelzinnig op, dan werkt O, I of l intypen alsnog.</string>
-    <string name="lock_reveal_not_sealed_yet">Deze instellingen worden pas verzegeld als je op Klaar tikt. Verlaat je dit scherm eerder, dan wordt de sleutel vergeten en is er niets vergrendeld — de telefoon blijft filteren, en je kunt opnieuw vergrendelen voor een nieuwe sleutel.</string>
-    <string name="lock_reveal_confirm">Ik heb deze sleutel opgeschreven of afgedrukt</string>
+    <string name="lock_reveal_confirm">Ik heb de sleutel opgeschreven of opgeslagen, of ze met opzet vergeten.</string>
     <string name="lock_reveal_share">Sleutel afdrukken of bewaren</string>
     <string name="lock_reveal_subject">drawbridge-sleutel</string>
     <string name="lock_reveal_body">drawbridge-sleutel: %1$s\n\nBewaar dit ergens veilig en offline. Hiermee ontgrendel je de drawbridge-instellingen op de telefoon.</string>
@@ -116,9 +115,9 @@
     <string name="lock_since_hint">Klopt dat niet met wat je je herinnert, dan is deze telefoon sindsdien ontgrendeld of teruggezet.</string>
 
     <!-- De vergrendelingstimer -->
-    <string name="lock_timer_name">Zichzelf ontgrendelen na een tijd</string>
+    <string name="lock_timer_name">Automatische ontgrendeltimer</string>
     <string name="lock_timer_description">De vergrendeling stopt na de periode die je kiest. Je krijgt nog steeds een sleutel, en die werkt nog steeds.</string>
-    <string name="lock_timer_info">Vergrendelen zonder timer duurt tot iemand de sleutel intypt. Met een timer stopt de vergrendeling ook van zichzelf na de periode die je kiest — een dag offline om te studeren, een weekendje offline, een weekje kamperen, twee weken geen discussie over de avondklok, een vastenperiode van veertig dagen.\n\nDe sleutel verandert niet: hij wordt nog steeds gemaakt, nog steeds één keer getoond, en hij opent de telefoon nog steeds op elk moment. Hem gebruiken stopt ook de timer. De timer bepaalt alleen wat er gebeurt als niemand hem ooit gebruikt — en dat is precies wat de sleutel bewust niet opschrijven veilig maakt.\n\nDe periode staat vast op het moment dat je vergrendelt. Ze kan vanaf een vergrendelde telefoon niet ingekort, verlengd of uitgezet worden, en de klok van de telefoon wordt op netwerktijd gehouden zodat ook de datum niet verschoven kan worden.\n\nAls de tijd om is, kunnen de instellingen weer gewijzigd worden en kan drawbridge van de telefoon verwijderd worden. De webfilter zelf blijft tot iemand die verwijdert.</string>
+    <string name="lock_timer_info">Zonder timer blijft drawbridge vergrendeld tot je de sleutel ingeeft. Je kunt ook een timer zetten waarna drawbridge zichzelf ontgrendelt.\n\nEr is nog altijd een sleutel om eerder te ontgrendelen, maar veel mensen ‘vergeten’ de sleutel liever met opzet en gebruiken de timer om er even tussenuit te zijn, bv. “4 uur studeren zonder internet”, “een weekend kamperen offline”, “2 weken zonder YouTube”, “3 weken met een strikte internetcurfew”.\n\nDe periode ligt vast op het moment dat je vergrendelt. Ze kan niet ingekort, verlengd of uitgezet worden vanaf een vergrendelde telefoon, en de klok van de telefoon volgt de netwerktijd, dus de datum kan ook niet verschoven worden.</string>
     <string name="lock_timer_length_hint">Blijft vergrendeld</string>
     <string name="lock_timer_applied">De vergrendeling stopt van zichzelf na %1$s.</string>
     <string name="lock_timer_off_applied">De vergrendeling duurt tot je ze met de sleutel opheft.</string>
@@ -142,7 +141,7 @@
 
     <!-- Code vergeten, op een vergrendelde telefoon -->
     <string name="forgot_key_title">Code vergeten?</string>
-    <string name="forgot_key_message">Is de code weg, dan is dit de weg terug: een wachttijd van %1$s, waarna drawbridge zichzelf ontgrendelt. Dan kunnen de instellingen weer gewijzigd worden en kan drawbridge van de telefoon verwijderd worden.\n\nDe wachttijd kan niet korter. De datum staat vast zodra ze begint, en de klok van de telefoon wordt op netwerktijd gehouden zodat ze niet vooruit gezet kan worden.\n\nDe datum staat tot dan op dit scherm en op het vergrendelscherm van de telefoon, dus niemand kan dit stil in gang zetten. Vindt de code toch nog terug, dan stopt ontgrendelen met die code de wachttijd.</string>
+    <string name="forgot_key_message">Ben je de sleutel kwijt maar heb je drawbridge ontgrendeld nodig om de beperkingen te wijzigen of het toestel terug te zetten naar fabrieksinstellingen, dan kun je in het volgende scherm een timer van %1$s starten. Drawbridge ontgrendelt daarna vanzelf.\n\nDe timer staat op het vergrendelscherm, dus het is niet stiekem te doen.</string>
     <string name="forgot_key_start">Wachttijd starten</string>
     <string name="forgot_key_started">drawbridge ontgrendelt zichzelf op %1$s. Tot dan verandert er niets: de telefoon blijft vergrendeld en de code opent ze nog steeds.</string>
     <string name="forgot_key_running">Deze telefoon ontgrendelt zichzelf al op %1$s, en dat kan niet vervroegd worden. Ontgrendelen met de code voor die tijd stopt het.</string>
@@ -165,9 +164,9 @@
 
     <string name="disconnect_heading">Verbindingsfilosofie</string>
     <string name="disconnect_offline_name">Altijd zalig offline</string>
-    <string name="disconnect_offline_description">Dit toestel kan niet op het internet. Alleen bellen en sms\'en: geen RCS of MMS, dus foto\'s en groepsberichten komen niet door. Gps-ontvangst blijft werken, en FM-radio indien aanwezig.</string>
+    <string name="disconnect_offline_description">Na vergrendeling: geen internetverkeer mogelijk. Alleen bellen en sms\'en, en gps-ontvangst en FM-radio indien beschikbaar.</string>
     <string name="disconnect_online_name">Helaas altijd online</string>
-    <string name="disconnect_online_description">Toestel mag altijd online.</string>
+    <string name="disconnect_online_description">Standaard, en altijd wanneer ontgrendeld.</string>
     <string name="disconnect_curfew_name">Avondklok voor het internet</string>
     <string name="disconnect_curfew_description">Internet alleen tussen bepaalde uren. Aanbevolen is minstens een half uur per week om updates te installeren.</string>
     <string name="curfew_explanation">De telefoon is offline tussen deze uren.</string>

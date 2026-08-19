@@ -127,6 +127,12 @@ class MainActivity : AppCompatActivity() {
 
         setContentView(R.layout.activity_main)
 
+        // Set here rather than as android:label on the activity: this is the
+        // launcher activity, so a label would rename the icon on the home
+        // screen as well. The bar says what the screen is; the icon keeps the
+        // app's name.
+        setTitle(R.string.main_title)
+
         findViewById<View>(R.id.root).applyScreenInsets()
 
         updateNotice = findViewById(R.id.updateNotice)
@@ -645,17 +651,20 @@ class MainActivity : AppCompatActivity() {
         val description: Int,
         val symbol: Int,
     ) {
-        OFFLINE(
-            DisconnectSettings.Mode.OFFLINE,
-            R.string.disconnect_offline_name,
-            R.string.disconnect_offline_description,
-            R.drawable.ic_disconnect_lotus,
-        ),
+        // Online first, because it is what the phone does now: the list then
+        // reads as the state you are in followed by the two you can choose,
+        // rather than opening on the most drastic option available.
         ONLINE(
             DisconnectSettings.Mode.ONLINE,
             R.string.disconnect_online_name,
             R.string.disconnect_online_description,
             R.drawable.ic_disconnect_robot,
+        ),
+        OFFLINE(
+            DisconnectSettings.Mode.OFFLINE,
+            R.string.disconnect_offline_name,
+            R.string.disconnect_offline_description,
+            R.drawable.ic_disconnect_lotus,
         ),
         CURFEW(
             DisconnectSettings.Mode.CURFEW,
@@ -873,10 +882,11 @@ class MainActivity : AppCompatActivity() {
     // --- Locking -------------------------------------------------------------
 
     /**
-     * The last sentence of [R.string.lock_confirm_message] says the key is the
-     * only way back short of a factory reset, and with a timer running that is not
-     * true — so the dialog says what is true instead. A confirmation that
-     * overstates what it is about to do is worse than none.
+     * [R.string.lock_confirm_message] says the key is what unlocks drawbridge
+     * "outside of the timer", which is as much as a message written for every
+     * lock can say — so when a timer is actually set, the dialog appends the
+     * period it will run for. A confirmation that leaves the reader to guess
+     * which of two ways out applies to them is worse than one sentence longer.
      */
     private fun confirmLock() {
         val message = buildString {

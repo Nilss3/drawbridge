@@ -48,10 +48,11 @@ import kotlinx.coroutines.launch
  * **Back leaves, and that is all it does.** It used to open a dialog whose
  * confirming button called [sealWithKey], so the way out of a screen saying
  * "write this down" was an offer to lock the phone forever with the key you had
- * just declined to keep — while the same screen promised, in
- * `lock_reveal_not_sealed_yet`, that leaving early forgets the key and locks
- * nothing. Two claims, one screen, and the destructive one was on the button
- * every Android user presses to go back.
+ * just declined to keep — while the same screen promised, in a line since cut
+ * for length, that leaving early forgets the key and locks nothing. Two claims,
+ * one screen, and the destructive one was on the button every Android user
+ * presses to go back. The behaviour is unchanged now that the line is gone:
+ * leaving still forgets the key and seals nothing.
  *
  * **Challenge** is every time after that: the key, typed back, opens the
  * configuration screen. There is no attempt limit. A six-digit PIN needed one; a

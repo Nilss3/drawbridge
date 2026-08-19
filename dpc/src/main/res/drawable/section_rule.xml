@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    A hairline along the top of a section heading.
+
+    The configuration screen is one long column and its headings were only a
+    little larger than the text under them, so "Policy" read as a sentence about
+    the cards rather than as the start of a section. A rule is what makes the
+    boundary visible without another heading level.
+
+    Drawn as the heading's background rather than as a View of its own, so the
+    six headings stay one style and no layout has to gain a sibling.
+-->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:gravity="top"
+        android:height="1dp">
+        <shape android:shape="rectangle">
+            <solid android:color="?attr/colorOutlineVariant" />
+        </shape>
+    </item>
+</layer-list>

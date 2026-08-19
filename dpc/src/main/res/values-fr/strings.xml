@@ -12,7 +12,7 @@
 
     <string name="welcome_title">Bienvenue dans drawbridge</string>
     <string name="welcome_subtitle">Levons le pont face à l\'internet toxique et addictif, et gardons notre tranquillité d\'esprit.</string>
-    <string name="welcome_scene_description">Un pont-levis relevé la nuit, entre un parc paisible éclairé par la lune et une rive rocheuse où attendent des monstres de dessin animé.</string>
+    <string name="welcome_scene_description">Un pont-levis relevé au coucher du soleil, entre un parc d\'automne où quelqu\'un lit sur un banc et une rive rocheuse où attendent des monstres de dessin animé.</string>
 
     <string name="policy_heading">Politique</string>
     <string name="policy_none_available">Ce document de politique ne propose aucun choix.</string>
@@ -25,24 +25,24 @@
     <string name="change_applied_at_lock">%1$s appliqué après le verrouillage.</string>
     <string name="change_applied">%1$s appliqué.</string>
     <string name="info_button_description">En savoir plus sur %1$s</string>
-    <string name="settings_take_effect_at_lock">Le filtre web fonctionne déjà, et les applications que cette politique n\'autorise pas sont supprimées dès qu\'elles apparaissent. Les autres options ci-dessous ne prennent effet qu\'après le verrouillage.</string>
+    <string name="settings_take_effect_at_lock">Cette politique est toujours active, même lorsque drawbridge est déverrouillé. Les options ci-dessous sont des restrictions supplémentaires et ne s\'appliquent que lorsque drawbridge est verrouillé.</string>
 
     <string name="browser_heading">Politique de navigateur</string>
-    <string name="browser_all_name">Les navigateurs autorisés</string>
-    <string name="browser_all_description">Tous les navigateurs qui fonctionnent bien avec le filtre web. Nous recommandons herald : minimaliste, il affiche une page claire lorsqu\'un site est bloqué et il suit la politique de drawbridge. Les liens web s\'ouvrent dans herald, sauf si vous choisissez autrement ci-dessous.</string>
+    <string name="browser_all_name">Autoriser les navigateurs</string>
+    <string name="browser_all_description">Tous les navigateurs qui fonctionnent bien avec le filtre web. Nous recommandons herald : minimaliste, il affiche une page claire lorsqu\'un site est bloqué et il suit la politique de drawbridge.</string>
     <string name="browser_mono_name">herald mono uniquement</string>
-    <string name="browser_mono_description">Un seul navigateur, volontairement ennuyeux : noir et blanc par défaut, mode lecture, un seul onglet. Un bon choix pour qui trouve la navigation elle-même addictive (sites d\'actualité, achats en ligne et compagnie) plutôt qu\'un site en particulier. Tous les autres navigateurs sont supprimés.</string>
+    <string name="browser_mono_description">Un navigateur minimaliste pour qui navigue trop : monochrome par défaut, il défile et réagit plus lentement, et n\'a qu\'un seul onglet. Tous les autres navigateurs sont supprimés.</string>
     <string name="browser_none_name">Aucun navigateur</string>
-    <string name="browser_none_description">Le téléphone n\'a aucun navigateur.\n\nConnectez-vous partout avant de choisir ceci. Certaines applications renvoient vers un navigateur pour se connecter, et sur un téléphone qui n\'en a pas, c\'est impossible. Ce qui n\'est pas déjà connecté le reste, sans recours autre que déverrouiller drawbridge.</string>
+    <string name="browser_none_description">Supprime tous les navigateurs. Avant de verrouiller ce choix, assurez-vous d\'être connecté dans toutes vos applications, car certaines exigent un navigateur pour s\'y connecter.\n\nSachez aussi que certaines fonctions peuvent mal fonctionner ou ne plus fonctionner du tout, par exemple les paiements, les codes QR, etc.</string>
     <string name="browser_icons_description">Les navigateurs que ce choix autorise</string>
 
     <string name="install_lock_heading">Installation d\'applications</string>
-    <string name="install_lock_name">Uniquement les applications déjà présentes</string>
+    <string name="install_lock_name">Aucune autre application</string>
     <string name="install_lock_description">Après le verrouillage, aucune nouvelle application ne peut être installée. Celles qui se trouvent sur le téléphone à ce moment-là continuent de se mettre à jour normalement.</string>
-    <string name="install_lock_info">Le téléphone se ferme au verrouillage. Tout ce qui s\'y trouve continue de fonctionner et de se mettre à jour, et le Play Store met toujours ces applications à jour — mais une application qui n\'est pas déjà là ne peut plus être ajoutée.\n\nC\'est tout l\'intérêt de cette option et c\'est aussi toute l\'objection qu\'on peut lui faire : pas de nouvelle application bancaire, pas d\'application de billets de train, pas d\'application demandée par l\'école en mars, sans déverrouiller drawbridge avec la clé au préalable. Déverrouillez, installez ce qu\'il faut, puis verrouillez à nouveau — ce qui est sur le téléphone à cet instant est ce qu\'il conserve.\n\nherald et tout ce que la politique exige par ailleurs font exception. drawbridge les installe lui-même, depuis la politique signée que vous avez choisie, que le téléphone soit verrouillé ou non.\n\nLaissez ceci désactivé en cas de doute. Bloquer une application reste possible plus tard ; un téléphone sur lequel personne ne peut rien installer est un téléphone pour lequel on devra venir vous trouver.</string>
+    <string name="install_lock_info">Avant de verrouiller, faites le tri dans vos applications et ne gardez que celles que vous voulez sur le téléphone. Après le verrouillage, aucune nouvelle application ne sera autorisée. Les mises à jour des applications existantes passent toujours : gardez donc le Play Store pour les mettre à jour.\n\nherald et tout ce que la politique exige par ailleurs font exception. drawbridge les installe lui-même, depuis la politique signée que vous avez choisie, que le téléphone soit verrouillé ou non.\n\nLaissez ceci désactivé en cas de doute. Bloquer une application reste possible plus tard ; un téléphone sur lequel personne ne peut rien installer est un téléphone pour lequel on devra venir vous trouver.</string>
 
     <string name="options_heading">Options</string>
-    <string name="options_explanation">Autorisez les services suivants à vos propres risques.</string>
+    <string name="options_explanation">Lorsqu\'il est déverrouillé, drawbridge autorise tout ce qui suit. Si vous ne voulez pas de certains de ces ‘services’, et à juste titre, interdisez-les et verrouillez drawbridge.</string>
     <string name="options_none_available">Cette politique ne propose rien à activer.</string>
     <string name="options_footnote">La politique s\'inspire des bonnes pratiques du minimalisme numérique et constitue un bon choix pour tout le monde, adultes compris. Les âges sont une recommandation de pédiatres et de neurologues, et ne concernent que les personnes qui configurent un appareil pour un adolescent.</string>
     <string name="option_change_failed">Cette option ne figure plus dans la politique.</string>
@@ -60,12 +60,12 @@
 
     <!-- Verrouillage -->
     <string name="lock_confirm_title">Verrouiller drawbridge ?</string>
-    <string name="lock_confirm_message">Le verrouillage applique les réglages de cet écran : les applications que vous vouliez malgré tout autoriser disparaissent si vous les avez laissées désactivées, et la philosophie de déconnexion prend effet. Les applications qui ne sont jamais autorisées ont disparu dès l\'installation.\n\nSi Android demande si drawbridge peut fonctionner en arrière-plan, autorisez-le. Drawbridge fonctionne dans les deux cas, mais ainsi il peut mettre à jour le filtre web.\n\nUne clé vous sera montrée. C\'est le seul moyen de déverrouiller, hormis une réinitialisation d\'usine de l\'appareil. La clé n\'est affichée qu\'une seule fois. Notez-la, ou gardez votre appareil ainsi pour toujours — c\'est votre choix.</string>
+    <string name="lock_confirm_message">Le verrouillage appliquera les restrictions autres que celles par défaut, pour les sites web comme pour les applications.\n\nUne clé aléatoire vous sera montrée, difficile à retenir et différente à chaque verrouillage. Cette clé est nécessaire pour déverrouiller drawbridge (en dehors de la minuterie). Notez-la et cachez-la soigneusement. Vous pouvez aussi ‘oublier’ la clé volontairement, par exemple si vous réglez une minuterie ou si vous voulez que l\'appareil garde ces restrictions indéfiniment.\n\nSi Android demande si drawbridge peut fonctionner en arrière-plan, autorisez-le. drawbridge fonctionne dans les deux cas, mais les mises à jour arrivent ainsi à temps.</string>
     <string name="lock_confirm_yes">Verrouiller et montrer la clé</string>
     <string name="lock_needs_filter">Le filtre de contenu doit fonctionner avant que le téléphone puisse être verrouillé.</string>
 
     <string name="lock_reveal_title">Notez ceci maintenant</string>
-    <string name="lock_reveal_explanation">Cette clé déverrouille ces réglages. Elle n\'est stockée nulle part où vous pourriez la relire, et une nouvelle est créée à chaque verrouillage — donc celle-ci, sur papier, est tout ce qui existe.\n\nSi vous préférez ne pas pouvoir changer d\'avis, c\'est un choix légitime : touchez Terminé sans noter la clé, et ces réglages ne pourront plus jamais être modifiés — le téléphone peut toutefois toujours être réinitialisé, ce qui supprime drawbridge et tout le reste.</string>
+    <string name="lock_reveal_explanation">Nous vous rappelons que la clé est différente à chaque fois.</string>
     <string name="update_title">Mettre drawbridge à jour</string>
     <string name="update_notice">Une version plus récente de drawbridge est disponible.</string>
     <string name="update_action">Mettre à jour</string>
@@ -99,8 +99,7 @@
         <item quantity="other">%d minutes</item>
     </plurals>
     <string name="lock_key_glyphs">Une clé ne contient jamais les lettres O, I ni L. Un caractère rond est un zéro. Si votre écriture est ambiguë, taper O, I ou l fonctionne quand même.</string>
-    <string name="lock_reveal_not_sealed_yet">Ces réglages ne sont scellés qu\'au moment où vous touchez Terminé. Si vous quittez cet écran avant, la clé est oubliée et rien n\'est verrouillé — le téléphone continue de filtrer, et vous pouvez verrouiller à nouveau pour obtenir une nouvelle clé.</string>
-    <string name="lock_reveal_confirm">J\'ai noté ou imprimé cette clé</string>
+    <string name="lock_reveal_confirm">J\'ai noté ou enregistré la clé, ou je l\'ai oubliée volontairement.</string>
     <string name="lock_reveal_share">Imprimer ou enregistrer la clé</string>
     <string name="lock_reveal_subject">clé drawbridge</string>
     <string name="lock_reveal_body">Clé drawbridge : %1$s\n\nConservez-la en lieu sûr et hors ligne. Elle déverrouille les réglages drawbridge sur le téléphone.</string>
@@ -116,9 +115,9 @@
     <string name="lock_since_hint">Si cela ne correspond pas à vos souvenirs, ce téléphone a été déverrouillé ou réinitialisé depuis.</string>
 
     <!-- La minuterie du verrouillage -->
-    <string name="lock_timer_name">Se déverrouiller de lui-même après un temps</string>
+    <string name="lock_timer_name">Minuterie de déverrouillage automatique</string>
     <string name="lock_timer_description">Le verrouillage prend fin de lui-même après la période choisie. Vous recevez toujours une clé, et elle fonctionne toujours.</string>
-    <string name="lock_timer_info">Sans minuterie, le verrouillage dure jusqu\'à ce que quelqu\'un saisisse la clé. Avec une minuterie, il prend aussi fin de lui-même après la période que vous choisissez — une journée hors ligne pour étudier, un week-end, une semaine de camping, deux semaines sans discussion sur le couvre-feu, une période de jeûne de quarante jours.\n\nLa clé ne change pas : elle est toujours créée, toujours affichée une seule fois, et elle ouvre toujours le téléphone à tout moment. L\'utiliser met aussi fin à la minuterie. Celle-ci décide seulement de ce qui se passe si personne ne l\'utilise jamais — et c\'est ce qui permet de ne délibérément pas noter la clé sans risque.\n\nLa période est fixée au moment du verrouillage. Elle ne peut être ni raccourcie, ni prolongée, ni désactivée depuis un téléphone verrouillé, et l\'horloge du téléphone est maintenue à l\'heure du réseau pour que la date ne puisse pas être déplacée non plus.\n\nAu terme de la période, les réglages peuvent de nouveau être modifiés et drawbridge peut être retiré du téléphone. Le filtre web, lui, reste en place jusqu\'à ce que quelqu\'un le retire.</string>
+    <string name="lock_timer_info">Sans minuterie, drawbridge reste verrouillé jusqu\'à ce que vous saisissiez la clé. Vous pouvez aussi régler une minuterie au bout de laquelle drawbridge se déverrouille tout seul.\n\nLa clé permet toujours de déverrouiller avant l\'échéance, mais beaucoup préfèrent ‘oublier’ la clé volontairement et se servir de la minuterie pour s\'accorder une pause, par exemple « 4 h d\'étude sans internet », « un week-end de camping hors ligne », « 2 semaines sans YouTube », « 3 semaines avec un couvre-feu internet strict ».\n\nLa durée est fixée au moment du verrouillage. Elle ne peut être ni raccourcie, ni prolongée, ni annulée depuis un téléphone verrouillé, et l\'horloge du téléphone suit l\'heure du réseau, si bien que la date ne peut pas être déplacée non plus.</string>
     <string name="lock_timer_length_hint">Reste verrouillé pendant</string>
     <string name="lock_timer_applied">Le verrouillage prendra fin de lui-même après %1$s.</string>
     <string name="lock_timer_off_applied">Le verrouillage durera jusqu\'à ce que vous le leviez avec la clé.</string>
@@ -142,7 +141,7 @@
 
     <!-- Code oublié, sur un téléphone verrouillé -->
     <string name="forgot_key_title">Code oublié ?</string>
-    <string name="forgot_key_message">Si le code est perdu, voici la voie de retour : une attente de %1$s, au terme de laquelle drawbridge se déverrouille de lui-même. Les réglages peuvent alors être modifiés à nouveau, et drawbridge peut être retiré du téléphone.\n\nCette attente ne peut pas être raccourcie. La date est fixée dès qu\'elle commence, et l\'horloge du téléphone est maintenue à l\'heure du réseau pour qu\'elle ne puisse pas être avancée.\n\nJusque-là, la date est affichée sur cet écran et sur l\'écran de verrouillage du téléphone : personne ne peut donc lancer cela discrètement. Si le code réapparaît malgré tout, déverrouiller avec lui met fin à l\'attente.</string>
+    <string name="forgot_key_message">Si vous avez oublié la clé mais que vous avez besoin de déverrouiller drawbridge pour modifier les restrictions ou réinitialiser l\'appareil, vous pouvez lancer à l\'écran suivant une minuterie de %1$s. Drawbridge se déverrouillera ensuite.\n\nLa minuterie est affichée sur l\'écran de verrouillage : cela ne passera donc pas inaperçu.</string>
     <string name="forgot_key_start">Lancer l\'attente</string>
     <string name="forgot_key_started">drawbridge se déverrouille de lui-même le %1$s. D\'ici là rien ne change : le téléphone reste verrouillé et le code l\'ouvre toujours.</string>
     <string name="forgot_key_running">Ce téléphone se déverrouille déjà de lui-même le %1$s, et cela ne peut pas être avancé. Déverrouiller avec le code avant cette date y met fin.</string>
@@ -165,9 +164,9 @@
 
     <string name="disconnect_heading">Philosophie de déconnexion</string>
     <string name="disconnect_offline_name">Toujours délicieusement hors ligne</string>
-    <string name="disconnect_offline_description">Cet appareil ne peut pas se connecter à internet. Appels et SMS uniquement : ni RCS ni MMS, donc les photos et les messages de groupe ne passent pas. La réception GPS continue de fonctionner, ainsi que la radio FM si elle est présente.</string>
+    <string name="disconnect_offline_description">Après le verrouillage : aucun trafic internet possible. Uniquement les appels et les SMS, ainsi que la réception GPS et la radio FM lorsqu\'elles sont disponibles.</string>
     <string name="disconnect_online_name">Hélas toujours en ligne</string>
-    <string name="disconnect_online_description">L\'appareil peut toujours se connecter.</string>
+    <string name="disconnect_online_description">Par défaut, et toujours lorsque drawbridge est déverrouillé.</string>
     <string name="disconnect_curfew_name">Couvre-feu pour internet</string>
     <string name="disconnect_curfew_description">N\'autoriser internet qu\'entre certaines heures. Il est recommandé de prévoir au moins une demi-heure par semaine pour installer les mises à jour.</string>
     <string name="curfew_explanation">Le téléphone est hors ligne entre ces heures.</string>
