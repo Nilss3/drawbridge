@@ -1,7 +1,7 @@
 {
-  "version": 84,
+  "version": 85,
   "issued_at": "2026-08-16T12:00:00Z",
-  "comment": "Via joins Comet as a browser to be tried on this channel. Both are provisional and neither is on main.",
+  "comment": "Comet and Via cleared: no VPN option and no DNS setting in either, so the default profile names them among the browsers.",
   "dns": {
     "upstreams": [
       "94.140.14.15",
@@ -425,7 +425,7 @@
       "id": "default",
       "name": "Default policy",
       "subtitle": "Keeps out the toxic internet",
-      "description": "Keeps out algorithmic social media, adult sites, gambling, ads, dating apps, games, and AI companions. The only search engines available are Google, DuckDuckGo, Bing, and Kagi. The only browsers are herald (recommended), herald mono, Chrome, Firefox Focus, and Vivaldi.",
+      "description": "Keeps out algorithmic social media, adult sites, gambling, ads, dating apps, games, and AI companions. The only search engines available are Google, DuckDuckGo, Bing, and Kagi. The only browsers are herald (recommended), herald mono, Chrome, Firefox Focus, Vivaldi, Comet and Via.",
       "name_i18n": {
         "nl": "Standaardbeleid",
         "fr": "Politique par d\u00e9faut"
@@ -435,8 +435,8 @@
         "fr": "Tient l'internet toxique \u00e0 distance"
       },
       "description_i18n": {
-        "nl": "Houdt algoritmische sociale media, pornosites, gokken, advertenties, datingapps, games en AI-gezelschapsapps buiten. De enige beschikbare zoekmachines zijn Google, DuckDuckGo, Bing en Kagi. De enige browsers zijn herald (aanbevolen), herald mono, Chrome, Firefox Focus en Vivaldi.",
-        "fr": "Tient \u00e0 distance les r\u00e9seaux sociaux algorithmiques, les sites pornographiques, les jeux d'argent, la publicit\u00e9, les applications de rencontre, les jeux et les compagnons IA. Les seuls moteurs de recherche disponibles sont Google, DuckDuckGo, Bing et Kagi. Les seuls navigateurs sont herald (recommand\u00e9), herald mono, Chrome, Firefox Focus et Vivaldi."
+        "nl": "Houdt algoritmische sociale media, pornosites, gokken, advertenties, datingapps, games en AI-gezelschapsapps buiten. De enige beschikbare zoekmachines zijn Google, DuckDuckGo, Bing en Kagi. De enige browsers zijn herald (aanbevolen), herald mono, Chrome, Firefox Focus, Vivaldi, Comet en Via.",
+        "fr": "Tient \u00e0 distance les r\u00e9seaux sociaux algorithmiques, les sites pornographiques, les jeux d'argent, la publicit\u00e9, les applications de rencontre, les jeux et les compagnons IA. Les seuls moteurs de recherche disponibles sont Google, DuckDuckGo, Bing et Kagi. Les seuls navigateurs sont herald (recommand\u00e9), herald mono, Chrome, Firefox Focus, Vivaldi, Comet et Via."
       },
       "recommended_age": 14
     }

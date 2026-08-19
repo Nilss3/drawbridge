@@ -259,34 +259,55 @@ would have let them stay.
 
 | App | Play rating (BE) | Package |
 |---|---|---|
-| AI Character: Roleplay Chat | PEGI 3 | `com.ai.chat.assistant.smart.bot` |
-| Anima: AI Friend Virtual Chat | PEGI 3 | `anima.virtual.ai.robot.friend` |
-| Botify AI: Chatbot & Companion | PEGI 16 | `ai.botify.app` |
-| Chai: Chat AI Platform | PEGI 18 | `com.Beauchamp.Messenger.external` |
-| Character AI: Chat, Talk, Text | PEGI 18 | `ai.character.app` |
-| CrushX: Fantasy Roleplay Chat | PEGI 18 | `com.crushx.aichatfriends` |
-| Cycle AI: Chat & AI Friends | PEGI 16 | `com.cycleai.android` |
-| EVA AI Soulmate | PEGI 18 | `com.ifriend.app` |
-| Fantasia: Character AI Chat | PEGI 16 | `com.fantasia.ai` |
-| Fantasy AI: RP & Companions | PEGI 18 | `com.fantasychat.withai` |
-| Fantasy.AI:Chat With Character | PEGI 16 | `online.fantasyai.android` |
-| FantasyX: AI Roleplay Chat | PEGI 3 | `com.fantasyx.chat` |
-| HiWaifu: AI Friend & Waifu Hub | PEGI 18 | `com.hiwaifu.app` |
-| Joyland:Chat with AI Character | PEGI 16 | `com.joyland.ai` |
-| Kajiwoto AI Friend Companions | Parental guidance | `com.cho.kajiwoto` |
-| Kindroid: Your Personal AI | PEGI 16 | `com.kindroid.app` |
-| Linky AI: Chat, Play, Connect | PEGI 18 | `com.aigc.ushow.ichat` |
-| Magic: Fantasy Roleplay Chat | PEGI 18 | `com.magicai.android` |
-| Mimo: Connect with Characters | PEGI 16 | `chat.aimimo.mimo` |
-| Nomi AI: Chat, Play, Connect | PEGI 3 | `nomi.ai.friend.chat` |
-| Paradot: Personal AI chat | Parental guidance | `com.withfeelingai.test` |
-| PolyBuzz: Chat with AI Friends | PEGI 18 | `ai.socialapps.speakmaster` |
-| Replika: My AI Friend | Parental guidance | `ai.replika.app` |
-| RolePlai - Ai Character Chat | PEGI 12 | `com.roleplai.app` |
-| Rosytalk: AI Character Chat | PEGI 16 | `com.rosytalk.ai` |
-| SimSimi | PEGI 16 | `com.ismaker.android.simsimi` |
-| Talkie: Creative AI Community | PEGI 18 | `com.weaver.app.prod` |
-| iGirl: AI Girlfriend | PEGI 16 | `ai.girlfriend.virtual.dating.lover.igirl` |
+| Amazon Kindle: Reading App | Parental guidance | `com.amazon.kindle` |
+| Amazon Music: Songs & Podcasts | Parental guidance | `com.amazon.mp3` |
+| Anghami: Play music & Podcasts | Parental guidance | `com.anghami` |
+| AntennaPod - Podcast Player | Parental guidance | `de.danoeh.antennapod` |
+| Apple Music | Parental guidance | `com.apple.android.music` |
+| Audible: Audiobooks & Podcasts | Parental guidance | `com.audible.application` |
+| Audiomack: Music Downloader | Parental guidance | `com.audiomack` |
+| Bandcamp | Parental guidance | `com.bandcamp.android` |
+| Beeper: Universal Chat | Parental guidance | `com.beeper.android` |
+| Birda - Birding Made Better | Parental guidance | `com.chirpbirding.birda` |
+| Birdero: Birdwatching, Bird ID | Parental guidance | `com.apex.community.birdbrain.birdbrain` |
+| ChatGPT | Parental guidance | `com.openai.chatgpt` |
+| Claude by Anthropic | Parental guidance | `com.anthropic.claude` |
+| Cookpad recipes, homemade food | Parental guidance | `com.mufumbo.android.recipe.search` |
+| DeepSeek - AI Assistant | Parental guidance | `com.deepseek.chat` |
+| Deezer: Music & Podcast Player | Parental guidance | `deezer.android.app` |
+| FamilyAlbum - Photo Sharing | Parental guidance | `us.mitene` |
+| GitHub | Parental guidance | `com.github.android` |
+| Google Gemini | Parental guidance | `com.google.android.apps.bard` |
+| Google Play Books & Audiobooks | Parental guidance | `com.google.android.apps.books` |
+| Kimi | Parental guidance | `com.moonshot.kimichat` |
+| Kobo | eBooks & Audiobooks | Parental guidance | `com.kobobooks.android` |
+| Libby: Read Library Books | Parental guidance | `com.overdrive.mobile.android.libby` |
+| Microsoft Copilot | Parental guidance | `com.microsoft.office.officehubrow` |
+| Newpharma | PEGI 18 | `app.newpharma.shop` |
+| Perplexity - Ask Anything | Parental guidance | `ai.perplexity.app.android` |
+| Pocket Casts - Podcast App | Parental guidance | `au.com.shiftyjelly.pocketcasts` |
+| Podcast Addict: Podcast player | Parental guidance | `com.bambuna.podcastaddict` |
+| Podcast Player - Castbox | Parental guidance | `fm.castbox.audiobook.radio.podcast` |
+| Podcast Player App - Podbean | Parental guidance | `com.podbean.app.podcast` |
+| Podcast Republic - Podcast app | PEGI 12 | `com.itunestoppodcastplayer.app` |
+| Qobuz: Music & Editorial | Parental guidance | `com.qobuz.music` |
+| ReciMe: Recipes & Meal Planner | Parental guidance | `com.recime.app` |
+| Running Tracker App – FITAPP | Parental guidance | `com.fitapp` |
+| Samsung Food: Meal Planner | Parental guidance | `com.foodient.whisk` |
+| Session - Private Messenger | Parental guidance | `network.loki.messenger` |
+| Shazam: Find Music & Concerts | Parental guidance | `com.shazam.android` |
+| SimpleX Chat | Parental guidance | `chat.simplex.app` |
+| SoundCloud: The Music You Love | Parental guidance | `com.soundcloud.android` |
+| Sports Tracker: Run Bike Hike | Parental guidance | `com.stt.android` |
+| Spotify: Music and Podcasts | Parental guidance | `com.spotify.music` |
+| Storytel - Audiobooks & Books | Parental guidance | `grit.storytel.app` |
+| Strava: Run, Bike, Walk | Parental guidance | `com.strava` |
+| Threema. The Secure Messenger | Parental guidance | `ch.threema.app` |
+| TIDAL Music: HiFi sound | Parental guidance | `com.aspiro.tidal` |
+| TuneIn Radio: Music & Sports | Parental guidance | `tunein.player` |
+| Vibe by Mistral (ex-Le Chat) | Parental guidance | `ai.mistral.chat` |
+| Webex | Parental guidance | `com.cisco.wx2.android` |
+| Zoom Workplace | Parental guidance | `us.zoom.videomeetings` |
 
 ### Detailed table
 
@@ -349,7 +370,7 @@ Character.AI under-18 changes: https://blog.character.ai/an-update-on-changes-to
 ## The exceptions: apps allowed above PEGI 3
 
 The rating rule removes anything the store does not rate PEGI 3, which is deliberately blunt and
-would take a pile of ordinary tools with it. These 33 are named as exceptions, one at a
+would take a pile of ordinary tools with it. These 49 are named as exceptions, one at a
 time. They are tools rather than entertainment: music you already chose, messaging that is not a
 feed, recipes, sport tracking, video calls for school and work, and the general-purpose assistants.
 None of them has an algorithmic feed of strangers' content, which is the line this list is drawn
