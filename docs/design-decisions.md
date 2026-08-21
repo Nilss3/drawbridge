@@ -1917,6 +1917,59 @@ The trade-off is that the set cannot be enumerated and collisions cause false
 positives. At 10⁶ entries the chance a given lookup collides is about 10⁻¹³ —
 orders of magnitude below the rate at which the upstream lists contain mistakes.
 
+## MIT, and why a device policy controller in particular should be forkable
+
+The licence is MIT, and it was considered against AGPLv3 with dual licensing on
+2026-08-19 — the standard way to keep a project open while reserving commercial
+use to the copyright holder. It was declined, and the reasoning is worth keeping
+because the question returns whenever anybody thinks about money.
+
+**Being readable is part of the product.** drawbridge is a Device Owner. It
+cannot be uninstalled without a factory reset, it can hide or remove any app on
+the phone, it runs an always-on VPN that sees every DNS query, and it holds a key
+that decides when the person holding the phone gets their settings back. No
+amount of documentation substitutes for being able to read what it does. "Trust
+me" is not an argument this category is allowed to make, and a closed DPC asking
+for those powers should be refused on principle — including this one.
+
+**But auditability alone does not choose MIT over AGPL**, and that is the part
+worth being precise about. An AGPL drawbridge would be exactly as readable, and
+copyleft would have kept a company from building something proprietary on it. If
+the argument were only "people must be able to check it", AGPL wins on every
+count.
+
+**What decides it is forkability without permission.** If this project stops
+being maintained, someone else has to be able to pick it up — on their own terms,
+commercially if that is what keeps it alive — and phones already carrying it must
+not be stranded on an abandoned app that owns them. Under a dual-licensed AGPL
+that continuation depends on whoever holds the copyright still being reachable
+and willing. For software that cannot be removed without wiping the device, that
+dependency is the wrong shape. The permissive licence is the one that survives
+the author losing interest.
+
+**What this rules out**, so it is not proposed again as a compromise: the
+source-available non-compete licences — BUSL, FSL, PolyForm, Elastic v2 — reserve
+commercial use explicitly and would give the strongest protection against being
+undercut. They are not open source. Other projects cannot incorporate the code,
+F-Droid will not carry it, and the website would have to stop saying "free, open
+source". For this category that trade is the wrong way round.
+
+**Two consequences that follow from staying MIT:**
+
+- **Dual licensing stays available, and only because the code is owned.** The DNS
+  filter was written from scratch rather than adapted from DNS66 or
+  personalDNSfilter, both GPLv3 — see the licence note in the README. That reads
+  as caution about staying MIT; its real effect is that the copyright is
+  undivided, so a future licence change of any kind is still possible. Adapting
+  GPL code would have closed that door permanently.
+- **uBlock Origin remains the one thing to be careful about.** It is GPLv3 and
+  ships unmodified inside the APK as a separate program, which is aggregation
+  rather than a derived work — see
+  [uBlock Origin ships inside the APK](#ublock-origin-ships-inside-the-apk).
+  That reasoning is defensible and it is still reasoning; moving to GPL or AGPL
+  would have dissolved the question instead of answering it. Anyone revisiting
+  the licence should weigh that as a point *for* copyleft, not against it.
+
 ## Browsers are detected, not listed
 
 A package-name list of browsers is out of date the moment someone publishes a new
