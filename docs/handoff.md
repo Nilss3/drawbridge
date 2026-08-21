@@ -145,8 +145,9 @@ the key can always unlock and put a build on the phone. See
 - **Moto G15** (Android 15, MediaTek) — the dev phone. Everything on `dev` is
   tested here first. It is also where every hardware surprise in
   [Traps](#traps-that-cost-time-here) came from.
-- **Nothing Phone (A059)** — the alpha phone, the owner's daily device, on
-  `main`. Do not experiment on it.
+- **Nothing Phone (3a)** (model A059) — the alpha phone, the owner's daily
+  device, on `main`. Do not experiment on it. Running build 41 without
+  trouble as of 2026-08-19, which is what the website's beta note now says.
 - **API 36 emulator** (`Medium_Phone_API_36.0`, and `herald_test`) — provisioned
   as Device Owner, and good for everything except what needs a real OEM: the
   keyguard's crowding, Doze, and Play Protect's behaviour, which it does
