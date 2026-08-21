@@ -174,7 +174,7 @@ HOME = {
     "en": dict(
         title="drawbridge — protect your Android device from harmful content",
         description="A free, open-source, watertight content filter for Android. For yourself, or for a device you manage on someone else's behalf. No account, no backend, no telemetry.",
-        beta="In public beta, and running day to day without trouble on a Nothing Phone (3a) and a Moto G15. If it holds up on more, this site gets a real domain.",
+        beta='This software is still in alpha testing but already runs well on at least two brands. If there is a lot of interest in a public beta we may give this site a real domain.',
         hero_title="Drawbridge Project",
         hero_tagline="Keeps the bad internet on the other side",
         hero_art_alt="A raised drawbridge at sunset, between an autumn park where somebody is reading on a bench and a rocky shore where cartoon monsters are waiting.",
@@ -228,7 +228,7 @@ HOME = {
     "nl": dict(
         title="drawbridge — bescherm je Android-toestel tegen schadelijke inhoud",
         description="Een gratis, open source, waterdichte contentfilter voor Android. Voor jezelf, of voor een toestel dat je voor iemand anders beheert. Geen account, geen backend, geen telemetrie.",
-        beta="In publieke beta, en draait dagelijks zonder problemen op een Nothing Phone (3a) en een Moto G15. Blijft dat zo, dan krijgt deze site een echt domein.",
+        beta='Deze software zit nog in alfatesting, maar draait nu al goed op minstens twee merken. Is er veel interesse in een publieke beta, dan geven we deze site misschien een echt domein.',
         hero_title="Drawbridge Project",
         hero_tagline="Houdt het slechte internet aan de overkant",
         hero_art_alt="Een opgehaalde ophaalbrug bij zonsondergang, tussen een herfstpark waar iemand op een bank zit te lezen en een rotsige oever waar tekenfilmmonsters staan te wachten.",
@@ -282,7 +282,7 @@ HOME = {
     "fr": dict(
         title="drawbridge — protégez votre appareil Android des contenus nuisibles",
         description="Un filtre de contenu gratuit, open source et étanche pour Android. Pour vous-même, ou pour un appareil que vous gérez pour quelqu'un d'autre. Pas de compte, pas de serveur, aucune télémétrie.",
-        beta="En bêta publique, et tourne au quotidien sans problème sur un Nothing Phone (3a) et un Moto G15. Si cela se confirme, ce site aura son propre nom de domaine.",
+        beta="Ce logiciel est encore en phase de test alpha, mais il tourne déjà bien sur au moins deux marques. Si une bêta publique suscite beaucoup d'intérêt, nous donnerons peut-être un vrai nom de domaine à ce site.",
         hero_title="Drawbridge Project",
         hero_tagline="Garde le mauvais internet de l'autre côté",
         hero_art_alt="Un pont-levis relevé au coucher du soleil, entre un parc d'automne où quelqu'un lit sur un banc et une rive rocheuse où attendent des monstres de dessin animé.",
