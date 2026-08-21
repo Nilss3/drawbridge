@@ -158,6 +158,14 @@ the key can always unlock and put a build on the phone. See
 
 **Watched working on hardware**, most recently on 2026-08-19 with build 40:
 
+- **Android Auto connects wirelessly with the filter running.** Confirmed in the
+  car on 2026-08-19, which closes the one thing this project had shipped and
+  never seen work. It also settles the open question underneath it: Android Auto
+  asks `ConnectivityManager` whether there is a VPN rather than looking for a
+  `tun` interface, so leaving a package out of the VPN's UID ranges genuinely
+  makes the VPN invisible to it. That is why split tunnelling is the fix, and it
+  is now measured rather than argued — which matters for the next app that
+  refuses to run beside a VPN.
 - **A removal a switch governs hides the app instead of uninstalling it**, so
   herald survives the browser chooser going back and forth without a
   quarter-gigabyte download each way, and WhatsApp comes back with its chats. The
@@ -189,15 +197,6 @@ the key can always unlock and put a build on the phone. See
   been on this list since build 30.
 - **A second person installing any of this**, from the website, without the
   author in the room.
-- **Android Auto working wirelessly with the filter on.** The alpha phone shows
-  *"error 21, are you using a VPN?"* on the car's screen whenever it comes into
-  range, and works over a cable. The fix — `dns.excluded_packages`, defaulting
-  to Android Auto — is written and reasoned but has never been in a car. **What
-  would falsify it:** if Android Auto looks for a `tun` interface rather than
-  asking `ConnectivityManager`, no per-app exclusion can help, because the
-  interface is there for every process. Then the honest options are a cable, or
-  dropping the filter while the phone is in car mode, which is a much bigger
-  hole for a much smaller problem.
 - **Mono's slower fling on a real phone.** It is measured and watched working on
   the emulator, where scrolling is a scripted swipe rather than a thumb — see
   [next step 12](#12-herald-mono-take-out-always-on-reader-view--done-2026-08-19).

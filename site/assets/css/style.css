@@ -58,10 +58,14 @@ img { max-width: 100%; display: block; }
 a { color: var(--slate-dark); text-decoration-color: var(--line); text-underline-offset: 3px; }
 a:hover { text-decoration-color: currentColor; }
 
-h1, h2, h3 { line-height: 1.2; letter-spacing: -0.01em; color: var(--ink); }
+h1, h2, h3, h4 { line-height: 1.2; letter-spacing: -0.01em; color: var(--ink); }
 h1 { font-size: clamp(2rem, 5vw, 2.9rem); margin: 0 0 0.5rem; }
 h2 { font-size: 1.6rem; margin: 2.4rem 0 0.9rem; }
 h3 { font-size: 1.15rem; margin: 1.8rem 0 0.5rem; }
+/* Fourth level exists only on the Q&A page, where "how do I switch it off"
+   has three answers under it. Sized close to body text on purpose: it is a
+   label for the paragraph below it, not another section. */
+h4 { font-size: 1rem; margin: 1.4rem 0 0.4rem; color: var(--ink-soft); }
 
 p { margin: 0 0 1rem; }
 .lede { font-size: 1.15rem; color: var(--ink-soft); }
@@ -87,11 +91,75 @@ p { margin: 0 0 1rem; }
 .lang-switch a:hover { color: var(--ink); }
 .lang-switch a.lang-current { color: var(--ink); background: var(--paper); border: 1px solid var(--line); font-weight: 600; }
 
+/* Package ids and shell commands. The blocklist page names about a hundred and
+   thirty Android packages, and in a proportional face `com.a3.sgt` reads as
+   prose rather than as an identifier. Wraps rather than overflows: some of
+   these are long and they sit in narrow table cells. */
+code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.88em;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 0.05em 0.35em;
+  overflow-wrap: anywhere;
+}
+
 /* hero */
 
-.hero { padding: 3.5rem 0 2.5rem; }
-.hero-art { border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); margin: 1.6rem 0; }
-.hero-art picture, .hero-art img { display: block; width: 100%; height: auto; }
+.hero { padding: 2.5rem 0 2.5rem; }
+.hero-art {
+  position: relative;
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  margin: 0 0 1.6rem;
+  /* So the title can be sized against the *picture* rather than the viewport:
+     the art is capped at --max while the window is not, and text set in vw
+     kept outgrowing the sky it sits in. */
+  container-type: inline-size;
+}
+.hero-art img { display: block; width: 100%; height: auto; }
+
+/* The title sits on the picture, in the top-right sky.
+   Deliberately not themed. The same illustration is served to light and dark
+   readers alike -- it is a sunset, warm enough for either -- so the text over
+   it is keyed to the sky it lies on and not to --ink, which would turn pale
+   in dark mode and vanish. */
+.hero-art-title {
+  position: absolute;
+  top: 5%;
+  right: 4.5%;
+  max-width: 55%;
+  text-align: right;
+  color: #2a2118;
+  text-shadow: 0 1px 10px rgba(255, 244, 224, 0.75);
+}
+.hero-art-title h1 {
+  margin: 0;
+  color: inherit;
+  font-size: clamp(1.25rem, 5.2vw, 2.6rem);   /* fallback where cqw is unknown */
+  font-size: max(1.25rem, 5.2cqw);
+  letter-spacing: -0.015em;
+}
+.hero-art-title p {
+  margin: 0.15em 0 0;
+  font-weight: 600;
+  font-size: clamp(0.72rem, 2.4vw, 1.15rem);
+  font-size: max(0.72rem, 2.4cqw);
+  line-height: 1.25;
+  opacity: 0.9;
+  /* Two even lines rather than a lone trailing word, where it wraps. */
+  text-wrap: balance;
+}
+
+/* Below about 700px the picture is small enough that text scaled purely to it
+   stops being readable -- 8px at a phone width -- so both sizes have a floor
+   above, and the block is given more of the sky to spend it in. The tagline
+   wraps to two lines there, which the far-right sky has room for. */
+@media (max-width: 700px) {
+  .hero-art-title { max-width: 68%; top: 4%; }
+}
 .beta-note {
   display: inline-block;
   font-size: 0.85rem;
@@ -101,6 +169,28 @@ p { margin: 0 0 1rem; }
   border-radius: 999px;
   padding: 0.3rem 0.8rem;
   margin-bottom: 1rem;
+}
+
+/* The people this is for, in their own words: five one-liners between the hero
+   art and the explanation. A grid rather than a column, because five stacked
+   cards would push the paragraph that explains the project off the screen. */
+.voices-lead { margin-bottom: 0.6rem; font-weight: 600; }
+.voices {
+  list-style: none;
+  margin: 0 0 1.6rem;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 0.8rem;
+}
+.voices li {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--slate);
+  border-radius: var(--radius);
+  padding: 0.85rem 1rem;
+  font-style: italic;
+  color: var(--ink-soft);
 }
 
 /* buttons */
@@ -340,3 +430,15 @@ td:first-child, th:first-child { white-space: nowrap; }
    the list does not silently renumber itself mid-run. */
 .installer-steps li[data-state="skipped"] { color: var(--ink-soft); opacity: 0.55; }
 .installer-steps li[data-state="skipped"] .step-dot { border-style: dashed; }
+
+/* Non-production channel band. Deliberately loud and deliberately not themed:
+   the one thing it must never do is look like part of the site. */
+.channel-banner {
+  background: var(--rust);
+  color: #fff;
+  text-align: center;
+  padding: 0.55rem 1rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
