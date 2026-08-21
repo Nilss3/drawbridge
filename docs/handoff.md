@@ -148,6 +148,9 @@ the key can always unlock and put a build on the phone. See
 - **Nothing Phone (3a)** (model A059) — the alpha phone, the owner's daily
   device, on `main`. Do not experiment on it. Running build 41 without
   trouble as of 2026-08-19, which is what the website's beta note now says.
+- **Dumber Mini** (LineageOS) — a third handset, and the first that is neither
+  stock Android nor an OEM's version of it. drawbridge works on it, which is the
+  useful half of the finding; the other half is [12e](#12e-private-dns-was-not-locked-on-lineageos-and-changing-it-took-the-phone-offline).
 - **API 36 emulator** (`Medium_Phone_API_36.0`, and `herald_test`) — provisioned
   as Device Owner, and good for everything except what needs a real OEM: the
   keyguard's crowding, Doze, and Play Protect's behaviour, which it does
@@ -929,6 +932,44 @@ it costs a tap to answer "which browsers?".
 
 Whichever, the description is the fallback either way, so it has to name them:
 the default profile's text does, in three languages, as of policy 85.
+
+### 12e. Private DNS was not locked on LineageOS, and changing it took the phone offline
+
+**Reported 2026-08-19 from a Dumber Mini running LineageOS**, where everything
+else worked. Two observations, and the second is what makes the first less
+alarming than it sounds:
+
+1. **The DNS setting was still reachable.** `DISALLOW_CONFIG_PRIVATE_DNS` is
+   applied by `restrictionsFor` and is meant to close exactly that screen —
+   Android files Private DNS under network settings rather than under VPN, which
+   is why the restriction is listed separately from `DISALLOW_CONFIG_VPN`. On
+   this device it did not take.
+2. **Choosing another resolver took the phone offline** rather than routing
+   around the filter. So the hole did not open; something downstream refused.
+
+**Why the second is plausible and worth confirming rather than assuming.** The
+filter presents each upstream under a fake address inside the tunnel's own subnet
+and routes only those addresses, so a Private DNS hostname the phone resolves for
+itself has nowhere to go: the tunnel does not carry it and the system will not
+fall back. That would produce exactly "no internet" — a fail-closed outcome, and
+the right one — but it has not been traced, and a mechanism nobody has watched is
+not a mechanism to rely on.
+
+**What to check**, in order:
+
+1. Whether the restriction is *applied* on that device at all:
+   `adb shell dumpsys device_policy | grep -i private_dns`, then compare with the
+   G15. LineageOS may honour the restriction and present the screen anyway, or
+   may not honour it.
+2. What actually happens to a lookup once Private DNS is set: `adb logcat -s
+   drawbridge-vpn` while resolving, to see whether queries reach the tunnel.
+3. Whether it fails *closed* on every network — mobile data as well as Wi-Fi,
+   since the two take different paths through the resolver.
+
+If the restriction genuinely cannot be applied on LineageOS, the honest fix is
+to say so on the install page rather than to rely on the failure mode: a
+protection that works because something else breaks is not one to document as
+protection.
 
 ### 13. A copy pass over the app, then the website — the app half is done
 
