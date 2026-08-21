@@ -175,6 +175,8 @@ HOME = {
         title="drawbridge — protect your Android device from harmful content",
         description="A free, open-source, watertight content filter for Android. For yourself, or for a device you manage on someone else's behalf. No account, no backend, no telemetry.",
         beta='This software is still in alpha testing but already runs well on at least two brands. If there is a lot of interest in a public beta we may give this site a real domain.',
+        limits='You can add further limitations: an internet curfew, or even a completely offline phone. You can also go browser-less, or limit the phone to just the few apps you picked.',
+        states='<p>Drawbridge has an unlocked and a locked state. Unlocked, it already stops social media, games, adult content, gambling and AI companions in general, but it still allows WhatsApp, Telegram, YouTube and video streaming apps like Netflix. Genuinely private messengers such as Signal are always allowed. In the unlocked state you can also remove drawbridge with a factory reset.</p>\n          <p>By locking drawbridge you can impose more protections:</p>\n          <ul>\n            <li>Block WhatsApp, Telegram, video streaming and/or YouTube.</li>\n            <li>Have an internet curfew.</li>\n            <li>Have a completely offline phone. GPS keeps working, so navigation and even location sharing still work offline.</li>\n            <li>Remove all browsers.</li>\n            <li>Have only some apps, the ones you really need, and stop further app installs.</li>\n          </ul>\n          <p>A locked drawbridge requires a difficult key and/or a timer to unlock. You may set no timer and &quot;forget&quot; the key on purpose, in which case you have those restrictions forever.</p>',
         hero_title="Drawbridge Project",
         hero_tagline="Keeps the bad internet on the other side",
         hero_art_alt="A raised drawbridge at sunset, between an autumn park where somebody is reading on a bench and a rocky shore where cartoon monsters are waiting.",
@@ -194,8 +196,8 @@ HOME = {
         cta_primary="Get started",
         cta_secondary="See what's blocked, and why",
         how_h2="How it works",
-        how_p1='You connect the phone to a computer once, over USB, and run the installer. There is no factory reset, and nothing on the phone is erased. This will embed drawbridge on your device. Once installed, just start it. Installing it does uninstall the apps it blocks, so expect those to go. Move anything you want to keep off the phone first. You\'ll get a random code to deactivate drawbridge. Alternatively, "forget" the code and have your protection indefinitely.',
-        how_p2="Drawbridge relies on a web filter, a block list, and a custom browser. You don't need an account, and no data leaves your device. As opposed to parental controls or app blockers, there is little to no configuration, it already has everything there to protect you. There is also no workaround.",
+        how_p1='You connect the phone to a computer once, over USB, and run the installer. There is no factory reset, and nothing on the phone is erased. This will embed drawbridge on your device. Once installed, just start it. Installing it does uninstall the apps it blocks, so expect those to go. Move anything you want to keep off the phone first.',
+        how_p2="Drawbridge relies on a web filter, a block list, and automatic app uninstalls. You don't need an account, and no data leaves your device. As opposed to parental controls or app blockers, there is little to no configuration, it already has everything there to protect you. There is also no workaround.",
         how_art_alt="A phone with a raised drawbridge across its screen: a calm green landscape inside, dark creatures shut out behind it.",
         how_cta_faq="Read the Q&amp;A",
         how_cta_install="Installation guide",
@@ -229,6 +231,8 @@ HOME = {
         title="drawbridge — bescherm je Android-toestel tegen schadelijke inhoud",
         description="Een gratis, open source, waterdichte contentfilter voor Android. Voor jezelf, of voor een toestel dat je voor iemand anders beheert. Geen account, geen backend, geen telemetrie.",
         beta='Deze software zit nog in alfatesting, maar draait nu al goed op minstens twee merken. Is er veel interesse in een publieke beta, dan geven we deze site misschien een echt domein.',
+        limits='Je kan verder beperkingen toevoegen: een internetcurfew, of zelfs een volledig offline telefoon. Je kan ook zonder browser werken, of de telefoon beperken tot enkel de apps die je zelf koos.',
+        states='<p>Drawbridge heeft een ontgrendelde en een vergrendelde toestand. Ontgrendeld houdt het social media, games, pornografie, gokken en AI companions al tegen, maar het laat WhatsApp, Telegram, YouTube en videostreamingapps zoals Netflix nog toe. Echt private berichtenapps zoals Signal zijn altijd toegelaten. In de ontgrendelde toestand kan je drawbridge ook verwijderen met een factory reset.</p>\n          <p>Door drawbridge te vergrendelen kan je meer bescherming opleggen:</p>\n          <ul>\n            <li>WhatsApp, Telegram, videostreaming en/of YouTube blokkeren.</li>\n            <li>Een internetcurfew instellen.</li>\n            <li>Een volledig offline telefoon. Gps blijft werken, dus navigatie en zelfs je locatie delen lukken offline.</li>\n            <li>Alle browsers verwijderen.</li>\n            <li>Enkel bepaalde apps houden, die je echt nodig hebt, en verdere installaties tegenhouden.</li>\n          </ul>\n          <p>Een vergrendelde drawbridge vraagt een moeilijke sleutel en/of een timer om te ontgrendelen. Je kan ook geen timer zetten en de sleutel bewust &quot;vergeten&quot;: dan hou je die beperkingen voorgoed.</p>',
         hero_title="Drawbridge Project",
         hero_tagline="Houdt het slechte internet aan de overkant",
         hero_art_alt="Een opgehaalde ophaalbrug bij zonsondergang, tussen een herfstpark waar iemand op een bank zit te lezen en een rotsige oever waar tekenfilmmonsters staan te wachten.",
@@ -248,8 +252,8 @@ HOME = {
         cta_primary="Aan de slag",
         cta_secondary="Bekijk wat geblokkeerd wordt, en waarom",
         how_h2="Hoe het werkt",
-        how_p1='Je verbindt de telefoon één keer met een computer via USB en voert de installer uit. Er is geen factory reset nodig, en er wordt niets op de telefoon gewist. Dat installeert drawbridge op je toestel. Eenmaal geïnstalleerd, start je het gewoon op. Bij het installeren verdwijnen wel de apps die drawbridge blokkeert, dus zet eerst weg wat je wil bewaren. Je krijgt een willekeurige code om drawbridge te deactiveren. Je kan die code ook bewust "vergeten", zodat je bescherming voor onbepaalde tijd actief blijft.',
-        how_p2='Drawbridge steunt op een webfilter, een blocklist, en een eigen browser. Je hebt geen account nodig, en er wordt nooit data van je toestel verzonden. In tegenstelling tot parental controls of app blockers is er nauwelijks tot geen configuratie nodig: alles staat er al klaar om je te beschermen. Er is ook geen workaround.',
+        how_p1='Je verbindt de telefoon één keer met een computer via USB en voert de installer uit. Er is geen factory reset nodig, en er wordt niets op de telefoon gewist. Dat installeert drawbridge op je toestel. Eenmaal geïnstalleerd, start je het gewoon op. Bij het installeren verdwijnen wel de apps die drawbridge blokkeert, dus zet eerst weg wat je wil bewaren.',
+        how_p2='Drawbridge steunt op een webfilter, een blocklist, en het automatisch verwijderen van apps. Je hebt geen account nodig, en er wordt nooit data van je toestel verzonden. In tegenstelling tot parental controls of app blockers is er nauwelijks tot geen configuratie nodig: alles staat er al klaar om je te beschermen. Er is ook geen workaround.',
         how_art_alt="Een telefoon met een opgehaalde brug over het scherm: een rustig groen landschap binnenin, duistere wezens buitengesloten.",
         how_cta_faq="Lees de Q&amp;A",
         how_cta_install="Installatiegids",
@@ -283,6 +287,8 @@ HOME = {
         title="drawbridge — protégez votre appareil Android des contenus nuisibles",
         description="Un filtre de contenu gratuit, open source et étanche pour Android. Pour vous-même, ou pour un appareil que vous gérez pour quelqu'un d'autre. Pas de compte, pas de serveur, aucune télémétrie.",
         beta="Ce logiciel est encore en phase de test alpha, mais il tourne déjà bien sur au moins deux marques. Si une bêta publique suscite beaucoup d'intérêt, nous donnerons peut-être un vrai nom de domaine à ce site.",
+        limits="Vous pouvez ajouter d'autres limites : un couvre-feu internet, ou même un téléphone entièrement hors ligne. Vous pouvez aussi vous passer de navigateur, ou limiter le téléphone aux quelques applications que vous avez choisies.",
+        states="<p>Drawbridge a un état déverrouillé et un état verrouillé. Déverrouillé, il bloque déjà les réseaux sociaux, les jeux, les contenus pour adultes, les jeux d'argent et les compagnons IA en général, mais il autorise encore WhatsApp, Telegram, YouTube et les applications de streaming vidéo comme Netflix. Les messageries vraiment privées comme Signal sont toujours autorisées. À l'état déverrouillé, vous pouvez aussi retirer drawbridge par une réinitialisation d'usine.</p>\n          <p>En verrouillant drawbridge, vous pouvez imposer davantage de protections :</p>\n          <ul>\n            <li>Bloquer WhatsApp, Telegram, le streaming vidéo et/ou YouTube.</li>\n            <li>Instaurer un couvre-feu internet.</li>\n            <li>Un téléphone entièrement hors ligne. Le GPS continue de fonctionner, donc la navigation et même le partage de position marchent hors ligne.</li>\n            <li>Supprimer tous les navigateurs.</li>\n            <li>Ne garder que certaines applications, celles dont vous avez vraiment besoin, et empêcher toute nouvelle installation.</li>\n          </ul>\n          <p>Un drawbridge verrouillé demande une clé difficile et/ou une minuterie pour être déverrouillé. Vous pouvez ne mettre aucune minuterie et « oublier » la clé volontairement : vous gardez alors ces restrictions pour toujours.</p>",
         hero_title="Drawbridge Project",
         hero_tagline="Garde le mauvais internet de l'autre côté",
         hero_art_alt="Un pont-levis relevé au coucher du soleil, entre un parc d'automne où quelqu'un lit sur un banc et une rive rocheuse où attendent des monstres de dessin animé.",
@@ -302,8 +308,8 @@ HOME = {
         cta_primary="Commencer",
         cta_secondary="Voir ce qui est bloqué, et pourquoi",
         how_h2="Comment ça marche",
-        how_p1="Vous reliez le téléphone à un ordinateur une seule fois, par USB, et vous lancez l'installeur. Il n'y a aucune réinitialisation, et rien n'est effacé sur le téléphone. Cela installe drawbridge sur votre appareil. Une fois installé, il suffit de le démarrer. L'installation désinstalle en revanche les applications qu'il bloque, mettez donc d'abord de côté ce que vous voulez garder. Vous recevrez un code aléatoire pour désactiver drawbridge. Vous pouvez aussi « oublier » ce code volontairement, pour que la protection reste active indéfiniment.",
-        how_p2="Drawbridge s'appuie sur un filtre web, une liste de blocage, et un navigateur dédié. Aucun compte n'est nécessaire, et aucune donnée ne quitte votre appareil. Contrairement aux contrôles parentaux ou aux bloqueurs d'applications, il n'y a que peu, voire aucune configuration à faire : tout est déjà en place pour vous protéger. Il n'existe pas non plus de moyen de contournement.",
+        how_p1="Vous reliez le téléphone à un ordinateur une seule fois, par USB, et vous lancez l'installeur. Il n'y a aucune réinitialisation, et rien n'est effacé sur le téléphone. Cela installe drawbridge sur votre appareil. Une fois installé, il suffit de le démarrer. L'installation désinstalle en revanche les applications qu'il bloque, mettez donc d'abord de côté ce que vous voulez garder.",
+        how_p2="Drawbridge s'appuie sur un filtre web, une liste de blocage, et la désinstallation automatique des applications. Aucun compte n'est nécessaire, et aucune donnée ne quitte votre appareil. Contrairement aux contrôles parentaux ou aux bloqueurs d'applications, il n'y a que peu, voire aucune configuration à faire : tout est déjà en place pour vous protéger. Il n'existe pas non plus de moyen de contournement.",
         how_art_alt="Un téléphone dont le pont-levis est relevé sur l'écran : un paysage vert et calme à l'intérieur, des créatures sombres tenues à l'écart.",
         how_cta_faq="Lire la Q&amp;A",
         how_cta_install="Guide d'installation",
@@ -365,6 +371,7 @@ def render_home(lang: str) -> str:
       </ul>
       <p>{c['p1']}</p>
       <p>{c['p2']}</p>
+      <p>{c['limits']}</p>
       <p>{c['browser_teaser']}</p>
       <div class="btn-row">
         <a class="btn btn--primary" href="{install_href}">{c['cta_primary']}</a>
@@ -380,6 +387,7 @@ def render_home(lang: str) -> str:
         <div>
           <p>{c['how_p1']}</p>
           <p>{c['how_p2']}</p>
+          {c['states']}
           <div class="btn-row" style="margin-bottom:0;">
             <a class="btn btn--ghost" href="{faq_href}">{c['how_cta_faq']}</a>
             <a class="btn btn--ghost" href="{install_href}">{c['how_cta_install']}</a>
