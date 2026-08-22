@@ -148,9 +148,11 @@ the key can always unlock and put a build on the phone. See
 - **Nothing Phone (3a)** (model A059) — the alpha phone, the owner's daily
   device, on `main`. Do not experiment on it. Running build 41 without
   trouble as of 2026-08-19, which is what the website's beta note now says.
-- **Dumber Mini** (LineageOS) — a third handset, and the first that is neither
-  stock Android nor an OEM's version of it. drawbridge works on it, which is the
-  useful half of the finding; the other half is [12e](#12e-private-dns-was-not-locked-on-lineageos-and-changing-it-took-the-phone-offline).
+- **Dumber Mini** (LineageOS 21, Android 14) — a third handset, and the first
+  that is neither stock Android nor an OEM's version of it. drawbridge works on
+  it, restrictions included: measured over adb on 2026-08-19, Private DNS is
+  greyed in Settings and cannot be written even from a shell. See
+  [12e](#12e-private-dns-on-lineageos--investigated-2026-08-19-nothing-wrong).
 - **API 36 emulator** (`Medium_Phone_API_36.0`, and `herald_test`) — provisioned
   as Device Owner, and good for everything except what needs a real OEM: the
   keyguard's crowding, Doze, and Play Protect's behaviour, which it does
@@ -933,43 +935,59 @@ it costs a tap to answer "which browsers?".
 Whichever, the description is the fallback either way, so it has to name them:
 the default profile's text does, in three languages, as of policy 85.
 
-### 12e. Private DNS was not locked on LineageOS, and changing it took the phone offline
+### 12e. ~~Private DNS on LineageOS~~ — investigated 2026-08-19, nothing wrong
 
-**Reported 2026-08-19 from a Dumber Mini running LineageOS**, where everything
-else worked. Two observations, and the second is what makes the first less
-alarming than it sounds:
+**Measured over adb on the Dumber Mini** (LineageOS 21, Android 14, drawbridge
+Device Owner, protected but unlocked at the time). The restriction works there,
+and both of the guesses this entry used to carry were wrong.
 
-1. **The DNS setting was still reachable.** `DISALLOW_CONFIG_PRIVATE_DNS` is
-   applied by `restrictionsFor` and is meant to close exactly that screen —
-   Android files Private DNS under network settings rather than under VPN, which
-   is why the restriction is listed separately from `DISALLOW_CONFIG_VPN`. On
-   this device it did not take.
-2. **Choosing another resolver took the phone offline** rather than routing
-   around the filter. So the hole did not open; something downstream refused.
+| | |
+|---|---|
+| Is `DISALLOW_CONFIG_PRIVATE_DNS` applied? | **Yes.** It is in the effective restriction set, spelled `disallow_config_private_dns` rather than `no_*` like its neighbours, which is the platform's own naming and not a bug. |
+| Does the Settings UI honour it? | **Yes.** Private DNS is greyed out and reads *Controlled by admin*, exactly like VPN beside it. |
+| Can adb override it? | **No**, and this is the part worth knowing. `settings put global private_dns_mode hostname` is accepted at the prompt and **silently does nothing** — the value reads back unchanged. Android's settings provider maps that key to this restriction, so a shell with `WRITE_SECURE_SETTINGS` cannot write it either. Enforcement is well below the UI. |
+| Is the restriction keyed on the lock? | **No, on protection.** The phone was unlocked when measured — `no_debugging_features` absent, adb working — and the DNS restriction was applied anyway, so it survives an unlock like the filter does. |
 
-**Why the second is plausible and worth confirming rather than assuming.** The
-filter presents each upstream under a fake address inside the tunnel's own subnet
-and routes only those addresses, so a Private DNS hostname the phone resolves for
-itself has nowhere to go: the tunnel does not carry it and the system will not
-fall back. That would produce exactly "no internet" — a fail-closed outcome, and
-the right one — but it has not been traced, and a mechanism nobody has watched is
-not a mechanism to rely on.
+**What the owner actually saw was the pre-lock window**, and that is correct
+behaviour rather than a gap: *nothing* is applied until the first lock, which is
+the whole point of that window — a parent adds an account, sets a screen lock and
+moves data off. They checked before ever locking. After the first lock the
+restriction lands and stays.
 
-**What to check**, in order:
+**Why choosing another resolver took the phone offline**, which was the other
+half of the report and is also deliberate: `block_encrypted_dns` routes the
+known DoH/DoT endpoints into the tunnel and drops them. The tunnel's route table
+on this phone carries Google, Cloudflare, Quad9, AdGuard, OpenDNS, Control D and
+NextDNS, v4 and v6 — `1.1.1.1` among them, and `one.one.one.one` is what was
+typed in. Android's hostname mode is strict and has no fallback, so every lookup
+failed. Fail-closed, by design, and confirmed here: `ping 1.1.1.1` is
+unreachable while ordinary resolution works.
 
-1. Whether the restriction is *applied* on that device at all:
-   `adb shell dumpsys device_policy | grep -i private_dns`, then compare with the
-   G15. LineageOS may honour the restriction and present the screen anyway, or
-   may not honour it.
-2. What actually happens to a lookup once Private DNS is set: `adb logcat -s
-   drawbridge-vpn` while resolving, to see whether queries reach the tunnel.
-3. Whether it fails *closed* on every network — mobile data as well as Wi-Fi,
-   since the two take different paths through the resolver.
+### 12f. A Private DNS hostname set *before* the first lock is frozen in place
 
-If the restriction genuinely cannot be applied on LineageOS, the honest fix is
-to say so on the install page rather than to rely on the failure mode: a
-protection that works because something else breaks is not one to document as
-protection.
+**The one real finding from that investigation, and it is not LineageOS-specific.**
+The restriction stops the value being changed; it does not change the value. So a
+phone where somebody set Private DNS to a blackholed provider *before* locking
+keeps that setting, loses all DNS the moment the tunnel comes up, and has no way
+back: Settings refuses, adb refuses, and unlocking does not help because the
+restriction is keyed on protection rather than on the lock. The only exits are
+deactivating drawbridge from its own screen or a factory reset.
+
+Nothing in `dpc/` reads or writes those settings today — the code only adds the
+restriction.
+
+**The fix is one call, and the API exists**: `DevicePolicyManager` has
+`getGlobalPrivateDnsMode`, `setGlobalPrivateDnsModeOpportunistic` and
+`setGlobalPrivateDnsModeSpecifiedHost` for a Device Owner, from API 29. Reading
+the mode at lock time costs nothing and answers whether the phone is about to
+seal itself into that state. Opportunistic is the safe destination: it attempts
+DoT against the network's own resolvers, which here are the tunnel's fake
+addresses, and those do not answer DoT — so it falls back to plain DNS, which is
+the filter. Setting it *off* has no setter, which is why opportunistic rather
+than off.
+
+Worth doing before anybody else installs this, because the window it happens in
+is the window every new user is in.
 
 ### 13. A copy pass over the app, then the website — the app half is done
 
