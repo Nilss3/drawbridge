@@ -974,31 +974,47 @@ typed in. Android's hostname mode is strict and has no fallback, so every lookup
 failed. Fail-closed, by design, and confirmed here: `ping 1.1.1.1` is
 unreachable while ordinary resolution works.
 
-### 12f. A Private DNS hostname set *before* the first lock is frozen in place
+### 12f. ~~A Private DNS hostname set before the first lock is frozen in place~~ — fixed 2026-08-19
 
-**The one real finding from that investigation, and it is not LineageOS-specific.**
-The restriction stops the value being changed; it does not change the value. So a
-phone where somebody set Private DNS to a blackholed provider *before* locking
-keeps that setting, loses all DNS the moment the tunnel comes up, and has no way
-back: Settings refuses, adb refuses, and unlocking does not help because the
-restriction is keyed on protection rather than on the lock. The only exits are
-deactivating drawbridge from its own screen or a factory reset.
+**Found while investigating 12e, and fixed the same day.** The restriction stops
+the Private DNS value being changed; it does not change the value. So a phone
+where somebody set Private DNS to a hostname *before* locking kept it, lost every
+lookup once the tunnel came up — `block_encrypted_dns` drops the known DoT
+endpoints and Android's hostname mode has no cleartext fallback — and had no way
+back, because Settings greys the entry out, `settings put` from a shell is
+silently ignored, and unlocking does not help since the restriction is keyed on
+protection. The only exits were removing drawbridge or a factory reset, for a
+setting chosen before drawbridge had any opinion about it.
 
-Nothing in `dpc/` reads or writes those settings today — the code only adds the
-restriction.
+`DeviceOwnerManager.normalisePrivateDns` now runs at the top of
+`applyUserRestrictions`, before the restriction lands: if the mode is
+`PRIVATE_DNS_MODE_PROVIDER_HOSTNAME` it is moved to opportunistic. Opportunistic
+rather than off because there is no setter for off, and it is the right
+destination anyway — it probes DoT against *the network's own* resolvers, which
+on a filtered phone are the tunnel's fake addresses, and those answer port 53 and
+nothing else, so the probe fails and the system falls back to cleartext, which is
+the filter.
 
-**The fix is one call, and the API exists**: `DevicePolicyManager` has
-`getGlobalPrivateDnsMode`, `setGlobalPrivateDnsModeOpportunistic` and
-`setGlobalPrivateDnsModeSpecifiedHost` for a Device Owner, from API 29. Reading
-the mode at lock time costs nothing and answers whether the phone is about to
-seal itself into that state. Opportunistic is the safe destination: it attempts
-DoT against the network's own resolvers, which here are the tunnel's fake
-addresses, and those do not answer DoT — so it falls back to plain DNS, which is
-the filter. Setting it *off* has no setter, which is why opportunistic rather
-than off.
+**Watched working on the API 36 emulator**, provisioned as Device Owner, with the
+trap set up by hand:
 
-Worth doing before anybody else installs this, because the window it happens in
-is the window every new user is in.
+```
+before lock : private_dns_mode=hostname  specifier=one.one.one.one  restriction absent
+at lock     : "Private DNS was pinned to one.one.one.one; moved to opportunistic
+               so the filter stays reachable once the restriction lands"
+after lock  : private_dns_mode=opportunistic  specifier=null  restriction applied
+              example.com resolves; instagram.com blocked; putting the mode back
+              from an adb shell is ignored
+```
+
+Diagnostics gained a `private DNS:` line, which reads `opportunistic` there. It
+is the only way to see this state on a phone, and a phone showing `hostname` has
+DNS going somewhere the filter cannot see.
+
+**Not on any handset yet**: the fix is in the DPC, so it needs a build. It only
+matters for a phone locked *after* somebody set a Private DNS host, which is a
+first-install situation, so existing phones are unaffected — the alpha reads
+`off`.
 
 ### 13. A copy pass over the app, then the website — the app half is done
 
