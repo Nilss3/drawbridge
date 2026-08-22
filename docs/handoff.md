@@ -164,6 +164,19 @@ the key can always unlock and put a build on the phone. See
 
 **Watched working on hardware**, most recently on 2026-08-19 with build 40:
 
+- **Android Auto connects wirelessly with the filter running.** Confirmed in the
+  car on 2026-08-19, which closes the one thing this project had shipped and
+  never seen work. It also settles the mechanism underneath it: Android Auto asks
+  `ConnectivityManager` whether there is a VPN rather than looking for a `tun`
+  interface, so leaving a package out of the VPN's UID ranges genuinely makes the
+  VPN invisible to it. That is why split tunnelling is the fix, and it is now
+  measured rather than argued — which matters for the next app that refuses to
+  run beside a VPN.
+- **The restriction set holds on LineageOS**, the first non-OEM Android any of
+  this has run on. Private DNS is greyed in Settings, and `settings put` from an
+  adb shell is silently ignored rather than refused, so enforcement is in the
+  settings provider rather than the UI. Measured 2026-08-19; see
+  [12e](#12e-private-dns-on-lineageos--investigated-2026-08-19-nothing-wrong).
 - **A removal a switch governs hides the app instead of uninstalling it**, so
   herald survives the browser chooser going back and forth without a
   quarter-gigabyte download each way, and WhatsApp comes back with its chats. The
@@ -195,15 +208,6 @@ the key can always unlock and put a build on the phone. See
   been on this list since build 30.
 - **A second person installing any of this**, from the website, without the
   author in the room.
-- **Android Auto working wirelessly with the filter on.** The alpha phone shows
-  *"error 21, are you using a VPN?"* on the car's screen whenever it comes into
-  range, and works over a cable. The fix — `dns.excluded_packages`, defaulting
-  to Android Auto — is written and reasoned but has never been in a car. **What
-  would falsify it:** if Android Auto looks for a `tun` interface rather than
-  asking `ConnectivityManager`, no per-app exclusion can help, because the
-  interface is there for every process. Then the honest options are a cable, or
-  dropping the filter while the phone is in car mode, which is a much bigger
-  hole for a much smaller problem.
 - **Mono's slower fling on a real phone.** It is measured and watched working on
   the emulator, where scrolling is a scripted swipe rather than a thumb — see
   [next step 12](#12-herald-mono-take-out-always-on-reader-view--done-2026-08-19).
@@ -337,6 +341,13 @@ Each of these looks like a bug and is not, or bites silently:
   is live.
 - **`site/` is generated.** Hand-edited HTML disappears at the next
   `build-site.py` run, with no error. It has happened once already.
+- **`git checkout <other-branch> -- <file>` silently discards whatever that file
+  held on this branch.** It is the obvious way to port a doc change from `dev` to
+  `main`, and it takes the *whole* file — so an edit made only on `main` is gone
+  without a conflict or a warning. That is how the Android Auto result, recorded
+  on `main` alone, was reverted twice on 2026-08-19 by later ports of unrelated
+  sections. Write shared documentation on `dev` first and let it travel one way,
+  or check `git diff dev -- <file>` before the checkout.
 - **`dist/release/dpc-release.apk` is shared between branches**, so building a
   release on one channel leaves the other channel's staged APK wrong, and
   `build-site.py` then refuses to run — correctly, since the installer page must
