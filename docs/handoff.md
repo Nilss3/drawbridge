@@ -864,18 +864,26 @@ constant to move.
 
 ### 12b. Two small things on the configuration screen, reported 2026-08-19
 
-Neither is urgent and both are visual, from the owner running build 41:
+Both visual, from the owner running build 41. **The first is fixed; the second
+is still open.**
 
-- **A band of empty space sits under the title bar** and stays there while the
-  rest scrolls, eating vertical space on a screen that has none to spare. It is
-  the first thing to look at on a small phone, which is where it will be worst.
-  Suspect the insets applied in `MainActivity.onCreate` via `applyScreenInsets`,
-  or the `ScrollView` padding above the first heading — the heading itself is
-  `SectionHeading.First`, which deliberately has no rule and 8dp of top padding,
-  so if it looks like more than that the space is coming from somewhere else.
-- **"Drawbridge Control" could be smaller.** It is the activity title in the
-  default action bar, set at runtime from `main_title`; nothing sizes it today,
-  so it takes whatever `textAppearanceTitleLarge` the Material theme gives it.
+- ~~**A band of empty space sits under the title bar**~~ — **fixed 2026-08-24,
+  and the suspicion in this entry was right.** `applyScreenInsets` was adding
+  `actionBarSize` to a `systemBars()` top inset that already contained it.
+  AppCompat's `ActionBarOverlayLayout` folds the bar it draws into the insets it
+  hands down to the content, so what arrived was 231px on the 420dpi emulator —
+  24dp of status bar plus 64dp of action bar — and the old code read that as the
+  status bar alone. Every screen in the app began 64dp lower than it had any
+  reason to. Measured before and after with `uiautomator dump`: the first
+  heading moved from y=420 to y=252, against an action bar ending at y=231, so
+  the gap is now the 8dp the `LinearLayout` asks for and nothing else. Checked
+  on the configuration screen and on diagnostics; the fix is in `Insets.kt` and
+  applies to all five activities that call it. It was invisible below API 35,
+  where the decor consumes the insets and this reports zero.
+- **"Drawbridge Control" could be smaller.** *Still open.* It is the activity
+  title in the default action bar, set at runtime from `main_title`; nothing
+  sizes it today, so it takes whatever `textAppearanceTitleLarge` the Material
+  theme gives it.
 
 ### 12c. Comet and Via, and what any new browser has to be checked against
 
