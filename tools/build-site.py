@@ -198,7 +198,7 @@ HOME = {
         how_h2="How it works",
         how_p1='You connect the phone to a computer once, over USB, and run the installer. There is no factory reset, and nothing on the phone is erased. This will embed drawbridge on your device. Once installed, just start it. Installing it does uninstall the apps it blocks, so expect those to go. Move anything you want to keep off the phone first.',
         how_p2="Drawbridge relies on a web filter, a block list, and automatic app uninstalls. You don't need an account, and no data leaves your device. As opposed to parental controls or app blockers, there is little to no configuration, it already has everything there to protect you. There is also no workaround.",
-        how_art_alt="A phone with a raised drawbridge across its screen: a calm green landscape inside, dark creatures shut out behind it.",
+        how_photos_note="The three phones the alpha has run on, photographed with drawbridge locked.",
         how_cta_faq="Read the Q&amp;A",
         how_cta_install="Installation guide",
         devices_h2="On what devices?",
@@ -254,7 +254,7 @@ HOME = {
         how_h2="Hoe het werkt",
         how_p1='Je verbindt de telefoon één keer met een computer via USB en voert de installer uit. Er is geen factory reset nodig, en er wordt niets op de telefoon gewist. Dat installeert drawbridge op je toestel. Eenmaal geïnstalleerd, start je het gewoon op. Bij het installeren verdwijnen wel de apps die drawbridge blokkeert, dus zet eerst weg wat je wil bewaren.',
         how_p2='Drawbridge steunt op een webfilter, een blocklist, en het automatisch verwijderen van apps. Je hebt geen account nodig, en er wordt nooit data van je toestel verzonden. In tegenstelling tot parental controls of app blockers is er nauwelijks tot geen configuratie nodig: alles staat er al klaar om je te beschermen. Er is ook geen workaround.',
-        how_art_alt="Een telefoon met een opgehaalde brug over het scherm: een rustig groen landschap binnenin, duistere wezens buitengesloten.",
+        how_photos_note="De drie telefoons waarop de alpha gedraaid heeft, gefotografeerd met drawbridge vergrendeld.",
         how_cta_faq="Lees de Q&amp;A",
         how_cta_install="Installatiegids",
         devices_h2="Op welke toestellen?",
@@ -310,7 +310,7 @@ HOME = {
         how_h2="Comment ça marche",
         how_p1="Vous reliez le téléphone à un ordinateur une seule fois, par USB, et vous lancez l'installeur. Il n'y a aucune réinitialisation, et rien n'est effacé sur le téléphone. Cela installe drawbridge sur votre appareil. Une fois installé, il suffit de le démarrer. L'installation désinstalle en revanche les applications qu'il bloque, mettez donc d'abord de côté ce que vous voulez garder.",
         how_p2="Drawbridge s'appuie sur un filtre web, une liste de blocage, et la désinstallation automatique des applications. Aucun compte n'est nécessaire, et aucune donnée ne quitte votre appareil. Contrairement aux contrôles parentaux ou aux bloqueurs d'applications, il n'y a que peu, voire aucune configuration à faire : tout est déjà en place pour vous protéger. Il n'existe pas non plus de moyen de contournement.",
-        how_art_alt="Un téléphone dont le pont-levis est relevé sur l'écran : un paysage vert et calme à l'intérieur, des créatures sombres tenues à l'écart.",
+        how_photos_note="Les trois téléphones sur lesquels l'alpha a tourné, photographiés avec drawbridge verrouillé.",
         how_cta_faq="Lire la Q&amp;A",
         how_cta_install="Guide d'installation",
         devices_h2="Sur quels appareils ?",
@@ -340,6 +340,94 @@ HOME = {
         browsers_cta="Télécharger la dernière version",
     ),
 }
+
+
+# ---------------------------------------------------------------------------
+# Photographs of drawbridge locked on real phones
+# ---------------------------------------------------------------------------
+#
+# These sit where an illustration used to, under "How it works". The
+# illustration said what drawbridge is *for*; a photograph says it exists and
+# runs, which is the thing a page of text cannot claim on its own.
+#
+# Three phones on purpose: two manufacturers and a keypad phone, so the picture
+# carries the same message as the devices section next to it. The captions are
+# device names and are the same in every language.
+#
+# Sources are the camera JPEGs in images/. The site copies were made with a
+# square centre crop of the full frame height, so nothing is clipped:
+#
+#   magick images/DumberMini.JPG     -crop 3888x3888+570+0 +repage \
+#       -resize 800x800 -quality 80 site/assets/img/phone-dumber-mini.webp
+#   magick images/MotoG15.JPG        -crop 3888x3888+803+0 +repage \
+#       -resize 800x800 -quality 80 site/assets/img/phone-moto-g15.webp
+#   magick images/NothingPhone3a.JPG -crop 3888x3888+920+0 +repage \
+#       -modulate 118,104,100 -resize 800x800 -quality 80 \
+#       site/assets/img/phone-nothing-3a.webp
+#
+# The Nothing frame was shot darker than the other two -- 0.31 mean luminance
+# against 0.38 -- and one visibly dark slide in a crossfade reads as a fault in
+# the page. The modulate brings it to 0.37; nothing else is retouched.
+
+PHONE_PHOTOS = [
+    dict(
+        file="phone-moto-g15.webp",
+        caption="Motorola Moto G15",
+        alt=dict(
+            en="A Motorola Moto G15 on a table showing drawbridge's locked screen, beside a hand-written card naming the phone.",
+            nl="Een Motorola Moto G15 op tafel met het vergrendelscherm van drawbridge, naast een handgeschreven kaartje met de naam van de telefoon.",
+            fr="Un Motorola Moto G15 posé sur une table, affichant l'écran verrouillé de drawbridge, à côté d'une fiche manuscrite qui nomme le téléphone.",
+        ),
+    ),
+    dict(
+        file="phone-nothing-3a.webp",
+        caption="Nothing Phone (3a)",
+        alt=dict(
+            en="A Nothing Phone (3a) on a table showing drawbridge's locked screen with an evening curfew, beside a hand-written card naming the phone.",
+            nl="Een Nothing Phone (3a) op tafel met het vergrendelscherm van drawbridge en een avondcurfew, naast een handgeschreven kaartje met de naam van de telefoon.",
+            fr="Un Nothing Phone (3a) posé sur une table, affichant l'écran verrouillé de drawbridge avec un couvre-feu du soir, à côté d'une fiche manuscrite qui nomme le téléphone.",
+        ),
+    ),
+    dict(
+        file="phone-dumber-mini.webp",
+        caption="Dumber Mini",
+        alt=dict(
+            en="A Dumber Mini keypad phone on a table showing drawbridge's locked screen above its keys, beside a hand-written card naming the phone.",
+            nl="Een Dumber Mini met toetsen op tafel, met het vergrendelscherm van drawbridge boven de toetsen, naast een handgeschreven kaartje met de naam van de telefoon.",
+            fr="Un téléphone à touches Dumber Mini posé sur une table, affichant l'écran verrouillé de drawbridge au-dessus de ses touches, à côté d'une fiche manuscrite qui nomme le téléphone.",
+        ),
+    ),
+]
+
+PHOTOS_LABEL = dict(
+    en="Photographs of drawbridge locked on three phones",
+    nl="Foto's van drawbridge vergrendeld op drie telefoons",
+    fr="Photographies de drawbridge verrouillé sur trois téléphones",
+)
+
+
+def phone_photos_html(lang: str) -> str:
+    """The crossfading photographs under "How it works".
+
+    Markup only -- the crossfade is six lines of CSS in style.css, and no
+    script runs on this page. Where a reader has asked for reduced motion the
+    same three figures stack into a column instead, which is why every slide
+    carries its own caption rather than the container carrying one.
+    """
+    figures = []
+    for photo in PHONE_PHOTOS:
+        figures.append(
+            f'            <figure>\n'
+            f'              <img src="/assets/img/{photo["file"]}" alt="{photo["alt"][lang]}"\n'
+            f'                   width="800" height="800" loading="lazy" decoding="async" />\n'
+            f'              <figcaption>{photo["caption"]}</figcaption>\n'
+            f'            </figure>'
+        )
+    return (
+        f'          <div class="phone-slides" role="group" aria-label="{PHOTOS_LABEL[lang]}">\n'
+        + "\n".join(figures)
+        + "\n          </div>"
+    )
 
 
 def render_home(lang: str) -> str:
@@ -394,7 +482,8 @@ def render_home(lang: str) -> str:
           </div>
         </div>
         <div class="how-art">
-          <img src="/assets/img/howitworks.webp" alt="{c['how_art_alt']}" />
+{phone_photos_html(lang)}
+          <p class="phone-slides-note">{c['how_photos_note']}</p>
         </div>
       </div>
     </div>

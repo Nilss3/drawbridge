@@ -225,14 +225,72 @@ code {
 .section { padding: 2.5rem 0; }
 .section--alt { background: var(--paper); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
 
-/* "How it works": text beside the phone illustration. The image is square,
-   so it is capped rather than stretched — a full-column square would tower
-   over the three paragraphs next to it. */
+/* "How it works": text beside photographs of the phones. The images are
+   square, so they are capped rather than stretched — a full-column square
+   would tower over the three paragraphs next to it. */
 .how-grid { display: grid; grid-template-columns: 1.35fr 1fr; gap: 2rem; align-items: center; margin-top: 1.2rem; }
 .how-art img { width: 100%; max-width: 340px; height: auto; margin: 0 auto; border-radius: var(--radius); }
 @media (max-width: 780px) {
   .how-grid { grid-template-columns: 1fr; gap: 1.4rem; }
   .how-art img { max-width: 280px; }
+}
+
+/* Three photographs crossfading in place of one picture.
+ *
+ * No script: the site loads none on this page and this is not worth being the
+ * first. Three figures are stacked, each runs the same 18s animation offset by
+ * a third of it with a negative delay, so all three are already mid-cycle on
+ * the first frame and slide one is the one showing.
+ *
+ * The first figure stays in the flow and is what gives the block its height;
+ * the other two are laid over it. That works because the images are the same
+ * square and every caption is one line — if a caption ever wraps in one
+ * language and not another, the block will jump, and the fix is to reserve the
+ * height here rather than to shorten the caption.
+ */
+.phone-slides { position: relative; max-width: 340px; margin: 0 auto; }
+.phone-slides figure { margin: 0; opacity: 0; animation: phone-slide-fade 18s infinite; }
+.phone-slides figure:first-child { position: relative; }
+.phone-slides figure + figure { position: absolute; top: 0; left: 0; right: 0; }
+.phone-slides figure:nth-child(2) { animation-delay: -12s; }
+.phone-slides figure:nth-child(3) { animation-delay: -6s; }
+.phone-slides img { display: block; width: 100%; height: auto; border-radius: var(--radius); box-shadow: var(--shadow); }
+.phone-slides figcaption {
+  margin-top: 0.5rem;
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+}
+.phone-slides-note {
+  max-width: 340px;
+  margin: 0.7rem auto 0;
+  text-align: center;
+  font-size: 0.82rem;
+  color: var(--ink-soft);
+}
+
+/* Five seconds held, one second of crossfade: the outgoing slide fades out
+   over 5s–6s of its own cycle while the incoming one fades in over 17s–18s of
+   its, which is the same second of wall clock. */
+@keyframes phone-slide-fade {
+  0%     { opacity: 1; }
+  27.78% { opacity: 1; }   /* 5s  */
+  33.33% { opacity: 0; }   /* 6s  */
+  94.44% { opacity: 0; }   /* 17s */
+  100%   { opacity: 1; }   /* 18s */
+}
+
+/* Asked not to move things: show all three at once instead of one at a time.
+   Nothing is lost — the slideshow's whole content was three photographs, and
+   this is three photographs. */
+@media (prefers-reduced-motion: reduce) {
+  .phone-slides figure,
+  .phone-slides figure + figure { position: relative; animation: none; opacity: 1; }
+  .phone-slides figure + figure { margin-top: 1.2rem; }
+}
+
+@media (max-width: 780px) {
+  .phone-slides, .phone-slides-note { max-width: 280px; }
 }
 
 .steps { list-style: none; margin: 1.2rem 0; padding: 0; display: grid; gap: 0.9rem; }
