@@ -373,7 +373,8 @@ class MainActivity : AppCompatActivity() {
         installLockSwitch.isChecked = installLock.isEnabled
         installLockSwitch.setOnCheckedChangeListener { _, checked ->
             installLock.isEnabled = checked
-            toast(applied(getString(R.string.install_lock_name)))
+            // Only the closing direction has anything to wait for. See [applied].
+            if (checked) toast(applied(getString(R.string.install_lock_name)))
         }
     }
 
@@ -487,12 +488,19 @@ class MainActivity : AppCompatActivity() {
      * The default handler is applied straight away regardless, because it takes
      * nothing away — it only decides which of the browsers already on the phone
      * inherits a tapped link.
+     *
+     * [BrowserSettings.Choice.ALL] is the widest of the three and so is the one
+     * direction with nothing deferred: [restoreNewlyAllowed] above has already
+     * brought back whatever a narrower choice had hidden, by the time the toast
+     * would appear. See [applied].
      */
     private fun selectBrowsers(choice: BrowserSettings.Choice) {
         browsers.choice = choice
         lifecycleScope.launch {
             withContext(Dispatchers.IO) { restoreNewlyAllowed() }
-            toast(applied(getString(BrowserChoice.of(choice).title)))
+            if (choice != BrowserSettings.Choice.ALL) {
+                toast(applied(getString(BrowserChoice.of(choice).title)))
+            }
             renderBrowsers()
         }
     }
@@ -617,8 +625,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
-     * It says the same sentence every other control on this screen says, and it
-     * used to say nothing at all.
+     * It says the same sentence every other control on this screen says, for the
+     * two choices that have something to say it about, and it used to say
+     * nothing at all.
      *
      * The old reasoning was that the radio moving is feedback enough, and that
      * "applied" would be a lie because the choice waits for the lock. The first
@@ -626,12 +635,18 @@ class MainActivity : AppCompatActivity() {
      * it: a tick that moves says the app heard you, not that the phone has
      * changed. The second half is answered by saying *when* rather than by
      * saying nothing.
+     *
+     * [DisconnectSettings.Mode.ONLINE] is the exception, because it is the state
+     * an unlocked phone is already in: [applyDisconnect] cancels the curfew here
+     * and now, and there is no later moment for the lock to bring. See
+     * [applied].
      */
     private fun selectDisconnect(mode: DisconnectSettings.Mode) {
         if (mode == disconnect.mode) return
         disconnect.mode = mode
         renderDisconnect()
         applyDisconnect()
+        if (mode == DisconnectSettings.Mode.ONLINE) return
         DisconnectChoice.entries.firstOrNull { it.mode == mode }
             ?.let { toast(applied(getString(it.title))) }
     }
@@ -1017,7 +1032,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
-     * Both directions apply as soon as the switch moves.
+     * Both directions apply as soon as the switch moves, and only one of them
+     * says so.
      *
      * Switching one off used to ask first, because it used to uninstall the
      * apps the option allowed the moment it was answered. Removal follows the
@@ -1025,7 +1041,9 @@ class MainActivity : AppCompatActivity() {
      * dialog was warning about something that no longer happens — and its
      * second sentence, that switching back on does not bring the apps back, had
      * stopped being true as well: [restoreNewlyAllowed] unhides what the policy
-     * names again. The toast says where the change actually lands.
+     * names again — which is also why switching one *on* now says nothing: the
+     * restore has already run by then, so there is no later moment to name. See
+     * [applied].
      */
     private fun applyOption(option: PolicyOption, enabled: Boolean) {
         lifecycleScope.launch {
@@ -1053,7 +1071,7 @@ class MainActivity : AppCompatActivity() {
             // this particular change lands.
             if (enabled) restoreNewlyAllowed()
             Log.i(TAG, "Option ${option.id} set to $enabled; ${sweep()} packages removed")
-            toast(applied(option.displayName(Languages.current())))
+            if (!enabled) toast(applied(option.displayName(Languages.current())))
             renderOptions()
         }
     }
@@ -1098,15 +1116,26 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
-     * What to tell the parent after a change: one sentence, for every control on
-     * this screen.
+     * What to tell the parent after a change that has to wait for the lock.
      *
-     * It used to be three, distinguishing what went now from what waited. That
-     * distinction is not one a parent has to hold: nothing here lands until the
-     * phone is locked, which is what the owner watched on the reference phone on
-     * 2026-08-14 with the streaming option and Disney+. So the screen says the
-     * one thing that is true of all of it, and
+     * It used to be three sentences, distinguishing what went now from what
+     * waited. That distinction is not one a parent has to hold, so the screen
+     * says the one thing that is true of everything it waits for — a tightening
+     * really does wait, which is what the owner watched on the reference phone
+     * on 2026-08-14 with the streaming option and Disney+ — and
      * [R.string.settings_take_effect_at_lock] above the controls says why.
+     *
+     * **It is not said in the loosening direction, as of 2026-08-24, because
+     * there it is false.** Every control here has a widest setting — *Sadly
+     * always online*, *Allow the browsers*, *No other apps* switched off, an
+     * option switched on — and that setting is the one an unlocked phone is
+     * already in. Choosing it either changes nothing that was not already true
+     * or is honoured on the spot by [restoreNewlyAllowed] and
+     * [applyDisconnect]; either way there is no later moment for the lock to
+     * bring, and a phone that has never been locked would be told to wait for a
+     * lock that may never come. Those callers say nothing instead, and let the
+     * switch or the radio be the acknowledgement, which is what they were doing
+     * before this sentence existed.
      *
      * The removal count is gone with them. It could only ever have read zero
      * from here — [sweep] declines while unlocked, and unlocked is the only

@@ -885,6 +885,22 @@ is still open.**
   sizes it today, so it takes whatever `textAppearanceTitleLarge` the Material
   theme gives it.
 
+### 12d. "Applied after lock" is no longer said in the loosening direction
+
+**Done 2026-08-24**, asked for by the owner from use: the sentence appeared on
+*Sadly always online*, on *Allow the browsers*, on *No other apps* switched off
+and on an option switched on, and on all four it is false — those are the
+settings an unlocked phone is already in. The reasoning is in
+[design-decisions](design-decisions.md#narrowed-on-2026-08-15-only-what-a-switch-could-change-waits),
+next to the argument for the sentence existing at all.
+
+Watched on the API 36 emulator, both directions of all four controls: option off
+toasts and on is silent, install lock on toasts and off is silent, curfew toasts
+and *Sadly always online* is silent, *herald mono only* toasts and *Allow the
+browsers* is silent. What was **not** checked is a phone — nothing here depends
+on device-owner state, but the emulator is not a device owner, so the toast
+paths ran with the enforcement behind them doing nothing.
+
 ### 12c. Comet and Via, and what any new browser has to be checked against
 
 **Both were cleared by the owner on 2026-08-19 and are now on both channels.**
