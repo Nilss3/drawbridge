@@ -40,7 +40,7 @@
     <string name="install_lock_heading">App-installaties</string>
     <string name="install_lock_name">Geen andere apps</string>
     <string name="install_lock_description">Na de vergrendeling kan geen enkele nieuwe app geïnstalleerd worden. De apps die op dat moment op de telefoon staan blijven gewoon updaten.</string>
-    <string name="install_lock_info">Snoei je apps voor je vergrendelt en hou enkel de apps die je op je telefoon wil. Na de vergrendeling worden geen nieuwe apps meer toegelaten. Updates van bestaande apps komen wel door, dus hou de Play Store om bij te werken.\n\nherald en alles wat het beleid verder vereist zijn de uitzondering. Die installeert drawbridge zelf, vanuit het ondertekende beleid dat je gekozen hebt, vergrendeld of niet.\n\nLaat dit uit als je twijfelt. Een app blokkeren kan later altijd nog; een telefoon waarop niemand iets kan installeren is een telefoon waarvoor men bij jou moet aankloppen.</string>
+    <string name="install_lock_info">Snoei je apps voor je vergrendelt en hou enkel de apps die je op je telefoon wil. Na de vergrendeling worden geen nieuwe apps meer toegelaten. Updates van bestaande apps komen wel door, dus hou de Play Store om bij te werken.\n\nWil je geen browser, kies dan die optie hierboven. Anders blijft herald geïnstalleerd.\n\nLaat dit uit als je twijfelt. Een app blokkeren kan later altijd nog; een telefoon waarop niemand iets kan installeren is een telefoon waarvoor men bij jou moet aankloppen.</string>
 
     <string name="options_heading">Opties</string>
     <string name="options_explanation">drawbridge laat, wanneer het ontgrendeld is, alles hieronder toe. Wil je sommige van deze ‘diensten’ niet, en terecht, verbied ze dan en vergrendel drawbridge.</string>

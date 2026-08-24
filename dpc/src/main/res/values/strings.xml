@@ -61,7 +61,7 @@
     <string name="install_lock_heading">App installs</string>
     <string name="install_lock_name">No other apps</string>
     <string name="install_lock_description">After the lock, no new app can be installed. The apps that are on the phone at that moment go on updating as normal.</string>
-    <string name="install_lock_info">Before locking, prune down your apps and keep only those you want to have on your phone. After locking, no new apps will be allowed. Updates of existing apps do come through, so keep the Play Store to update.\n\nherald and anything else the policy requires are the exception. drawbridge installs those itself, from the signed policy you chose, and they arrive whether the phone is locked or not.\n\nLeave this off if you are not sure. A blocked app can always be blocked later; an app nobody can install is a phone somebody has to come to you about.</string>
+    <string name="install_lock_info">Before locking, prune down your apps and keep only those you want to have on your phone. After locking, no new apps will be allowed. Updates of existing apps do come through, so keep the Play Store to update.\n\nIf you want no browser, pick that option above. Otherwise, herald will remain installed.\n\nLeave this off if you are not sure. A blocked app can always be blocked later; an app nobody can install is a phone somebody has to come to you about.</string>
 
     <string name="options_heading">Options</string>
     <string name="options_explanation">drawbridge when unlocked allows all of the following. If you don\'t want some of these \u2018services\u2019, and rightfully so, disallow them and lock drawbridge.</string>
