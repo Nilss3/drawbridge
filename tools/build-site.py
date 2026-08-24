@@ -576,41 +576,54 @@ INSTALL = {
             "Update a device that has drawbridge",
         ],
 
-        new_intro="The easiest case: there is nothing on the phone to move off it, and nothing you chose gets uninstalled. The one thing to get right is the account — Android only hands over this level of control to a phone with no account on it, so skip the sign-in during setup and sign in at the end instead.",
+        new_intro="The easiest case: there is nothing on the phone to move off it, and nothing you chose gets uninstalled. The one thing to get right is the accounts — Android only hands over this level of control to a phone with no account left on it, so skip the sign-in during setup and sign in at the end instead.",
         new_steps=[
-            "<strong>Go through Android's setup and skip signing in.</strong> If the phone is already past setup with an account on it, remove it: Settings → Passwords, passkeys &amp; accounts.",
+            "<strong>Go through Android's setup and skip signing in.</strong> If the phone is already past setup with accounts on it, remove them — see the flow for a phone in use, next to this one.",
+        ],
+        new_steps_2=[
             "Enable Developer Options (tap the build number in Settings → About phone several times) and turn on <strong>USB debugging</strong>.",
+        ],
+        new_steps_3=[
             "Connect the phone to a computer with a USB cable, and run the installer.",
-            "Sign in with a Google (or other) account.",
         ],
         new_note="Apps the policy never allows still go, within minutes of the install. On a phone this new that means the manufacturer's preloaded social apps and games, and nothing you put there.",
 
         used_steps=[
             "<strong>Move what you want to keep off the phone.</strong> Export bookmarks, save photos out of an app that holds them, write down what you are signed in to. The warning above says what goes.",
-            "<strong>Remove every account from the phone.</strong> Settings → Passwords, passkeys &amp; accounts. Android only hands over this level of control to a phone with no account on it. You sign back in at the end.",
+            "<strong>Remove every account from the phone.</strong> Settings → Passwords, passkeys &amp; accounts. <strong>Not only the Google ones.</strong> WhatsApp and Signal are accounts on this screen too, and they have to go with the rest — Android hands over this level of control only to a phone with nothing left in that list. <strong>Back up first what you would not want to lose</strong>: WhatsApp's chat backup and Signal's own backup are both made from inside those apps, before you remove the account here. You put the accounts back at the end.",
+        ],
+        used_steps_2=[
             "<strong>Delete the Private Space, if the phone has one.</strong> Settings → Security &amp; privacy → Private Space → Delete private space. Android refuses this level of control while any second profile exists, and a Private Space is hidden — it does not appear in the user switcher, and it needs its own PIN. Any other extra user is in Settings → System → Multiple users.",
             "Enable Developer Options (tap the build number in Settings → About phone several times) and turn on <strong>USB debugging</strong>.",
+        ],
+        used_steps_3=[
             "Connect the phone to a computer with a USB cable, and run the installer.",
-            "Sign back in with a Google (or other) account.",
         ],
 
-        update_intro="<strong>The phone can do this by itself.</strong> drawbridge checks the signed policy for a newer build and offers it on the phone — while it is still locked, without your key and without a cable. The cable is the fallback for when that will not go through.",
-        inapp_h3="From the app on the phone",
-        inapp_steps=[
-            "Open <strong>drawbridge</strong> on the phone. When a newer build is available the screen says so and offers it. The phone can stay locked, and you do not need your key.",
-            "Tap the notice, then <strong>pause Play Protect</strong> for a minute. It blocks an app that installs other apps, which is what drawbridge is on this phone — and it cannot tell that you are the one who chose that.",
-            "Tap <strong>Install the update</strong>, then turn Play Protect back on.",
+        accounts_shots_title="Removing the accounts",
+        accounts_shots=[
+            "Settings → Passwords, passkeys and accounts.",
+            "Every account in the list, not only Google: Signal and WhatsApp are here too.",
+            "Open each one and tap Remove account.",
         ],
-        inapp_note="This costs nothing else: the phone stays locked and your key stays your key. herald and the block lists update on their own in the background and need none of it.",
-        cable_h3="Over the cable",
-        cable_intro="For a phone that will not take the update from the app. Same page and same button as a fresh install — it notices drawbridge is already there and updates it instead. Nothing is reset and nothing on the phone is lost.",
+        devopts_shots_title="Turning on USB debugging",
+        devopts_shots=[
+            "Settings → About phone → Device identifiers.",
+            "Tap Build number seven times.",
+            "Settings → System → Developer options.",
+            "Turn on USB debugging.",
+        ],
+
+        accounts_back="<strong>When the installer has finished, sign back in.</strong> Settings → Passwords, passkeys &amp; accounts → Add account, for the Google account and for WhatsApp and Signal. Restore their backups from inside those apps.",
+
+        update_intro="<strong>There is an update button in drawbridge itself.</strong> Open the app on the phone and follow the instructions it gives you — it shows you what to do, with pictures. The phone can stay locked, and you do not need your key.",
+        cable_intro="If that did not work, you can do it through the USB cable instead:",
         cable_steps=[
-            "On the phone, open <strong>drawbridge</strong> and enter your key to unlock it. That is what hands USB debugging back.",
+            "Unlock drawbridge on the phone with your key.",
             "Turn <strong>USB debugging</strong> back on: Settings → System → Developer options.",
-            "Plug the phone into the computer and run the installer.",
-            "<strong>Lock drawbridge again</strong> on the phone, and write down the new key.",
+            "Plug the phone in and press the button below.",
         ],
-        cable_note="Locking mints a fresh key, so your old one stops working. The cable always ends with a new key to write down; the update from the app does not.",
+        cable_note="Unlocking discards your key, and locking the phone again mints a new one to write down. That is the cost of the cable, and the reason to try the button in the app first.",
 
         coming_title="Install from your browser",
         coming_text="Install drawbridge straight from this site over USB, with no software to set up. Needs Chrome or Edge.",
@@ -643,41 +656,54 @@ INSTALL = {
             "Een toestel met drawbridge bijwerken",
         ],
 
-        new_intro="Het eenvoudigste geval: er staat nog niets op de telefoon om weg te zetten, en er verdwijnt niets wat jij gekozen hebt. Het enige waar het op aankomt is het account — Android geeft dit niveau van controle enkel weg aan een toestel waar geen account op staat, dus sla het aanmelden over tijdens de setup en meld je pas op het einde aan.",
+        new_intro="Het eenvoudigste geval: er staat nog niets op de telefoon om weg te zetten, en er verdwijnt niets wat jij gekozen hebt. Het enige waar het op aankomt zijn de accounts — Android geeft dit niveau van controle enkel weg aan een toestel waar geen enkel account meer op staat, dus sla het aanmelden over tijdens de setup en meld je pas op het einde aan.",
         new_steps=[
-            "<strong>Doorloop de setup van Android en sla het aanmelden over.</strong> Staat de telefoon al voorbij de setup met een account erop, verwijder dat dan: Instellingen → Wachtwoorden, toegangssleutels en accounts.",
+            "<strong>Doorloop de setup van Android en sla het aanmelden over.</strong> Staat de telefoon al voorbij de setup met accounts erop, verwijder die dan — zie de stappen voor een toestel in gebruik, hiernaast.",
+        ],
+        new_steps_2=[
             "Activeer Ontwikkelaarsopties (tik meerdere keren op het buildnummer in Instellingen → Over de telefoon) en schakel <strong>USB-debugging</strong> in.",
+        ],
+        new_steps_3=[
             "Verbind de telefoon met een computer via een USB-kabel, en voer de installer uit.",
-            "Meld je aan met een Google-account (of een ander account).",
         ],
         new_note="Apps die het beleid nooit toelaat verdwijnen ook hier, binnen enkele minuten na de installatie. Op een telefoon die zo nieuw is zijn dat de vooraf geïnstalleerde sociale apps en games van de fabrikant, en niets wat jij erop gezet hebt.",
 
         used_steps=[
             "<strong>Zet weg wat je wil bewaren.</strong> Exporteer bladwijzers, haal foto's uit een app die ze vasthoudt, noteer waar je aangemeld bent. De waarschuwing hierboven zegt wat er verdwijnt.",
-            "<strong>Verwijder elk account van de telefoon.</strong> Instellingen → Wachtwoorden, toegangssleutels en accounts. Android geeft dit niveau van controle enkel weg aan een toestel waar geen account op staat. Op het einde meld je je weer aan.",
+            "<strong>Verwijder elk account van de telefoon.</strong> Instellingen → Wachtwoorden, toegangssleutels en accounts. <strong>Niet alleen die van Google.</strong> WhatsApp en Signal staan ook als account in die lijst, en ze moeten mee weg — Android geeft dit niveau van controle enkel weg aan een toestel waar niets meer in die lijst staat. <strong>Maak eerst een back-up van wat je niet wil verliezen</strong>: de chatback-up van WhatsApp en de eigen back-up van Signal maak je vanuit die apps zelf, vóór je hier het account verwijdert. Op het einde zet je de accounts terug.",
+        ],
+        used_steps_2=[
             "<strong>Verwijder de privéruimte, als de telefoon er een heeft.</strong> Instellingen → Beveiliging en privacy → Privéruimte → Privéruimte verwijderen. Android weigert dit niveau van controle zolang er een tweede profiel bestaat, en een privéruimte is verborgen — ze staat niet in de gebruikerswissel en heeft een eigen pincode. Andere extra gebruikers staan in Instellingen → Systeem → Meerdere gebruikers.",
             "Activeer Ontwikkelaarsopties (tik meerdere keren op het buildnummer in Instellingen → Over de telefoon) en schakel <strong>USB-debugging</strong> in.",
+        ],
+        used_steps_3=[
             "Verbind de telefoon met een computer via een USB-kabel, en voer de installer uit.",
-            "Meld je weer aan met een Google-account (of een ander account).",
         ],
 
-        update_intro="<strong>De telefoon kan dit zelf.</strong> Drawbridge kijkt in het ondertekende beleid of er een nieuwere build is en biedt die aan op de telefoon — terwijl ze vergrendeld blijft, zonder je sleutel en zonder kabel. De kabel is de terugvaloptie voor wanneer dat niet lukt.",
-        inapp_h3="Vanuit de app op de telefoon",
-        inapp_steps=[
-            "Open <strong>drawbridge</strong> op de telefoon. Is er een nieuwere build, dan zegt het scherm dat en biedt het ze aan. De telefoon mag vergrendeld blijven, en je hebt je sleutel niet nodig.",
-            "Tik op de melding en <strong>zet Play Protect even uit</strong>. Het blokkeert een app die andere apps installeert, en dat is precies wat drawbridge op deze telefoon is — het kan niet zien dat jij dat zelf gekozen hebt.",
-            "Tik op <strong>De update installeren</strong> en zet Play Protect daarna weer aan.",
+        accounts_shots_title="De accounts verwijderen",
+        accounts_shots=[
+            "Instellingen → Wachtwoorden, toegangssleutels en accounts.",
+            "Elk account in de lijst, niet alleen Google: Signal en WhatsApp staan er ook.",
+            "Open ze één voor één en tik op Account verwijderen.",
         ],
-        inapp_note="Verder kost dit niets: de telefoon blijft vergrendeld en je sleutel blijft je sleutel. Herald en de blocklists werken zichzelf op de achtergrond bij en hebben hier niets van nodig.",
-        cable_h3="Via de kabel",
-        cable_intro="Voor een telefoon die de update niet via de app aanneemt. Zelfde pagina en zelfde knop als bij een verse installatie — die merkt dat drawbridge er al staat en werkt ze bij in plaats van opnieuw in te richten. Er wordt niets teruggezet en er gaat niets verloren.",
+        devopts_shots_title="USB-debugging inschakelen",
+        devopts_shots=[
+            "Instellingen → Over de telefoon → Apparaat-ID's.",
+            "Tik zeven keer op het buildnummer.",
+            "Instellingen → Systeem → Ontwikkelaarsopties.",
+            "Schakel USB-debugging in.",
+        ],
+
+        accounts_back="<strong>Is de installer klaar, meld je dan weer aan.</strong> Instellingen → Wachtwoorden, toegangssleutels en accounts → Account toevoegen, voor het Google-account en voor WhatsApp en Signal. Hun back-ups zet je terug vanuit die apps zelf.",
+
+        update_intro="<strong>In drawbridge zelf zit een updateknop.</strong> Open de app op de telefoon en volg de instructies die ze geeft — ze toont met beelden wat je moet doen. De telefoon mag vergrendeld blijven, en je hebt je sleutel niet nodig.",
+        cable_intro="Lukte dat niet, dan kan het ook via de USB-kabel:",
         cable_steps=[
-            "Open <strong>drawbridge</strong> op de telefoon en voer je sleutel in om te ontgrendelen. Dat is wat USB-debugging teruggeeft.",
+            "Ontgrendel drawbridge op de telefoon met je sleutel.",
             "Schakel <strong>USB-debugging</strong> weer in: Instellingen → Systeem → Ontwikkelaarsopties.",
-            "Verbind de telefoon met de computer en voer de installer uit.",
-            "<strong>Vergrendel drawbridge opnieuw</strong> op de telefoon, en schrijf de nieuwe sleutel op.",
+            "Verbind de telefoon en druk op de knop hieronder.",
         ],
-        cable_note="Bij het vergrendelen wordt een verse sleutel gemaakt, dus je oude werkt niet meer. Via de kabel eindig je altijd met een nieuwe sleutel om op te schrijven; bij de update vanuit de app niet.",
+        cable_note="Bij het ontgrendelen vervalt je sleutel, en bij het opnieuw vergrendelen wordt er een nieuwe gemaakt die je moet opschrijven. Dat is wat de kabel kost, en de reden om eerst de knop in de app te proberen.",
 
         coming_title="Installeren vanuit uw browser",
         coming_text="Installeer drawbridge rechtstreeks vanaf deze site via USB, zonder software op te zetten. Vereist Chrome of Edge.",
@@ -710,41 +736,54 @@ INSTALL = {
             "Mettre à jour un appareil qui a drawbridge",
         ],
 
-        new_intro="Le cas le plus simple : il n'y a rien à mettre de côté sur le téléphone, et rien que vous ayez choisi n'est désinstallé. La seule chose à ne pas rater, c'est le compte — Android n'accorde ce niveau de contrôle qu'à un téléphone ne portant aucun compte, alors sautez la connexion pendant la configuration et connectez-vous à la fin.",
+        new_intro="Le cas le plus simple : il n'y a rien à mettre de côté sur le téléphone, et rien que vous ayez choisi n'est désinstallé. La seule chose à ne pas rater, ce sont les comptes — Android n'accorde ce niveau de contrôle qu'à un téléphone ne portant plus aucun compte, alors sautez la connexion pendant la configuration et connectez-vous à la fin.",
         new_steps=[
-            "<strong>Suivez la configuration d'Android et sautez la connexion.</strong> Si le téléphone a déjà terminé sa configuration avec un compte dessus, retirez-le : Paramètres → Mots de passe, clés d'accès et comptes.",
+            "<strong>Suivez la configuration d'Android et sautez la connexion.</strong> Si le téléphone a déjà terminé sa configuration avec des comptes dessus, retirez-les — voyez la marche à suivre pour un appareil déjà utilisé, juste à côté.",
+        ],
+        new_steps_2=[
             "Activez les options pour développeurs (tapez plusieurs fois sur le numéro de build dans Paramètres → À propos du téléphone) et activez le <strong>débogage USB</strong>.",
+        ],
+        new_steps_3=[
             "Connectez le téléphone à un ordinateur avec un câble USB, et lancez l'installeur.",
-            "Connectez-vous avec un compte Google (ou un autre).",
         ],
         new_note="Les applications que la politique n'autorise jamais disparaissent ici aussi, dans les minutes qui suivent l'installation. Sur un téléphone aussi neuf, ce sont les réseaux sociaux et les jeux préinstallés par le fabricant, et rien que vous y ayez mis.",
 
         used_steps=[
             "<strong>Mettez de côté ce que vous voulez garder.</strong> Exportez vos favoris, sortez les photos d'une application qui les détient, notez où vous êtes connecté. L'avertissement ci-dessus dit ce qui disparaît.",
-            "<strong>Retirez tous les comptes du téléphone.</strong> Paramètres → Mots de passe, clés d'accès et comptes. Android n'accorde ce niveau de contrôle qu'à un téléphone ne portant aucun compte. Vous vous reconnecterez à la fin.",
+            "<strong>Retirez tous les comptes du téléphone.</strong> Paramètres → Mots de passe, clés d'accès et comptes. <strong>Pas seulement ceux de Google.</strong> WhatsApp et Signal figurent aussi comme comptes dans cette liste, et ils doivent partir avec les autres — Android n'accorde ce niveau de contrôle qu'à un téléphone dont cette liste est vide. <strong>Sauvegardez d'abord ce que vous ne voudriez pas perdre</strong> : la sauvegarde des conversations WhatsApp et celle de Signal se font depuis ces applications elles-mêmes, avant de retirer le compte ici. Vous remettrez les comptes à la fin.",
+        ],
+        used_steps_2=[
             "<strong>Supprimez l'espace privé, si le téléphone en a un.</strong> Paramètres → Sécurité et confidentialité → Espace privé → Supprimer l'espace privé. Android refuse ce niveau de contrôle tant qu'un second profil existe, et un espace privé est masqué — il n'apparaît pas dans le sélecteur d'utilisateur et possède son propre code PIN. Les autres utilisateurs supplémentaires se trouvent dans Paramètres → Système → Utilisateurs multiples.",
             "Activez les options pour développeurs (tapez plusieurs fois sur le numéro de build dans Paramètres → À propos du téléphone) et activez le <strong>débogage USB</strong>.",
+        ],
+        used_steps_3=[
             "Connectez le téléphone à un ordinateur avec un câble USB, et lancez l'installeur.",
-            "Reconnectez-vous avec un compte Google (ou un autre).",
         ],
 
-        update_intro="<strong>Le téléphone peut le faire tout seul.</strong> drawbridge consulte la politique signée pour voir s'il existe une version plus récente et la propose sur le téléphone — pendant qu'il reste verrouillé, sans votre clé et sans câble. Le câble est le recours pour les cas où cela ne passe pas.",
-        inapp_h3="Depuis l'application sur le téléphone",
-        inapp_steps=[
-            "Ouvrez <strong>drawbridge</strong> sur le téléphone. S'il existe une version plus récente, l'écran le dit et la propose. Le téléphone peut rester verrouillé, et votre clé n'est pas nécessaire.",
-            "Tapez sur l'avis, puis <strong>mettez Play Protect en pause</strong> une minute. Il bloque une application qui en installe d'autres, ce qu'est précisément drawbridge sur ce téléphone — et il ne peut pas voir que c'est vous qui l'avez voulu.",
-            "Tapez sur <strong>Installer la mise à jour</strong>, puis réactivez Play Protect.",
+        accounts_shots_title="Retirer les comptes",
+        accounts_shots=[
+            "Paramètres → Mots de passe, clés d'accès et comptes.",
+            "Chaque compte de la liste, pas seulement Google : Signal et WhatsApp y sont aussi.",
+            "Ouvrez-les un par un et tapez sur Supprimer le compte.",
         ],
-        inapp_note="Cela ne coûte rien d'autre : le téléphone reste verrouillé et votre clé reste votre clé. herald et les listes de blocage se mettent à jour d'eux-mêmes en arrière-plan et n'ont besoin de rien de tout cela.",
-        cable_h3="Par le câble",
-        cable_intro="Pour un téléphone qui n'accepte pas la mise à jour depuis l'application. Même page et même bouton que pour une installation neuve : il détecte que drawbridge est déjà là et le met à jour au lieu de le reconfigurer. Rien n'est réinitialisé et rien n'est perdu.",
+        devopts_shots_title="Activer le débogage USB",
+        devopts_shots=[
+            "Paramètres → À propos du téléphone → Identifiants de l'appareil.",
+            "Tapez sept fois sur le numéro de build.",
+            "Paramètres → Système → Options pour développeurs.",
+            "Activez le débogage USB.",
+        ],
+
+        accounts_back="<strong>Une fois l'installeur terminé, reconnectez-vous.</strong> Paramètres → Mots de passe, clés d'accès et comptes → Ajouter un compte, pour le compte Google comme pour WhatsApp et Signal. Leurs sauvegardes se restaurent depuis ces applications elles-mêmes.",
+
+        update_intro="<strong>drawbridge contient lui-même un bouton de mise à jour.</strong> Ouvrez l'application sur le téléphone et suivez les instructions qu'elle donne — elle montre en images ce qu'il faut faire. Le téléphone peut rester verrouillé, et votre clé n'est pas nécessaire.",
+        cable_intro="Si cela n'a pas fonctionné, vous pouvez le faire par le câble USB :",
         cable_steps=[
-            "Sur le téléphone, ouvrez <strong>drawbridge</strong> et saisissez votre clé pour le déverrouiller. C'est ce qui rend le débogage USB.",
+            "Déverrouillez drawbridge sur le téléphone avec votre clé.",
             "Réactivez le <strong>débogage USB</strong> : Paramètres → Système → Options pour développeurs.",
-            "Branchez le téléphone à l'ordinateur et lancez l'installeur.",
-            "<strong>Verrouillez de nouveau drawbridge</strong> sur le téléphone, et notez la nouvelle clé.",
+            "Branchez le téléphone et appuyez sur le bouton ci-dessous.",
         ],
-        cable_note="Le verrouillage forge une nouvelle clé : l'ancienne cesse donc de fonctionner. Par le câble, vous terminez toujours avec une nouvelle clé à noter ; par la mise à jour depuis l'application, non.",
+        cable_note="Le déverrouillage annule votre clé, et le reverrouillage en forge une nouvelle à noter. C'est ce que coûte le câble, et la raison d'essayer d'abord le bouton dans l'application.",
 
         coming_title="Installer depuis votre navigateur",
         coming_text="Installez drawbridge directement depuis ce site par USB, sans logiciel à mettre en place. Nécessite Chrome ou Edge.",
@@ -762,16 +801,86 @@ INSTALL = {
 }
 
 
+# Screenshots of the two settings screens the preparation runs through.
+#
+# **Pictures because the words were not enough and could not be made enough.**
+# Both steps are a path through Settings, and Settings is where every
+# manufacturer diverges: the entry a reader is looking for is worded differently
+# on a Motorola than on a Nothing, sits at a different depth, and on the accounts
+# screen the important part is not a path at all but *what the list contains* --
+# that Signal and WhatsApp are accounts on it, which no wording makes as obvious
+# as one look at the screen does.
+#
+# The arrows are drawn on the source images rather than by CSS, so they survive
+# being saved, printed, or looked at with images scaled. The originals are the
+# PNG and JPEG screenshots in images/, taken on the Moto G15; site copies are
+# 480px wide WebP, and every one is padded to the same aspect ratio so the strip
+# does not come out ragged:
+#
+#   magick images/accounts-1.png -resize 480x -quality 80 \
+#       site/assets/img/step-accounts-1.webp
+#   magick images/developer-options-2.jpg -background white -gravity center \
+#       -extent 1080x2392 -resize 480x -quality 80 \
+#       site/assets/img/step-devopts-2.webp
+#
+# Only developer-options-2 needed the padding; it was cropped shorter than the
+# rest at 1080x1921, and everything else is already 9:20.
+
+SHOT_SETS = dict(
+    accounts=("step-accounts-1.webp", "step-accounts-2.webp", "step-accounts-3.webp"),
+    devopts=(
+        "step-devopts-1.webp",
+        "step-devopts-2.webp",
+        "step-devopts-3.webp",
+        "step-devopts-4.webp",
+    ),
+)
+
+
+def shot_strip(c: dict, which: str, only: tuple = ()) -> str:
+    """A row of phone screenshots with a caption under each.
+
+    `only` takes a slice of the set by 1-based position, for the update flow,
+    which needs the last two pictures of the developer-options walk and none of
+    the ones about switching Developer Options on in the first place -- a phone
+    that already has drawbridge went through that at install time.
+    """
+    files = SHOT_SETS[which]
+    captions = c[f"{which}_shots"]
+    picked = [(files[i - 1], captions[i - 1]) for i in only] if only else list(zip(files, captions))
+
+    # Wrapped in a link to the image itself: on a phone these sit two to a row at
+    # about 156px, which is enough to see where the arrow points and not enough
+    # to read the setting under it. A plain <a> to the file is "tap to enlarge"
+    # for nothing -- no script, no lightbox, and it still works from a saved page.
+    figures = "\n".join(
+        f"""          <figure>
+            <a href="/assets/img/{f}">
+              <img src="/assets/img/{f}" alt="{caption}" width="480" height="1063"
+                   loading="lazy" decoding="async" />
+            </a>
+            <figcaption>{caption}</figcaption>
+          </figure>"""
+        for f, caption in picked
+    )
+    return f"""        <div class="shot-strip" data-count="{len(picked)}">
+          <p class="shot-strip-title">{c[f'{which}_shots_title']}</p>
+          <div class="shot-strip-row">
+{figures}
+          </div>
+        </div>"""
+
+
 def render_install(lang: str) -> str:
     """The install guide, with the three situations behind one picker.
 
     **Three flows rather than one, as of 2026-08-24**, because the page had been
     written for exactly one of them: a phone somebody has been using. A new phone
     has no accounts to strip and nothing to rescue, and its whole preparation is
-    "do not sign in during setup" — advice the old page could not give, because
+    "do not sign in during setup" -- advice the old page could not give, because
     it was busy telling everyone to remove accounts it assumed were there. A
     phone that already has drawbridge does not want any of this: it wants to be
-    told the app updates itself.
+    told the app has a button.
 
     **What the picker does not hide is the caveat about apps disappearing.** It
     is sharpest for a phone in use and nearly moot on a new one, so by shape it
@@ -780,6 +889,14 @@ def render_install(lang: str) -> str:
     warning two thirds of readers never see. It stays above the picker; the
     in-use flow's first step points back up at it, and the new-device flow says
     in a footnote why it barely applies there.
+
+    **The steps stop at the cable, and putting the accounts back comes after the
+    installer**, which is where it happens: the phone has to be account-less for
+    the install itself, so an instruction to sign in placed above the button is
+    an instruction to undo the step before it. Everything that used to follow
+    under "After setup" is gone -- the installer page carries it, at the moment
+    the install finishes, which is when a parent is looking at a phone rather
+    than at this page.
 
     **The picker is three radio buttons and a sibling selector**, so this page
     still runs no script -- see [render_usb_installer] for the one page on this
@@ -803,44 +920,47 @@ def render_install(lang: str) -> str:
           </div>
         </div>"""
 
-    def after_setup() -> str:
-        return f"""<h3>{c['after_h2']}</h3>
-        {steps_html(c['after_steps'])}
-        <p class="footnote">{c['after_note']}</p>"""
-
     labels = c["flow_labels"]
     tabs = "\n".join(
         f'          <label for="flow-{key}">{label}</label>'
         for key, label in zip(("new", "used", "update"), labels)
     )
 
+    new_n = len(c["new_steps"])
+    used_n = len(c["used_steps"])
+
     panels = f"""        <section class="flow-panel" id="panel-new" aria-labelledby="flow-new-h">
           <h2 id="flow-new-h" class="flow-panel-title">{labels[0]}</h2>
           <p>{c['new_intro']}</p>
           {steps_html(c['new_steps'])}
+{shot_strip(c, "accounts")}
+          {steps_html(c['new_steps_2'], start=new_n + 1)}
+{shot_strip(c, "devopts")}
+          {steps_html(c['new_steps_3'], start=new_n + 1 + len(c['new_steps_2']))}
           <p class="footnote">{c['new_note']}</p>
           {installer_callout()}
-          {after_setup()}
+          <p>{c['accounts_back']}</p>
         </section>
 
         <section class="flow-panel" id="panel-used" aria-labelledby="flow-used-h">
           <h2 id="flow-used-h" class="flow-panel-title">{labels[1]}</h2>
           {steps_html(c['used_steps'])}
+{shot_strip(c, "accounts")}
+          {steps_html(c['used_steps_2'], start=used_n + 1)}
+{shot_strip(c, "devopts")}
+          {steps_html(c['used_steps_3'], start=used_n + 1 + len(c['used_steps_2']))}
           {installer_callout()}
-          {after_setup()}
+          <p>{c['accounts_back']}</p>
         </section>
 
         <section class="flow-panel" id="panel-update" aria-labelledby="flow-update-h">
           <h2 id="flow-update-h" class="flow-panel-title">{labels[2]}</h2>
           <p>{c['update_intro']}</p>
-          <h3>{c['inapp_h3']}</h3>
-          {steps_html(c['inapp_steps'])}
-          <p class="footnote">{c['inapp_note']}</p>
-          <h3>{c['cable_h3']}</h3>
           <p>{c['cable_intro']}</p>
           {steps_html(c['cable_steps'])}
-          <p class="footnote">{c['cable_note']}</p>
+{shot_strip(c, "devopts", only=(3, 4))}
           {installer_callout()}
+          <p class="footnote">{c['cable_note']}</p>
         </section>"""
 
     body = f"""

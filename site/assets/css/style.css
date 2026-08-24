@@ -380,6 +380,34 @@ code {
    the section headings use, so "which one am I reading" is answerable without
    scrolling back up — the panel repeats its own name as its heading too. */
 .flow-panel { display: none; margin-top: 1.6rem; }
+
+/* Screenshots of the settings screens a step walks through.
+ *
+ * A row on a wide screen, two columns on a phone — four 480px pictures side by
+ * side on a 375px screen is four pictures nobody can read, and one per row
+ * turns a step into a scroll. The arrows are drawn into the images, so nothing
+ * here has to position anything on top of them.
+ */
+.shot-strip { margin: 1.2rem 0 1.4rem; }
+.shot-strip-title { font-weight: 600; font-size: 0.92rem; margin: 0 0 0.7rem; }
+.shot-strip-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.9rem; align-items: start; }
+.shot-strip[data-count="3"] .shot-strip-row { grid-template-columns: repeat(3, 1fr); }
+.shot-strip[data-count="2"] .shot-strip-row { grid-template-columns: repeat(2, 1fr); max-width: 380px; }
+@media (max-width: 640px) {
+  .shot-strip-row,
+  .shot-strip[data-count="3"] .shot-strip-row { grid-template-columns: repeat(2, 1fr); }
+}
+.shot-strip figure { margin: 0; }
+.shot-strip a { display: block; }
+.shot-strip img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+}
+.shot-strip figcaption { margin-top: 0.4rem; font-size: 0.78rem; line-height: 1.35; color: var(--ink-soft); }
 .flow-panel-title { margin-top: 0; }
 #flow-new:checked ~ #panel-new,
 #flow-used:checked ~ #panel-used,
