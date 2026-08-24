@@ -198,13 +198,12 @@ HOME = {
         how_h2="How it works",
         how_p1='You connect the phone to a computer once, over USB, and run the installer. There is no factory reset, and nothing on the phone is erased. This will embed drawbridge on your device. Once installed, just start it. Installing it does uninstall the apps it blocks, so expect those to go. Move anything you want to keep off the phone first.',
         how_p2="Drawbridge relies on a web filter, a block list, and automatic app uninstalls. You don't need an account, and no data leaves your device. As opposed to parental controls or app blockers, there is little to no configuration, it already has everything there to protect you. There is also no workaround.",
-        how_photos_note="The three phones the alpha has run on, photographed with drawbridge locked.",
         how_cta_faq="Read the Q&amp;A",
         how_cta_install="Installation guide",
         devices_h2="On what devices?",
         devices_intro="Drawbridge should work on <strong>all Android devices</strong> running near-stock Android, or with good enterprise support.",
         good_title="Should work well",
-        good_text="Samsung, Motorola, OnePlus, Nothing Phone, Fairphone, Sony, Nokia/HMD, and many more.",
+        good_text="Google Pixel, Samsung, Motorola, OnePlus, Nothing Phone, Fairphone, Sony, Nokia/HMD, the Dumber Mini (LineageOS), and many more.",
         warn_title="May not be supported",
         warn_text="Devices with heavily modified Android: Xiaomi, Oppo, Vivo, Redmi, Realme.",
         see_faq="See our Q&amp;A",
@@ -254,13 +253,12 @@ HOME = {
         how_h2="Hoe het werkt",
         how_p1='Je verbindt de telefoon één keer met een computer via USB en voert de installer uit. Er is geen factory reset nodig, en er wordt niets op de telefoon gewist. Dat installeert drawbridge op je toestel. Eenmaal geïnstalleerd, start je het gewoon op. Bij het installeren verdwijnen wel de apps die drawbridge blokkeert, dus zet eerst weg wat je wil bewaren.',
         how_p2='Drawbridge steunt op een webfilter, een blocklist, en het automatisch verwijderen van apps. Je hebt geen account nodig, en er wordt nooit data van je toestel verzonden. In tegenstelling tot parental controls of app blockers is er nauwelijks tot geen configuratie nodig: alles staat er al klaar om je te beschermen. Er is ook geen workaround.',
-        how_photos_note="De drie telefoons waarop de alpha gedraaid heeft, gefotografeerd met drawbridge vergrendeld.",
         how_cta_faq="Lees de Q&amp;A",
         how_cta_install="Installatiegids",
         devices_h2="Op welke toestellen?",
         devices_intro="Drawbridge zou moeten werken op <strong>alle Android-toestellen</strong> met een bijna-stock Android, of met goede enterprise-ondersteuning.",
         good_title="Zou goed moeten werken",
-        good_text="Samsung, Motorola, OnePlus, Nothing Phone, Fairphone, Sony, Nokia/HMD, en vele andere.",
+        good_text="Google Pixel, Samsung, Motorola, OnePlus, Nothing Phone, Fairphone, Sony, Nokia/HMD, de Dumber Mini (LineageOS), en vele andere.",
         warn_title="Mogelijk niet ondersteund",
         warn_text="Toestellen met sterk aangepaste Android-versies: Xiaomi, Oppo, Vivo, Redmi, Realme.",
         see_faq="Bekijk onze Q&amp;A",
@@ -310,13 +308,12 @@ HOME = {
         how_h2="Comment ça marche",
         how_p1="Vous reliez le téléphone à un ordinateur une seule fois, par USB, et vous lancez l'installeur. Il n'y a aucune réinitialisation, et rien n'est effacé sur le téléphone. Cela installe drawbridge sur votre appareil. Une fois installé, il suffit de le démarrer. L'installation désinstalle en revanche les applications qu'il bloque, mettez donc d'abord de côté ce que vous voulez garder.",
         how_p2="Drawbridge s'appuie sur un filtre web, une liste de blocage, et la désinstallation automatique des applications. Aucun compte n'est nécessaire, et aucune donnée ne quitte votre appareil. Contrairement aux contrôles parentaux ou aux bloqueurs d'applications, il n'y a que peu, voire aucune configuration à faire : tout est déjà en place pour vous protéger. Il n'existe pas non plus de moyen de contournement.",
-        how_photos_note="Les trois téléphones sur lesquels l'alpha a tourné, photographiés avec drawbridge verrouillé.",
         how_cta_faq="Lire la Q&amp;A",
         how_cta_install="Guide d'installation",
         devices_h2="Sur quels appareils ?",
         devices_intro="Drawbridge devrait fonctionner sur <strong>tous les appareils Android</strong> proches d'Android stock, ou bénéficiant d'un bon support entreprise.",
         good_title="Devrait bien fonctionner",
-        good_text="Samsung, Motorola, OnePlus, Nothing Phone, Fairphone, Sony, Nokia/HMD, et bien d'autres.",
+        good_text="Google Pixel, Samsung, Motorola, OnePlus, Nothing Phone, Fairphone, Sony, Nokia/HMD, le Dumber Mini (LineageOS), et bien d'autres.",
         warn_title="Support non garanti",
         warn_text="Appareils avec une version d'Android fortement modifiée : Xiaomi, Oppo, Vivo, Redmi, Realme.",
         see_faq="Consultez notre Q&amp;A",
@@ -354,6 +351,12 @@ HOME = {
 # carries the same message as the devices section next to it. The captions are
 # device names and are the same in every language.
 #
+# They are stacked, one under the other, rather than crossfaded in one frame.
+# The column beside them is three paragraphs, a list and two buttons tall, so
+# the room was there for all three at once -- and three photographs a reader can
+# compare in one glance say more than three that take eighteen seconds to
+# arrive, none of which can be looked at twice.
+#
 # Sources are the camera JPEGs in images/. The site copies were made with a
 # square centre crop of the full frame height, so nothing is clipped:
 #
@@ -366,8 +369,8 @@ HOME = {
 #       site/assets/img/phone-nothing-3a.webp
 #
 # The Nothing frame was shot darker than the other two -- 0.31 mean luminance
-# against 0.38 -- and one visibly dark slide in a crossfade reads as a fault in
-# the page. The modulate brings it to 0.37; nothing else is retouched.
+# against 0.38 -- and stacked above and below two lighter ones that reads as a
+# fault in the page. The modulate brings it to 0.37; nothing else is retouched.
 
 PHONE_PHOTOS = [
     dict(
@@ -407,12 +410,11 @@ PHOTOS_LABEL = dict(
 
 
 def phone_photos_html(lang: str) -> str:
-    """The crossfading photographs under "How it works".
+    """The stacked photographs under "How it works".
 
-    Markup only -- the crossfade is six lines of CSS in style.css, and no
-    script runs on this page. Where a reader has asked for reduced motion the
-    same three figures stack into a column instead, which is why every slide
-    carries its own caption rather than the container carrying one.
+    Markup only, and nothing moves: three figures in a column, styled by
+    `.phone-photos` in style.css. No script runs on this page and nothing here
+    needs one.
     """
     figures = []
     for photo in PHONE_PHOTOS:
@@ -424,7 +426,7 @@ def phone_photos_html(lang: str) -> str:
             f'            </figure>'
         )
     return (
-        f'          <div class="phone-slides" role="group" aria-label="{PHOTOS_LABEL[lang]}">\n'
+        f'          <div class="phone-photos" role="group" aria-label="{PHOTOS_LABEL[lang]}">\n'
         + "\n".join(figures)
         + "\n          </div>"
     )
@@ -483,7 +485,6 @@ def render_home(lang: str) -> str:
         </div>
         <div class="how-art">
 {phone_photos_html(lang)}
-          <p class="phone-slides-note">{c['how_photos_note']}</p>
         </div>
       </div>
     </div>
