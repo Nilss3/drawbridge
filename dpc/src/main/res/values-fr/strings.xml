@@ -74,6 +74,10 @@
     <string name="update_why_blocked">Play Protect va bloquer cette mise à jour, et ce n\'est la faute ni de l\'un ni de l\'autre. drawbridge a le droit d\'installer des applications sur ce téléphone — c\'est ainsi que herald est arrivé, et que les applications bloquées sont supprimées. Une application capable d\'en installer d\'autres est exactement ce dont Play Protect doit se méfier, car sur la plupart des téléphones personne n\'a choisi de lui donner ce pouvoir. Sur celui-ci, si : vous, lors de la configuration.\n\nPlay Protect ne peut pas distinguer ces deux situations, il arrête donc la mise à jour. Le suspendre une minute suffit.</string>
     <string name="update_steps_heading">Ce qu\'il faut faire</string>
     <string name="update_steps">1. Ouvrez Play Protect et désactivez l\'analyse.\n2. Revenez ici et touchez Installer la mise à jour.\n3. Réactivez Play Protect.</string>
+    <string name="update_shots_heading">À quoi cela ressemble</string>
+    <string name="update_shot_1">Dans Play Protect, touchez la roue dentée en haut.</string>
+    <string name="update_shot_2">Désactivez « Analyser les applications avec Play Protect ».</string>
+    <string name="update_shot_3">Choisissez « Suspendre », pas « Désactiver ».</string>
     <string name="update_open_play_protect">Ouvrir Play Protect</string>
     <string name="update_install">Installer la mise à jour</string>
     <string name="update_no_play_protect">Play Protect n\'a pas pu être ouvert d\'ici. Il se trouve dans le Play Store, sous votre photo de profil.</string>

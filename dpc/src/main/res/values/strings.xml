@@ -114,6 +114,23 @@
     <string name="update_why_blocked">Play Protect will block this update, and that is not a fault in either of them. drawbridge is allowed to install apps on this phone — it is how herald got here, and how blocked apps are removed. An app that can install other apps is exactly what Play Protect is built to be wary of, because on most phones nobody chose to give an app that power. On this one you did, when you set it up.\n\nPlay Protect cannot tell those two situations apart, so it stops the update. Pausing it for a minute is enough.</string>
     <string name="update_steps_heading">What to do</string>
     <string name="update_steps">1. Open Play Protect and turn off scanning.\n2. Come back here and tap Install the update.\n3. Turn Play Protect back on.</string>
+    <!--
+         The three screens Play Protect makes you walk through, pictured.
+
+         "Turn off scanning" is one sentence and four taps, and none of the four
+         is where a person would guess: the switch is behind a gear in the top
+         corner of a screen whose whole content is a green tick, and turning it
+         off asks a second question whose *first* button is the one to press.
+         A parent who does not find it reads the update as broken and stops.
+
+         Pictured rather than written because the shape of the screen is the
+         part that is hard to say, and because this screen already carries three
+         paragraphs; the answer to a wall of text is not more of it.
+    -->
+    <string name="update_shots_heading">What that looks like</string>
+    <string name="update_shot_1">In Play Protect, tap the gear in the top corner.</string>
+    <string name="update_shot_2">Turn off “Scan apps with Play Protect”.</string>
+    <string name="update_shot_3">Choose “Pause”, not “Turn off”.</string>
     <string name="update_open_play_protect">Open Play Protect</string>
     <string name="update_install">Install the update</string>
     <string name="update_no_play_protect">Play Protect could not be opened from here. It is in the Play Store, under your profile picture.</string>

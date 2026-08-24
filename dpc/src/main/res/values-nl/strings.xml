@@ -74,6 +74,10 @@
     <string name="update_why_blocked">Play Protect blokkeert deze update, en dat is geen fout van een van beide. drawbridge mag apps installeren op deze telefoon — zo is herald hier gekomen, en zo worden geblokkeerde apps verwijderd. Een app die andere apps kan installeren is precies waar Play Protect wantrouwig over hoort te zijn, want op de meeste telefoons heeft niemand een app die macht gegeven. Op deze wel: jij, bij het instellen.\n\nPlay Protect kan die twee situaties niet uit elkaar houden en stopt de update dus. Hem een minuut pauzeren is genoeg.</string>
     <string name="update_steps_heading">Wat je moet doen</string>
     <string name="update_steps">1. Open Play Protect en zet het scannen uit.\n2. Kom hier terug en tik op De update installeren.\n3. Zet Play Protect weer aan.</string>
+    <string name="update_shots_heading">Hoe dat eruitziet</string>
+    <string name="update_shot_1">Tik in Play Protect op het tandwiel in de bovenhoek.</string>
+    <string name="update_shot_2">Zet “Apps scannen met Play Protect” uit.</string>
+    <string name="update_shot_3">Kies “Pauzeren”, niet “Uitschakelen”.</string>
     <string name="update_open_play_protect">Play Protect openen</string>
     <string name="update_install">De update installeren</string>
     <string name="update_no_play_protect">Play Protect kon hier niet geopend worden. Je vindt het in de Play Store, onder je profielfoto.</string>
