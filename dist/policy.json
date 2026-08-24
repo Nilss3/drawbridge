@@ -1,7 +1,7 @@
 {
-  "version": 85,
-  "issued_at": "2026-08-16T12:00:00Z",
-  "comment": "Comet and Via cleared: no VPN option and no DNS setting in either, so the default profile names them among the browsers.",
+  "version": 86,
+  "issued_at": "2026-08-24T11:35:32Z",
+  "comment": "Names drawbridge build 42: no policy content changed, only the app_update pin. The build carries the LineageOS Private DNS fix, the configuration screen's top spacing, quieter toasts on the loosening direction, and pictures of the Play Protect walk on the update screen.",
   "dns": {
     "upstreams": [
       "94.140.14.15",
@@ -735,9 +735,9 @@
   },
   "app_update": {
     "package_name": "app.drawbridge.dpc",
-    "version_code": 41,
-    "url": "https://dev.drawbridge-project.pages.dev/assets/dpc-c0a460f4aa6babab.apk",
-    "sha256": "c0a460f4aa6babab137ef24f0269db01c7806f8f405b294501a597398467eb3d"
+    "version_code": 42,
+    "url": "https://dev.drawbridge-project.pages.dev/assets/dpc-f3f1f29b75484f9a.apk",
+    "sha256": "f3f1f29b75484f9ae5dc926501715c138c975fda91d9ff13e36f01028a5ea799"
   },
   "required_apps": [
     {

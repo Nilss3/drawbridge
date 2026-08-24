@@ -21,9 +21,9 @@ which is kept whole on purpose.
 
 | | `main` (the alpha) | `dev` |
 |---|---|---|
-| drawbridge | 0.2.7, build 18 | **0.2.16, build 41** |
+| drawbridge | 0.2.7, build 18 | **0.2.17, build 42** |
 | herald | 0.1.9 | **0.1.14** |
-| policy | **52** | **81** |
+| policy | **52** | **86** |
 | install page | <https://drawbridge-project.pages.dev/install/usb/> | <https://dev.drawbridge-project.pages.dev/install/usb/> |
 | phone | the owner's Nothing Phone (A059) | the Moto G15 |
 
@@ -218,6 +218,15 @@ the key can always unlock and put a build on the phone. See
 
 Each of these looks like a bug and is not, or bites silently:
 
+- **`tools/stage-release.sh` re-copies herald whatever you are releasing.** On a
+  dpc-only release herald has not been rebuilt, so what sits in
+  `herald/build/outputs` is an *older local build* — not the binary the published
+  release carries, because Android builds are not byte-reproducible. Running the
+  script plain overwrites six correct APKs in `dist/release` with ones no phone
+  will accept, and the pin check then reports them STALE. They are git-ignored,
+  so the only way back is 1.3 GB from the GitHub release. Cost an hour on
+  2026-08-24. **Pass `--dpc-only`**, added the same day, which leaves them alone
+  and still runs the check.
 - **Release builds kill adb.** `DISALLOW_DEBUGGING_FEATURES` switches off USB
   debugging the instant it applies. Install everything *before* provisioning.
 - **Neither app may take an `applicationIdSuffix`.** A `.debug` herald is
