@@ -30,22 +30,8 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingBottom="16dp"
-            android:text="@string/update_why_blocked"
-            android:textAppearance="?attr/textAppearanceBodyMedium" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingBottom="8dp"
-            android:text="@string/update_steps_heading"
-            android:textAppearance="?attr/textAppearanceTitleSmall" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
             android:paddingBottom="20dp"
-            android:text="@string/update_steps"
+            android:text="@string/update_why_blocked"
             android:textAppearance="?attr/textAppearanceBodyMedium" />
 
         <Button
@@ -67,12 +53,15 @@
             above them.
 
             Above them it would put roughly a screenful of images between the
-            instructions and the thing they tell you to press, and this screen
-            is reached twice: once to pause Play Protect and once, coming back
-            from it, to install. Somebody returning for the second visit wants
-            the button, not the pictures again. Below, the buttons are the first
-            thing on the screen after the words, and the pictures are where a
-            parent who did not find the setting will scroll.
+            one paragraph and the thing that paragraph says to press, and this
+            screen is reached twice: once to pause Play Protect and once, coming
+            back from it, to install. Somebody returning for the second visit
+            wants the button, not the pictures again. Below, the buttons are the
+            first thing after the words, and the pictures are where a parent who
+            did not find the setting will scroll.
+
+            They carry no heading of their own: the paragraph ends by pointing
+            at them, which is the only introduction they need.
 
             Each is capped rather than stretched: these are screenshots 621 to
             756 px wide, so match_parent on a 1080 px phone would be upscaling
@@ -83,14 +72,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="28dp"
-            android:paddingBottom="4dp"
-            android:text="@string/update_shots_heading"
-            android:textAppearance="?attr/textAppearanceTitleSmall" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingTop="12dp"
             android:paddingBottom="6dp"
             android:text="@string/update_shot_1"
             android:textAppearance="?attr/textAppearanceBodyMedium" />
@@ -145,13 +126,5 @@
             android:paddingTop="16dp"
             android:textAppearance="?attr/textAppearanceBodyMedium"
             android:visibility="gone" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:alpha="0.75"
-            android:text="@string/update_turn_back_on"
-            android:textAppearance="?attr/textAppearanceBodySmall" />
     </LinearLayout>
 </ScrollView>

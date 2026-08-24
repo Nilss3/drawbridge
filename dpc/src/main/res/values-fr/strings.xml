@@ -23,6 +23,7 @@
     <string name="policy_applying_message">Téléchargement des listes de blocage et vérification des applications installées…</string>
     <string name="policy_apply_failed">Cette politique ne figure plus dans le document.</string>
     <string name="change_applied_at_lock">%1$s appliqué après le verrouillage.</string>
+    <string name="change_blocked_at_lock">%1$s bloqué après le verrouillage.</string>
     <string name="change_applied">%1$s appliqué.</string>
     <string name="info_button_description">En savoir plus sur %1$s</string>
     <string name="settings_take_effect_at_lock">Cette politique est toujours active, même lorsque drawbridge est déverrouillé. Les options ci-dessous sont des restrictions supplémentaires et ne s\'appliquent que lorsque drawbridge est verrouillé.</string>
@@ -71,10 +72,7 @@
     <string name="update_action">Mettre à jour</string>
     <string name="update_available_detail">Ce téléphone exécute %1$s (build %2$d). Le build %3$d est disponible.</string>
     <string name="update_none">Ce téléphone exécute %1$s, la version la plus récente que la politique désigne.</string>
-    <string name="update_why_blocked">Play Protect va bloquer cette mise à jour, et ce n\'est la faute ni de l\'un ni de l\'autre. drawbridge a le droit d\'installer des applications sur ce téléphone — c\'est ainsi que herald est arrivé, et que les applications bloquées sont supprimées. Une application capable d\'en installer d\'autres est exactement ce dont Play Protect doit se méfier, car sur la plupart des téléphones personne n\'a choisi de lui donner ce pouvoir. Sur celui-ci, si : vous, lors de la configuration.\n\nPlay Protect ne peut pas distinguer ces deux situations, il arrête donc la mise à jour. Le suspendre une minute suffit.</string>
-    <string name="update_steps_heading">Ce qu\'il faut faire</string>
-    <string name="update_steps">1. Ouvrez Play Protect et désactivez l\'analyse.\n2. Revenez ici et touchez Installer la mise à jour.\n3. Réactivez Play Protect.</string>
-    <string name="update_shots_heading">À quoi cela ressemble</string>
+    <string name="update_why_blocked">Pour mettre à jour drawbridge, vous devez suspendre Play Protect, le cas échéant. Le Play Protect de Google n\'autorise pas l\'installation de device policy controllers (comme drawbridge) qui ne passent pas par des partenaires entreprise. Cliquez pour ouvrir les paramètres de Play Protect et suspendez-le avant d\'appuyer sur le bouton de mise à jour. Voir les captures d\'écran pour plus de détails.</string>
     <string name="update_shot_1">Dans Play Protect, touchez la roue dentée en haut.</string>
     <string name="update_shot_2">Désactivez « Analyser les applications avec Play Protect ».</string>
     <string name="update_shot_3">Choisissez « Suspendre », pas « Désactiver ».</string>
@@ -85,7 +83,6 @@
     <string name="update_result_installed">Le build %1$d est installé.</string>
     <string name="update_result_blocked">Le téléphone a refusé la mise à jour, ce qui correspond à un blocage par Play Protect. Suspendez Play Protect et réessayez.</string>
     <string name="update_result_failed">La mise à jour n\'a pas été installée : %1$s</string>
-    <string name="update_turn_back_on">Réactivez Play Protect ensuite. C\'est la seule chose sur ce téléphone qui surveille les applications réellement nuisibles, et elle ne gêne rien d\'autre dans drawbridge.</string>
     <string name="lock_screen_info">drawbridge protège</string>
     <string name="lock_screen_info_locked">drawbridge verrouillé depuis %1$s</string>
     <string name="lock_screen_info_timer">drawbridge se déverrouille dans %1$s</string>

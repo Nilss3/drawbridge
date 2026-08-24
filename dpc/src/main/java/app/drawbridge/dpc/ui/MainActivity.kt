@@ -1071,7 +1071,7 @@ class MainActivity : AppCompatActivity() {
             // this particular change lands.
             if (enabled) restoreNewlyAllowed()
             Log.i(TAG, "Option ${option.id} set to $enabled; ${sweep()} packages removed")
-            if (!enabled) toast(applied(option.displayName(Languages.current())))
+            if (!enabled) toast(blocked(option))
             renderOptions()
         }
     }
@@ -1143,6 +1143,29 @@ class MainActivity : AppCompatActivity() {
      */
     private fun applied(name: String): String =
         getString(R.string.change_applied_at_lock, name)
+
+    /**
+     * What an option says when it is switched off, which is the one control here
+     * whose label is the wrong words for the sentence.
+     *
+     * "Allow WhatsApp applied after lock" names the switch rather than what the
+     * switch did, and at a glance it reads as the opposite: the two words a
+     * parent takes in are *allow* and *applied*, on the tap that blocks the app.
+     * [PolicyOption.subject] carries "WhatsApp" on its own so this can say
+     * "WhatsApp blocked after lock", which is the thing that is true.
+     *
+     * **Falls back to the old sentence when the document has no subject**, which
+     * is not a hypothetical: the copy bundled in the APK is one policy behind by
+     * construction, so a phone that has not polled yet is exactly that case. The
+     * fallback is wordy rather than wrong, and it heals itself on the first
+     * refresh.
+     */
+    private fun blocked(option: PolicyOption): String {
+        val language = Languages.current()
+        val subject = option.displaySubject(language)
+            ?: return applied(option.displayName(language))
+        return getString(R.string.change_blocked_at_lock, subject)
+    }
 
     private fun refreshPolicy() {
         lifecycleScope.launch {
