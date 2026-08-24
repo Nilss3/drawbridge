@@ -539,7 +539,8 @@ import re as _re
 #: filename. There is one set per language, because the app is translated and a
 #: French page beside an English screenshot is a page that has not been
 #: translated — it has been half translated, which reads worse than either.
-#: Captured on the API 36 emulator in light mode; see tools/README on how.
+#: Captured in light mode with tools/capture-explainer-shots.py, which takes the
+#: language as its only argument and needs an unlocked phone or emulator.
 EXPLAINER_SECTIONS = {
     1: "policy",
     2: "disconnect",
