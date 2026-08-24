@@ -35,6 +35,7 @@
     <div class="wrap">
       <h1>Installing drawbridge</h1>
       <p class="lede">Install over USB from a computer. No factory reset, and nothing on the phone is erased.</p>
+      <p>It works on ordinary Android phones with Google on them and on deGoogled open-source Android alike.</p>
 
       <div class="callout callout--alpha">
         <strong>This is still in early alpha testing!!</strong>
@@ -46,34 +47,99 @@
         <p style="margin: 0.5rem 0 0;">On a phone that is already in use, apps that are never allowed — social media, harmful games, browsers the policy does not sanction — start disappearing within minutes of the install, and whatever was only inside them goes too. <strong>Move what you want to keep off the phone first</strong>: export bookmarks, save photos out of an app that holds them, write down what you are signed in to. Apps you can still choose about, like WhatsApp or YouTube, are left alone until you lock. Nothing else is erased: your photos, messages and other apps stay where they are.</p>
       </div>
 
-      <h2>Install over USB</h2>
-      <p>For Google (regular) Android phones and also deGoogled open-source Android devices: install over USB using the flow below.</p>
-      <ol class="steps">
-<li><span class="num">1</span><div><strong>Remove every account from the phone.</strong> Settings → Passwords, passkeys &amp; accounts. Android only hands over this level of control to a phone with no account on it. You sign back in at step 4.</div></li>
-<li><span class="num">2</span><div><strong>Delete the Private Space, if the phone has one.</strong> Settings → Security &amp; privacy → Private Space → Delete private space. Android refuses this level of control while any second profile exists, and a Private Space is hidden — it does not appear in the user switcher, and it needs its own PIN. Any other extra user is in Settings → System → Multiple users.</div></li>
-<li><span class="num">3</span><div>Enable Developer Options (tap the build number in Settings → About phone several times) and turn on <strong>USB debugging</strong>.</div></li>
-<li><span class="num">4</span><div>Connect the phone to a computer with a USB cable, and run the installer.</div></li>
-<li><span class="num">5</span><div>Sign back in with a Google (or other) account.</div></li>
-</ol>
-
-      <div class="callout callout--coming-soon">
-        <strong>Install from your browser</strong>
-        <p style="margin: 0.6rem 0 0;">Install drawbridge straight from this site over USB, with no software to set up. Needs Chrome or Edge.</p>
-        <div class="btn-row" style="margin-bottom:0;">
-          <a class="btn btn--primary" href="/install/usb/">Install over USB</a>
+      <div class="flow-picker" role="group" aria-label="What are you doing?">
+        <input type="radio" name="flow" id="flow-new" checked />
+        <input type="radio" name="flow" id="flow-used" />
+        <input type="radio" name="flow" id="flow-update" />
+        <p class="flow-legend">What are you doing?</p>
+        <div class="flow-tabs">
+          <label for="flow-new">Install on a new device, or after a factory reset</label>
+          <label for="flow-used">Install on a device in use</label>
+          <label for="flow-update">Update a device that has drawbridge</label>
         </div>
-      </div>
 
-      <p class="footnote">In the meantime it is one command from a copy of the repository, <code>tools/provision-adb.sh</code>, which installs both apps and makes drawbridge the owner of the phone. It is documented in <a href="https://github.com/Nilss3/drawbridge/blob/main/docs/provisioning.md">provisioning.md</a>.</p>
-
-      <h2>After setup</h2>
-      <ol class="steps">
+        <section class="flow-panel" id="panel-new" aria-labelledby="flow-new-h">
+          <h2 id="flow-new-h" class="flow-panel-title">Install on a new device, or after a factory reset</h2>
+          <p>The easiest case: there is nothing on the phone to move off it, and nothing you chose gets uninstalled. The one thing to get right is the account — Android only hands over this level of control to a phone with no account on it, so skip the sign-in during setup and sign in at the end instead.</p>
+          <ol class="steps">
+<li><span class="num">1</span><div><strong>Go through Android's setup and skip signing in.</strong> If the phone is already past setup with an account on it, remove it: Settings → Passwords, passkeys &amp; accounts.</div></li>
+<li><span class="num">2</span><div>Enable Developer Options (tap the build number in Settings → About phone several times) and turn on <strong>USB debugging</strong>.</div></li>
+<li><span class="num">3</span><div>Connect the phone to a computer with a USB cable, and run the installer.</div></li>
+<li><span class="num">4</span><div>Sign in with a Google (or other) account.</div></li>
+</ol>
+          <p class="footnote">Apps the policy never allows still go, within minutes of the install. On a phone this new that means the manufacturer's preloaded social apps and games, and nothing you put there.</p>
+          <div class="callout callout--coming-soon">
+          <strong>Install from your browser</strong>
+          <p style="margin: 0.6rem 0 0;">Install drawbridge straight from this site over USB, with no software to set up. Needs Chrome or Edge.</p>
+          <div class="btn-row" style="margin-bottom:0;">
+            <a class="btn btn--primary" href="/install/usb/">Install over USB</a>
+          </div>
+        </div>
+          <h3>After setup</h3>
+        <ol class="steps">
 <li><span class="num">1</span><div><strong>Move your bookmarks into herald.</strong> It installs itself right after drawbridge, so it is already there. Export them from the browser you are leaving, then in herald: ⋮ → Bookmarks → ⋮ → Import. Do this <em>before</em> the next step, because activating removes the other browsers, and their bookmarks go with them.</div></li>
 <li><span class="num">2</span><div>Open the drawbridge app and activate it.</div></li>
 <li><span class="num">3</span><div>Write down the deactivation code shown once. Or don't, if you want the protection to stay on for good.</div></li>
 </ol>
+        <p class="footnote">Activating switches USB debugging off. Unlocking drawbridge with your code turns it back on, which is how you would put a later version on the phone over the same cable.</p>
+        </section>
 
-      <p class="footnote">Activating switches USB debugging off. Unlocking drawbridge with your code turns it back on, which is how you would put a later version on the phone over the same cable.</p>
+        <section class="flow-panel" id="panel-used" aria-labelledby="flow-used-h">
+          <h2 id="flow-used-h" class="flow-panel-title">Install on a device in use</h2>
+          <ol class="steps">
+<li><span class="num">1</span><div><strong>Move what you want to keep off the phone.</strong> Export bookmarks, save photos out of an app that holds them, write down what you are signed in to. The warning above says what goes.</div></li>
+<li><span class="num">2</span><div><strong>Remove every account from the phone.</strong> Settings → Passwords, passkeys &amp; accounts. Android only hands over this level of control to a phone with no account on it. You sign back in at the end.</div></li>
+<li><span class="num">3</span><div><strong>Delete the Private Space, if the phone has one.</strong> Settings → Security &amp; privacy → Private Space → Delete private space. Android refuses this level of control while any second profile exists, and a Private Space is hidden — it does not appear in the user switcher, and it needs its own PIN. Any other extra user is in Settings → System → Multiple users.</div></li>
+<li><span class="num">4</span><div>Enable Developer Options (tap the build number in Settings → About phone several times) and turn on <strong>USB debugging</strong>.</div></li>
+<li><span class="num">5</span><div>Connect the phone to a computer with a USB cable, and run the installer.</div></li>
+<li><span class="num">6</span><div>Sign back in with a Google (or other) account.</div></li>
+</ol>
+          <div class="callout callout--coming-soon">
+          <strong>Install from your browser</strong>
+          <p style="margin: 0.6rem 0 0;">Install drawbridge straight from this site over USB, with no software to set up. Needs Chrome or Edge.</p>
+          <div class="btn-row" style="margin-bottom:0;">
+            <a class="btn btn--primary" href="/install/usb/">Install over USB</a>
+          </div>
+        </div>
+          <h3>After setup</h3>
+        <ol class="steps">
+<li><span class="num">1</span><div><strong>Move your bookmarks into herald.</strong> It installs itself right after drawbridge, so it is already there. Export them from the browser you are leaving, then in herald: ⋮ → Bookmarks → ⋮ → Import. Do this <em>before</em> the next step, because activating removes the other browsers, and their bookmarks go with them.</div></li>
+<li><span class="num">2</span><div>Open the drawbridge app and activate it.</div></li>
+<li><span class="num">3</span><div>Write down the deactivation code shown once. Or don't, if you want the protection to stay on for good.</div></li>
+</ol>
+        <p class="footnote">Activating switches USB debugging off. Unlocking drawbridge with your code turns it back on, which is how you would put a later version on the phone over the same cable.</p>
+        </section>
+
+        <section class="flow-panel" id="panel-update" aria-labelledby="flow-update-h">
+          <h2 id="flow-update-h" class="flow-panel-title">Update a device that has drawbridge</h2>
+          <p><strong>The phone can do this by itself.</strong> drawbridge checks the signed policy for a newer build and offers it on the phone — while it is still locked, without your key and without a cable. The cable is the fallback for when that will not go through.</p>
+          <h3>From the app on the phone</h3>
+          <ol class="steps">
+<li><span class="num">1</span><div>Open <strong>drawbridge</strong> on the phone. When a newer build is available the screen says so and offers it. The phone can stay locked, and you do not need your key.</div></li>
+<li><span class="num">2</span><div>Tap the notice, then <strong>pause Play Protect</strong> for a minute. It blocks an app that installs other apps, which is what drawbridge is on this phone — and it cannot tell that you are the one who chose that.</div></li>
+<li><span class="num">3</span><div>Tap <strong>Install the update</strong>, then turn Play Protect back on.</div></li>
+</ol>
+          <p class="footnote">This costs nothing else: the phone stays locked and your key stays your key. herald and the block lists update on their own in the background and need none of it.</p>
+          <h3>Over the cable</h3>
+          <p>For a phone that will not take the update from the app. Same page and same button as a fresh install — it notices drawbridge is already there and updates it instead. Nothing is reset and nothing on the phone is lost.</p>
+          <ol class="steps">
+<li><span class="num">1</span><div>On the phone, open <strong>drawbridge</strong> and enter your key to unlock it. That is what hands USB debugging back.</div></li>
+<li><span class="num">2</span><div>Turn <strong>USB debugging</strong> back on: Settings → System → Developer options.</div></li>
+<li><span class="num">3</span><div>Plug the phone into the computer and run the installer.</div></li>
+<li><span class="num">4</span><div><strong>Lock drawbridge again</strong> on the phone, and write down the new key.</div></li>
+</ol>
+          <p class="footnote">Locking mints a fresh key, so your old one stops working. The cable always ends with a new key to write down; the update from the app does not.</p>
+          <div class="callout callout--coming-soon">
+          <strong>Install from your browser</strong>
+          <p style="margin: 0.6rem 0 0;">Install drawbridge straight from this site over USB, with no software to set up. Needs Chrome or Edge.</p>
+          <div class="btn-row" style="margin-bottom:0;">
+            <a class="btn btn--primary" href="/install/usb/">Install over USB</a>
+          </div>
+        </div>
+        </section>
+      </div>
+
+      <p class="footnote">In the meantime it is one command from a copy of the repository, <code>tools/provision-adb.sh</code>, which installs both apps and makes drawbridge the owner of the phone. It is documented in <a href="https://github.com/Nilss3/drawbridge/blob/main/docs/provisioning.md">provisioning.md</a>.</p>
 
       <p>Read the <a href="/faq/">Q&amp;A</a> for what's blocked and why, or see the <a href="/why-blocked/">full sourced breakdown</a>.</p>
     </div>

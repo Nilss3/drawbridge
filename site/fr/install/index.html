@@ -35,6 +35,7 @@
     <div class="wrap">
       <h1>Installer drawbridge</h1>
       <p class="lede">Installez par USB depuis un ordinateur. Aucune réinitialisation, et rien n'est effacé sur le téléphone.</p>
+      <p>Cela fonctionne aussi bien sur les téléphones Android ordinaires avec Google que sur les Android open source dégooglisés.</p>
 
       <div class="callout callout--alpha">
         <strong>Ceci est encore en phase de test alpha !!</strong>
@@ -46,34 +47,99 @@
         <p style="margin: 0.5rem 0 0;">Sur un téléphone déjà utilisé, les applications qui ne sont jamais autorisées — réseaux sociaux, jeux nocifs, navigateurs que la politique ne sanctionne pas — disparaissent dans les minutes qui suivent l'installation, et ce qui n'existait qu'à l'intérieur d'elles disparaît avec. <strong>Mettez d'abord de côté ce que vous voulez garder</strong> : exportez vos favoris, sortez les photos d'une application qui les détient, notez où vous êtes connecté. Les applications sur lesquelles vous pouvez encore choisir, comme WhatsApp ou YouTube, restent jusqu'au verrouillage. Rien d'autre n'est effacé : vos photos, vos messages et vos autres applications restent en place.</p>
       </div>
 
-      <h2>Installer par USB</h2>
-      <p>Pour les téléphones Android ordinaires avec Google comme pour les appareils Android open source dégooglisés : installez par USB en suivant les étapes ci-dessous.</p>
-      <ol class="steps">
-<li><span class="num">1</span><div><strong>Retirez tous les comptes du téléphone.</strong> Paramètres → Mots de passe, clés d'accès et comptes. Android n'accorde ce niveau de contrôle qu'à un téléphone ne portant aucun compte. Vous vous reconnecterez à l'étape 4.</div></li>
-<li><span class="num">2</span><div><strong>Supprimez l'espace privé, si le téléphone en a un.</strong> Paramètres → Sécurité et confidentialité → Espace privé → Supprimer l'espace privé. Android refuse ce niveau de contrôle tant qu'un second profil existe, et un espace privé est masqué — il n'apparaît pas dans le sélecteur d'utilisateur et possède son propre code PIN. Les autres utilisateurs supplémentaires se trouvent dans Paramètres → Système → Utilisateurs multiples.</div></li>
-<li><span class="num">3</span><div>Activez les options pour développeurs (tapez plusieurs fois sur le numéro de build dans Paramètres → À propos du téléphone) et activez le <strong>débogage USB</strong>.</div></li>
-<li><span class="num">4</span><div>Connectez le téléphone à un ordinateur avec un câble USB, et lancez l'installeur.</div></li>
-<li><span class="num">5</span><div>Reconnectez-vous avec un compte Google (ou un autre).</div></li>
-</ol>
-
-      <div class="callout callout--coming-soon">
-        <strong>Installer depuis votre navigateur</strong>
-        <p style="margin: 0.6rem 0 0;">Installez drawbridge directement depuis ce site par USB, sans logiciel à mettre en place. Nécessite Chrome ou Edge.</p>
-        <div class="btn-row" style="margin-bottom:0;">
-          <a class="btn btn--primary" href="/fr/install/usb/">Installer par USB</a>
+      <div class="flow-picker" role="group" aria-label="Que faites-vous ?">
+        <input type="radio" name="flow" id="flow-new" checked />
+        <input type="radio" name="flow" id="flow-used" />
+        <input type="radio" name="flow" id="flow-update" />
+        <p class="flow-legend">Que faites-vous ?</p>
+        <div class="flow-tabs">
+          <label for="flow-new">Installer sur un appareil neuf, ou après une réinitialisation</label>
+          <label for="flow-used">Installer sur un appareil déjà utilisé</label>
+          <label for="flow-update">Mettre à jour un appareil qui a drawbridge</label>
         </div>
-      </div>
 
-      <p class="footnote">En attendant, il s'agit d'une seule commande depuis une copie du dépôt, <code>tools/provision-adb.sh</code>, qui installe les deux applications et fait de drawbridge le propriétaire du téléphone. Tout est expliqué dans <a href="https://github.com/Nilss3/drawbridge/blob/main/docs/provisioning.md">provisioning.md</a>.</p>
-
-      <h2>Après l'installation</h2>
-      <ol class="steps">
+        <section class="flow-panel" id="panel-new" aria-labelledby="flow-new-h">
+          <h2 id="flow-new-h" class="flow-panel-title">Installer sur un appareil neuf, ou après une réinitialisation</h2>
+          <p>Le cas le plus simple : il n'y a rien à mettre de côté sur le téléphone, et rien que vous ayez choisi n'est désinstallé. La seule chose à ne pas rater, c'est le compte — Android n'accorde ce niveau de contrôle qu'à un téléphone ne portant aucun compte, alors sautez la connexion pendant la configuration et connectez-vous à la fin.</p>
+          <ol class="steps">
+<li><span class="num">1</span><div><strong>Suivez la configuration d'Android et sautez la connexion.</strong> Si le téléphone a déjà terminé sa configuration avec un compte dessus, retirez-le : Paramètres → Mots de passe, clés d'accès et comptes.</div></li>
+<li><span class="num">2</span><div>Activez les options pour développeurs (tapez plusieurs fois sur le numéro de build dans Paramètres → À propos du téléphone) et activez le <strong>débogage USB</strong>.</div></li>
+<li><span class="num">3</span><div>Connectez le téléphone à un ordinateur avec un câble USB, et lancez l'installeur.</div></li>
+<li><span class="num">4</span><div>Connectez-vous avec un compte Google (ou un autre).</div></li>
+</ol>
+          <p class="footnote">Les applications que la politique n'autorise jamais disparaissent ici aussi, dans les minutes qui suivent l'installation. Sur un téléphone aussi neuf, ce sont les réseaux sociaux et les jeux préinstallés par le fabricant, et rien que vous y ayez mis.</p>
+          <div class="callout callout--coming-soon">
+          <strong>Installer depuis votre navigateur</strong>
+          <p style="margin: 0.6rem 0 0;">Installez drawbridge directement depuis ce site par USB, sans logiciel à mettre en place. Nécessite Chrome ou Edge.</p>
+          <div class="btn-row" style="margin-bottom:0;">
+            <a class="btn btn--primary" href="/fr/install/usb/">Installer par USB</a>
+          </div>
+        </div>
+          <h3>Après l'installation</h3>
+        <ol class="steps">
 <li><span class="num">1</span><div><strong>Transférez vos favoris vers herald.</strong> Il s'installe juste après drawbridge : il est donc déjà là. Exportez-les depuis le navigateur que vous quittez, puis dans herald : ⋮ → Favoris → ⋮ → Importer. Faites-le <em>avant</em> l'étape suivante, car l'activation supprime les autres navigateurs, et leurs favoris partent avec eux.</div></li>
 <li><span class="num">2</span><div>Ouvrez l'application drawbridge et activez-la.</div></li>
 <li><span class="num">3</span><div>Notez le code de désactivation affiché une seule fois. Ou pas, si vous voulez que la protection reste active pour de bon.</div></li>
 </ol>
+        <p class="footnote">L'activation désactive le débogage USB. Il revient dès que vous déverrouillez drawbridge avec votre code : c'est ainsi que vous installerez plus tard une version plus récente par le même câble.</p>
+        </section>
 
-      <p class="footnote">L'activation désactive le débogage USB. Il revient dès que vous déverrouillez drawbridge avec votre code : c'est ainsi que vous installerez plus tard une version plus récente par le même câble.</p>
+        <section class="flow-panel" id="panel-used" aria-labelledby="flow-used-h">
+          <h2 id="flow-used-h" class="flow-panel-title">Installer sur un appareil déjà utilisé</h2>
+          <ol class="steps">
+<li><span class="num">1</span><div><strong>Mettez de côté ce que vous voulez garder.</strong> Exportez vos favoris, sortez les photos d'une application qui les détient, notez où vous êtes connecté. L'avertissement ci-dessus dit ce qui disparaît.</div></li>
+<li><span class="num">2</span><div><strong>Retirez tous les comptes du téléphone.</strong> Paramètres → Mots de passe, clés d'accès et comptes. Android n'accorde ce niveau de contrôle qu'à un téléphone ne portant aucun compte. Vous vous reconnecterez à la fin.</div></li>
+<li><span class="num">3</span><div><strong>Supprimez l'espace privé, si le téléphone en a un.</strong> Paramètres → Sécurité et confidentialité → Espace privé → Supprimer l'espace privé. Android refuse ce niveau de contrôle tant qu'un second profil existe, et un espace privé est masqué — il n'apparaît pas dans le sélecteur d'utilisateur et possède son propre code PIN. Les autres utilisateurs supplémentaires se trouvent dans Paramètres → Système → Utilisateurs multiples.</div></li>
+<li><span class="num">4</span><div>Activez les options pour développeurs (tapez plusieurs fois sur le numéro de build dans Paramètres → À propos du téléphone) et activez le <strong>débogage USB</strong>.</div></li>
+<li><span class="num">5</span><div>Connectez le téléphone à un ordinateur avec un câble USB, et lancez l'installeur.</div></li>
+<li><span class="num">6</span><div>Reconnectez-vous avec un compte Google (ou un autre).</div></li>
+</ol>
+          <div class="callout callout--coming-soon">
+          <strong>Installer depuis votre navigateur</strong>
+          <p style="margin: 0.6rem 0 0;">Installez drawbridge directement depuis ce site par USB, sans logiciel à mettre en place. Nécessite Chrome ou Edge.</p>
+          <div class="btn-row" style="margin-bottom:0;">
+            <a class="btn btn--primary" href="/fr/install/usb/">Installer par USB</a>
+          </div>
+        </div>
+          <h3>Après l'installation</h3>
+        <ol class="steps">
+<li><span class="num">1</span><div><strong>Transférez vos favoris vers herald.</strong> Il s'installe juste après drawbridge : il est donc déjà là. Exportez-les depuis le navigateur que vous quittez, puis dans herald : ⋮ → Favoris → ⋮ → Importer. Faites-le <em>avant</em> l'étape suivante, car l'activation supprime les autres navigateurs, et leurs favoris partent avec eux.</div></li>
+<li><span class="num">2</span><div>Ouvrez l'application drawbridge et activez-la.</div></li>
+<li><span class="num">3</span><div>Notez le code de désactivation affiché une seule fois. Ou pas, si vous voulez que la protection reste active pour de bon.</div></li>
+</ol>
+        <p class="footnote">L'activation désactive le débogage USB. Il revient dès que vous déverrouillez drawbridge avec votre code : c'est ainsi que vous installerez plus tard une version plus récente par le même câble.</p>
+        </section>
+
+        <section class="flow-panel" id="panel-update" aria-labelledby="flow-update-h">
+          <h2 id="flow-update-h" class="flow-panel-title">Mettre à jour un appareil qui a drawbridge</h2>
+          <p><strong>Le téléphone peut le faire tout seul.</strong> drawbridge consulte la politique signée pour voir s'il existe une version plus récente et la propose sur le téléphone — pendant qu'il reste verrouillé, sans votre clé et sans câble. Le câble est le recours pour les cas où cela ne passe pas.</p>
+          <h3>Depuis l'application sur le téléphone</h3>
+          <ol class="steps">
+<li><span class="num">1</span><div>Ouvrez <strong>drawbridge</strong> sur le téléphone. S'il existe une version plus récente, l'écran le dit et la propose. Le téléphone peut rester verrouillé, et votre clé n'est pas nécessaire.</div></li>
+<li><span class="num">2</span><div>Tapez sur l'avis, puis <strong>mettez Play Protect en pause</strong> une minute. Il bloque une application qui en installe d'autres, ce qu'est précisément drawbridge sur ce téléphone — et il ne peut pas voir que c'est vous qui l'avez voulu.</div></li>
+<li><span class="num">3</span><div>Tapez sur <strong>Installer la mise à jour</strong>, puis réactivez Play Protect.</div></li>
+</ol>
+          <p class="footnote">Cela ne coûte rien d'autre : le téléphone reste verrouillé et votre clé reste votre clé. herald et les listes de blocage se mettent à jour d'eux-mêmes en arrière-plan et n'ont besoin de rien de tout cela.</p>
+          <h3>Par le câble</h3>
+          <p>Pour un téléphone qui n'accepte pas la mise à jour depuis l'application. Même page et même bouton que pour une installation neuve : il détecte que drawbridge est déjà là et le met à jour au lieu de le reconfigurer. Rien n'est réinitialisé et rien n'est perdu.</p>
+          <ol class="steps">
+<li><span class="num">1</span><div>Sur le téléphone, ouvrez <strong>drawbridge</strong> et saisissez votre clé pour le déverrouiller. C'est ce qui rend le débogage USB.</div></li>
+<li><span class="num">2</span><div>Réactivez le <strong>débogage USB</strong> : Paramètres → Système → Options pour développeurs.</div></li>
+<li><span class="num">3</span><div>Branchez le téléphone à l'ordinateur et lancez l'installeur.</div></li>
+<li><span class="num">4</span><div><strong>Verrouillez de nouveau drawbridge</strong> sur le téléphone, et notez la nouvelle clé.</div></li>
+</ol>
+          <p class="footnote">Le verrouillage forge une nouvelle clé : l'ancienne cesse donc de fonctionner. Par le câble, vous terminez toujours avec une nouvelle clé à noter ; par la mise à jour depuis l'application, non.</p>
+          <div class="callout callout--coming-soon">
+          <strong>Installer depuis votre navigateur</strong>
+          <p style="margin: 0.6rem 0 0;">Installez drawbridge directement depuis ce site par USB, sans logiciel à mettre en place. Nécessite Chrome ou Edge.</p>
+          <div class="btn-row" style="margin-bottom:0;">
+            <a class="btn btn--primary" href="/fr/install/usb/">Installer par USB</a>
+          </div>
+        </div>
+        </section>
+      </div>
+
+      <p class="footnote">En attendant, il s'agit d'une seule commande depuis une copie du dépôt, <code>tools/provision-adb.sh</code>, qui installe les deux applications et fait de drawbridge le propriétaire du téléphone. Tout est expliqué dans <a href="https://github.com/Nilss3/drawbridge/blob/main/docs/provisioning.md">provisioning.md</a>.</p>
 
       <p>Consultez la <a href="/fr/faq/">Q&amp;A</a> pour savoir ce qui est bloqué et pourquoi, ou voir le <a href="/fr/why-blocked/">détail complet sourcé</a>.</p>
     </div>

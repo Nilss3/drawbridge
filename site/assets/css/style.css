@@ -343,6 +343,65 @@ code {
 
 .footnote { font-size: 0.85rem; color: var(--ink-soft); }
 
+/* The install page's three situations, behind one picker.
+ *
+ * Three radios and a sibling selector, so the guide still runs no script — the
+ * USB installer next door is the only page on this site that does, and it has
+ * WebUSB as an excuse. Every panel is in the HTML; with CSS off a reader gets
+ * all three in order under their own headings, which is the failure mode worth
+ * having. The radios are moved off-screen rather than display:none'd, so they
+ * keep their focus and their arrow-key navigation.
+ */
+.flow-picker { margin: 1.6rem 0 1.2rem; }
+.flow-picker > input {
+  position: absolute;
+  width: 1px; height: 1px;
+  margin: -1px; padding: 0; border: 0;
+  overflow: hidden; clip-path: inset(50%);
+}
+.flow-legend { font-weight: 600; margin: 0 0 0.7rem; }
+.flow-tabs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.6rem; }
+@media (max-width: 780px) { .flow-tabs { grid-template-columns: 1fr; } }
+.flow-tabs label {
+  display: flex;
+  align-items: center;
+  padding: 0.8rem 1rem;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--line);
+  border-radius: var(--radius);
+  font-size: 0.94rem;
+  line-height: 1.35;
+  cursor: pointer;
+}
+.flow-tabs label:hover { border-color: var(--ink-soft); border-left-color: var(--slate); }
+
+/* The panel bodies. One shows; the selected tab is marked in the same green
+   the section headings use, so "which one am I reading" is answerable without
+   scrolling back up — the panel repeats its own name as its heading too. */
+.flow-panel { display: none; margin-top: 1.6rem; }
+.flow-panel-title { margin-top: 0; }
+#flow-new:checked ~ #panel-new,
+#flow-used:checked ~ #panel-used,
+#flow-update:checked ~ #panel-update { display: block; }
+
+#flow-new:checked ~ .flow-tabs label[for="flow-new"],
+#flow-used:checked ~ .flow-tabs label[for="flow-used"],
+#flow-update:checked ~ .flow-tabs label[for="flow-update"] {
+  background: color-mix(in srgb, var(--wood) 10%, var(--paper));
+  border-color: var(--wood);
+  border-left-color: var(--wood);
+  color: var(--slate-dark);
+  font-weight: 600;
+}
+
+#flow-new:focus-visible ~ .flow-tabs label[for="flow-new"],
+#flow-used:focus-visible ~ .flow-tabs label[for="flow-used"],
+#flow-update:focus-visible ~ .flow-tabs label[for="flow-update"] {
+  outline: 2px solid var(--wood);
+  outline-offset: 2px;
+}
+
 /* tables (why-blocked page) */
 
 .table-scroll { overflow-x: auto; margin: 1rem 0 1.8rem; border: 1px solid var(--line); border-radius: var(--radius); }

@@ -567,15 +567,51 @@ INSTALL = {
         alpha_detail="This public alpha has been tested on three devices by the people who built it: a Motorola G15, a Nothing Phone (3a) and a Dumber Mini running LineageOS. The Nothing Phone is a daily phone and runs it without trouble. It works end to end on all three. Nothing is known about how it behaves on any other phone, so don't use a device you depend on.",
         caveat_title="Installing drawbridge uninstalls the apps it blocks.",
         caveat_text="On a phone that is already in use, apps that are never allowed — social media, harmful games, browsers the policy does not sanction — start disappearing within minutes of the install, and whatever was only inside them goes too. <strong>Move what you want to keep off the phone first</strong>: export bookmarks, save photos out of an app that holds them, write down what you are signed in to. Apps you can still choose about, like WhatsApp or YouTube, are left alone until you lock. Nothing else is erased: your photos, messages and other apps stay where they are.",
-        usb_h2="Install over USB",
-        usb_qualifier="For Google (regular) Android phones and also deGoogled open-source Android devices: install over USB using the flow below.",
-        usb_steps=[
-            "<strong>Remove every account from the phone.</strong> Settings → Passwords, passkeys &amp; accounts. Android only hands over this level of control to a phone with no account on it. You sign back in at step 4.",
+        usb_qualifier="It works on ordinary Android phones with Google on them and on deGoogled open-source Android alike.",
+
+        picker_legend="What are you doing?",
+        flow_labels=[
+            "Install on a new device, or after a factory reset",
+            "Install on a device in use",
+            "Update a device that has drawbridge",
+        ],
+
+        new_intro="The easiest case: there is nothing on the phone to move off it, and nothing you chose gets uninstalled. The one thing to get right is the account — Android only hands over this level of control to a phone with no account on it, so skip the sign-in during setup and sign in at the end instead.",
+        new_steps=[
+            "<strong>Go through Android's setup and skip signing in.</strong> If the phone is already past setup with an account on it, remove it: Settings → Passwords, passkeys &amp; accounts.",
+            "Enable Developer Options (tap the build number in Settings → About phone several times) and turn on <strong>USB debugging</strong>.",
+            "Connect the phone to a computer with a USB cable, and run the installer.",
+            "Sign in with a Google (or other) account.",
+        ],
+        new_note="Apps the policy never allows still go, within minutes of the install. On a phone this new that means the manufacturer's preloaded social apps and games, and nothing you put there.",
+
+        used_steps=[
+            "<strong>Move what you want to keep off the phone.</strong> Export bookmarks, save photos out of an app that holds them, write down what you are signed in to. The warning above says what goes.",
+            "<strong>Remove every account from the phone.</strong> Settings → Passwords, passkeys &amp; accounts. Android only hands over this level of control to a phone with no account on it. You sign back in at the end.",
             "<strong>Delete the Private Space, if the phone has one.</strong> Settings → Security &amp; privacy → Private Space → Delete private space. Android refuses this level of control while any second profile exists, and a Private Space is hidden — it does not appear in the user switcher, and it needs its own PIN. Any other extra user is in Settings → System → Multiple users.",
             "Enable Developer Options (tap the build number in Settings → About phone several times) and turn on <strong>USB debugging</strong>.",
             "Connect the phone to a computer with a USB cable, and run the installer.",
             "Sign back in with a Google (or other) account.",
         ],
+
+        update_intro="<strong>The phone can do this by itself.</strong> drawbridge checks the signed policy for a newer build and offers it on the phone — while it is still locked, without your key and without a cable. The cable is the fallback for when that will not go through.",
+        inapp_h3="From the app on the phone",
+        inapp_steps=[
+            "Open <strong>drawbridge</strong> on the phone. When a newer build is available the screen says so and offers it. The phone can stay locked, and you do not need your key.",
+            "Tap the notice, then <strong>pause Play Protect</strong> for a minute. It blocks an app that installs other apps, which is what drawbridge is on this phone — and it cannot tell that you are the one who chose that.",
+            "Tap <strong>Install the update</strong>, then turn Play Protect back on.",
+        ],
+        inapp_note="This costs nothing else: the phone stays locked and your key stays your key. herald and the block lists update on their own in the background and need none of it.",
+        cable_h3="Over the cable",
+        cable_intro="For a phone that will not take the update from the app. Same page and same button as a fresh install — it notices drawbridge is already there and updates it instead. Nothing is reset and nothing on the phone is lost.",
+        cable_steps=[
+            "On the phone, open <strong>drawbridge</strong> and enter your key to unlock it. That is what hands USB debugging back.",
+            "Turn <strong>USB debugging</strong> back on: Settings → System → Developer options.",
+            "Plug the phone into the computer and run the installer.",
+            "<strong>Lock drawbridge again</strong> on the phone, and write down the new key.",
+        ],
+        cable_note="Locking mints a fresh key, so your old one stops working. The cable always ends with a new key to write down; the update from the app does not.",
+
         coming_title="Install from your browser",
         coming_text="Install drawbridge straight from this site over USB, with no software to set up. Needs Chrome or Edge.",
         coming_btn="Install over USB",
@@ -598,15 +634,51 @@ INSTALL = {
         alpha_detail='Deze publieke alfa is door de makers zelf op drie toestellen getest: een Motorola G15, een Nothing Phone (3a) en een Dumber Mini met LineageOS. De Nothing Phone is een dagelijkse telefoon en draait ze zonder problemen. Op alle drie werkt ze van begin tot eind. Over het gedrag op eender welke andere telefoon is niets bekend, dus gebruik geen toestel waar je van afhangt.',
         caveat_title="Bij het installeren verwijdert drawbridge de apps die het blokkeert.",
         caveat_text="Op een telefoon die al in gebruik is, verdwijnen apps die nooit toegelaten zijn — sociale media, schadelijke games, browsers die het beleid niet toelaat — binnen enkele minuten na de installatie, en wat er alleen in die apps zat, gaat mee. <strong>Zet eerst weg wat je wil bewaren</strong>: exporteer bladwijzers, haal foto's uit een app die ze vasthoudt, noteer waar je aangemeld bent. Apps waar je nog over kan kiezen, zoals WhatsApp of YouTube, blijven staan tot je vergrendelt. Verder wordt er niets gewist: je foto's, berichten en andere apps blijven staan.",
-        usb_h2="Installeren via USB",
-        usb_qualifier="Voor gewone Android-telefoons met Google én voor deGooglede open-source Android-toestellen: installeer via USB met de stappen hieronder.",
-        usb_steps=[
-            "<strong>Verwijder elk account van de telefoon.</strong> Instellingen → Wachtwoorden, toegangssleutels en accounts. Android geeft dit niveau van controle enkel weg aan een toestel waar geen account op staat. In stap 4 meld je je weer aan.",
+        usb_qualifier="Het werkt zowel op gewone Android-telefoons met Google erop als op deGooglede open-source Android.",
+
+        picker_legend="Wat ga je doen?",
+        flow_labels=[
+            "Installeren op een nieuw toestel, of na een factory reset",
+            "Installeren op een toestel dat al in gebruik is",
+            "Een toestel met drawbridge bijwerken",
+        ],
+
+        new_intro="Het eenvoudigste geval: er staat nog niets op de telefoon om weg te zetten, en er verdwijnt niets wat jij gekozen hebt. Het enige waar het op aankomt is het account — Android geeft dit niveau van controle enkel weg aan een toestel waar geen account op staat, dus sla het aanmelden over tijdens de setup en meld je pas op het einde aan.",
+        new_steps=[
+            "<strong>Doorloop de setup van Android en sla het aanmelden over.</strong> Staat de telefoon al voorbij de setup met een account erop, verwijder dat dan: Instellingen → Wachtwoorden, toegangssleutels en accounts.",
+            "Activeer Ontwikkelaarsopties (tik meerdere keren op het buildnummer in Instellingen → Over de telefoon) en schakel <strong>USB-debugging</strong> in.",
+            "Verbind de telefoon met een computer via een USB-kabel, en voer de installer uit.",
+            "Meld je aan met een Google-account (of een ander account).",
+        ],
+        new_note="Apps die het beleid nooit toelaat verdwijnen ook hier, binnen enkele minuten na de installatie. Op een telefoon die zo nieuw is zijn dat de vooraf geïnstalleerde sociale apps en games van de fabrikant, en niets wat jij erop gezet hebt.",
+
+        used_steps=[
+            "<strong>Zet weg wat je wil bewaren.</strong> Exporteer bladwijzers, haal foto's uit een app die ze vasthoudt, noteer waar je aangemeld bent. De waarschuwing hierboven zegt wat er verdwijnt.",
+            "<strong>Verwijder elk account van de telefoon.</strong> Instellingen → Wachtwoorden, toegangssleutels en accounts. Android geeft dit niveau van controle enkel weg aan een toestel waar geen account op staat. Op het einde meld je je weer aan.",
             "<strong>Verwijder de privéruimte, als de telefoon er een heeft.</strong> Instellingen → Beveiliging en privacy → Privéruimte → Privéruimte verwijderen. Android weigert dit niveau van controle zolang er een tweede profiel bestaat, en een privéruimte is verborgen — ze staat niet in de gebruikerswissel en heeft een eigen pincode. Andere extra gebruikers staan in Instellingen → Systeem → Meerdere gebruikers.",
             "Activeer Ontwikkelaarsopties (tik meerdere keren op het buildnummer in Instellingen → Over de telefoon) en schakel <strong>USB-debugging</strong> in.",
             "Verbind de telefoon met een computer via een USB-kabel, en voer de installer uit.",
             "Meld je weer aan met een Google-account (of een ander account).",
         ],
+
+        update_intro="<strong>De telefoon kan dit zelf.</strong> Drawbridge kijkt in het ondertekende beleid of er een nieuwere build is en biedt die aan op de telefoon — terwijl ze vergrendeld blijft, zonder je sleutel en zonder kabel. De kabel is de terugvaloptie voor wanneer dat niet lukt.",
+        inapp_h3="Vanuit de app op de telefoon",
+        inapp_steps=[
+            "Open <strong>drawbridge</strong> op de telefoon. Is er een nieuwere build, dan zegt het scherm dat en biedt het ze aan. De telefoon mag vergrendeld blijven, en je hebt je sleutel niet nodig.",
+            "Tik op de melding en <strong>zet Play Protect even uit</strong>. Het blokkeert een app die andere apps installeert, en dat is precies wat drawbridge op deze telefoon is — het kan niet zien dat jij dat zelf gekozen hebt.",
+            "Tik op <strong>De update installeren</strong> en zet Play Protect daarna weer aan.",
+        ],
+        inapp_note="Verder kost dit niets: de telefoon blijft vergrendeld en je sleutel blijft je sleutel. Herald en de blocklists werken zichzelf op de achtergrond bij en hebben hier niets van nodig.",
+        cable_h3="Via de kabel",
+        cable_intro="Voor een telefoon die de update niet via de app aanneemt. Zelfde pagina en zelfde knop als bij een verse installatie — die merkt dat drawbridge er al staat en werkt ze bij in plaats van opnieuw in te richten. Er wordt niets teruggezet en er gaat niets verloren.",
+        cable_steps=[
+            "Open <strong>drawbridge</strong> op de telefoon en voer je sleutel in om te ontgrendelen. Dat is wat USB-debugging teruggeeft.",
+            "Schakel <strong>USB-debugging</strong> weer in: Instellingen → Systeem → Ontwikkelaarsopties.",
+            "Verbind de telefoon met de computer en voer de installer uit.",
+            "<strong>Vergrendel drawbridge opnieuw</strong> op de telefoon, en schrijf de nieuwe sleutel op.",
+        ],
+        cable_note="Bij het vergrendelen wordt een verse sleutel gemaakt, dus je oude werkt niet meer. Via de kabel eindig je altijd met een nieuwe sleutel om op te schrijven; bij de update vanuit de app niet.",
+
         coming_title="Installeren vanuit uw browser",
         coming_text="Installeer drawbridge rechtstreeks vanaf deze site via USB, zonder software op te zetten. Vereist Chrome of Edge.",
         coming_btn="Installeren via USB",
@@ -629,15 +701,51 @@ INSTALL = {
         alpha_detail="Cette alpha publique a été testée sur trois appareils par ceux qui l'ont construite : un Motorola G15, un Nothing Phone (3a) et un Dumber Mini sous LineageOS. Le Nothing Phone est un téléphone du quotidien sur lequel elle tourne sans problème. Elle fonctionne de bout en bout sur les trois. On ne sait rien de son comportement sur un autre téléphone, donc n'utilisez pas un appareil dont vous dépendez.",
         caveat_title="L'installation de drawbridge désinstalle les applications qu'il bloque.",
         caveat_text="Sur un téléphone déjà utilisé, les applications qui ne sont jamais autorisées — réseaux sociaux, jeux nocifs, navigateurs que la politique ne sanctionne pas — disparaissent dans les minutes qui suivent l'installation, et ce qui n'existait qu'à l'intérieur d'elles disparaît avec. <strong>Mettez d'abord de côté ce que vous voulez garder</strong> : exportez vos favoris, sortez les photos d'une application qui les détient, notez où vous êtes connecté. Les applications sur lesquelles vous pouvez encore choisir, comme WhatsApp ou YouTube, restent jusqu'au verrouillage. Rien d'autre n'est effacé : vos photos, vos messages et vos autres applications restent en place.",
-        usb_h2="Installer par USB",
-        usb_qualifier="Pour les téléphones Android ordinaires avec Google comme pour les appareils Android open source dégooglisés : installez par USB en suivant les étapes ci-dessous.",
-        usb_steps=[
-            "<strong>Retirez tous les comptes du téléphone.</strong> Paramètres → Mots de passe, clés d'accès et comptes. Android n'accorde ce niveau de contrôle qu'à un téléphone ne portant aucun compte. Vous vous reconnecterez à l'étape 4.",
+        usb_qualifier="Cela fonctionne aussi bien sur les téléphones Android ordinaires avec Google que sur les Android open source dégooglisés.",
+
+        picker_legend="Que faites-vous ?",
+        flow_labels=[
+            "Installer sur un appareil neuf, ou après une réinitialisation",
+            "Installer sur un appareil déjà utilisé",
+            "Mettre à jour un appareil qui a drawbridge",
+        ],
+
+        new_intro="Le cas le plus simple : il n'y a rien à mettre de côté sur le téléphone, et rien que vous ayez choisi n'est désinstallé. La seule chose à ne pas rater, c'est le compte — Android n'accorde ce niveau de contrôle qu'à un téléphone ne portant aucun compte, alors sautez la connexion pendant la configuration et connectez-vous à la fin.",
+        new_steps=[
+            "<strong>Suivez la configuration d'Android et sautez la connexion.</strong> Si le téléphone a déjà terminé sa configuration avec un compte dessus, retirez-le : Paramètres → Mots de passe, clés d'accès et comptes.",
+            "Activez les options pour développeurs (tapez plusieurs fois sur le numéro de build dans Paramètres → À propos du téléphone) et activez le <strong>débogage USB</strong>.",
+            "Connectez le téléphone à un ordinateur avec un câble USB, et lancez l'installeur.",
+            "Connectez-vous avec un compte Google (ou un autre).",
+        ],
+        new_note="Les applications que la politique n'autorise jamais disparaissent ici aussi, dans les minutes qui suivent l'installation. Sur un téléphone aussi neuf, ce sont les réseaux sociaux et les jeux préinstallés par le fabricant, et rien que vous y ayez mis.",
+
+        used_steps=[
+            "<strong>Mettez de côté ce que vous voulez garder.</strong> Exportez vos favoris, sortez les photos d'une application qui les détient, notez où vous êtes connecté. L'avertissement ci-dessus dit ce qui disparaît.",
+            "<strong>Retirez tous les comptes du téléphone.</strong> Paramètres → Mots de passe, clés d'accès et comptes. Android n'accorde ce niveau de contrôle qu'à un téléphone ne portant aucun compte. Vous vous reconnecterez à la fin.",
             "<strong>Supprimez l'espace privé, si le téléphone en a un.</strong> Paramètres → Sécurité et confidentialité → Espace privé → Supprimer l'espace privé. Android refuse ce niveau de contrôle tant qu'un second profil existe, et un espace privé est masqué — il n'apparaît pas dans le sélecteur d'utilisateur et possède son propre code PIN. Les autres utilisateurs supplémentaires se trouvent dans Paramètres → Système → Utilisateurs multiples.",
             "Activez les options pour développeurs (tapez plusieurs fois sur le numéro de build dans Paramètres → À propos du téléphone) et activez le <strong>débogage USB</strong>.",
             "Connectez le téléphone à un ordinateur avec un câble USB, et lancez l'installeur.",
             "Reconnectez-vous avec un compte Google (ou un autre).",
         ],
+
+        update_intro="<strong>Le téléphone peut le faire tout seul.</strong> drawbridge consulte la politique signée pour voir s'il existe une version plus récente et la propose sur le téléphone — pendant qu'il reste verrouillé, sans votre clé et sans câble. Le câble est le recours pour les cas où cela ne passe pas.",
+        inapp_h3="Depuis l'application sur le téléphone",
+        inapp_steps=[
+            "Ouvrez <strong>drawbridge</strong> sur le téléphone. S'il existe une version plus récente, l'écran le dit et la propose. Le téléphone peut rester verrouillé, et votre clé n'est pas nécessaire.",
+            "Tapez sur l'avis, puis <strong>mettez Play Protect en pause</strong> une minute. Il bloque une application qui en installe d'autres, ce qu'est précisément drawbridge sur ce téléphone — et il ne peut pas voir que c'est vous qui l'avez voulu.",
+            "Tapez sur <strong>Installer la mise à jour</strong>, puis réactivez Play Protect.",
+        ],
+        inapp_note="Cela ne coûte rien d'autre : le téléphone reste verrouillé et votre clé reste votre clé. herald et les listes de blocage se mettent à jour d'eux-mêmes en arrière-plan et n'ont besoin de rien de tout cela.",
+        cable_h3="Par le câble",
+        cable_intro="Pour un téléphone qui n'accepte pas la mise à jour depuis l'application. Même page et même bouton que pour une installation neuve : il détecte que drawbridge est déjà là et le met à jour au lieu de le reconfigurer. Rien n'est réinitialisé et rien n'est perdu.",
+        cable_steps=[
+            "Sur le téléphone, ouvrez <strong>drawbridge</strong> et saisissez votre clé pour le déverrouiller. C'est ce qui rend le débogage USB.",
+            "Réactivez le <strong>débogage USB</strong> : Paramètres → Système → Options pour développeurs.",
+            "Branchez le téléphone à l'ordinateur et lancez l'installeur.",
+            "<strong>Verrouillez de nouveau drawbridge</strong> sur le téléphone, et notez la nouvelle clé.",
+        ],
+        cable_note="Le verrouillage forge une nouvelle clé : l'ancienne cesse donc de fonctionner. Par le câble, vous terminez toujours avec une nouvelle clé à noter ; par la mise à jour depuis l'application, non.",
+
         coming_title="Installer depuis votre navigateur",
         coming_text="Installez drawbridge directement depuis ce site par USB, sans logiciel à mettre en place. Nécessite Chrome ou Edge.",
         coming_btn="Installer par USB",
@@ -655,16 +763,92 @@ INSTALL = {
 
 
 def render_install(lang: str) -> str:
+    """The install guide, with the three situations behind one picker.
+
+    **Three flows rather than one, as of 2026-08-24**, because the page had been
+    written for exactly one of them: a phone somebody has been using. A new phone
+    has no accounts to strip and nothing to rescue, and its whole preparation is
+    "do not sign in during setup" — advice the old page could not give, because
+    it was busy telling everyone to remove accounts it assumed were there. A
+    phone that already has drawbridge does not want any of this: it wants to be
+    told the app updates itself.
+
+    **What the picker does not hide is the caveat about apps disappearing.** It
+    is sharpest for a phone in use and nearly moot on a new one, so by shape it
+    belongs in that panel -- but it is also the one thing on this page a reader
+    cannot afford to meet after the fact, and a warning behind a click is a
+    warning two thirds of readers never see. It stays above the picker; the
+    in-use flow's first step points back up at it, and the new-device flow says
+    in a footnote why it barely applies there.
+
+    **The picker is three radio buttons and a sibling selector**, so this page
+    still runs no script -- see [render_usb_installer] for the one page on this
+    site that does, and why it has no choice. Every panel is in the HTML and one
+    of them is displayed; a reader with CSS off gets all three, in order, each
+    under its own heading, which is the honest failure mode. Radios also give the
+    group arrow-key navigation for nothing, which a set of buttons would have had
+    to be taught.
+    """
     c = INSTALL[lang]
     prefix = lang_prefix(lang)
     faq_href = f"{prefix}/faq/"
     why_href = f"{prefix}/why-blocked/"
+
+    def installer_callout() -> str:
+        return f"""<div class="callout callout--coming-soon">
+          <strong>{c['coming_title']}</strong>
+          <p style="margin: 0.6rem 0 0;">{c['coming_text']}</p>
+          <div class="btn-row" style="margin-bottom:0;">
+            <a class="btn btn--primary" href="{prefix}/install/usb/">{c['coming_btn']}</a>
+          </div>
+        </div>"""
+
+    def after_setup() -> str:
+        return f"""<h3>{c['after_h2']}</h3>
+        {steps_html(c['after_steps'])}
+        <p class="footnote">{c['after_note']}</p>"""
+
+    labels = c["flow_labels"]
+    tabs = "\n".join(
+        f'          <label for="flow-{key}">{label}</label>'
+        for key, label in zip(("new", "used", "update"), labels)
+    )
+
+    panels = f"""        <section class="flow-panel" id="panel-new" aria-labelledby="flow-new-h">
+          <h2 id="flow-new-h" class="flow-panel-title">{labels[0]}</h2>
+          <p>{c['new_intro']}</p>
+          {steps_html(c['new_steps'])}
+          <p class="footnote">{c['new_note']}</p>
+          {installer_callout()}
+          {after_setup()}
+        </section>
+
+        <section class="flow-panel" id="panel-used" aria-labelledby="flow-used-h">
+          <h2 id="flow-used-h" class="flow-panel-title">{labels[1]}</h2>
+          {steps_html(c['used_steps'])}
+          {installer_callout()}
+          {after_setup()}
+        </section>
+
+        <section class="flow-panel" id="panel-update" aria-labelledby="flow-update-h">
+          <h2 id="flow-update-h" class="flow-panel-title">{labels[2]}</h2>
+          <p>{c['update_intro']}</p>
+          <h3>{c['inapp_h3']}</h3>
+          {steps_html(c['inapp_steps'])}
+          <p class="footnote">{c['inapp_note']}</p>
+          <h3>{c['cable_h3']}</h3>
+          <p>{c['cable_intro']}</p>
+          {steps_html(c['cable_steps'])}
+          <p class="footnote">{c['cable_note']}</p>
+          {installer_callout()}
+        </section>"""
 
     body = f"""
   <section class="section">
     <div class="wrap">
       <h1>{c['h1']}</h1>
       <p class="lede">{c['lede']}</p>
+      <p>{c['usb_qualifier']}</p>
 
       <div class="callout callout--alpha">
         <strong>{c['alpha_warning']}</strong>
@@ -676,24 +860,19 @@ def render_install(lang: str) -> str:
         <p style="margin: 0.5rem 0 0;">{c['caveat_text']}</p>
       </div>
 
-      <h2>{c['usb_h2']}</h2>
-      <p>{c['usb_qualifier']}</p>
-      {steps_html(c['usb_steps'])}
-
-      <div class="callout callout--coming-soon">
-        <strong>{c['coming_title']}</strong>
-        <p style="margin: 0.6rem 0 0;">{c['coming_text']}</p>
-        <div class="btn-row" style="margin-bottom:0;">
-          <a class="btn btn--primary" href="{prefix}/install/usb/">{c['coming_btn']}</a>
+      <div class="flow-picker" role="group" aria-label="{c['picker_legend']}">
+        <input type="radio" name="flow" id="flow-new" checked />
+        <input type="radio" name="flow" id="flow-used" />
+        <input type="radio" name="flow" id="flow-update" />
+        <p class="flow-legend">{c['picker_legend']}</p>
+        <div class="flow-tabs">
+{tabs}
         </div>
+
+{panels}
       </div>
 
       <p class="footnote">{c['meanwhile']}</p>
-
-      <h2>{c['after_h2']}</h2>
-      {steps_html(c['after_steps'])}
-
-      <p class="footnote">{c['after_note']}</p>
 
       <p>{c['see_more'].format(faq=faq_href, why=why_href)}</p>
     </div>
@@ -718,7 +897,7 @@ USB_INSTALLER = {
         browser_note="Needs Chrome, Edge or another Chromium browser. Firefox and Safari have no WebUSB.",
         unsupported="This browser cannot talk to USB devices. Open this page in Chrome or Edge, or use <code>tools/provision-adb.sh</code> from a terminal instead.",
         update_h2="Updating a phone that already has drawbridge",
-        update_intro="Same page, same button. It notices the phone is already managed and updates it instead. Nothing is reset and nothing on the phone is lost. drawbridge cannot update itself, so this cable is how a new version gets there.",
+        update_intro="Same page, same button. It notices the phone is already managed and updates it instead. Nothing is reset and nothing on the phone is lost. Try the phone first, though: drawbridge offers its own update on screen while it is still locked, and that route does not cost you your key. This cable is the fallback for when that will not go through.",
         update_steps=[
             "On the phone, open <strong>drawbridge</strong> and enter your key to unlock it. That is what hands USB debugging back.",
             "Turn <strong>USB debugging</strong> back on: Settings → System → Developer options.",
@@ -769,7 +948,7 @@ USB_INSTALLER = {
         browser_note="Vereist Chrome, Edge of een andere Chromium-browser. Firefox en Safari hebben geen WebUSB.",
         unsupported="Deze browser kan niet met USB-toestellen praten. Open deze pagina in Chrome of Edge, of gebruik <code>tools/provision-adb.sh</code> vanuit een terminal.",
         update_h2="Een telefoon bijwerken die drawbridge al heeft",
-        update_intro="Zelfde pagina, zelfde knop. Die merkt dat de telefoon al beheerd wordt en werkt hem bij in plaats van hem opnieuw in te richten. Er wordt niets teruggezet en er gaat niets verloren. drawbridge kan zichzelf niet bijwerken, dus via deze kabel komt een nieuwe versie binnen.",
+        update_intro="Zelfde pagina, zelfde knop. Die merkt dat de telefoon al beheerd wordt en werkt hem bij in plaats van hem opnieuw in te richten. Er wordt niets teruggezet en er gaat niets verloren. Probeer eerst de telefoon zelf: drawbridge biedt haar eigen update aan op het scherm terwijl ze vergrendeld blijft, en die weg kost je je sleutel niet. Deze kabel is de terugvaloptie voor wanneer dat niet lukt.",
         update_steps=[
             "Open op de telefoon <strong>drawbridge</strong> en voer je sleutel in om te ontgrendelen. Daardoor komt USB-foutopsporing terug.",
             "Zet <strong>USB-foutopsporing</strong> weer aan: Instellingen → Systeem → Ontwikkelaarsopties.",
@@ -820,7 +999,7 @@ USB_INSTALLER = {
         browser_note="Nécessite Chrome, Edge ou un autre navigateur Chromium. Firefox et Safari n'ont pas WebUSB.",
         unsupported="Ce navigateur ne peut pas communiquer avec les appareils USB. Ouvrez cette page dans Chrome ou Edge, ou utilisez <code>tools/provision-adb.sh</code> depuis un terminal.",
         update_h2="Mettre à jour un téléphone qui a déjà drawbridge",
-        update_intro="Même page, même bouton : il détecte que le téléphone est déjà géré et le met à jour au lieu de le reconfigurer. Rien n'est réinitialisé et rien n'est perdu. drawbridge ne peut pas se mettre à jour tout seul : c'est par ce câble qu'une nouvelle version arrive.",
+        update_intro="Même page, même bouton : il détecte que le téléphone est déjà géré et le met à jour au lieu de le reconfigurer. Rien n'est réinitialisé et rien n'est perdu. Essayez d'abord le téléphone lui-même : drawbridge propose sa propre mise à jour à l'écran pendant qu'il reste verrouillé, et cette voie ne vous coûte pas votre clé. Ce câble est le recours pour les cas où cela ne passe pas.",
         update_steps=[
             "Sur le téléphone, ouvrez <strong>drawbridge</strong> et saisissez votre clé pour le déverrouiller. C'est ce qui rend le débogage USB de nouveau disponible.",
             "Réactivez le <strong>débogage USB</strong> : Paramètres → Système → Options pour développeurs.",
