@@ -84,24 +84,141 @@
           </div>
         </div>
         <div class="how-art">
-          <div class="phone-photos" role="group" aria-label="Foto's van drawbridge vergrendeld op drie telefoons">
+          <div class="how-slides" role="group" aria-label="Drie schermen van drawbridge in werking: ontgrendeld, vergrendeld, en een geweigerde site">
             <figure>
-              <img src="/assets/img/phone-moto-g15.webp" alt="Een Motorola Moto G15 op tafel met het vergrendelscherm van drawbridge, naast een handgeschreven kaartje met de naam van de telefoon."
-                   width="800" height="800" loading="lazy" decoding="async" />
-              <figcaption>Motorola Moto G15</figcaption>
+              <img src="/assets/img/how-unlocked.webp" alt="De drawbridge-app open op een telefoon, ontgrendeld, met het beleid en de instellingen."
+                   width="640" height="1422" loading="lazy" decoding="async" />
             </figure>
             <figure>
-              <img src="/assets/img/phone-nothing-3a.webp" alt="Een Nothing Phone (3a) op tafel met het vergrendelscherm van drawbridge en een avondcurfew, naast een handgeschreven kaartje met de naam van de telefoon."
-                   width="800" height="800" loading="lazy" decoding="async" />
-              <figcaption>Nothing Phone (3a)</figcaption>
+              <img src="/assets/img/how-locked.webp" alt="Dezelfde app eenmaal vergrendeld: sinds wanneer ze de telefoon beschermt, en een veld voor de sleutel."
+                   width="640" height="1422" loading="lazy" decoding="async" />
             </figure>
             <figure>
-              <img src="/assets/img/phone-dumber-mini.webp" alt="Een Dumber Mini met toetsen op tafel, met het vergrendelscherm van drawbridge boven de toetsen, naast een handgeschreven kaartje met de naam van de telefoon."
-                   width="800" height="800" loading="lazy" decoding="async" />
-              <figcaption>Dumber Mini</figcaption>
+              <img src="/assets/img/how-blocked.webp" alt="De herald-browser die toont dat tiktok.com geweigerd is, met de drawbridge-illustratie erboven."
+                   width="640" height="1422" loading="lazy" decoding="async" />
             </figure>
           </div>
         </div>
+      </div>
+
+      <h2>De drawbridge-instellingen uitgelegd</h2>
+      <div class="explainer" role="group" aria-label="De drawbridge-instellingen uitgelegd">
+        <input type="radio" name="dbpage" id="dbp-1" checked />
+        <input type="radio" name="dbpage" id="dbp-2" />
+        <input type="radio" name="dbpage" id="dbp-3" />
+        <input type="radio" name="dbpage" id="dbp-4" />
+        <input type="radio" name="dbpage" id="dbp-5" />
+        <input type="radio" name="dbpage" id="dbp-6" />
+        <div class="explainer-dots">
+          <label for="dbp-1" title="Standaardbeleid, altijd actief"><span class="visually-hidden">Standaardbeleid, altijd actief</span></label>
+          <label for="dbp-2" title="Verbindingsfilosofie"><span class="visually-hidden">Verbindingsfilosofie</span></label>
+          <label for="dbp-3" title="Browserbeleid"><span class="visually-hidden">Browserbeleid</span></label>
+          <label for="dbp-4" title="Enkel de apps die je echt nodig hebt"><span class="visually-hidden">Enkel de apps die je echt nodig hebt</span></label>
+          <label for="dbp-5" title="Optioneel gif"><span class="visually-hidden">Optioneel gif</span></label>
+          <label for="dbp-6" title="Vergrendelen"><span class="visually-hidden">Vergrendelen</span></label>
+        </div>
+        <article class="explainer-page" id="dbpage-1">
+          <nav class="explainer-nav">
+            <label class="btn btn--ghost" for="dbp-6">&larr; Vorige</label>
+            <span class="explainer-count">1 van 6</span>
+            <label class="btn btn--ghost" for="dbp-2">Volgende &rarr;</label>
+          </nav>
+          <figure class="explainer-shot">
+            <img src="/assets/img/app-nl-1-policy.webp" alt="Het configuratiescherm van drawbridge, met Standaardbeleid, altijd actief."
+                 width="640" loading="lazy" decoding="async" />
+          </figure>
+          <div class="explainer-copy">
+            <h3>Standaardbeleid, altijd actief</h3>
+            <p>Houdt algoritmische sociale media, pornosites, gokken, advertenties, datingapps, games en AI-gezelschapsapps buiten. De enige beschikbare zoekmachines zijn Google, DuckDuckGo, Bing en Kagi. De enige browsers zijn herald (aanbevolen), herald mono, Chrome, Firefox Focus, Vivaldi, Comet en Via.</p>
+          </div>
+        </article>
+        <article class="explainer-page" id="dbpage-2">
+          <nav class="explainer-nav">
+            <label class="btn btn--ghost" for="dbp-1">&larr; Vorige</label>
+            <span class="explainer-count">2 van 6</span>
+            <label class="btn btn--ghost" for="dbp-3">Volgende &rarr;</label>
+          </nav>
+          <figure class="explainer-shot">
+            <img src="/assets/img/app-nl-2-disconnect.webp" alt="Het configuratiescherm van drawbridge, met Verbindingsfilosofie."
+                 width="640" loading="lazy" decoding="async" />
+          </figure>
+          <div class="explainer-copy">
+            <h3>Verbindingsfilosofie</h3>
+            <p>Kies om maar een deel van de tijd online te zijn, of maak van je telefoon een offline ‘dumbphone’. Kies dan ook geen browser.</p>
+          </div>
+        </article>
+        <article class="explainer-page" id="dbpage-3">
+          <nav class="explainer-nav">
+            <label class="btn btn--ghost" for="dbp-2">&larr; Vorige</label>
+            <span class="explainer-count">3 van 6</span>
+            <label class="btn btn--ghost" for="dbp-4">Volgende &rarr;</label>
+          </nav>
+          <figure class="explainer-shot">
+            <img src="/assets/img/app-nl-3-browser.webp" alt="Het configuratiescherm van drawbridge, met Browserbeleid."
+                 width="640" loading="lazy" decoding="async" />
+          </figure>
+          <div class="explainer-copy">
+            <h3>Browserbeleid</h3>
+            <p>Kies voor een minimalistische, monochrome browser — of helemaal geen browser!</p>
+          </div>
+        </article>
+        <article class="explainer-page" id="dbpage-4">
+          <nav class="explainer-nav">
+            <label class="btn btn--ghost" for="dbp-3">&larr; Vorige</label>
+            <span class="explainer-count">4 van 6</span>
+            <label class="btn btn--ghost" for="dbp-5">Volgende &rarr;</label>
+          </nav>
+          <figure class="explainer-shot">
+            <img src="/assets/img/app-nl-4-installs.webp" alt="Het configuratiescherm van drawbridge, met Enkel de apps die je echt nodig hebt."
+                 width="640" loading="lazy" decoding="async" />
+          </figure>
+          <div class="explainer-copy">
+            <h3>Enkel de apps die je echt nodig hebt</h3>
+            <p>Snoei je apps voor je vergrendelt en hou enkel de apps die je op je telefoon wil. Na de vergrendeling worden geen nieuwe apps meer toegelaten. Updates van bestaande apps komen wel door, dus hou de Play Store om bij te werken.</p>
+            <p>Wil je geen browser, kies dan die optie hierboven. Anders blijft herald geïnstalleerd.</p>
+            <p>Laat dit uit als je twijfelt. Een app blokkeren kan later altijd nog; een telefoon waarop niemand iets kan installeren is een telefoon waarvoor men bij jou moet aankloppen.</p>
+          </div>
+        </article>
+        <article class="explainer-page" id="dbpage-5">
+          <nav class="explainer-nav">
+            <label class="btn btn--ghost" for="dbp-4">&larr; Vorige</label>
+            <span class="explainer-count">5 van 6</span>
+            <label class="btn btn--ghost" for="dbp-6">Volgende &rarr;</label>
+          </nav>
+          <figure class="explainer-shot">
+            <img src="/assets/img/app-nl-5-options.webp" alt="Het configuratiescherm van drawbridge, met Optioneel gif."
+                 width="640" loading="lazy" decoding="async" />
+          </figure>
+          <div class="explainer-copy">
+            <h3>Optioneel gif</h3>
+            <h4>WhatsApp toestaan</h4>
+            <p>WhatsApp brengt privacyrisico&#x27;s mee, heeft toxische socialemediafuncties en een vervelende chatbot. Signal is op dit toestel altijd toegelaten, al raden we ook daar 14+ en/of ouderlijke begeleiding aan: als groepschat-app draagt het een risico op cyberpesten. Dit uitzetten verwijdert de app niet: ze wordt opgeschort en verborgen, en komt met al haar gesprekken en media intact terug zodra je ze weer aanzet. Wil je ze echt kwijt, verwijder ze dan zelf voor je vergrendelt.</p>
+            <h4>YouTube toestaan</h4>
+            <p>De aanbevelingsfeed en Shorts van YouTube zijn gemaakt om je te laten doorkijken, en daarom staat YouTube standaard uit. Zet je dit aan, dan komen YouTube en zijn familie terug (Kids, TV, Creator Studio, Music) en gaat Google&#x27;s eigen Beperkte modus aan voor de YouTube-app en voor de browser. De telefoon dwingt dat af, dus het kan niet vanuit YouTube worden uitgezet. In herald openen Shorts als gewone video&#x27;s.</p>
+            <h4>Telegram toestaan</h4>
+            <p>Telegram is een goede berichtenapp om een slechte heen. Privéchats zijn prima. Publieke kanalen zijn doorzoekbaar, in de praktijk ongemodereerd, en het is daar dat pornografie, extremistische ronselarij en illegale bestanden op dit platform zitten. Er is geen instelling die ze weghaalt, en gewone chats zijn niet end-to-end versleuteld tenzij je telkens een Geheime chat begint. Signal mag altijd op dit toestel en doet het berichtendeel beter. Dit uitzetten verwijdert de app niet: ze wordt opgeschort en verborgen, en komt met al haar gesprekken en media intact terug zodra je ze weer aanzet. Wil je ze echt kwijt, verwijder ze dan zelf voor je vergrendelt.</p>
+            <h4>Long-form video streaming toestaan</h4>
+            <p>Netflix, Prime Video, Disney+, HBO Max en een vijftigtal andere abonnementsdiensten voor video staan standaard uit, want een avond verdwijnt daarin even makkelijk als in een feed. Zet je dit aan, dan komen ze allemaal tegelijk terug, de apps en de websites. YouTube hoort hier niet bij: dat heeft zijn eigen optie, want een aanbevelingsfeed is iets anders dan een film waar je voor bent gaan zitten.</p>
+          </div>
+        </article>
+        <article class="explainer-page" id="dbpage-6">
+          <nav class="explainer-nav">
+            <label class="btn btn--ghost" for="dbp-5">&larr; Vorige</label>
+            <span class="explainer-count">6 van 6</span>
+            <label class="btn btn--ghost" for="dbp-1">Volgende &rarr;</label>
+          </nav>
+          <figure class="explainer-shot">
+            <img src="/assets/img/app-nl-6-locking.webp" alt="Het configuratiescherm van drawbridge, met Vergrendelen."
+                 width="640" loading="lazy" decoding="async" />
+          </figure>
+          <div class="explainer-copy">
+            <h3>Vergrendelen</h3>
+            <p>Vergrendelen legt de opties vast die je hierboven gekozen hebt. Je hebt de sleutel nodig om terug naar de ontgrendelde modus te gaan — onthouden of net vergeten — of je gebruikt de timer. Vergrendeld kan drawbridge niet verwijderd worden, ook niet met een factory reset.</p>
+            <p>Zonder timer blijft drawbridge vergrendeld tot je de sleutel ingeeft. Je kunt ook een timer zetten waarna drawbridge zichzelf ontgrendelt.</p>
+            <p>Er is nog altijd een sleutel om eerder te ontgrendelen, maar veel mensen ‘vergeten’ de sleutel liever met opzet en gebruiken de timer om er even tussenuit te zijn, bv. “4 uur studeren zonder internet”, “een weekend kamperen offline”, “2 weken zonder YouTube”, “3 weken met een strikte internetcurfew”.</p>
+            <p>De periode ligt vast op het moment dat je vergrendelt. Ze kan niet ingekort, verlengd of uitgezet worden vanaf een vergrendelde telefoon, en de klok van de telefoon volgt de netwerktijd, dus de datum kan ook niet verschoven worden.</p>
+          </div>
+        </article>
       </div>
     </div>
   </section>
@@ -120,6 +237,23 @@
           <p>Toestellen met sterk aangepaste Android-versies: Xiaomi, Oppo, Vivo, Redmi, Realme.</p>
         </div>
       </div>
+          <div class="phone-photos phone-photos--row" role="group" aria-label="Foto's van drawbridge vergrendeld op drie telefoons">
+            <figure>
+              <img src="/assets/img/phone-moto-g15.webp" alt="Een Motorola Moto G15 op tafel met het vergrendelscherm van drawbridge, naast een handgeschreven kaartje met de naam van de telefoon."
+                   width="800" height="800" loading="lazy" decoding="async" />
+              <figcaption>Motorola Moto G15</figcaption>
+            </figure>
+            <figure>
+              <img src="/assets/img/phone-nothing-3a.webp" alt="Een Nothing Phone (3a) op tafel met het vergrendelscherm van drawbridge en een avondcurfew, naast een handgeschreven kaartje met de naam van de telefoon."
+                   width="800" height="800" loading="lazy" decoding="async" />
+              <figcaption>Nothing Phone (3a)</figcaption>
+            </figure>
+            <figure>
+              <img src="/assets/img/phone-dumber-mini.webp" alt="Een Dumber Mini met toetsen op tafel, met het vergrendelscherm van drawbridge boven de toetsen, naast een handgeschreven kaartje met de naam van de telefoon."
+                   width="800" height="800" loading="lazy" decoding="async" />
+              <figcaption>Dumber Mini</figcaption>
+            </figure>
+          </div>
       <div class="btn-row">
         <a class="btn btn--ghost" href="/nl/faq/">Bekijk onze Q&amp;A</a>
       </div>

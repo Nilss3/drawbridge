@@ -225,11 +225,53 @@ code {
 .section { padding: 2.5rem 0; }
 .section--alt { background: var(--paper); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
 
-/* "How it works": text beside photographs of the phones. Sizing lives on
-   .phone-photos below, which is the only thing this column holds. */
+/* "How it works": prose in one column, three screens of the running system
+   crossfading in the other.
+ *
+ * The section had prose and nothing else for a few hours on 2026-08-24, after
+ * the photographs moved to "On what devices?" — and the explainer under it
+ * opens on the *policy*, so a reader met six pages of settings without having
+ * seen the thing once. These three are the overview that was missing: open,
+ * locked, and a site refused.
+ */
 .how-grid { display: grid; grid-template-columns: 1.35fr 1fr; gap: 2rem; align-items: center; margin-top: 1.2rem; }
 @media (max-width: 780px) {
   .how-grid { grid-template-columns: 1fr; gap: 1.4rem; }
+}
+
+/* Six seconds held, one second of crossfade, three slides to an 18s cycle.
+   Negative delays put all three mid-cycle on the first frame, so slide one is
+   simply the one showing; the first figure stays in the flow and gives the
+   block its height, and the other two are laid over it. All three are the same
+   1080x2400 screen, so they measure the same. */
+.how-slides { position: relative; max-width: 300px; margin: 0 auto; }
+.how-slides figure { margin: 0; opacity: 0; animation: how-slide-fade 18s infinite; }
+.how-slides figure:first-child { position: relative; }
+.how-slides figure + figure { position: absolute; top: 0; left: 0; right: 0; }
+.how-slides figure:nth-child(2) { animation-delay: -12s; }
+.how-slides figure:nth-child(3) { animation-delay: -6s; }
+.how-slides img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+@keyframes how-slide-fade {
+  0%     { opacity: 1; }
+  27.78% { opacity: 1; }   /* 5s  */
+  33.33% { opacity: 0; }   /* 6s  */
+  94.44% { opacity: 0; }   /* 17s */
+  100%   { opacity: 1; }   /* 18s */
+}
+
+/* Asked not to move things: all three at once, in a column. Nothing is lost —
+   the slideshow's whole content is three screenshots, and so is this. */
+@media (prefers-reduced-motion: reduce) {
+  .how-slides figure,
+  .how-slides figure + figure { position: relative; animation: none; opacity: 1; }
+  .how-slides figure + figure { margin-top: 1.2rem; }
 }
 
 /* Three photographs, one under the other.
@@ -251,6 +293,22 @@ code {
   text-align: center;
   font-size: 0.85rem;
   color: var(--ink-soft);
+}
+
+/* The photographs sit under "On what devices?" now, three across, under the
+   two cards. That is the question they answer — three phones, three
+   manufacturers, one of them not even running an OEM's Android — and it is why
+   they left "how it works", where they were decoration beside text about
+   installing. Across rather than stacked because the page is full width here
+   and a column of three would run twice the height of everything beside it. */
+.phone-photos--row {
+  max-width: none;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.2rem;
+  margin: 1.4rem 0 0;
+}
+@media (max-width: 780px) {
+  .phone-photos--row { grid-template-columns: 1fr; max-width: 280px; }
 }
 
 .steps { list-style: none; margin: 1.2rem 0; padding: 0; display: grid; gap: 0.9rem; }
@@ -546,4 +604,107 @@ td:first-child, th:first-child { white-space: nowrap; }
   font-size: 0.85rem;
   font-weight: 700;
   letter-spacing: 0.02em;
+}
+
+/* "Drawbridge app explained": six screens of the app, one at a time.
+ *
+ * Radios and a sibling selector, like the install page's picker, because this
+ * site runs no JavaScript outside the USB installer and a carousel is not the
+ * thing to break that for. Every page is in the HTML and one is shown, so with
+ * CSS off a reader gets six sections in order under their own headings —
+ * which is a perfectly good way to read this page.
+ */
+.explainer {
+  position: relative;
+  margin: 1.4rem 0 0;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 1.4rem;
+}
+.explainer > input {
+  position: absolute;
+  width: 1px; height: 1px;
+  margin: -1px; padding: 0; border: 0;
+  overflow: hidden; clip-path: inset(50%);
+}
+
+/* Direct access to any page, and the only part of the widget that is always
+   visible — so it doubles as the "there are six of these" signal. */
+.explainer-dots { display: flex; justify-content: center; gap: 0.5rem; margin-bottom: 1.2rem; }
+.explainer-dots label {
+  width: 0.85rem; height: 0.85rem;
+  border-radius: 50%;
+  border: 1px solid var(--slate);
+  cursor: pointer;
+}
+.explainer-dots label:hover { background: var(--line); }
+
+.explainer-page { display: none; }
+.explainer-page {
+  grid-template-columns: minmax(0, 300px) 1fr;
+  gap: 1.8rem;
+  align-items: start;
+}
+#dbp-1:checked ~ #dbpage-1,
+#dbp-2:checked ~ #dbpage-2,
+#dbp-3:checked ~ #dbpage-3,
+#dbp-4:checked ~ #dbpage-4,
+#dbp-5:checked ~ #dbpage-5,
+#dbp-6:checked ~ #dbpage-6 { display: grid; }
+
+#dbp-1:checked ~ .explainer-dots label[for="dbp-1"],
+#dbp-2:checked ~ .explainer-dots label[for="dbp-2"],
+#dbp-3:checked ~ .explainer-dots label[for="dbp-3"],
+#dbp-4:checked ~ .explainer-dots label[for="dbp-4"],
+#dbp-5:checked ~ .explainer-dots label[for="dbp-5"],
+#dbp-6:checked ~ .explainer-dots label[for="dbp-6"] { background: var(--wood); border-color: var(--wood); }
+
+#dbp-1:focus-visible ~ .explainer-dots label[for="dbp-1"],
+#dbp-2:focus-visible ~ .explainer-dots label[for="dbp-2"],
+#dbp-3:focus-visible ~ .explainer-dots label[for="dbp-3"],
+#dbp-4:focus-visible ~ .explainer-dots label[for="dbp-4"],
+#dbp-5:focus-visible ~ .explainer-dots label[for="dbp-5"],
+#dbp-6:focus-visible ~ .explainer-dots label[for="dbp-6"] { outline: 2px solid var(--wood); outline-offset: 3px; }
+
+.explainer-shot { margin: 0; }
+.explainer-shot img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+.explainer-copy h3 { margin-top: 0; }
+.explainer-copy h4 { margin: 1.1rem 0 0.2rem; font-size: 1rem; color: var(--slate-dark); }
+.explainer-copy p { margin: 0.5rem 0; }
+
+/* Above the page rather than below it, as of 2026-08-24. The pages differ a
+   lot in height — page 5 is four options long — so controls at the bottom sat
+   somewhere different every time and, on the long pages, below the fold: a
+   reader could finish page 1 without ever learning there were five more. */
+.explainer-nav {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem;
+  margin-bottom: 1.4rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--line);
+}
+.explainer-nav .btn { padding: 0.55rem 1rem; font-size: 0.92rem; }
+.explainer-count { font-size: 0.85rem; color: var(--ink-soft); white-space: nowrap; }
+
+@media (max-width: 780px) {
+  .explainer { padding: 1rem; }
+  .explainer-page { grid-template-columns: 1fr; gap: 1.1rem; }
+  .explainer-shot { max-width: 300px; margin: 0 auto; }
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px; height: 1px;
+  margin: -1px; padding: 0; border: 0;
+  overflow: hidden; clip-path: inset(50%);
 }

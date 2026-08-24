@@ -339,6 +339,72 @@ HOME = {
 }
 
 
+# Three screens of the running system, crossfading beside "How it works".
+#
+# The section had prose and nothing else after the photographs moved to "On
+# what devices?", and the app explainer under it starts at the *policy* — so a
+# reader met six pages of settings without ever having seen what the thing looks
+# like. These are that overview: the app open, the app locked, and a blocked
+# site in herald, which is the whole product in three pictures.
+#
+# Captured on the API 36 emulator in light mode, with drawbridge as device owner
+# and the filter running, so the block page is a real one and not a mock-up.
+HOW_SLIDES = [
+    dict(
+        file="how-unlocked.webp",
+        alt=dict(
+            en="The drawbridge app open on a phone, unlocked, showing the policy and its settings.",
+            nl="De drawbridge-app open op een telefoon, ontgrendeld, met het beleid en de instellingen.",
+            fr="L'application drawbridge ouverte sur un téléphone, déverrouillée, montrant la politique et ses réglages.",
+        ),
+    ),
+    dict(
+        file="how-locked.webp",
+        alt=dict(
+            en="The same app once locked: the dates it has been protecting the phone, and a field for the key.",
+            nl="Dezelfde app eenmaal vergrendeld: sinds wanneer ze de telefoon beschermt, en een veld voor de sleutel.",
+            fr="La même application une fois verrouillée : depuis quand elle protège le téléphone, et un champ pour la clé.",
+        ),
+    ),
+    dict(
+        file="how-blocked.webp",
+        alt=dict(
+            en="The herald browser showing that tiktok.com was refused, with the drawbridge illustration above it.",
+            nl="De herald-browser die toont dat tiktok.com geweigerd is, met de drawbridge-illustratie erboven.",
+            fr="Le navigateur herald indiquant que tiktok.com a été refusé, avec l'illustration de drawbridge au-dessus.",
+        ),
+    ),
+]
+
+HOW_SLIDES_LABEL = dict(
+    en="Three screens of drawbridge running: unlocked, locked, and a site refused",
+    nl="Drie schermen van drawbridge in werking: ontgrendeld, vergrendeld, en een geweigerde site",
+    fr="Trois écrans de drawbridge en fonctionnement : déverrouillé, verrouillé, et un site refusé",
+)
+
+
+def how_slides_html(lang: str) -> str:
+    """The crossfade beside "How it works".
+
+    Markup only; the crossfade is in style.css and no script runs on this page.
+    Under prefers-reduced-motion the same three stack into a column, so a reader
+    who asked for stillness sees all three rather than one.
+    """
+    figures = []
+    for slide in HOW_SLIDES:
+        figures.append(
+            f'            <figure>\n'
+            f'              <img src="/assets/img/{slide["file"]}" alt="{slide["alt"][lang]}"\n'
+            f'                   width="640" height="1422" loading="lazy" decoding="async" />\n'
+            f'            </figure>'
+        )
+    return (
+        f'          <div class="how-slides" role="group" aria-label="{HOW_SLIDES_LABEL[lang]}">\n'
+        + "\n".join(figures)
+        + "\n          </div>"
+    )
+
+
 # ---------------------------------------------------------------------------
 # Photographs of drawbridge locked on real phones
 # ---------------------------------------------------------------------------
@@ -409,12 +475,18 @@ PHOTOS_LABEL = dict(
 )
 
 
-def phone_photos_html(lang: str) -> str:
-    """The stacked photographs under "How it works".
+def phone_photos_html(lang: str, row: bool = False) -> str:
+    """The photographs of the three phones, as a column or as a row.
 
-    Markup only, and nothing moves: three figures in a column, styled by
-    `.phone-photos` in style.css. No script runs on this page and nothing here
-    needs one.
+    **They live under "On what devices?" as of 2026-08-24**, which is the
+    question they answer: three phones, three manufacturers, one of them not
+    even running an OEM's Android, all of them running this. Under "How it
+    works" they were decoration beside text about installing, and that section
+    now runs full width with the app explainer under it.
+
+    `row` is what the move needed. Stacked, three photographs made a column
+    twice the height of the two device cards beside them; across, they sit under
+    the cards at the full width of the page and the section stays one screen.
     """
     figures = []
     for photo in PHONE_PHOTOS:
@@ -425,11 +497,262 @@ def phone_photos_html(lang: str) -> str:
             f'              <figcaption>{photo["caption"]}</figcaption>\n'
             f'            </figure>'
         )
+    variant = " phone-photos--row" if row else ""
     return (
-        f'          <div class="phone-photos" role="group" aria-label="{PHOTOS_LABEL[lang]}">\n'
+        f'          <div class="phone-photos{variant}" role="group" aria-label="{PHOTOS_LABEL[lang]}">\n'
         + "\n".join(figures)
         + "\n          </div>"
     )
+
+
+# ---------------------------------------------------------------------------
+# "Drawbridge app explained" — the configuration screen, one section per page
+# ---------------------------------------------------------------------------
+#
+# **Every word of explanation here is read out of the app, not written here.**
+# Four of the six pages quote an ⓘ button on the configuration screen, and those
+# buttons are the one place this project has already said each thing carefully.
+# Copying them into the site by hand would make two texts that drift, and the
+# drift would be invisible: nobody diffs a website against a policy document.
+#
+# So the pages are assembled at build time from the two places those texts
+# actually live:
+#
+#   - the signed policy, `dist/policy.signed.json`, for the profile description
+#     and the four option descriptions — the words a phone will show once it has
+#     polled, in whatever language it is set to;
+#   - the app's own string resources, `dpc/src/main/res/values*/strings.xml`,
+#     for the two controls that are device-local and therefore have no entry in
+#     the document: the install lock and the unlock timer.
+#
+# Rebuild the site and the widget is current. Change a policy description and
+# the next `python3 tools/build-site.py` carries it across on its own; there is
+# nothing to remember.
+#
+# The prose that is *not* from a button — the page titles, and pages 2 and 3 —
+# is in PAGE_COPY below, because those describe a choice rather than explain a
+# setting and the app has no equivalent text to quote.
+
+import re as _re
+
+#: The section of the configuration screen each page shows, as the middle of the
+#: filename. There is one set per language, because the app is translated and a
+#: French page beside an English screenshot is a page that has not been
+#: translated — it has been half translated, which reads worse than either.
+#: Captured on the API 36 emulator in light mode; see tools/README on how.
+EXPLAINER_SECTIONS = {
+    1: "policy",
+    2: "disconnect",
+    3: "browser",
+    4: "installs",
+    5: "options",
+    6: "locking",
+}
+
+
+def explainer_shot(lang: str, page: int) -> str:
+    return f"app-{lang}-{page}-{EXPLAINER_SECTIONS[page]}.webp"
+
+PAGE_COPY = {
+    "en": dict(
+        widget_h2="Drawbridge settings explained",
+        prev="Previous",
+        next="Next",
+        of="{n} of {total}",
+        titles={
+            1: "Default policy, always active",
+            2: "Disconnect philosophy",
+            3: "Browser policy",
+            4: "Go with only the apps you really need",
+            5: "Optional poison",
+            6: "Locking",
+        },
+        page2="Choose to be online only some of the time, or make your phone an offline ‘dumbphone’. Pick then also no browser.",
+        page3="Choose to have a minimalist, monochrome browser, or no browser at all!",
+        page6_lead="Locking forces the options you put before. You’ll need to remember (or forget) the key to go back to the unlocked mode, or use the timer. When locked, drawbridge cannot be removed, not even by factory reset.",
+        alt="The drawbridge configuration screen, showing {title}.",
+    ),
+    "nl": dict(
+        widget_h2="De drawbridge-instellingen uitgelegd",
+        prev="Vorige",
+        next="Volgende",
+        of="{n} van {total}",
+        titles={
+            1: "Standaardbeleid, altijd actief",
+            2: "Verbindingsfilosofie",
+            3: "Browserbeleid",
+            4: "Enkel de apps die je echt nodig hebt",
+            5: "Optioneel gif",
+            6: "Vergrendelen",
+        },
+        page2="Kies om maar een deel van de tijd online te zijn, of maak van je telefoon een offline ‘dumbphone’. Kies dan ook geen browser.",
+        page3="Kies voor een minimalistische, monochrome browser — of helemaal geen browser!",
+        page6_lead="Vergrendelen legt de opties vast die je hierboven gekozen hebt. Je hebt de sleutel nodig om terug naar de ontgrendelde modus te gaan — onthouden of net vergeten — of je gebruikt de timer. Vergrendeld kan drawbridge niet verwijderd worden, ook niet met een factory reset.",
+        alt="Het configuratiescherm van drawbridge, met {title}.",
+    ),
+    "fr": dict(
+        widget_h2="Les réglages de drawbridge expliqués",
+        prev="Précédent",
+        next="Suivant",
+        of="{n} sur {total}",
+        titles={
+            1: "Politique par défaut, toujours active",
+            2: "Philosophie de connexion",
+            3: "Politique de navigateur",
+            4: "N’emportez que les applications dont vous avez vraiment besoin",
+            5: "Poison facultatif",
+            6: "Verrouillage",
+        },
+        page2="Choisissez de n’être en ligne qu’une partie du temps, ou faites de votre téléphone un « dumbphone » hors ligne. Choisissez alors aussi de n’avoir aucun navigateur.",
+        page3="Choisissez un navigateur minimaliste et monochrome — ou aucun navigateur du tout !",
+        page6_lead="Le verrouillage fige les options que vous avez choisies plus haut. Il vous faudra la clé pour revenir au mode déverrouillé — la retenir, ou justement l’oublier — ou bien le minuteur. Verrouillé, drawbridge ne peut pas être supprimé, pas même par une réinitialisation d’usine.",
+        alt="L’écran de configuration de drawbridge, montrant : {title}.",
+    ),
+}
+
+
+def _policy_document() -> dict:
+    """The signed policy's payload, decoded.
+
+    The *signed* copy rather than `dist/policy.json`, deliberately: it is the
+    document a phone will actually be handed, so a description that has been
+    edited but not yet signed does not reach the site ahead of the phones.
+    """
+    import base64
+
+    envelope = json.loads((REPO_ROOT / "dist" / "policy.signed.json").read_text())
+    return json.loads(base64.b64decode(envelope["payload"]))
+
+
+def _app_string(name: str, lang: str) -> str:
+    """One string resource out of the app, as HTML.
+
+    Android's escaping is not HTML's: `\n` is a line break, and apostrophes and
+    quotes carry backslashes. Paragraph breaks are `\n\n`, so the text comes
+    back as one <p> per paragraph rather than as a wall.
+    """
+    directory = "values" if lang == "en" else f"values-{lang}"
+    path = REPO_ROOT / "dpc" / "src" / "main" / "res" / directory / "strings.xml"
+    match = _re.search(rf'<string name="{name}">(.*?)</string>', path.read_text(), _re.S)
+    if match is None:
+        raise SystemExit(
+            f"{path.relative_to(REPO_ROOT)} has no string named {name}, and the "
+            "app explainer on the homepage quotes it. Either the resource was "
+            "renamed or the widget is pointing at the wrong one."
+        )
+    raw = _re.sub(
+        r"\\u([0-9a-fA-F]{4})",
+        lambda m: chr(int(m.group(1), 16)),
+        match.group(1)
+        .replace(r"\'", "'")
+        .replace(r'\"', '"')
+        .replace(r"\n", "\n"),
+    )
+    paragraphs = [html.escape(p.strip()) for p in raw.split("\n\n") if p.strip()]
+    return "\n            ".join(f"<p>{p}</p>" for p in paragraphs)
+
+
+def _localised(entry: dict, field: str, lang: str) -> str:
+    """A policy field in [lang], falling back to the untranslated original.
+
+    The same rule the apps use — see `pick` in Policy.kt — so the site and the
+    phone show the same words rather than the site blanking where a translation
+    is missing.
+    """
+    translated = (entry.get(f"{field}_i18n") or {}).get(lang)
+    return html.escape((translated or entry.get(field) or "").strip())
+
+
+def explainer_pages(lang: str) -> list[dict]:
+    """The six pages, assembled from the policy and the app's strings."""
+    c = PAGE_COPY[lang]
+    policy = _policy_document()
+
+    profiles = policy.get("profiles") or []
+    default_id = policy.get("default_profile")
+    profile = next((p for p in profiles if p.get("id") == default_id), profiles[0])
+
+    options_html = []
+    for option in policy.get("options") or []:
+        options_html.append(
+            f'<h4>{_localised(option, "name", lang)}</h4>\n'
+            f'            <p>{_localised(option, "description", lang)}</p>'
+        )
+
+    bodies = {
+        1: f'<p>{_localised(profile, "description", lang)}</p>',
+        2: f'<p>{c["page2"]}</p>',
+        3: f'<p>{c["page3"]}</p>',
+        4: _app_string("install_lock_info", lang),
+        5: "\n            ".join(options_html),
+        6: f'<p>{c["page6_lead"]}</p>\n            ' + _app_string("lock_timer_info", lang),
+    }
+
+    return [
+        dict(n=n, title=c["titles"][n], body=bodies[n], shot=explainer_shot(lang, n))
+        for n in range(1, 7)
+    ]
+
+
+def render_explainer(lang: str) -> str:
+    """The pager itself.
+
+    **Radios and sibling selectors again**, for the reason the install page's
+    picker uses them: this site runs no JavaScript outside the USB installer,
+    and a six-page carousel is not the thing to break that for. Every page is in
+    the HTML and one is displayed, so a reader with CSS off gets six sections in
+    order under their own headings — which is a perfectly good way to read this.
+
+    Previous and next are labels pointing at the neighbouring radio, and they
+    wrap: page 1's previous is page 6. Wrapping rather than greying out, because
+    a disabled control at the start of a carousel is a thing to explain, and
+    there is nothing here that a wrap gets wrong.
+    """
+    c = PAGE_COPY[lang]
+    pages = explainer_pages(lang)
+    total = len(pages)
+
+    inputs = "\n".join(
+        f'        <input type="radio" name="dbpage" id="dbp-{p["n"]}"'
+        f'{" checked" if p["n"] == 1 else ""} />'
+        for p in pages
+    )
+    dots = "\n".join(
+        f'          <label for="dbp-{p["n"]}" title="{p["title"]}">'
+        f'<span class="visually-hidden">{p["title"]}</span></label>'
+        for p in pages
+    )
+
+    articles = []
+    for page in pages:
+        n = page["n"]
+        previous = total if n == 1 else n - 1
+        following = 1 if n == total else n + 1
+        alt = c["alt"].format(title=page["title"])
+        articles.append(f"""        <article class="explainer-page" id="dbpage-{n}">
+          <nav class="explainer-nav">
+            <label class="btn btn--ghost" for="dbp-{previous}">&larr; {c['prev']}</label>
+            <span class="explainer-count">{c['of'].format(n=n, total=total)}</span>
+            <label class="btn btn--ghost" for="dbp-{following}">{c['next']} &rarr;</label>
+          </nav>
+          <figure class="explainer-shot">
+            <img src="/assets/img/{page['shot']}" alt="{alt}"
+                 width="640" loading="lazy" decoding="async" />
+          </figure>
+          <div class="explainer-copy">
+            <h3>{page['title']}</h3>
+            {page['body']}
+          </div>
+        </article>""")
+
+    return f"""      <h2>{c['widget_h2']}</h2>
+      <div class="explainer" role="group" aria-label="{c['widget_h2']}">
+{inputs}
+        <div class="explainer-dots">
+{dots}
+        </div>
+{chr(10).join(articles)}
+      </div>"""
 
 
 def render_home(lang: str) -> str:
@@ -484,9 +807,11 @@ def render_home(lang: str) -> str:
           </div>
         </div>
         <div class="how-art">
-{phone_photos_html(lang)}
+{how_slides_html(lang)}
         </div>
       </div>
+
+{render_explainer(lang)}
     </div>
   </section>
 
@@ -504,6 +829,7 @@ def render_home(lang: str) -> str:
           <p>{c['warn_text']}</p>
         </div>
       </div>
+{phone_photos_html(lang, row=True)}
       <div class="btn-row">
         <a class="btn btn--ghost" href="{faq_href}">{c['see_faq']}</a>
       </div>
