@@ -1453,6 +1453,23 @@ front of *policy* selection carries the same two stale sentences and is still
 there: swapping a profile changes the resolver and every blocklist with it, so
 it has something to confirm and wants rewording rather than deleting.)
 
+**"Applied after lock" is only said when something is actually waiting**, as of
+2026-08-24, from the owner reading it on the wrong half of every control. Each
+control on that screen has a widest setting — *Sadly always online*, *Allow the
+browsers*, *No other apps* switched off, an option switched on — and that
+setting is the one an unlocked phone is already in. Choosing it changes nothing
+that was not already true, or is honoured on the spot: `restoreNowAllowed`
+unhides what is allowed again before the toast would appear, and
+`CurfewController.apply` cancels a curfew as the radio moves. Announcing a
+future for a change that has no future left is not a small inaccuracy on this
+screen in particular, because the *tightening* direction really does wait, and a
+sentence that appears in both directions stops distinguishing them. Worse, a
+phone that has never been locked would be told to wait for a lock that may never
+come. Those choices say nothing now and let the switch or the radio be the
+acknowledgement — which is what they did before the sentence existed, and the
+argument for adding it (a tick that moves says the app heard you, not that the
+phone changed) was an argument about the direction that changes the phone.
+
 One wrinkle worth knowing. `lockDevice` triggers the policy fetch and the
 required-app install *before* it mints the key, because everything needing the
 configuration screen has to happen before that screen is sealed. So

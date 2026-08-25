@@ -311,6 +311,71 @@ class DeviceOwnerManager(context: Context) {
      * forbidding edits only freezes whatever the clock already said — a device
      * whose clock was wrong when the restriction landed would stay wrong.
      */
+    /**
+     * Moves the phone off a strict Private DNS host before
+     * [UserManager.DISALLOW_CONFIG_PRIVATE_DNS] makes the setting unwritable.
+     *
+     * **The restriction stops the value being changed; it does not change the
+     * value.** That asymmetry is a trap, and it was found on a real phone on
+     * 2026-08-19. Nothing is applied before the first lock — that window is for
+     * adding an account and moving data off — so somebody can set Private DNS to
+     * a hostname in it, quite reasonably, and then lock. From that moment:
+     *
+     *  - `block_encrypted_dns` routes the known DoH and DoT endpoints into the
+     *    tunnel and drops them, and every provider a person is likely to type is
+     *    on that list;
+     *  - Android's hostname mode is **strict** and has no cleartext fallback, so
+     *    every lookup on the device fails and the phone looks broken rather than
+     *    filtered;
+     *  - and the restriction now refuses every route back. Settings greys the
+     *    entry out, `settings put global private_dns_mode` from an adb shell is
+     *    *silently ignored* — the platform maps that key to this restriction
+     *    inside the settings provider — and unlocking does not help, because
+     *    this restriction is keyed on protection rather than on the lock.
+     *
+     * The only exits left would be removing drawbridge or a factory reset, for a
+     * setting the owner chose before drawbridge had any opinion about it.
+     *
+     * **Opportunistic rather than off, because there is no setter for off.**
+     * `DevicePolicyManager` offers only `setGlobalPrivateDnsModeOpportunistic`
+     * and `setGlobalPrivateDnsModeSpecifiedHost`, and opportunistic is
+     * harmless here: it probes DoT against *the network's own* resolvers, which
+     * on a phone running the filter are the tunnel's fake addresses. Those
+     * answer port 53 and nothing else, so the probe fails and the system falls
+     * back to cleartext DNS — which is the filter. The result is a phone that
+     * resolves through drawbridge either way.
+     *
+     * Only a *hostname* is rewritten. Off and opportunistic are both already
+     * fine, and rewriting them would be changing a setting for no reason.
+     *
+     * API 29 for these calls; below that the mode cannot be read or set by a
+     * DPC at all, and the trap stays open on API 28. Nothing else in the app
+     * touches these settings.
+     */
+    private fun normalisePrivateDns() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) return
+
+        val mode = runCatching { dpm.getGlobalPrivateDnsMode(admin) }
+            .onFailure { Log.w(TAG, "Could not read the Private DNS mode", it) }
+            .getOrNull() ?: return
+        if (mode != DevicePolicyManager.PRIVATE_DNS_MODE_PROVIDER_HOSTNAME) return
+
+        val host = runCatching { dpm.getGlobalPrivateDnsHost(admin) }.getOrNull()
+        runCatching { dpm.setGlobalPrivateDnsModeOpportunistic(admin) }
+            .onSuccess { result ->
+                if (result == DevicePolicyManager.PRIVATE_DNS_SET_NO_ERROR) {
+                    Log.i(TAG, "Private DNS was pinned to $host; moved to opportunistic " +
+                        "so the filter stays reachable once the restriction lands")
+                } else {
+                    // Worth a loud line rather than a silent pass: the phone is
+                    // about to seal itself into a state nothing on it can undo.
+                    Log.e(TAG, "Could not move Private DNS off $host (code $result); " +
+                        "this phone may lose DNS when the restriction applies")
+                }
+            }
+            .onFailure { Log.e(TAG, "Could not move Private DNS off $host", it) }
+    }
+
     fun applyClockLock() {
         if (!isDeviceOwner) return
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
@@ -353,6 +418,9 @@ class DeviceOwnerManager(context: Context) {
      */
     fun applyUserRestrictions() {
         if (!isDeviceOwner) return
+        // Before the restrictions, not after: one of them freezes the Private
+        // DNS setting wherever it happens to be standing. See [normalisePrivateDns].
+        normalisePrivateDns()
         val wanted = restrictionsToApply()
         wanted.forEach { restriction ->
             runCatching { dpm.addUserRestriction(admin, restriction) }

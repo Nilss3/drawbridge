@@ -3,6 +3,7 @@ package app.drawbridge.dpc.ui
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
+import android.app.admin.DevicePolicyManager
 import android.os.Build
 import android.os.Bundle
 import android.os.PowerManager
@@ -13,6 +14,7 @@ import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import app.drawbridge.dpc.admin.DrawbridgeDeviceAdminReceiver
 import app.drawbridge.dpc.BuildConfig
 import app.drawbridge.dpc.DrawbridgeApplication
 import app.drawbridge.dpc.R
@@ -93,6 +95,12 @@ class DiagnosticsActivity : AppCompatActivity() {
             // protection, and "it should be there" is not the same as seeing it.
             appendLine("lock screen says:  ${deviceOwner.lockScreenInfo() ?: "(nothing set)"}")
             appendLine("filter running:    ${DnsFilterService.isRunning}")
+            // The setting drawbridge locks but does not own. A phone that
+            // reaches "hostname" here has DNS going somewhere the filter cannot
+            // see, or nowhere at all — and once the restriction is on, nothing
+            // on the device can change it back. `applyUserRestrictions` moves it
+            // off hostname before locking; this is how you check that it did.
+            appendLine("private DNS:       ${privateDnsMode()}")
             // Every name here is outside the tunnel and therefore unfiltered,
             // which is the one thing about this device nothing else would show.
             // It is also the only way to tell, from the phone, whether a policy
@@ -241,6 +249,22 @@ class DiagnosticsActivity : AppCompatActivity() {
 
     private fun isIgnoringBatteryOptimisations(): Boolean =
         getSystemService(PowerManager::class.java).isIgnoringBatteryOptimizations(packageName)
+
+    /** The Private DNS mode, named rather than numbered. */
+    private fun privateDnsMode(): String {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) return "unknown (needs API 29)"
+        val dpm = getSystemService(DevicePolicyManager::class.java)
+        val admin = DrawbridgeDeviceAdminReceiver.componentName(this)
+        val mode = runCatching { dpm.getGlobalPrivateDnsMode(admin) }.getOrNull()
+        val host = runCatching { dpm.getGlobalPrivateDnsHost(admin) }.getOrNull()
+        return when (mode) {
+            DevicePolicyManager.PRIVATE_DNS_MODE_OFF -> "off"
+            DevicePolicyManager.PRIVATE_DNS_MODE_OPPORTUNISTIC -> "opportunistic"
+            DevicePolicyManager.PRIVATE_DNS_MODE_PROVIDER_HOSTNAME ->
+                "hostname: $host  <-- the filter cannot see this"
+            else -> "unknown"
+        }
+    }
 
     private fun globalSetting(name: String): String =
         runCatching { Settings.Global.getInt(contentResolver, name).toString() }

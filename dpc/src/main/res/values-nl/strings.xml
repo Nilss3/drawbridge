@@ -23,6 +23,7 @@
     <string name="policy_applying_message">Bloklijsten downloaden en geïnstalleerde apps nakijken…</string>
     <string name="policy_apply_failed">Dat beleid staat niet meer in het document.</string>
     <string name="change_applied_at_lock">%1$s toegepast na vergrendeling.</string>
+    <string name="change_blocked_at_lock">%1$s geblokkeerd na vergrendeling.</string>
     <string name="change_applied">%1$s toegepast.</string>
     <string name="info_button_description">Meer over %1$s</string>
     <string name="settings_take_effect_at_lock">Dit beleid is altijd actief, ook wanneer drawbridge ontgrendeld is. De opties hieronder zijn bijkomende beperkingen en gelden alleen wanneer drawbridge vergrendeld is.</string>
@@ -39,7 +40,7 @@
     <string name="install_lock_heading">App-installaties</string>
     <string name="install_lock_name">Geen andere apps</string>
     <string name="install_lock_description">Na de vergrendeling kan geen enkele nieuwe app geïnstalleerd worden. De apps die op dat moment op de telefoon staan blijven gewoon updaten.</string>
-    <string name="install_lock_info">Snoei je apps voor je vergrendelt en hou enkel de apps die je op je telefoon wil. Na de vergrendeling worden geen nieuwe apps meer toegelaten. Updates van bestaande apps komen wel door, dus hou de Play Store om bij te werken.\n\nherald en alles wat het beleid verder vereist zijn de uitzondering. Die installeert drawbridge zelf, vanuit het ondertekende beleid dat je gekozen hebt, vergrendeld of niet.\n\nLaat dit uit als je twijfelt. Een app blokkeren kan later altijd nog; een telefoon waarop niemand iets kan installeren is een telefoon waarvoor men bij jou moet aankloppen.</string>
+    <string name="install_lock_info">Snoei je apps voor je vergrendelt en hou enkel de apps die je op je telefoon wil. Na de vergrendeling worden geen nieuwe apps meer toegelaten. Updates van bestaande apps komen wel door, dus hou de Play Store om bij te werken.\n\nWil je geen browser, kies dan die optie hierboven. Anders blijft herald geïnstalleerd.\n\nLaat dit uit als je twijfelt. Een app blokkeren kan later altijd nog; een telefoon waarop niemand iets kan installeren is een telefoon waarvoor men bij jou moet aankloppen.</string>
 
     <string name="options_heading">Opties</string>
     <string name="options_explanation">drawbridge laat, wanneer het ontgrendeld is, alles hieronder toe. Wil je sommige van deze ‘diensten’ niet, en terecht, verbied ze dan en vergrendel drawbridge.</string>
@@ -71,9 +72,10 @@
     <string name="update_action">Bijwerken</string>
     <string name="update_available_detail">Deze telefoon draait %1$s (build %2$d). Build %3$d is beschikbaar.</string>
     <string name="update_none">Deze telefoon draait %1$s, de nieuwste versie die het beleid noemt.</string>
-    <string name="update_why_blocked">Play Protect blokkeert deze update, en dat is geen fout van een van beide. drawbridge mag apps installeren op deze telefoon — zo is herald hier gekomen, en zo worden geblokkeerde apps verwijderd. Een app die andere apps kan installeren is precies waar Play Protect wantrouwig over hoort te zijn, want op de meeste telefoons heeft niemand een app die macht gegeven. Op deze wel: jij, bij het instellen.\n\nPlay Protect kan die twee situaties niet uit elkaar houden en stopt de update dus. Hem een minuut pauzeren is genoeg.</string>
-    <string name="update_steps_heading">Wat je moet doen</string>
-    <string name="update_steps">1. Open Play Protect en zet het scannen uit.\n2. Kom hier terug en tik op De update installeren.\n3. Zet Play Protect weer aan.</string>
+    <string name="update_why_blocked">Om drawbridge bij te werken moet je Play Protect pauzeren, als dat van toepassing is. Google\'s Play Protect laat de installatie van device policy controllers (zoals drawbridge) niet toe als die niet via enterprise-partners verloopt. Klik om de instellingen van Play Protect te openen en pauzeer het, voor je op de updateknop drukt. Zie de schermafbeeldingen voor meer details.</string>
+    <string name="update_shot_1">Tik in Play Protect op het tandwiel in de bovenhoek.</string>
+    <string name="update_shot_2">Zet “Apps scannen met Play Protect” uit.</string>
+    <string name="update_shot_3">Kies “Pauzeren”, niet “Uitschakelen”.</string>
     <string name="update_open_play_protect">Play Protect openen</string>
     <string name="update_install">De update installeren</string>
     <string name="update_no_play_protect">Play Protect kon hier niet geopend worden. Je vindt het in de Play Store, onder je profielfoto.</string>
@@ -81,7 +83,6 @@
     <string name="update_result_installed">Build %1$d is geïnstalleerd.</string>
     <string name="update_result_blocked">De telefoon heeft de update geweigerd, en zo ziet het eruit als Play Protect hem blokkeert. Pauzeer Play Protect en probeer opnieuw.</string>
     <string name="update_result_failed">De update is niet geïnstalleerd: %1$s</string>
-    <string name="update_turn_back_on">Zet Play Protect daarna weer aan. Het is het enige op deze telefoon dat op echt schadelijke apps let, en het zit de rest van drawbridge niet in de weg.</string>
     <string name="lock_screen_info">drawbridge beschermt</string>
     <string name="lock_screen_info_locked">drawbridge vergrendeld sinds %1$s</string>
     <string name="lock_screen_info_timer">drawbridge ontgrendelt over %1$s</string>
@@ -138,6 +139,9 @@
     <string name="lock_timer_weeks_3">3 weken</string>
     <string name="lock_timer_days_30">30 dagen</string>
     <string name="lock_timer_days_40">40 dagen</string>
+    <string name="lock_timer_months_2">2 maanden</string>
+    <string name="lock_timer_months_3">3 maanden</string>
+    <string name="lock_timer_months_6">6 maanden</string>
 
     <!-- Code vergeten, op een vergrendelde telefoon -->
     <string name="forgot_key_title">Code vergeten?</string>

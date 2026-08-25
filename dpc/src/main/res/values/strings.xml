@@ -38,6 +38,7 @@
          option covers is the one thing that still waits for the lock, since the
          parent may be mid-decision and an uninstall cannot be undone. -->
     <string name="change_applied_at_lock">%1$s applied after lock.</string>
+    <string name="change_blocked_at_lock">%1$s blocked after lock.</string>
     <string name="change_applied">%1$s applied.</string>
     <string name="info_button_description">More about %1$s</string>
     <string name="settings_take_effect_at_lock">This policy is always active, also when drawbridge is unlocked. The options underneath are further restrictions and are active only when locked.</string>
@@ -60,7 +61,7 @@
     <string name="install_lock_heading">App installs</string>
     <string name="install_lock_name">No other apps</string>
     <string name="install_lock_description">After the lock, no new app can be installed. The apps that are on the phone at that moment go on updating as normal.</string>
-    <string name="install_lock_info">Before locking, prune down your apps and keep only those you want to have on your phone. After locking, no new apps will be allowed. Updates of existing apps do come through, so keep the Play Store to update.\n\nherald and anything else the policy requires are the exception. drawbridge installs those itself, from the signed policy you chose, and they arrive whether the phone is locked or not.\n\nLeave this off if you are not sure. A blocked app can always be blocked later; an app nobody can install is a phone somebody has to come to you about.</string>
+    <string name="install_lock_info">Before locking, prune down your apps and keep only those you want to have on your phone. After locking, no new apps will be allowed. Updates of existing apps do come through, so keep the Play Store to update.\n\nIf you want no browser, pick that option above. Otherwise, herald will remain installed.\n\nLeave this off if you are not sure. A blocked app can always be blocked later; an app nobody can install is a phone somebody has to come to you about.</string>
 
     <string name="options_heading">Options</string>
     <string name="options_explanation">drawbridge when unlocked allows all of the following. If you don\'t want some of these \u2018services\u2019, and rightfully so, disallow them and lock drawbridge.</string>
@@ -111,9 +112,28 @@
     <string name="update_action">Update</string>
     <string name="update_available_detail">This phone runs %1$s (build %2$d). Build %3$d is available.</string>
     <string name="update_none">This phone runs %1$s, which is the newest version the policy names.</string>
-    <string name="update_why_blocked">Play Protect will block this update, and that is not a fault in either of them. drawbridge is allowed to install apps on this phone — it is how herald got here, and how blocked apps are removed. An app that can install other apps is exactly what Play Protect is built to be wary of, because on most phones nobody chose to give an app that power. On this one you did, when you set it up.\n\nPlay Protect cannot tell those two situations apart, so it stops the update. Pausing it for a minute is enough.</string>
-    <string name="update_steps_heading">What to do</string>
-    <string name="update_steps">1. Open Play Protect and turn off scanning.\n2. Come back here and tap Install the update.\n3. Turn Play Protect back on.</string>
+    <string name="update_why_blocked">To update drawbridge you need to pause Play Protect, if applicable. Google\'s Play Protect does not allow the install of device policy controllers (like drawbridge) which are not through enterprise partners. Click to open the Play Protect settings and pause it before pushing the button to update. See screenshots for more details.</string>
+    <!--
+         The three screens Play Protect makes you walk through, pictured.
+
+         "Turn off scanning" is one sentence and four taps, and none of the four
+         is where a person would guess: the switch is behind a gear in the top
+         corner of a screen whose whole content is a green tick, and turning it
+         off asks a second question whose *first* button is the one to press.
+         A parent who does not find it reads the update as broken and stops.
+
+         Pictured rather than written because the shape of the screen is the
+         part that is hard to say. This screen carried three paragraphs about
+         why Play Protect refuses the install, a numbered list and a reminder to
+         switch scanning back on; all of it went on 2026-08-24, at the owner's
+         request and rightly — a parent standing on this screen wants to know
+         what to press, not why Google's rule exists, and the pictures say the
+         what better than any of it did. Play Protect resumes by itself the day
+         after a pause, which is what took the reminder with it.
+    -->
+    <string name="update_shot_1">In Play Protect, tap the gear in the top corner.</string>
+    <string name="update_shot_2">Turn off “Scan apps with Play Protect”.</string>
+    <string name="update_shot_3">Choose “Pause”, not “Turn off”.</string>
     <string name="update_open_play_protect">Open Play Protect</string>
     <string name="update_install">Install the update</string>
     <string name="update_no_play_protect">Play Protect could not be opened from here. It is in the Play Store, under your profile picture.</string>
@@ -121,7 +141,6 @@
     <string name="update_result_installed">Build %1$d is installed.</string>
     <string name="update_result_blocked">The phone refused the update, which is what Play Protect blocking it looks like. Pause Play Protect and try again.</string>
     <string name="update_result_failed">The update did not install: %1$s</string>
-    <string name="update_turn_back_on">Turn Play Protect back on afterwards. It is the only thing on this phone watching for genuinely harmful apps, and it does not interfere with anything else drawbridge does.</string>
     <!--
          The keyguard, in three short sentences. One line under a clock, often
          truncated, read by somebody who was not looking for it — so each state
@@ -189,6 +208,9 @@
     <string name="lock_timer_weeks_3">3 weeks</string>
     <string name="lock_timer_days_30">30 days</string>
     <string name="lock_timer_days_40">40 days</string>
+    <string name="lock_timer_months_2">2 months</string>
+    <string name="lock_timer_months_3">3 months</string>
+    <string name="lock_timer_months_6">6 months</string>
 
     <!-- The code-forgotten door, on a locked phone. -->
     <string name="forgot_key_title">Forgotten the code?</string>

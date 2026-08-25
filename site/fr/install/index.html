@@ -34,6 +34,7 @@
     <div class="wrap">
       <h1>Installer drawbridge</h1>
       <p class="lede">Installez par USB depuis un ordinateur. Aucune réinitialisation, et rien n'est effacé sur le téléphone.</p>
+      <p>Cela fonctionne aussi bien sur les téléphones Android ordinaires avec Google que sur les Android open source dégooglisés.</p>
 
       <div class="callout callout--alpha">
         <strong>Ceci est encore en phase de test alpha !!</strong>
@@ -45,34 +46,221 @@
         <p style="margin: 0.5rem 0 0;">Sur un téléphone déjà utilisé, les applications qui ne sont jamais autorisées — réseaux sociaux, jeux nocifs, navigateurs que la politique ne sanctionne pas — disparaissent dans les minutes qui suivent l'installation, et ce qui n'existait qu'à l'intérieur d'elles disparaît avec. <strong>Mettez d'abord de côté ce que vous voulez garder</strong> : exportez vos favoris, sortez les photos d'une application qui les détient, notez où vous êtes connecté. Les applications sur lesquelles vous pouvez encore choisir, comme WhatsApp ou YouTube, restent jusqu'au verrouillage. Rien d'autre n'est effacé : vos photos, vos messages et vos autres applications restent en place.</p>
       </div>
 
-      <h2>Installer par USB</h2>
-      <p>Pour les téléphones Android ordinaires avec Google comme pour les appareils Android open source dégooglisés : installez par USB en suivant les étapes ci-dessous.</p>
-      <ol class="steps">
-<li><span class="num">1</span><div><strong>Retirez tous les comptes du téléphone.</strong> Paramètres → Mots de passe, clés d'accès et comptes. Android n'accorde ce niveau de contrôle qu'à un téléphone ne portant aucun compte. Vous vous reconnecterez à l'étape 4.</div></li>
-<li><span class="num">2</span><div><strong>Supprimez l'espace privé, si le téléphone en a un.</strong> Paramètres → Sécurité et confidentialité → Espace privé → Supprimer l'espace privé. Android refuse ce niveau de contrôle tant qu'un second profil existe, et un espace privé est masqué — il n'apparaît pas dans le sélecteur d'utilisateur et possède son propre code PIN. Les autres utilisateurs supplémentaires se trouvent dans Paramètres → Système → Utilisateurs multiples.</div></li>
-<li><span class="num">3</span><div>Activez les options pour développeurs (tapez plusieurs fois sur le numéro de build dans Paramètres → À propos du téléphone) et activez le <strong>débogage USB</strong>.</div></li>
-<li><span class="num">4</span><div>Connectez le téléphone à un ordinateur avec un câble USB, et lancez l'installeur.</div></li>
-<li><span class="num">5</span><div>Reconnectez-vous avec un compte Google (ou un autre).</div></li>
-</ol>
-
-      <div class="callout callout--coming-soon">
-        <strong>Installer depuis votre navigateur</strong>
-        <p style="margin: 0.6rem 0 0;">Installez drawbridge directement depuis ce site par USB, sans logiciel à mettre en place. Nécessite Chrome ou Edge.</p>
-        <div class="btn-row" style="margin-bottom:0;">
-          <a class="btn btn--primary" href="/fr/install/usb/">Installer par USB</a>
+      <div class="flow-picker" role="group" aria-label="Que faites-vous ?">
+        <input type="radio" name="flow" id="flow-new" checked />
+        <input type="radio" name="flow" id="flow-used" />
+        <input type="radio" name="flow" id="flow-update" />
+        <p class="flow-legend">Que faites-vous ?</p>
+        <div class="flow-tabs">
+          <label for="flow-new">Installer sur un appareil neuf, ou après une réinitialisation</label>
+          <label for="flow-used">Installer sur un appareil déjà utilisé</label>
+          <label for="flow-update">Mettre à jour un appareil qui a drawbridge</label>
         </div>
+
+        <section class="flow-panel" id="panel-new" aria-labelledby="flow-new-h">
+          <h2 id="flow-new-h" class="flow-panel-title">Installer sur un appareil neuf, ou après une réinitialisation</h2>
+          <p>Le cas le plus simple : il n'y a rien à mettre de côté sur le téléphone, et rien que vous ayez choisi n'est désinstallé. La seule chose à ne pas rater, ce sont les comptes — Android n'accorde ce niveau de contrôle qu'à un téléphone ne portant plus aucun compte, alors sautez la connexion pendant la configuration et connectez-vous à la fin.</p>
+          <ol class="steps">
+<li><span class="num">1</span><div><strong>Suivez la configuration d'Android et sautez la connexion.</strong> Si le téléphone a déjà terminé sa configuration avec des comptes dessus, retirez-les — voyez la marche à suivre pour un appareil déjà utilisé, juste à côté.</div></li>
+</ol>
+        <div class="shot-strip" data-count="3">
+          <p class="shot-strip-title">Retirer les comptes</p>
+          <div class="shot-strip-row">
+          <figure>
+            <a href="/assets/img/step-accounts-1.webp">
+              <img src="/assets/img/step-accounts-1.webp" alt="Paramètres → Mots de passe, clés d'accès et comptes." width="480" height="1063"
+                   loading="lazy" decoding="async" />
+            </a>
+            <figcaption>Paramètres → Mots de passe, clés d'accès et comptes.</figcaption>
+          </figure>
+          <figure>
+            <a href="/assets/img/step-accounts-2.webp">
+              <img src="/assets/img/step-accounts-2.webp" alt="Chaque compte de la liste, pas seulement Google : Signal et WhatsApp y sont aussi." width="480" height="1063"
+                   loading="lazy" decoding="async" />
+            </a>
+            <figcaption>Chaque compte de la liste, pas seulement Google : Signal et WhatsApp y sont aussi.</figcaption>
+          </figure>
+          <figure>
+            <a href="/assets/img/step-accounts-3.webp">
+              <img src="/assets/img/step-accounts-3.webp" alt="Ouvrez-les un par un et tapez sur Supprimer le compte." width="480" height="1063"
+                   loading="lazy" decoding="async" />
+            </a>
+            <figcaption>Ouvrez-les un par un et tapez sur Supprimer le compte.</figcaption>
+          </figure>
+          </div>
+        </div>
+          <ol class="steps" start="2">
+<li><span class="num">2</span><div>Activez les options pour développeurs (tapez plusieurs fois sur le numéro de build dans Paramètres → À propos du téléphone) et activez le <strong>débogage USB</strong>.</div></li>
+</ol>
+        <div class="shot-strip" data-count="4">
+          <p class="shot-strip-title">Activer le débogage USB</p>
+          <div class="shot-strip-row">
+          <figure>
+            <a href="/assets/img/step-devopts-1.webp">
+              <img src="/assets/img/step-devopts-1.webp" alt="Paramètres → À propos du téléphone → Identifiants de l'appareil." width="480" height="1063"
+                   loading="lazy" decoding="async" />
+            </a>
+            <figcaption>Paramètres → À propos du téléphone → Identifiants de l'appareil.</figcaption>
+          </figure>
+          <figure>
+            <a href="/assets/img/step-devopts-2.webp">
+              <img src="/assets/img/step-devopts-2.webp" alt="Tapez sept fois sur le numéro de build." width="480" height="1063"
+                   loading="lazy" decoding="async" />
+            </a>
+            <figcaption>Tapez sept fois sur le numéro de build.</figcaption>
+          </figure>
+          <figure>
+            <a href="/assets/img/step-devopts-3.webp">
+              <img src="/assets/img/step-devopts-3.webp" alt="Paramètres → Système → Options pour développeurs." width="480" height="1063"
+                   loading="lazy" decoding="async" />
+            </a>
+            <figcaption>Paramètres → Système → Options pour développeurs.</figcaption>
+          </figure>
+          <figure>
+            <a href="/assets/img/step-devopts-4.webp">
+              <img src="/assets/img/step-devopts-4.webp" alt="Activez le débogage USB." width="480" height="1063"
+                   loading="lazy" decoding="async" />
+            </a>
+            <figcaption>Activez le débogage USB.</figcaption>
+          </figure>
+          </div>
+        </div>
+          <ol class="steps" start="3">
+<li><span class="num">3</span><div>Connectez le téléphone à un ordinateur avec un câble USB, et lancez l'installeur.</div></li>
+</ol>
+          <p class="footnote">Les applications que la politique n'autorise jamais disparaissent ici aussi, dans les minutes qui suivent l'installation. Sur un téléphone aussi neuf, ce sont les réseaux sociaux et les jeux préinstallés par le fabricant, et rien que vous y ayez mis.</p>
+          <div class="callout callout--coming-soon">
+          <strong>Installer depuis votre navigateur</strong>
+          <p style="margin: 0.6rem 0 0;">Installez drawbridge directement depuis ce site par USB, sans logiciel à mettre en place. Nécessite Chrome ou Edge.</p>
+          <div class="btn-row" style="margin-bottom:0;">
+            <a class="btn btn--primary" href="/fr/install/usb/">Installer par USB</a>
+          </div>
+        </div>
+          <p><strong>Une fois l'installeur terminé, reconnectez-vous.</strong> Paramètres → Mots de passe, clés d'accès et comptes → Ajouter un compte, pour le compte Google comme pour WhatsApp et Signal. Leurs sauvegardes se restaurent depuis ces applications elles-mêmes.</p>
+        </section>
+
+        <section class="flow-panel" id="panel-used" aria-labelledby="flow-used-h">
+          <h2 id="flow-used-h" class="flow-panel-title">Installer sur un appareil déjà utilisé</h2>
+          <ol class="steps">
+<li><span class="num">1</span><div><strong>Mettez de côté ce que vous voulez garder.</strong> Exportez vos favoris, sortez les photos d'une application qui les détient, notez où vous êtes connecté. L'avertissement ci-dessus dit ce qui disparaît.</div></li>
+<li><span class="num">2</span><div><strong>Retirez tous les comptes du téléphone.</strong> Paramètres → Mots de passe, clés d'accès et comptes. <strong>Pas seulement ceux de Google.</strong> WhatsApp et Signal figurent aussi comme comptes dans cette liste, et ils doivent partir avec les autres — Android n'accorde ce niveau de contrôle qu'à un téléphone dont cette liste est vide. <strong>Sauvegardez d'abord ce que vous ne voudriez pas perdre</strong> : la sauvegarde des conversations WhatsApp et celle de Signal se font depuis ces applications elles-mêmes, avant de retirer le compte ici. Vous remettrez les comptes à la fin.</div></li>
+</ol>
+        <div class="shot-strip" data-count="3">
+          <p class="shot-strip-title">Retirer les comptes</p>
+          <div class="shot-strip-row">
+          <figure>
+            <a href="/assets/img/step-accounts-1.webp">
+              <img src="/assets/img/step-accounts-1.webp" alt="Paramètres → Mots de passe, clés d'accès et comptes." width="480" height="1063"
+                   loading="lazy" decoding="async" />
+            </a>
+            <figcaption>Paramètres → Mots de passe, clés d'accès et comptes.</figcaption>
+          </figure>
+          <figure>
+            <a href="/assets/img/step-accounts-2.webp">
+              <img src="/assets/img/step-accounts-2.webp" alt="Chaque compte de la liste, pas seulement Google : Signal et WhatsApp y sont aussi." width="480" height="1063"
+                   loading="lazy" decoding="async" />
+            </a>
+            <figcaption>Chaque compte de la liste, pas seulement Google : Signal et WhatsApp y sont aussi.</figcaption>
+          </figure>
+          <figure>
+            <a href="/assets/img/step-accounts-3.webp">
+              <img src="/assets/img/step-accounts-3.webp" alt="Ouvrez-les un par un et tapez sur Supprimer le compte." width="480" height="1063"
+                   loading="lazy" decoding="async" />
+            </a>
+            <figcaption>Ouvrez-les un par un et tapez sur Supprimer le compte.</figcaption>
+          </figure>
+          </div>
+        </div>
+          <ol class="steps" start="3">
+<li><span class="num">3</span><div><strong>Supprimez l'espace privé, si le téléphone en a un.</strong> Paramètres → Sécurité et confidentialité → Espace privé → Supprimer l'espace privé. Android refuse ce niveau de contrôle tant qu'un second profil existe, et un espace privé est masqué — il n'apparaît pas dans le sélecteur d'utilisateur et possède son propre code PIN. Les autres utilisateurs supplémentaires se trouvent dans Paramètres → Système → Utilisateurs multiples.</div></li>
+<li><span class="num">4</span><div>Activez les options pour développeurs (tapez plusieurs fois sur le numéro de build dans Paramètres → À propos du téléphone) et activez le <strong>débogage USB</strong>.</div></li>
+</ol>
+        <div class="shot-strip" data-count="4">
+          <p class="shot-strip-title">Activer le débogage USB</p>
+          <div class="shot-strip-row">
+          <figure>
+            <a href="/assets/img/step-devopts-1.webp">
+              <img src="/assets/img/step-devopts-1.webp" alt="Paramètres → À propos du téléphone → Identifiants de l'appareil." width="480" height="1063"
+                   loading="lazy" decoding="async" />
+            </a>
+            <figcaption>Paramètres → À propos du téléphone → Identifiants de l'appareil.</figcaption>
+          </figure>
+          <figure>
+            <a href="/assets/img/step-devopts-2.webp">
+              <img src="/assets/img/step-devopts-2.webp" alt="Tapez sept fois sur le numéro de build." width="480" height="1063"
+                   loading="lazy" decoding="async" />
+            </a>
+            <figcaption>Tapez sept fois sur le numéro de build.</figcaption>
+          </figure>
+          <figure>
+            <a href="/assets/img/step-devopts-3.webp">
+              <img src="/assets/img/step-devopts-3.webp" alt="Paramètres → Système → Options pour développeurs." width="480" height="1063"
+                   loading="lazy" decoding="async" />
+            </a>
+            <figcaption>Paramètres → Système → Options pour développeurs.</figcaption>
+          </figure>
+          <figure>
+            <a href="/assets/img/step-devopts-4.webp">
+              <img src="/assets/img/step-devopts-4.webp" alt="Activez le débogage USB." width="480" height="1063"
+                   loading="lazy" decoding="async" />
+            </a>
+            <figcaption>Activez le débogage USB.</figcaption>
+          </figure>
+          </div>
+        </div>
+          <ol class="steps" start="5">
+<li><span class="num">5</span><div>Connectez le téléphone à un ordinateur avec un câble USB, et lancez l'installeur.</div></li>
+</ol>
+          <div class="callout callout--coming-soon">
+          <strong>Installer depuis votre navigateur</strong>
+          <p style="margin: 0.6rem 0 0;">Installez drawbridge directement depuis ce site par USB, sans logiciel à mettre en place. Nécessite Chrome ou Edge.</p>
+          <div class="btn-row" style="margin-bottom:0;">
+            <a class="btn btn--primary" href="/fr/install/usb/">Installer par USB</a>
+          </div>
+        </div>
+          <p><strong>Une fois l'installeur terminé, reconnectez-vous.</strong> Paramètres → Mots de passe, clés d'accès et comptes → Ajouter un compte, pour le compte Google comme pour WhatsApp et Signal. Leurs sauvegardes se restaurent depuis ces applications elles-mêmes.</p>
+        </section>
+
+        <section class="flow-panel" id="panel-update" aria-labelledby="flow-update-h">
+          <h2 id="flow-update-h" class="flow-panel-title">Mettre à jour un appareil qui a drawbridge</h2>
+          <p><strong>drawbridge contient lui-même un bouton de mise à jour.</strong> Ouvrez l'application sur le téléphone et suivez les instructions qu'elle donne — elle montre en images ce qu'il faut faire. Le téléphone peut rester verrouillé, et votre clé n'est pas nécessaire.</p>
+          <p>Si cela n'a pas fonctionné, vous pouvez le faire par le câble USB :</p>
+          <ol class="steps">
+<li><span class="num">1</span><div>Déverrouillez drawbridge sur le téléphone avec votre clé.</div></li>
+<li><span class="num">2</span><div>Réactivez le <strong>débogage USB</strong> : Paramètres → Système → Options pour développeurs.</div></li>
+<li><span class="num">3</span><div>Branchez le téléphone et appuyez sur le bouton ci-dessous.</div></li>
+</ol>
+        <div class="shot-strip" data-count="2">
+          <p class="shot-strip-title">Activer le débogage USB</p>
+          <div class="shot-strip-row">
+          <figure>
+            <a href="/assets/img/step-devopts-3.webp">
+              <img src="/assets/img/step-devopts-3.webp" alt="Paramètres → Système → Options pour développeurs." width="480" height="1063"
+                   loading="lazy" decoding="async" />
+            </a>
+            <figcaption>Paramètres → Système → Options pour développeurs.</figcaption>
+          </figure>
+          <figure>
+            <a href="/assets/img/step-devopts-4.webp">
+              <img src="/assets/img/step-devopts-4.webp" alt="Activez le débogage USB." width="480" height="1063"
+                   loading="lazy" decoding="async" />
+            </a>
+            <figcaption>Activez le débogage USB.</figcaption>
+          </figure>
+          </div>
+        </div>
+          <div class="callout callout--coming-soon">
+          <strong>Installer depuis votre navigateur</strong>
+          <p style="margin: 0.6rem 0 0;">Installez drawbridge directement depuis ce site par USB, sans logiciel à mettre en place. Nécessite Chrome ou Edge.</p>
+          <div class="btn-row" style="margin-bottom:0;">
+            <a class="btn btn--primary" href="/fr/install/usb/">Installer par USB</a>
+          </div>
+        </div>
+          <p class="footnote">Le déverrouillage annule votre clé, et le reverrouillage en forge une nouvelle à noter. C'est ce que coûte le câble, et la raison d'essayer d'abord le bouton dans l'application.</p>
+        </section>
       </div>
 
       <p class="footnote">En attendant, il s'agit d'une seule commande depuis une copie du dépôt, <code>tools/provision-adb.sh</code>, qui installe les deux applications et fait de drawbridge le propriétaire du téléphone. Tout est expliqué dans <a href="https://github.com/Nilss3/drawbridge/blob/main/docs/provisioning.md">provisioning.md</a>.</p>
-
-      <h2>Après l'installation</h2>
-      <ol class="steps">
-<li><span class="num">1</span><div><strong>Transférez vos favoris vers herald.</strong> Il s'installe juste après drawbridge : il est donc déjà là. Exportez-les depuis le navigateur que vous quittez, puis dans herald : ⋮ → Favoris → ⋮ → Importer. Faites-le <em>avant</em> l'étape suivante, car l'activation supprime les autres navigateurs, et leurs favoris partent avec eux.</div></li>
-<li><span class="num">2</span><div>Ouvrez l'application drawbridge et activez-la.</div></li>
-<li><span class="num">3</span><div>Notez le code de désactivation affiché une seule fois. Ou pas, si vous voulez que la protection reste active pour de bon.</div></li>
-</ol>
-
-      <p class="footnote">L'activation désactive le débogage USB. Il revient dès que vous déverrouillez drawbridge avec votre code : c'est ainsi que vous installerez plus tard une version plus récente par le même câble.</p>
 
       <p>Consultez la <a href="/fr/faq/">Q&amp;A</a> pour savoir ce qui est bloqué et pourquoi, ou voir le <a href="/fr/why-blocked/">détail complet sourcé</a>.</p>
     </div>

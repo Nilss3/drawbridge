@@ -373,7 +373,8 @@ class MainActivity : AppCompatActivity() {
         installLockSwitch.isChecked = installLock.isEnabled
         installLockSwitch.setOnCheckedChangeListener { _, checked ->
             installLock.isEnabled = checked
-            toast(applied(getString(R.string.install_lock_name)))
+            // Only the closing direction has anything to wait for. See [applied].
+            if (checked) toast(applied(getString(R.string.install_lock_name)))
         }
     }
 
@@ -404,6 +405,12 @@ class MainActivity : AppCompatActivity() {
             val card = inflater.inflate(R.layout.item_browser, browserContainer, false)
                 as MaterialCardView
             card.findViewById<TextView>(R.id.browserName).setText(choice.title)
+            card.bindRating(
+                R.id.browserRating,
+                R.id.browserRatingShield,
+                R.id.browserRatingText,
+                age = choice.recommendedAge,
+            )
             card.bindInfo(
                 R.id.browserInfo,
                 title = getString(choice.title),
@@ -487,12 +494,19 @@ class MainActivity : AppCompatActivity() {
      * The default handler is applied straight away regardless, because it takes
      * nothing away — it only decides which of the browsers already on the phone
      * inherits a tapped link.
+     *
+     * [BrowserSettings.Choice.ALL] is the widest of the three and so is the one
+     * direction with nothing deferred: [restoreNewlyAllowed] above has already
+     * brought back whatever a narrower choice had hidden, by the time the toast
+     * would appear. See [applied].
      */
     private fun selectBrowsers(choice: BrowserSettings.Choice) {
         browsers.choice = choice
         lifecycleScope.launch {
             withContext(Dispatchers.IO) { restoreNewlyAllowed() }
-            toast(applied(getString(BrowserChoice.of(choice).title)))
+            if (choice != BrowserSettings.Choice.ALL) {
+                toast(applied(getString(BrowserChoice.of(choice).title)))
+            }
             renderBrowsers()
         }
     }
@@ -501,21 +515,36 @@ class MainActivity : AppCompatActivity() {
         val choice: BrowserSettings.Choice,
         val title: Int,
         val description: Int,
+        /**
+         * The age a browser on the phone is reckoned suitable from, or null
+         * where the question does not arise.
+         *
+         * 14 on both of the choices that leave a browser, and nothing on the one
+         * that leaves none: a shield says *be this old before choosing this*,
+         * and there is no age at which having no browser needs permission. The
+         * two that do carry one carry the same number, which is the honest
+         * answer — mono is a gentler browser, not a younger one, and the open
+         * web is the open web in monochrome.
+         */
+        val recommendedAge: Int?,
     ) {
         ALL(
             BrowserSettings.Choice.ALL,
             R.string.browser_all_name,
             R.string.browser_all_description,
+            recommendedAge = 14,
         ),
         MONO(
             BrowserSettings.Choice.MONO_ONLY,
             R.string.browser_mono_name,
             R.string.browser_mono_description,
+            recommendedAge = 14,
         ),
         NONE(
             BrowserSettings.Choice.NONE,
             R.string.browser_none_name,
             R.string.browser_none_description,
+            recommendedAge = null,
         ),
         ;
 
@@ -553,6 +582,12 @@ class MainActivity : AppCompatActivity() {
             // "blissfully offline" does not say calls and SMS still work.
             card.findViewById<TextView>(R.id.disconnectDescription).setText(choice.description)
             card.findViewById<ImageView>(R.id.disconnectSymbol).setImageResource(choice.symbol)
+            card.bindRating(
+                R.id.disconnectRating,
+                R.id.disconnectRatingShield,
+                R.id.disconnectRatingText,
+                age = choice.recommendedAge,
+            )
             card.findViewById<RadioButton>(R.id.disconnectSelected).isChecked =
                 choice.mode == current
             card.isChecked = choice.mode == current
@@ -617,8 +652,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
-     * It says the same sentence every other control on this screen says, and it
-     * used to say nothing at all.
+     * It says the same sentence every other control on this screen says, for the
+     * two choices that have something to say it about, and it used to say
+     * nothing at all.
      *
      * The old reasoning was that the radio moving is feedback enough, and that
      * "applied" would be a lie because the choice waits for the lock. The first
@@ -626,12 +662,18 @@ class MainActivity : AppCompatActivity() {
      * it: a tick that moves says the app heard you, not that the phone has
      * changed. The second half is answered by saying *when* rather than by
      * saying nothing.
+     *
+     * [DisconnectSettings.Mode.ONLINE] is the exception, because it is the state
+     * an unlocked phone is already in: [applyDisconnect] cancels the curfew here
+     * and now, and there is no later moment for the lock to bring. See
+     * [applied].
      */
     private fun selectDisconnect(mode: DisconnectSettings.Mode) {
         if (mode == disconnect.mode) return
         disconnect.mode = mode
         renderDisconnect()
         applyDisconnect()
+        if (mode == DisconnectSettings.Mode.ONLINE) return
         DisconnectChoice.entries.firstOrNull { it.mode == mode }
             ?.let { toast(applied(getString(it.title))) }
     }
@@ -650,6 +692,19 @@ class MainActivity : AppCompatActivity() {
         val title: Int,
         val description: Int,
         val symbol: Int,
+        /**
+         * The age this philosophy is reckoned suitable from, read the same way
+         * as everywhere else on this screen: the age from which choosing it is
+         * usually reasonable.
+         *
+         * It runs the opposite way to the options, and that is not a mistake.
+         * An option's shield guards *allowing* something; here the permissive
+         * choice is the one that needs an age. A phone that is online whenever
+         * it is awake is the 16 one, an evening curfew is the 14 one, and a
+         * phone that is simply offline needs no age at all — there is nothing
+         * to be old enough for.
+         */
+        val recommendedAge: Int?,
     ) {
         // Online first, because it is what the phone does now: the list then
         // reads as the state you are in followed by the two you can choose,
@@ -659,18 +714,21 @@ class MainActivity : AppCompatActivity() {
             R.string.disconnect_online_name,
             R.string.disconnect_online_description,
             R.drawable.ic_disconnect_robot,
+            recommendedAge = 16,
         ),
         OFFLINE(
             DisconnectSettings.Mode.OFFLINE,
             R.string.disconnect_offline_name,
             R.string.disconnect_offline_description,
             R.drawable.ic_disconnect_lotus,
+            recommendedAge = null,
         ),
         CURFEW(
             DisconnectSettings.Mode.CURFEW,
             R.string.disconnect_curfew_name,
             R.string.disconnect_curfew_description,
             R.drawable.ic_disconnect_moon,
+            recommendedAge = 14,
         ),
     }
 
@@ -1017,7 +1075,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
-     * Both directions apply as soon as the switch moves.
+     * Both directions apply as soon as the switch moves, and only one of them
+     * says so.
      *
      * Switching one off used to ask first, because it used to uninstall the
      * apps the option allowed the moment it was answered. Removal follows the
@@ -1025,7 +1084,9 @@ class MainActivity : AppCompatActivity() {
      * dialog was warning about something that no longer happens — and its
      * second sentence, that switching back on does not bring the apps back, had
      * stopped being true as well: [restoreNewlyAllowed] unhides what the policy
-     * names again. The toast says where the change actually lands.
+     * names again — which is also why switching one *on* now says nothing: the
+     * restore has already run by then, so there is no later moment to name. See
+     * [applied].
      */
     private fun applyOption(option: PolicyOption, enabled: Boolean) {
         lifecycleScope.launch {
@@ -1053,7 +1114,7 @@ class MainActivity : AppCompatActivity() {
             // this particular change lands.
             if (enabled) restoreNewlyAllowed()
             Log.i(TAG, "Option ${option.id} set to $enabled; ${sweep()} packages removed")
-            toast(applied(option.displayName(Languages.current())))
+            if (!enabled) toast(blocked(option))
             renderOptions()
         }
     }
@@ -1098,15 +1159,26 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
-     * What to tell the parent after a change: one sentence, for every control on
-     * this screen.
+     * What to tell the parent after a change that has to wait for the lock.
      *
-     * It used to be three, distinguishing what went now from what waited. That
-     * distinction is not one a parent has to hold: nothing here lands until the
-     * phone is locked, which is what the owner watched on the reference phone on
-     * 2026-08-14 with the streaming option and Disney+. So the screen says the
-     * one thing that is true of all of it, and
+     * It used to be three sentences, distinguishing what went now from what
+     * waited. That distinction is not one a parent has to hold, so the screen
+     * says the one thing that is true of everything it waits for — a tightening
+     * really does wait, which is what the owner watched on the reference phone
+     * on 2026-08-14 with the streaming option and Disney+ — and
      * [R.string.settings_take_effect_at_lock] above the controls says why.
+     *
+     * **It is not said in the loosening direction, as of 2026-08-24, because
+     * there it is false.** Every control here has a widest setting — *Sadly
+     * always online*, *Allow the browsers*, *No other apps* switched off, an
+     * option switched on — and that setting is the one an unlocked phone is
+     * already in. Choosing it either changes nothing that was not already true
+     * or is honoured on the spot by [restoreNewlyAllowed] and
+     * [applyDisconnect]; either way there is no later moment for the lock to
+     * bring, and a phone that has never been locked would be told to wait for a
+     * lock that may never come. Those callers say nothing instead, and let the
+     * switch or the radio be the acknowledgement, which is what they were doing
+     * before this sentence existed.
      *
      * The removal count is gone with them. It could only ever have read zero
      * from here — [sweep] declines while unlocked, and unlocked is the only
@@ -1114,6 +1186,29 @@ class MainActivity : AppCompatActivity() {
      */
     private fun applied(name: String): String =
         getString(R.string.change_applied_at_lock, name)
+
+    /**
+     * What an option says when it is switched off, which is the one control here
+     * whose label is the wrong words for the sentence.
+     *
+     * "Allow WhatsApp applied after lock" names the switch rather than what the
+     * switch did, and at a glance it reads as the opposite: the two words a
+     * parent takes in are *allow* and *applied*, on the tap that blocks the app.
+     * [PolicyOption.subject] carries "WhatsApp" on its own so this can say
+     * "WhatsApp blocked after lock", which is the thing that is true.
+     *
+     * **Falls back to the old sentence when the document has no subject**, which
+     * is not a hypothetical: the copy bundled in the APK is one policy behind by
+     * construction, so a phone that has not polled yet is exactly that case. The
+     * fallback is wordy rather than wrong, and it heals itself on the first
+     * refresh.
+     */
+    private fun blocked(option: PolicyOption): String {
+        val language = Languages.current()
+        val subject = option.displaySubject(language)
+            ?: return applied(option.displayName(language))
+        return getString(R.string.change_blocked_at_lock, subject)
+    }
 
     private fun refreshPolicy() {
         lifecycleScope.launch {

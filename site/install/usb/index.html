@@ -90,7 +90,7 @@
       </div>
 
       <h2>Updating a phone that already has drawbridge</h2>
-      <p>Same page, same button. It notices the phone is already managed and updates it instead. Nothing is reset and nothing on the phone is lost. drawbridge cannot update itself, so this cable is how a new version gets there.</p>
+      <p>Same page, same button. It notices the phone is already managed and updates it instead. Nothing is reset and nothing on the phone is lost. Try the phone first, though: drawbridge offers its own update on screen while it is still locked, and that route does not cost you your key. This cable is the fallback for when that will not go through.</p>
       <ol class="steps">
 <li><span class="num">1</span><div>On the phone, open <strong>drawbridge</strong> and enter your key to unlock it. That is what hands USB debugging back.</div></li>
 <li><span class="num">2</span><div>Turn <strong>USB debugging</strong> back on: Settings → System → Developer options.</div></li>
@@ -113,9 +113,9 @@
 <script type="module">
 import { init } from "/assets/js/installer.js";
 init({
-  apkUrl: "/assets/dpc-11dae7e565f95fa7.apk",
-  apkSha256: "11dae7e565f95fa77ac0c78835dc64560ab5e8d6b3252c7fa18b0ed573e1162e",
-  apkName: "dpc-11dae7e565f95fa7.apk",
+  apkUrl: "/assets/dpc-ed76fbb83b442a07.apk",
+  apkSha256: "ed76fbb83b442a0762771c136404f3507daafc36112a512ae85098fa7bf7c22f",
+  apkName: "dpc-ed76fbb83b442a07.apk",
   text: { updateDetected: "This phone is already managed by drawbridge ({version}). Updating it instead of provisioning. Nothing is reset, and the phone keeps everything on it." },
 });
 </script>

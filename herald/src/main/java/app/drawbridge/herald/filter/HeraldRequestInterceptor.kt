@@ -79,14 +79,32 @@ class HeraldRequestInterceptor(private val context: Context) : RequestIntercepto
         )
     }
 
+    /**
+     * The engine's own error page, unless drawbridge is the reason for the
+     * failure — in which case say so.
+     *
+     * A curfew and the offline philosophy take the network away with the VPN's
+     * lockdown flag, so a page load fails exactly the way a broken Wi-Fi fails
+     * and the engine says *server not found*. True, and the least useful true
+     * thing available: the phone is doing what it was told, and a child reading
+     * that goes to check the Wi-Fi settings or decides the browser is broken.
+     *
+     * [OfflinePage] returns null unless the phone reports that it is refusing
+     * traffic at this moment, so a genuine DNS failure still gets the page that
+     * is right about it. See its KDoc for why the test has to be that narrow.
+     */
     override fun onErrorRequest(
         session: EngineSession,
         errorType: ErrorType,
         uri: String?,
-    ): RequestInterceptor.ErrorResponse =
-        RequestInterceptor.ErrorResponse(
+    ): RequestInterceptor.ErrorResponse {
+        OfflinePage.createIfOffline(context, uri)?.let { dataUrl ->
+            return RequestInterceptor.ErrorResponse(dataUrl)
+        }
+        return RequestInterceptor.ErrorResponse(
             ErrorPages.createUrlEncodedErrorPage(context, errorType, uri),
         )
+    }
 
     /**
      * Also check loads herald starts itself, so that a blocked URL typed into the

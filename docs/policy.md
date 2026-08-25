@@ -597,6 +597,7 @@ otherwise identical binary.
 ```bash
 ./gradlew :herald:assembleRelease            # 1. herald first — only if it changed
 tools/stage-release.sh                       #    names the APKs and checks the pins
+                                             #    (add --dpc-only when step 1 is skipped)
 # 2. hash the APKs into required_apps in dist/policy.json, bump version
 python3 tools/policytool.py sign --key-id drawbridge-2026-07
 cp dist/policy.signed.json policy/src/main/assets/drawbridge/default-policy.json
@@ -615,7 +616,13 @@ bundled `app_update` harmless: it names the previous build, and
 update to something older than itself.
 
 A dpc-only release is the same recipe with step 1 skipped and the herald pins
-left exactly as they are.
+left exactly as they are — and `tools/stage-release.sh --dpc-only`, which is not
+optional there. Without the flag the script re-copies herald out of
+`herald/build/outputs`, which on a release that did not rebuild herald holds an
+older local build; it overwrites the published APKs in `dist/release` with
+binaries the policy does not pin, and they are git-ignored, so getting them back
+means downloading them again from the release. See the traps in
+[handoff](handoff.md#traps-that-cost-time-here).
 
 **Skipping the `cp` cost a feature for thirty-three policies** — see
 [what ships inside the APK](#the-bundled-copy-is-what-a-fresh-install-runs-on).

@@ -23,6 +23,7 @@
     <string name="policy_applying_message">Téléchargement des listes de blocage et vérification des applications installées…</string>
     <string name="policy_apply_failed">Cette politique ne figure plus dans le document.</string>
     <string name="change_applied_at_lock">%1$s appliqué après le verrouillage.</string>
+    <string name="change_blocked_at_lock">%1$s bloqué après le verrouillage.</string>
     <string name="change_applied">%1$s appliqué.</string>
     <string name="info_button_description">En savoir plus sur %1$s</string>
     <string name="settings_take_effect_at_lock">Cette politique est toujours active, même lorsque drawbridge est déverrouillé. Les options ci-dessous sont des restrictions supplémentaires et ne s\'appliquent que lorsque drawbridge est verrouillé.</string>
@@ -39,7 +40,7 @@
     <string name="install_lock_heading">Installation d\'applications</string>
     <string name="install_lock_name">Aucune autre application</string>
     <string name="install_lock_description">Après le verrouillage, aucune nouvelle application ne peut être installée. Celles qui se trouvent sur le téléphone à ce moment-là continuent de se mettre à jour normalement.</string>
-    <string name="install_lock_info">Avant de verrouiller, faites le tri dans vos applications et ne gardez que celles que vous voulez sur le téléphone. Après le verrouillage, aucune nouvelle application ne sera autorisée. Les mises à jour des applications existantes passent toujours : gardez donc le Play Store pour les mettre à jour.\n\nherald et tout ce que la politique exige par ailleurs font exception. drawbridge les installe lui-même, depuis la politique signée que vous avez choisie, que le téléphone soit verrouillé ou non.\n\nLaissez ceci désactivé en cas de doute. Bloquer une application reste possible plus tard ; un téléphone sur lequel personne ne peut rien installer est un téléphone pour lequel on devra venir vous trouver.</string>
+    <string name="install_lock_info">Avant de verrouiller, faites le tri dans vos applications et ne gardez que celles que vous voulez sur le téléphone. Après le verrouillage, aucune nouvelle application ne sera autorisée. Les mises à jour des applications existantes passent toujours : gardez donc le Play Store pour les mettre à jour.\n\nSi vous ne voulez aucun navigateur, choisissez cette option ci-dessus. Sinon, herald restera installé.\n\nLaissez ceci désactivé en cas de doute. Bloquer une application reste possible plus tard ; un téléphone sur lequel personne ne peut rien installer est un téléphone pour lequel on devra venir vous trouver.</string>
 
     <string name="options_heading">Options</string>
     <string name="options_explanation">Lorsqu\'il est déverrouillé, drawbridge autorise tout ce qui suit. Si vous ne voulez pas de certains de ces ‘services’, et à juste titre, interdisez-les et verrouillez drawbridge.</string>
@@ -71,9 +72,10 @@
     <string name="update_action">Mettre à jour</string>
     <string name="update_available_detail">Ce téléphone exécute %1$s (build %2$d). Le build %3$d est disponible.</string>
     <string name="update_none">Ce téléphone exécute %1$s, la version la plus récente que la politique désigne.</string>
-    <string name="update_why_blocked">Play Protect va bloquer cette mise à jour, et ce n\'est la faute ni de l\'un ni de l\'autre. drawbridge a le droit d\'installer des applications sur ce téléphone — c\'est ainsi que herald est arrivé, et que les applications bloquées sont supprimées. Une application capable d\'en installer d\'autres est exactement ce dont Play Protect doit se méfier, car sur la plupart des téléphones personne n\'a choisi de lui donner ce pouvoir. Sur celui-ci, si : vous, lors de la configuration.\n\nPlay Protect ne peut pas distinguer ces deux situations, il arrête donc la mise à jour. Le suspendre une minute suffit.</string>
-    <string name="update_steps_heading">Ce qu\'il faut faire</string>
-    <string name="update_steps">1. Ouvrez Play Protect et désactivez l\'analyse.\n2. Revenez ici et touchez Installer la mise à jour.\n3. Réactivez Play Protect.</string>
+    <string name="update_why_blocked">Pour mettre à jour drawbridge, vous devez suspendre Play Protect, le cas échéant. Le Play Protect de Google n\'autorise pas l\'installation de device policy controllers (comme drawbridge) qui ne passent pas par des partenaires entreprise. Cliquez pour ouvrir les paramètres de Play Protect et suspendez-le avant d\'appuyer sur le bouton de mise à jour. Voir les captures d\'écran pour plus de détails.</string>
+    <string name="update_shot_1">Dans Play Protect, touchez la roue dentée en haut.</string>
+    <string name="update_shot_2">Désactivez « Analyser les applications avec Play Protect ».</string>
+    <string name="update_shot_3">Choisissez « Suspendre », pas « Désactiver ».</string>
     <string name="update_open_play_protect">Ouvrir Play Protect</string>
     <string name="update_install">Installer la mise à jour</string>
     <string name="update_no_play_protect">Play Protect n\'a pas pu être ouvert d\'ici. Il se trouve dans le Play Store, sous votre photo de profil.</string>
@@ -81,7 +83,6 @@
     <string name="update_result_installed">Le build %1$d est installé.</string>
     <string name="update_result_blocked">Le téléphone a refusé la mise à jour, ce qui correspond à un blocage par Play Protect. Suspendez Play Protect et réessayez.</string>
     <string name="update_result_failed">La mise à jour n\'a pas été installée : %1$s</string>
-    <string name="update_turn_back_on">Réactivez Play Protect ensuite. C\'est la seule chose sur ce téléphone qui surveille les applications réellement nuisibles, et elle ne gêne rien d\'autre dans drawbridge.</string>
     <string name="lock_screen_info">drawbridge protège</string>
     <string name="lock_screen_info_locked">drawbridge verrouillé depuis %1$s</string>
     <string name="lock_screen_info_timer">drawbridge se déverrouille dans %1$s</string>
@@ -138,6 +139,9 @@
     <string name="lock_timer_weeks_3">3 semaines</string>
     <string name="lock_timer_days_30">30 jours</string>
     <string name="lock_timer_days_40">40 jours</string>
+    <string name="lock_timer_months_2">2 mois</string>
+    <string name="lock_timer_months_3">3 mois</string>
+    <string name="lock_timer_months_6">6 mois</string>
 
     <!-- Code oublié, sur un téléphone verrouillé -->
     <string name="forgot_key_title">Code oublié ?</string>

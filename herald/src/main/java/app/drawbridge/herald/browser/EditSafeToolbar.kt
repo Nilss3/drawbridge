@@ -1,6 +1,8 @@
 package app.drawbridge.herald.browser
 
+import mozilla.components.browser.toolbar.BrowserToolbar
 import mozilla.components.concept.toolbar.Toolbar
+import mozilla.components.support.ktx.android.view.hideKeyboard
 
 /**
  * Stops the address bar from wiping what is being typed into it.
@@ -32,9 +34,22 @@ import mozilla.components.concept.toolbar.Toolbar
  *
  * **This owns the toolbar's single edit listener.** Anything else that needs
  * `setOnEditListener` has to go through here, or one of the two will silently
- * replace the other.
+ * replace the other. That is why the second job below lives here too.
+ *
+ * ## And it puts the on-screen keyboard away
+ *
+ * Pressing enter on a typed address loaded the page and left the keyboard up,
+ * covering the bottom half of it, in both editions. Nothing in
+ * `browser-toolbar` hides it: `BrowserToolbar.onUrlEntered` commits the text and
+ * calls `displayMode()`, `EditToolbar.stopEditing` clears the field's focus, and
+ * neither touches the input method. An app that wants the keyboard gone has to
+ * say so — Fenix does the same thing in its own toolbar code.
+ *
+ * Hooked to *stop* rather than to the commit, because every way out of edit mode
+ * wants the same thing: enter, the back button, and tapping the page all end
+ * with a keyboard nobody is typing into.
  */
-class EditSafeToolbar(private val delegate: Toolbar) : Toolbar by delegate {
+class EditSafeToolbar(private val delegate: BrowserToolbar) : Toolbar by delegate {
 
     @Volatile
     private var editing = false
@@ -47,10 +62,12 @@ class EditSafeToolbar(private val delegate: Toolbar) : Toolbar by delegate {
 
             override fun onStopEditing() {
                 editing = false
+                delegate.hideKeyboard()
             }
 
             override fun onCancelEditing(): Boolean {
                 editing = false
+                delegate.hideKeyboard()
                 return true
             }
         })

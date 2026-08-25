@@ -34,6 +34,7 @@
     <div class="wrap">
       <h1>Installing drawbridge</h1>
       <p class="lede">Install over USB from a computer. No factory reset, and nothing on the phone is erased.</p>
+      <p>It works on ordinary Android phones with Google on them and on deGoogled open-source Android alike.</p>
 
       <div class="callout callout--alpha">
         <strong>This is still in early alpha testing!!</strong>
@@ -45,34 +46,221 @@
         <p style="margin: 0.5rem 0 0;">On a phone that is already in use, apps that are never allowed — social media, harmful games, browsers the policy does not sanction — start disappearing within minutes of the install, and whatever was only inside them goes too. <strong>Move what you want to keep off the phone first</strong>: export bookmarks, save photos out of an app that holds them, write down what you are signed in to. Apps you can still choose about, like WhatsApp or YouTube, are left alone until you lock. Nothing else is erased: your photos, messages and other apps stay where they are.</p>
       </div>
 
-      <h2>Install over USB</h2>
-      <p>For Google (regular) Android phones and also deGoogled open-source Android devices: install over USB using the flow below.</p>
-      <ol class="steps">
-<li><span class="num">1</span><div><strong>Remove every account from the phone.</strong> Settings → Passwords, passkeys &amp; accounts. Android only hands over this level of control to a phone with no account on it. You sign back in at step 4.</div></li>
-<li><span class="num">2</span><div><strong>Delete the Private Space, if the phone has one.</strong> Settings → Security &amp; privacy → Private Space → Delete private space. Android refuses this level of control while any second profile exists, and a Private Space is hidden — it does not appear in the user switcher, and it needs its own PIN. Any other extra user is in Settings → System → Multiple users.</div></li>
-<li><span class="num">3</span><div>Enable Developer Options (tap the build number in Settings → About phone several times) and turn on <strong>USB debugging</strong>.</div></li>
-<li><span class="num">4</span><div>Connect the phone to a computer with a USB cable, and run the installer.</div></li>
-<li><span class="num">5</span><div>Sign back in with a Google (or other) account.</div></li>
-</ol>
-
-      <div class="callout callout--coming-soon">
-        <strong>Install from your browser</strong>
-        <p style="margin: 0.6rem 0 0;">Install drawbridge straight from this site over USB, with no software to set up. Needs Chrome or Edge.</p>
-        <div class="btn-row" style="margin-bottom:0;">
-          <a class="btn btn--primary" href="/install/usb/">Install over USB</a>
+      <div class="flow-picker" role="group" aria-label="What are you doing?">
+        <input type="radio" name="flow" id="flow-new" checked />
+        <input type="radio" name="flow" id="flow-used" />
+        <input type="radio" name="flow" id="flow-update" />
+        <p class="flow-legend">What are you doing?</p>
+        <div class="flow-tabs">
+          <label for="flow-new">Install on a new device, or after a factory reset</label>
+          <label for="flow-used">Install on a device in use</label>
+          <label for="flow-update">Update a device that has drawbridge</label>
         </div>
+
+        <section class="flow-panel" id="panel-new" aria-labelledby="flow-new-h">
+          <h2 id="flow-new-h" class="flow-panel-title">Install on a new device, or after a factory reset</h2>
+          <p>The easiest case: there is nothing on the phone to move off it, and nothing you chose gets uninstalled. The one thing to get right is the accounts — Android only hands over this level of control to a phone with no account left on it, so skip the sign-in during setup and sign in at the end instead.</p>
+          <ol class="steps">
+<li><span class="num">1</span><div><strong>Go through Android's setup and skip signing in.</strong> If the phone is already past setup with accounts on it, remove them — see the flow for a phone in use, next to this one.</div></li>
+</ol>
+        <div class="shot-strip" data-count="3">
+          <p class="shot-strip-title">Removing the accounts</p>
+          <div class="shot-strip-row">
+          <figure>
+            <a href="/assets/img/step-accounts-1.webp">
+              <img src="/assets/img/step-accounts-1.webp" alt="Settings → Passwords, passkeys and accounts." width="480" height="1063"
+                   loading="lazy" decoding="async" />
+            </a>
+            <figcaption>Settings → Passwords, passkeys and accounts.</figcaption>
+          </figure>
+          <figure>
+            <a href="/assets/img/step-accounts-2.webp">
+              <img src="/assets/img/step-accounts-2.webp" alt="Every account in the list, not only Google: Signal and WhatsApp are here too." width="480" height="1063"
+                   loading="lazy" decoding="async" />
+            </a>
+            <figcaption>Every account in the list, not only Google: Signal and WhatsApp are here too.</figcaption>
+          </figure>
+          <figure>
+            <a href="/assets/img/step-accounts-3.webp">
+              <img src="/assets/img/step-accounts-3.webp" alt="Open each one and tap Remove account." width="480" height="1063"
+                   loading="lazy" decoding="async" />
+            </a>
+            <figcaption>Open each one and tap Remove account.</figcaption>
+          </figure>
+          </div>
+        </div>
+          <ol class="steps" start="2">
+<li><span class="num">2</span><div>Enable Developer Options (tap the build number in Settings → About phone several times) and turn on <strong>USB debugging</strong>.</div></li>
+</ol>
+        <div class="shot-strip" data-count="4">
+          <p class="shot-strip-title">Turning on USB debugging</p>
+          <div class="shot-strip-row">
+          <figure>
+            <a href="/assets/img/step-devopts-1.webp">
+              <img src="/assets/img/step-devopts-1.webp" alt="Settings → About phone → Device identifiers." width="480" height="1063"
+                   loading="lazy" decoding="async" />
+            </a>
+            <figcaption>Settings → About phone → Device identifiers.</figcaption>
+          </figure>
+          <figure>
+            <a href="/assets/img/step-devopts-2.webp">
+              <img src="/assets/img/step-devopts-2.webp" alt="Tap Build number seven times." width="480" height="1063"
+                   loading="lazy" decoding="async" />
+            </a>
+            <figcaption>Tap Build number seven times.</figcaption>
+          </figure>
+          <figure>
+            <a href="/assets/img/step-devopts-3.webp">
+              <img src="/assets/img/step-devopts-3.webp" alt="Settings → System → Developer options." width="480" height="1063"
+                   loading="lazy" decoding="async" />
+            </a>
+            <figcaption>Settings → System → Developer options.</figcaption>
+          </figure>
+          <figure>
+            <a href="/assets/img/step-devopts-4.webp">
+              <img src="/assets/img/step-devopts-4.webp" alt="Turn on USB debugging." width="480" height="1063"
+                   loading="lazy" decoding="async" />
+            </a>
+            <figcaption>Turn on USB debugging.</figcaption>
+          </figure>
+          </div>
+        </div>
+          <ol class="steps" start="3">
+<li><span class="num">3</span><div>Connect the phone to a computer with a USB cable, and run the installer.</div></li>
+</ol>
+          <p class="footnote">Apps the policy never allows still go, within minutes of the install. On a phone this new that means the manufacturer's preloaded social apps and games, and nothing you put there.</p>
+          <div class="callout callout--coming-soon">
+          <strong>Install from your browser</strong>
+          <p style="margin: 0.6rem 0 0;">Install drawbridge straight from this site over USB, with no software to set up. Needs Chrome or Edge.</p>
+          <div class="btn-row" style="margin-bottom:0;">
+            <a class="btn btn--primary" href="/install/usb/">Install over USB</a>
+          </div>
+        </div>
+          <p><strong>When the installer has finished, sign back in.</strong> Settings → Passwords, passkeys &amp; accounts → Add account, for the Google account and for WhatsApp and Signal. Restore their backups from inside those apps.</p>
+        </section>
+
+        <section class="flow-panel" id="panel-used" aria-labelledby="flow-used-h">
+          <h2 id="flow-used-h" class="flow-panel-title">Install on a device in use</h2>
+          <ol class="steps">
+<li><span class="num">1</span><div><strong>Move what you want to keep off the phone.</strong> Export bookmarks, save photos out of an app that holds them, write down what you are signed in to. The warning above says what goes.</div></li>
+<li><span class="num">2</span><div><strong>Remove every account from the phone.</strong> Settings → Passwords, passkeys &amp; accounts. <strong>Not only the Google ones.</strong> WhatsApp and Signal are accounts on this screen too, and they have to go with the rest — Android hands over this level of control only to a phone with nothing left in that list. <strong>Back up first what you would not want to lose</strong>: WhatsApp's chat backup and Signal's own backup are both made from inside those apps, before you remove the account here. You put the accounts back at the end.</div></li>
+</ol>
+        <div class="shot-strip" data-count="3">
+          <p class="shot-strip-title">Removing the accounts</p>
+          <div class="shot-strip-row">
+          <figure>
+            <a href="/assets/img/step-accounts-1.webp">
+              <img src="/assets/img/step-accounts-1.webp" alt="Settings → Passwords, passkeys and accounts." width="480" height="1063"
+                   loading="lazy" decoding="async" />
+            </a>
+            <figcaption>Settings → Passwords, passkeys and accounts.</figcaption>
+          </figure>
+          <figure>
+            <a href="/assets/img/step-accounts-2.webp">
+              <img src="/assets/img/step-accounts-2.webp" alt="Every account in the list, not only Google: Signal and WhatsApp are here too." width="480" height="1063"
+                   loading="lazy" decoding="async" />
+            </a>
+            <figcaption>Every account in the list, not only Google: Signal and WhatsApp are here too.</figcaption>
+          </figure>
+          <figure>
+            <a href="/assets/img/step-accounts-3.webp">
+              <img src="/assets/img/step-accounts-3.webp" alt="Open each one and tap Remove account." width="480" height="1063"
+                   loading="lazy" decoding="async" />
+            </a>
+            <figcaption>Open each one and tap Remove account.</figcaption>
+          </figure>
+          </div>
+        </div>
+          <ol class="steps" start="3">
+<li><span class="num">3</span><div><strong>Delete the Private Space, if the phone has one.</strong> Settings → Security &amp; privacy → Private Space → Delete private space. Android refuses this level of control while any second profile exists, and a Private Space is hidden — it does not appear in the user switcher, and it needs its own PIN. Any other extra user is in Settings → System → Multiple users.</div></li>
+<li><span class="num">4</span><div>Enable Developer Options (tap the build number in Settings → About phone several times) and turn on <strong>USB debugging</strong>.</div></li>
+</ol>
+        <div class="shot-strip" data-count="4">
+          <p class="shot-strip-title">Turning on USB debugging</p>
+          <div class="shot-strip-row">
+          <figure>
+            <a href="/assets/img/step-devopts-1.webp">
+              <img src="/assets/img/step-devopts-1.webp" alt="Settings → About phone → Device identifiers." width="480" height="1063"
+                   loading="lazy" decoding="async" />
+            </a>
+            <figcaption>Settings → About phone → Device identifiers.</figcaption>
+          </figure>
+          <figure>
+            <a href="/assets/img/step-devopts-2.webp">
+              <img src="/assets/img/step-devopts-2.webp" alt="Tap Build number seven times." width="480" height="1063"
+                   loading="lazy" decoding="async" />
+            </a>
+            <figcaption>Tap Build number seven times.</figcaption>
+          </figure>
+          <figure>
+            <a href="/assets/img/step-devopts-3.webp">
+              <img src="/assets/img/step-devopts-3.webp" alt="Settings → System → Developer options." width="480" height="1063"
+                   loading="lazy" decoding="async" />
+            </a>
+            <figcaption>Settings → System → Developer options.</figcaption>
+          </figure>
+          <figure>
+            <a href="/assets/img/step-devopts-4.webp">
+              <img src="/assets/img/step-devopts-4.webp" alt="Turn on USB debugging." width="480" height="1063"
+                   loading="lazy" decoding="async" />
+            </a>
+            <figcaption>Turn on USB debugging.</figcaption>
+          </figure>
+          </div>
+        </div>
+          <ol class="steps" start="5">
+<li><span class="num">5</span><div>Connect the phone to a computer with a USB cable, and run the installer.</div></li>
+</ol>
+          <div class="callout callout--coming-soon">
+          <strong>Install from your browser</strong>
+          <p style="margin: 0.6rem 0 0;">Install drawbridge straight from this site over USB, with no software to set up. Needs Chrome or Edge.</p>
+          <div class="btn-row" style="margin-bottom:0;">
+            <a class="btn btn--primary" href="/install/usb/">Install over USB</a>
+          </div>
+        </div>
+          <p><strong>When the installer has finished, sign back in.</strong> Settings → Passwords, passkeys &amp; accounts → Add account, for the Google account and for WhatsApp and Signal. Restore their backups from inside those apps.</p>
+        </section>
+
+        <section class="flow-panel" id="panel-update" aria-labelledby="flow-update-h">
+          <h2 id="flow-update-h" class="flow-panel-title">Update a device that has drawbridge</h2>
+          <p><strong>There is an update button in drawbridge itself.</strong> Open the app on the phone and follow the instructions it gives you — it shows you what to do, with pictures. The phone can stay locked, and you do not need your key.</p>
+          <p>If that did not work, you can do it through the USB cable instead:</p>
+          <ol class="steps">
+<li><span class="num">1</span><div>Unlock drawbridge on the phone with your key.</div></li>
+<li><span class="num">2</span><div>Turn <strong>USB debugging</strong> back on: Settings → System → Developer options.</div></li>
+<li><span class="num">3</span><div>Plug the phone in and press the button below.</div></li>
+</ol>
+        <div class="shot-strip" data-count="2">
+          <p class="shot-strip-title">Turning on USB debugging</p>
+          <div class="shot-strip-row">
+          <figure>
+            <a href="/assets/img/step-devopts-3.webp">
+              <img src="/assets/img/step-devopts-3.webp" alt="Settings → System → Developer options." width="480" height="1063"
+                   loading="lazy" decoding="async" />
+            </a>
+            <figcaption>Settings → System → Developer options.</figcaption>
+          </figure>
+          <figure>
+            <a href="/assets/img/step-devopts-4.webp">
+              <img src="/assets/img/step-devopts-4.webp" alt="Turn on USB debugging." width="480" height="1063"
+                   loading="lazy" decoding="async" />
+            </a>
+            <figcaption>Turn on USB debugging.</figcaption>
+          </figure>
+          </div>
+        </div>
+          <div class="callout callout--coming-soon">
+          <strong>Install from your browser</strong>
+          <p style="margin: 0.6rem 0 0;">Install drawbridge straight from this site over USB, with no software to set up. Needs Chrome or Edge.</p>
+          <div class="btn-row" style="margin-bottom:0;">
+            <a class="btn btn--primary" href="/install/usb/">Install over USB</a>
+          </div>
+        </div>
+          <p class="footnote">Unlocking discards your key, and locking the phone again mints a new one to write down. That is the cost of the cable, and the reason to try the button in the app first.</p>
+        </section>
       </div>
 
       <p class="footnote">In the meantime it is one command from a copy of the repository, <code>tools/provision-adb.sh</code>, which installs both apps and makes drawbridge the owner of the phone. It is documented in <a href="https://github.com/Nilss3/drawbridge/blob/main/docs/provisioning.md">provisioning.md</a>.</p>
-
-      <h2>After setup</h2>
-      <ol class="steps">
-<li><span class="num">1</span><div><strong>Move your bookmarks into herald.</strong> It installs itself right after drawbridge, so it is already there. Export them from the browser you are leaving, then in herald: ⋮ → Bookmarks → ⋮ → Import. Do this <em>before</em> the next step, because activating removes the other browsers, and their bookmarks go with them.</div></li>
-<li><span class="num">2</span><div>Open the drawbridge app and activate it.</div></li>
-<li><span class="num">3</span><div>Write down the deactivation code shown once. Or don't, if you want the protection to stay on for good.</div></li>
-</ol>
-
-      <p class="footnote">Activating switches USB debugging off. Unlocking drawbridge with your code turns it back on, which is how you would put a later version on the phone over the same cable.</p>
 
       <p>Read the <a href="/faq/">Q&amp;A</a> for what's blocked and why, or see the <a href="/why-blocked/">full sourced breakdown</a>.</p>
     </div>

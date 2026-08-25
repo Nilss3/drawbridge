@@ -166,6 +166,17 @@ locking again, which re-takes the set. See
   design rather than drawbridge's** — herald matches its blocklist on hostname, so
   an IP literal is on no list, and a site that did serve on a bare IP with a valid
   certificate would go through.
+
+  **Blocking a port does not help either, and 853 is ours.** The measured sockets
+  were all on 443 — the same port as every other web request on the phone — so
+  there is no port to close that is not the internet. And 853 is DNS-over-TLS,
+  which is what drawbridge's own upstream uses (`tls://all.dns.mullvad.net`);
+  closing it would break the encrypted resolver and fall back to plain DNS. The
+  bypasses that *are* port-shaped are already covered: all `:53` is routed into
+  drawbridge's resolver wherever it is addressed, and public DoT/DoH resolvers are
+  black-holed by name and by IP. What is left is an app asking its own
+  infrastructure over HTTPS, which is indistinguishable from ordinary traffic
+  without IP-range rules.
 - **A factory reset removes everything, and nothing stops one.** Recovery mode or
   Settings, either works. Factory Reset Protection does *not* cover this: it is
   not armed on a fully managed device by default, tested on hardware on

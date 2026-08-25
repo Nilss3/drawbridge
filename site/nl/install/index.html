@@ -34,6 +34,7 @@
     <div class="wrap">
       <h1>Drawbridge installeren</h1>
       <p class="lede">Installeer via USB vanaf een computer. Geen factory reset, en er wordt niets op de telefoon gewist.</p>
+      <p>Het werkt zowel op gewone Android-telefoons met Google erop als op deGooglede open-source Android.</p>
 
       <div class="callout callout--alpha">
         <strong>Dit zit nog volop in vroege alfatesting!!</strong>
@@ -45,34 +46,221 @@
         <p style="margin: 0.5rem 0 0;">Op een telefoon die al in gebruik is, verdwijnen apps die nooit toegelaten zijn — sociale media, schadelijke games, browsers die het beleid niet toelaat — binnen enkele minuten na de installatie, en wat er alleen in die apps zat, gaat mee. <strong>Zet eerst weg wat je wil bewaren</strong>: exporteer bladwijzers, haal foto's uit een app die ze vasthoudt, noteer waar je aangemeld bent. Apps waar je nog over kan kiezen, zoals WhatsApp of YouTube, blijven staan tot je vergrendelt. Verder wordt er niets gewist: je foto's, berichten en andere apps blijven staan.</p>
       </div>
 
-      <h2>Installeren via USB</h2>
-      <p>Voor gewone Android-telefoons met Google én voor deGooglede open-source Android-toestellen: installeer via USB met de stappen hieronder.</p>
-      <ol class="steps">
-<li><span class="num">1</span><div><strong>Verwijder elk account van de telefoon.</strong> Instellingen → Wachtwoorden, toegangssleutels en accounts. Android geeft dit niveau van controle enkel weg aan een toestel waar geen account op staat. In stap 4 meld je je weer aan.</div></li>
-<li><span class="num">2</span><div><strong>Verwijder de privéruimte, als de telefoon er een heeft.</strong> Instellingen → Beveiliging en privacy → Privéruimte → Privéruimte verwijderen. Android weigert dit niveau van controle zolang er een tweede profiel bestaat, en een privéruimte is verborgen — ze staat niet in de gebruikerswissel en heeft een eigen pincode. Andere extra gebruikers staan in Instellingen → Systeem → Meerdere gebruikers.</div></li>
-<li><span class="num">3</span><div>Activeer Ontwikkelaarsopties (tik meerdere keren op het buildnummer in Instellingen → Over de telefoon) en schakel <strong>USB-debugging</strong> in.</div></li>
-<li><span class="num">4</span><div>Verbind de telefoon met een computer via een USB-kabel, en voer de installer uit.</div></li>
-<li><span class="num">5</span><div>Meld je weer aan met een Google-account (of een ander account).</div></li>
-</ol>
-
-      <div class="callout callout--coming-soon">
-        <strong>Installeren vanuit uw browser</strong>
-        <p style="margin: 0.6rem 0 0;">Installeer drawbridge rechtstreeks vanaf deze site via USB, zonder software op te zetten. Vereist Chrome of Edge.</p>
-        <div class="btn-row" style="margin-bottom:0;">
-          <a class="btn btn--primary" href="/nl/install/usb/">Installeren via USB</a>
+      <div class="flow-picker" role="group" aria-label="Wat ga je doen?">
+        <input type="radio" name="flow" id="flow-new" checked />
+        <input type="radio" name="flow" id="flow-used" />
+        <input type="radio" name="flow" id="flow-update" />
+        <p class="flow-legend">Wat ga je doen?</p>
+        <div class="flow-tabs">
+          <label for="flow-new">Installeren op een nieuw toestel, of na een factory reset</label>
+          <label for="flow-used">Installeren op een toestel dat al in gebruik is</label>
+          <label for="flow-update">Een toestel met drawbridge bijwerken</label>
         </div>
+
+        <section class="flow-panel" id="panel-new" aria-labelledby="flow-new-h">
+          <h2 id="flow-new-h" class="flow-panel-title">Installeren op een nieuw toestel, of na een factory reset</h2>
+          <p>Het eenvoudigste geval: er staat nog niets op de telefoon om weg te zetten, en er verdwijnt niets wat jij gekozen hebt. Het enige waar het op aankomt zijn de accounts — Android geeft dit niveau van controle enkel weg aan een toestel waar geen enkel account meer op staat, dus sla het aanmelden over tijdens de setup en meld je pas op het einde aan.</p>
+          <ol class="steps">
+<li><span class="num">1</span><div><strong>Doorloop de setup van Android en sla het aanmelden over.</strong> Staat de telefoon al voorbij de setup met accounts erop, verwijder die dan — zie de stappen voor een toestel in gebruik, hiernaast.</div></li>
+</ol>
+        <div class="shot-strip" data-count="3">
+          <p class="shot-strip-title">De accounts verwijderen</p>
+          <div class="shot-strip-row">
+          <figure>
+            <a href="/assets/img/step-accounts-1.webp">
+              <img src="/assets/img/step-accounts-1.webp" alt="Instellingen → Wachtwoorden, toegangssleutels en accounts." width="480" height="1063"
+                   loading="lazy" decoding="async" />
+            </a>
+            <figcaption>Instellingen → Wachtwoorden, toegangssleutels en accounts.</figcaption>
+          </figure>
+          <figure>
+            <a href="/assets/img/step-accounts-2.webp">
+              <img src="/assets/img/step-accounts-2.webp" alt="Elk account in de lijst, niet alleen Google: Signal en WhatsApp staan er ook." width="480" height="1063"
+                   loading="lazy" decoding="async" />
+            </a>
+            <figcaption>Elk account in de lijst, niet alleen Google: Signal en WhatsApp staan er ook.</figcaption>
+          </figure>
+          <figure>
+            <a href="/assets/img/step-accounts-3.webp">
+              <img src="/assets/img/step-accounts-3.webp" alt="Open ze één voor één en tik op Account verwijderen." width="480" height="1063"
+                   loading="lazy" decoding="async" />
+            </a>
+            <figcaption>Open ze één voor één en tik op Account verwijderen.</figcaption>
+          </figure>
+          </div>
+        </div>
+          <ol class="steps" start="2">
+<li><span class="num">2</span><div>Activeer Ontwikkelaarsopties (tik meerdere keren op het buildnummer in Instellingen → Over de telefoon) en schakel <strong>USB-debugging</strong> in.</div></li>
+</ol>
+        <div class="shot-strip" data-count="4">
+          <p class="shot-strip-title">USB-debugging inschakelen</p>
+          <div class="shot-strip-row">
+          <figure>
+            <a href="/assets/img/step-devopts-1.webp">
+              <img src="/assets/img/step-devopts-1.webp" alt="Instellingen → Over de telefoon → Apparaat-ID's." width="480" height="1063"
+                   loading="lazy" decoding="async" />
+            </a>
+            <figcaption>Instellingen → Over de telefoon → Apparaat-ID's.</figcaption>
+          </figure>
+          <figure>
+            <a href="/assets/img/step-devopts-2.webp">
+              <img src="/assets/img/step-devopts-2.webp" alt="Tik zeven keer op het buildnummer." width="480" height="1063"
+                   loading="lazy" decoding="async" />
+            </a>
+            <figcaption>Tik zeven keer op het buildnummer.</figcaption>
+          </figure>
+          <figure>
+            <a href="/assets/img/step-devopts-3.webp">
+              <img src="/assets/img/step-devopts-3.webp" alt="Instellingen → Systeem → Ontwikkelaarsopties." width="480" height="1063"
+                   loading="lazy" decoding="async" />
+            </a>
+            <figcaption>Instellingen → Systeem → Ontwikkelaarsopties.</figcaption>
+          </figure>
+          <figure>
+            <a href="/assets/img/step-devopts-4.webp">
+              <img src="/assets/img/step-devopts-4.webp" alt="Schakel USB-debugging in." width="480" height="1063"
+                   loading="lazy" decoding="async" />
+            </a>
+            <figcaption>Schakel USB-debugging in.</figcaption>
+          </figure>
+          </div>
+        </div>
+          <ol class="steps" start="3">
+<li><span class="num">3</span><div>Verbind de telefoon met een computer via een USB-kabel, en voer de installer uit.</div></li>
+</ol>
+          <p class="footnote">Apps die het beleid nooit toelaat verdwijnen ook hier, binnen enkele minuten na de installatie. Op een telefoon die zo nieuw is zijn dat de vooraf geïnstalleerde sociale apps en games van de fabrikant, en niets wat jij erop gezet hebt.</p>
+          <div class="callout callout--coming-soon">
+          <strong>Installeren vanuit uw browser</strong>
+          <p style="margin: 0.6rem 0 0;">Installeer drawbridge rechtstreeks vanaf deze site via USB, zonder software op te zetten. Vereist Chrome of Edge.</p>
+          <div class="btn-row" style="margin-bottom:0;">
+            <a class="btn btn--primary" href="/nl/install/usb/">Installeren via USB</a>
+          </div>
+        </div>
+          <p><strong>Is de installer klaar, meld je dan weer aan.</strong> Instellingen → Wachtwoorden, toegangssleutels en accounts → Account toevoegen, voor het Google-account en voor WhatsApp en Signal. Hun back-ups zet je terug vanuit die apps zelf.</p>
+        </section>
+
+        <section class="flow-panel" id="panel-used" aria-labelledby="flow-used-h">
+          <h2 id="flow-used-h" class="flow-panel-title">Installeren op een toestel dat al in gebruik is</h2>
+          <ol class="steps">
+<li><span class="num">1</span><div><strong>Zet weg wat je wil bewaren.</strong> Exporteer bladwijzers, haal foto's uit een app die ze vasthoudt, noteer waar je aangemeld bent. De waarschuwing hierboven zegt wat er verdwijnt.</div></li>
+<li><span class="num">2</span><div><strong>Verwijder elk account van de telefoon.</strong> Instellingen → Wachtwoorden, toegangssleutels en accounts. <strong>Niet alleen die van Google.</strong> WhatsApp en Signal staan ook als account in die lijst, en ze moeten mee weg — Android geeft dit niveau van controle enkel weg aan een toestel waar niets meer in die lijst staat. <strong>Maak eerst een back-up van wat je niet wil verliezen</strong>: de chatback-up van WhatsApp en de eigen back-up van Signal maak je vanuit die apps zelf, vóór je hier het account verwijdert. Op het einde zet je de accounts terug.</div></li>
+</ol>
+        <div class="shot-strip" data-count="3">
+          <p class="shot-strip-title">De accounts verwijderen</p>
+          <div class="shot-strip-row">
+          <figure>
+            <a href="/assets/img/step-accounts-1.webp">
+              <img src="/assets/img/step-accounts-1.webp" alt="Instellingen → Wachtwoorden, toegangssleutels en accounts." width="480" height="1063"
+                   loading="lazy" decoding="async" />
+            </a>
+            <figcaption>Instellingen → Wachtwoorden, toegangssleutels en accounts.</figcaption>
+          </figure>
+          <figure>
+            <a href="/assets/img/step-accounts-2.webp">
+              <img src="/assets/img/step-accounts-2.webp" alt="Elk account in de lijst, niet alleen Google: Signal en WhatsApp staan er ook." width="480" height="1063"
+                   loading="lazy" decoding="async" />
+            </a>
+            <figcaption>Elk account in de lijst, niet alleen Google: Signal en WhatsApp staan er ook.</figcaption>
+          </figure>
+          <figure>
+            <a href="/assets/img/step-accounts-3.webp">
+              <img src="/assets/img/step-accounts-3.webp" alt="Open ze één voor één en tik op Account verwijderen." width="480" height="1063"
+                   loading="lazy" decoding="async" />
+            </a>
+            <figcaption>Open ze één voor één en tik op Account verwijderen.</figcaption>
+          </figure>
+          </div>
+        </div>
+          <ol class="steps" start="3">
+<li><span class="num">3</span><div><strong>Verwijder de privéruimte, als de telefoon er een heeft.</strong> Instellingen → Beveiliging en privacy → Privéruimte → Privéruimte verwijderen. Android weigert dit niveau van controle zolang er een tweede profiel bestaat, en een privéruimte is verborgen — ze staat niet in de gebruikerswissel en heeft een eigen pincode. Andere extra gebruikers staan in Instellingen → Systeem → Meerdere gebruikers.</div></li>
+<li><span class="num">4</span><div>Activeer Ontwikkelaarsopties (tik meerdere keren op het buildnummer in Instellingen → Over de telefoon) en schakel <strong>USB-debugging</strong> in.</div></li>
+</ol>
+        <div class="shot-strip" data-count="4">
+          <p class="shot-strip-title">USB-debugging inschakelen</p>
+          <div class="shot-strip-row">
+          <figure>
+            <a href="/assets/img/step-devopts-1.webp">
+              <img src="/assets/img/step-devopts-1.webp" alt="Instellingen → Over de telefoon → Apparaat-ID's." width="480" height="1063"
+                   loading="lazy" decoding="async" />
+            </a>
+            <figcaption>Instellingen → Over de telefoon → Apparaat-ID's.</figcaption>
+          </figure>
+          <figure>
+            <a href="/assets/img/step-devopts-2.webp">
+              <img src="/assets/img/step-devopts-2.webp" alt="Tik zeven keer op het buildnummer." width="480" height="1063"
+                   loading="lazy" decoding="async" />
+            </a>
+            <figcaption>Tik zeven keer op het buildnummer.</figcaption>
+          </figure>
+          <figure>
+            <a href="/assets/img/step-devopts-3.webp">
+              <img src="/assets/img/step-devopts-3.webp" alt="Instellingen → Systeem → Ontwikkelaarsopties." width="480" height="1063"
+                   loading="lazy" decoding="async" />
+            </a>
+            <figcaption>Instellingen → Systeem → Ontwikkelaarsopties.</figcaption>
+          </figure>
+          <figure>
+            <a href="/assets/img/step-devopts-4.webp">
+              <img src="/assets/img/step-devopts-4.webp" alt="Schakel USB-debugging in." width="480" height="1063"
+                   loading="lazy" decoding="async" />
+            </a>
+            <figcaption>Schakel USB-debugging in.</figcaption>
+          </figure>
+          </div>
+        </div>
+          <ol class="steps" start="5">
+<li><span class="num">5</span><div>Verbind de telefoon met een computer via een USB-kabel, en voer de installer uit.</div></li>
+</ol>
+          <div class="callout callout--coming-soon">
+          <strong>Installeren vanuit uw browser</strong>
+          <p style="margin: 0.6rem 0 0;">Installeer drawbridge rechtstreeks vanaf deze site via USB, zonder software op te zetten. Vereist Chrome of Edge.</p>
+          <div class="btn-row" style="margin-bottom:0;">
+            <a class="btn btn--primary" href="/nl/install/usb/">Installeren via USB</a>
+          </div>
+        </div>
+          <p><strong>Is de installer klaar, meld je dan weer aan.</strong> Instellingen → Wachtwoorden, toegangssleutels en accounts → Account toevoegen, voor het Google-account en voor WhatsApp en Signal. Hun back-ups zet je terug vanuit die apps zelf.</p>
+        </section>
+
+        <section class="flow-panel" id="panel-update" aria-labelledby="flow-update-h">
+          <h2 id="flow-update-h" class="flow-panel-title">Een toestel met drawbridge bijwerken</h2>
+          <p><strong>In drawbridge zelf zit een updateknop.</strong> Open de app op de telefoon en volg de instructies die ze geeft — ze toont met beelden wat je moet doen. De telefoon mag vergrendeld blijven, en je hebt je sleutel niet nodig.</p>
+          <p>Lukte dat niet, dan kan het ook via de USB-kabel:</p>
+          <ol class="steps">
+<li><span class="num">1</span><div>Ontgrendel drawbridge op de telefoon met je sleutel.</div></li>
+<li><span class="num">2</span><div>Schakel <strong>USB-debugging</strong> weer in: Instellingen → Systeem → Ontwikkelaarsopties.</div></li>
+<li><span class="num">3</span><div>Verbind de telefoon en druk op de knop hieronder.</div></li>
+</ol>
+        <div class="shot-strip" data-count="2">
+          <p class="shot-strip-title">USB-debugging inschakelen</p>
+          <div class="shot-strip-row">
+          <figure>
+            <a href="/assets/img/step-devopts-3.webp">
+              <img src="/assets/img/step-devopts-3.webp" alt="Instellingen → Systeem → Ontwikkelaarsopties." width="480" height="1063"
+                   loading="lazy" decoding="async" />
+            </a>
+            <figcaption>Instellingen → Systeem → Ontwikkelaarsopties.</figcaption>
+          </figure>
+          <figure>
+            <a href="/assets/img/step-devopts-4.webp">
+              <img src="/assets/img/step-devopts-4.webp" alt="Schakel USB-debugging in." width="480" height="1063"
+                   loading="lazy" decoding="async" />
+            </a>
+            <figcaption>Schakel USB-debugging in.</figcaption>
+          </figure>
+          </div>
+        </div>
+          <div class="callout callout--coming-soon">
+          <strong>Installeren vanuit uw browser</strong>
+          <p style="margin: 0.6rem 0 0;">Installeer drawbridge rechtstreeks vanaf deze site via USB, zonder software op te zetten. Vereist Chrome of Edge.</p>
+          <div class="btn-row" style="margin-bottom:0;">
+            <a class="btn btn--primary" href="/nl/install/usb/">Installeren via USB</a>
+          </div>
+        </div>
+          <p class="footnote">Bij het ontgrendelen vervalt je sleutel, en bij het opnieuw vergrendelen wordt er een nieuwe gemaakt die je moet opschrijven. Dat is wat de kabel kost, en de reden om eerst de knop in de app te proberen.</p>
+        </section>
       </div>
 
       <p class="footnote">Ondertussen is het één commando vanuit een kopie van de repository, <code>tools/provision-adb.sh</code>, dat beide apps installeert en drawbridge de eigenaar van de telefoon maakt. De uitleg staat in <a href="https://github.com/Nilss3/drawbridge/blob/main/docs/provisioning.md">provisioning.md</a>.</p>
-
-      <h2>Na de installatie</h2>
-      <ol class="steps">
-<li><span class="num">1</span><div><strong>Zet je bladwijzers over naar herald.</strong> Die installeert zichzelf meteen na drawbridge en staat er dus al. Exporteer ze uit de browser die je verlaat, en kies daarna in herald: ⋮ → Bladwijzers → ⋮ → Importeren. Doe dit <em>vóór</em> de volgende stap, want bij het activeren verdwijnen de andere browsers, en hun bladwijzers gaan mee.</div></li>
-<li><span class="num">2</span><div>Open de drawbridge-app en activeer ze.</div></li>
-<li><span class="num">3</span><div>Schrijf de eenmalig getoonde deactivatiecode op. Of niet, als je wil dat de bescherming voorgoed aanblijft.</div></li>
-</ol>
-
-      <p class="footnote">Bij het activeren wordt USB-debugging uitgeschakeld. Ontgrendel je drawbridge met je code, dan komt ze terug. Zo zet je later een nieuwere versie via dezelfde kabel op de telefoon.</p>
 
       <p>Lees de <a href="/nl/faq/">Q&amp;A</a> voor wat er geblokkeerd wordt en waarom, of bekijk het <a href="/nl/why-blocked/">volledige, onderbouwde overzicht</a>.</p>
     </div>

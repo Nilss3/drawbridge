@@ -21,9 +21,9 @@ which is kept whole on purpose.
 
 | | `main` (the alpha) | `dev` |
 |---|---|---|
-| drawbridge | 0.2.7, build 18 | **0.2.16, build 41** |
-| herald | 0.1.9 | **0.1.14** |
-| policy | **52** | **81** |
+| drawbridge | **0.2.19, build 44** | **0.2.19, build 44** |
+| herald | **0.1.15** | **0.1.15** |
+| policy | **89** | **90** |
 | install page | <https://drawbridge-project.pages.dev/install/usb/> | <https://dev.drawbridge-project.pages.dev/install/usb/> |
 | phone | the owner's Nothing Phone (A059) | the Moto G15 |
 
@@ -218,6 +218,24 @@ the key can always unlock and put a build on the phone. See
 
 Each of these looks like a bug and is not, or bites silently:
 
+- **Re-pinning `required_apps` means three fields, not two.** `url`, `sha256`
+  *and* `version_code`. On 2026-08-25 the first two were updated for
+  v0.2.8-dev.6 and the third was left at 14, so policy 89 shipped correct
+  binaries at correct URLs that no phone would ever fetch: `AppInstaller`
+  installs a required app only when `versionCode > versionCodeOf(package)`, and
+  14 > 14 is false. Every checksum matched, so nothing complained — the phone
+  simply sat on herald 0.1.14 through restarts. Fixed in policy 90, and
+  `stage-release.sh` now reads the versionCode out of each staged APK and fails
+  when it disagrees with the document.
+- **`tools/stage-release.sh` re-copies herald whatever you are releasing.** On a
+  dpc-only release herald has not been rebuilt, so what sits in
+  `herald/build/outputs` is an *older local build* — not the binary the published
+  release carries, because Android builds are not byte-reproducible. Running the
+  script plain overwrites six correct APKs in `dist/release` with ones no phone
+  will accept, and the pin check then reports them STALE. They are git-ignored,
+  so the only way back is 1.3 GB from the GitHub release. Cost an hour on
+  2026-08-24. **Pass `--dpc-only`**, added the same day, which leaves them alone
+  and still runs the check.
 - **Release builds kill adb.** `DISALLOW_DEBUGGING_FEATURES` switches off USB
   debugging the instant it applies. Install everything *before* provisioning.
 - **Neither app may take an `applicationIdSuffix`.** A `.debug` herald is
@@ -864,18 +882,42 @@ constant to move.
 
 ### 12b. Two small things on the configuration screen, reported 2026-08-19
 
-Neither is urgent and both are visual, from the owner running build 41:
+Both visual, from the owner running build 41. **The first is fixed; the second
+is still open.**
 
-- **A band of empty space sits under the title bar** and stays there while the
-  rest scrolls, eating vertical space on a screen that has none to spare. It is
-  the first thing to look at on a small phone, which is where it will be worst.
-  Suspect the insets applied in `MainActivity.onCreate` via `applyScreenInsets`,
-  or the `ScrollView` padding above the first heading — the heading itself is
-  `SectionHeading.First`, which deliberately has no rule and 8dp of top padding,
-  so if it looks like more than that the space is coming from somewhere else.
-- **"Drawbridge Control" could be smaller.** It is the activity title in the
-  default action bar, set at runtime from `main_title`; nothing sizes it today,
-  so it takes whatever `textAppearanceTitleLarge` the Material theme gives it.
+- ~~**A band of empty space sits under the title bar**~~ — **fixed 2026-08-24,
+  and the suspicion in this entry was right.** `applyScreenInsets` was adding
+  `actionBarSize` to a `systemBars()` top inset that already contained it.
+  AppCompat's `ActionBarOverlayLayout` folds the bar it draws into the insets it
+  hands down to the content, so what arrived was 231px on the 420dpi emulator —
+  24dp of status bar plus 64dp of action bar — and the old code read that as the
+  status bar alone. Every screen in the app began 64dp lower than it had any
+  reason to. Measured before and after with `uiautomator dump`: the first
+  heading moved from y=420 to y=252, against an action bar ending at y=231, so
+  the gap is now the 8dp the `LinearLayout` asks for and nothing else. Checked
+  on the configuration screen and on diagnostics; the fix is in `Insets.kt` and
+  applies to all five activities that call it. It was invisible below API 35,
+  where the decor consumes the insets and this reports zero.
+- **"Drawbridge Control" could be smaller.** *Still open.* It is the activity
+  title in the default action bar, set at runtime from `main_title`; nothing
+  sizes it today, so it takes whatever `textAppearanceTitleLarge` the Material
+  theme gives it.
+
+### 12d. "Applied after lock" is no longer said in the loosening direction
+
+**Done 2026-08-24**, asked for by the owner from use: the sentence appeared on
+*Sadly always online*, on *Allow the browsers*, on *No other apps* switched off
+and on an option switched on, and on all four it is false — those are the
+settings an unlocked phone is already in. The reasoning is in
+[design-decisions](design-decisions.md#narrowed-on-2026-08-15-only-what-a-switch-could-change-waits),
+next to the argument for the sentence existing at all.
+
+Watched on the API 36 emulator, both directions of all four controls: option off
+toasts and on is silent, install lock on toasts and off is silent, curfew toasts
+and *Sadly always online* is silent, *herald mono only* toasts and *Allow the
+browsers* is silent. What was **not** checked is a phone — nothing here depends
+on device-owner state, but the emulator is not a device owner, so the toast
+paths ran with the enforcement behind them doing nothing.
 
 ### 12c. Comet and Via, and what any new browser has to be checked against
 
@@ -974,31 +1016,47 @@ typed in. Android's hostname mode is strict and has no fallback, so every lookup
 failed. Fail-closed, by design, and confirmed here: `ping 1.1.1.1` is
 unreachable while ordinary resolution works.
 
-### 12f. A Private DNS hostname set *before* the first lock is frozen in place
+### 12f. ~~A Private DNS hostname set before the first lock is frozen in place~~ — fixed 2026-08-19
 
-**The one real finding from that investigation, and it is not LineageOS-specific.**
-The restriction stops the value being changed; it does not change the value. So a
-phone where somebody set Private DNS to a blackholed provider *before* locking
-keeps that setting, loses all DNS the moment the tunnel comes up, and has no way
-back: Settings refuses, adb refuses, and unlocking does not help because the
-restriction is keyed on protection rather than on the lock. The only exits are
-deactivating drawbridge from its own screen or a factory reset.
+**Found while investigating 12e, and fixed the same day.** The restriction stops
+the Private DNS value being changed; it does not change the value. So a phone
+where somebody set Private DNS to a hostname *before* locking kept it, lost every
+lookup once the tunnel came up — `block_encrypted_dns` drops the known DoT
+endpoints and Android's hostname mode has no cleartext fallback — and had no way
+back, because Settings greys the entry out, `settings put` from a shell is
+silently ignored, and unlocking does not help since the restriction is keyed on
+protection. The only exits were removing drawbridge or a factory reset, for a
+setting chosen before drawbridge had any opinion about it.
 
-Nothing in `dpc/` reads or writes those settings today — the code only adds the
-restriction.
+`DeviceOwnerManager.normalisePrivateDns` now runs at the top of
+`applyUserRestrictions`, before the restriction lands: if the mode is
+`PRIVATE_DNS_MODE_PROVIDER_HOSTNAME` it is moved to opportunistic. Opportunistic
+rather than off because there is no setter for off, and it is the right
+destination anyway — it probes DoT against *the network's own* resolvers, which
+on a filtered phone are the tunnel's fake addresses, and those answer port 53 and
+nothing else, so the probe fails and the system falls back to cleartext, which is
+the filter.
 
-**The fix is one call, and the API exists**: `DevicePolicyManager` has
-`getGlobalPrivateDnsMode`, `setGlobalPrivateDnsModeOpportunistic` and
-`setGlobalPrivateDnsModeSpecifiedHost` for a Device Owner, from API 29. Reading
-the mode at lock time costs nothing and answers whether the phone is about to
-seal itself into that state. Opportunistic is the safe destination: it attempts
-DoT against the network's own resolvers, which here are the tunnel's fake
-addresses, and those do not answer DoT — so it falls back to plain DNS, which is
-the filter. Setting it *off* has no setter, which is why opportunistic rather
-than off.
+**Watched working on the API 36 emulator**, provisioned as Device Owner, with the
+trap set up by hand:
 
-Worth doing before anybody else installs this, because the window it happens in
-is the window every new user is in.
+```
+before lock : private_dns_mode=hostname  specifier=one.one.one.one  restriction absent
+at lock     : "Private DNS was pinned to one.one.one.one; moved to opportunistic
+               so the filter stays reachable once the restriction lands"
+after lock  : private_dns_mode=opportunistic  specifier=null  restriction applied
+              example.com resolves; instagram.com blocked; putting the mode back
+              from an adb shell is ignored
+```
+
+Diagnostics gained a `private DNS:` line, which reads `opportunistic` there. It
+is the only way to see this state on a phone, and a phone showing `hostname` has
+DNS going somewhere the filter cannot see.
+
+**Not on any handset yet**: the fix is in the DPC, so it needs a build. It only
+matters for a phone locked *after* somebody set a Private DNS host, which is a
+first-install situation, so existing phones are unaffected — the alpha reads
+`off`.
 
 ### 13. A copy pass over the app, then the website — the app half is done
 

@@ -250,6 +250,35 @@ data class PolicyOption(
     val descriptionByLanguage: Map<String, String> = emptyMap(),
 
     /**
+     * What the option is *about*, without the "allow" around it — "WhatsApp"
+     * where [name] is "Allow WhatsApp".
+     *
+     * It exists because the switch's label is the wrong words for a sentence
+     * about what just happened. Turning the switch off used to report "Allow
+     * WhatsApp applied after lock", which names the control rather than the
+     * consequence and reads, at a glance, like the opposite of what was done.
+     * With a subject the screen can say "WhatsApp blocked after lock", which is
+     * the sentence a parent is owed.
+     *
+     * It cannot be derived from [name]. English wraps the subject on the left
+     * ("Allow WhatsApp"), Dutch on the right ("WhatsApp toestaan"), and French
+     * on the left again with a different word — so stripping a prefix would be
+     * three guesses about three languages, wrong the moment a fourth arrives.
+     * The document already carries every other word this screen shows, and this
+     * is one more of them.
+     *
+     * **Optional, and absence is not an error.** A policy written before this
+     * field existed has none, and so does the copy bundled in the APK, which is
+     * by construction one document behind. Callers fall back to the old
+     * sentence built from [name]; see MainActivity.applyOption.
+     */
+    val subject: String = "",
+
+    /** See [nameByLanguage]. */
+    @SerialName("subject_i18n")
+    val subjectByLanguage: Map<String, String> = emptyMap(),
+
+    /**
      * The age this is usually reckoned suitable from, shown next to the name as
      * "14+". Advice, not enforcement: nothing on the device knows how old its
      * owner is, and the parent switching this on is the one who does.
@@ -311,6 +340,10 @@ data class PolicyOption(
 
     fun displayDescription(language: String): String =
         pick(description, descriptionByLanguage, language)
+
+    /** [subject] for [language], or null when the document does not carry one. */
+    fun displaySubject(language: String): String? =
+        pick(subject, subjectByLanguage, language).takeIf { it.isNotBlank() }
 }
 
 /**
@@ -539,7 +572,7 @@ data class BrowserPolicy(
      * to herald's own string.
      */
     @SerialName("blocked_page_title")
-    val blockedPageTitle: String = "Drawbridge opened",
+    val blockedPageTitle: String = "drawbridge is up",
 
     /** The line under the heading on herald's block page. */
     @SerialName("blocked_page_message")

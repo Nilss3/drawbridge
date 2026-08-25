@@ -43,11 +43,41 @@
       <p class="lede">Drawbridge protects you and your Android device from harmful content, so you can keep your focus and sanity.</p>
       <p class="voices-lead">Drawbridge aims to solve use cases like:</p>
       <ul class="voices">
-        <li>“I need a phone without social media! It drives me crazy!”</li>
-        <li>“If only there was a phone with just maps, WhatsApp, my bank app, and nothing else!”</li>
-        <li>“My teen and I keep fighting over parental controls and I'm sick of it! Also, these parental controls for all these apps keep changing all the time!”</li>
-        <li>“Isn't there an offline phone without a browser for my kid?”</li>
-        <li>“Can't I have a device for just Spotify?”</li>
+        <li>
+          <span class="voice-quote">“I need a phone without social media! It drives me crazy!”</span>
+          <details class="voice-how">
+            <summary>How?</summary>
+            <p>A phone with drawbridge keeps out all social media, games, pornography, gambling, AI companions and dating. Optionally you can allow video streaming and/or YouTube. All the rest is allowed, though, and the phone functions like normal with all the other apps and tools available.</p>
+          </details>
+        </li>
+        <li>
+          <span class="voice-quote">“If only there was a phone with just maps, WhatsApp, my bank app, and nothing else!”</span>
+          <details class="voice-how">
+            <summary>How?</summary>
+            <p>Drawbridge has an option to prevent app installs. Clean up the apps, keep the few apps you need, and lock it long-term. Updates do come through, so your banking app remains safe.</p>
+          </details>
+        </li>
+        <li>
+          <span class="voice-quote">“My teen and I keep fighting over parental controls and I'm sick of it! Also, these parental controls for all these apps keep changing all the time!”</span>
+          <details class="voice-how">
+            <summary>How?</summary>
+            <p>A phone with drawbridge keeps out all social media, games, pornography, gambling, AI companions and dating. Period. Simple. No discussion. Optionally you can allow WhatsApp, video streaming and/or YouTube, and you can impose a curfew. Once you decided on the latter options, lock the settings for a long time or permanently. Done.</p>
+          </details>
+        </li>
+        <li>
+          <span class="voice-quote">“Isn't there an offline phone without a browser for my kid?”</span>
+          <details class="voice-how">
+            <summary>How?</summary>
+            <p>Even though it is recommended for a child up to 14 to have only a true dumbphone (also so that society doesn&rsquo;t take smartphones for granted!), some people may choose to recycle an old Android device instead, especially when they may want an offline map, FM radio, MP3 player or possibility to share a location. Drawbridge allows you to go fully offline (blocking all web traffic), remove all browsers, and prevent app installs other than the few apps you had already. Phone calls and sms of course remain possible, and GPS and FM radio are passive receivers and remain available. An offline maps app like Organic Maps also allows location sharing through sms.</p>
+          </details>
+        </li>
+        <li>
+          <span class="voice-quote">“Can't I have a device for just Spotify?”</span>
+          <details class="voice-how">
+            <summary>How?</summary>
+            <p>Drawbridge has an option to prevent app installs. Clean up the apps, keep the few apps you need, like Spotify, and lock it long-term.</p>
+          </details>
+        </li>
       </ul>
       <p>Make your phone a drawbridge phone: a phone clear of social media and other harmful time-wasters. A drawbridge phone can be used for yourself, and/or for your teenager, as a free, better and low-maintenance alternative to parental controls. The protection is based on the best practices of digital minimalism and supported by neuroscience and parents' organisations. Drawbridge is free, open source, no frills, watertight, and respects your privacy. No account is needed, and none of your data is ever uploaded.</p>
       <p>Drawbridge is a protection on your device which "raises the bridge" to harmful content and keeps it from entering your device, your life and your soul. It stops adult content, gambling, ads, algorithmic social media, AI companions, and games.</p>
@@ -83,8 +113,141 @@
           </div>
         </div>
         <div class="how-art">
-          <img src="/assets/img/howitworks.webp" alt="A phone with a raised drawbridge across its screen: a calm green landscape inside, dark creatures shut out behind it." />
+          <div class="how-slides" role="group" aria-label="Three screens of drawbridge running: unlocked, locked, and a site refused">
+            <figure>
+              <img src="/assets/img/how-unlocked-en.webp" alt="The drawbridge app open on a phone, unlocked, showing the policy and its settings."
+                   width="640" height="1422" loading="lazy" decoding="async" />
+            </figure>
+            <figure>
+              <img src="/assets/img/how-locked-en.webp" alt="The same app once locked: the dates it has been protecting the phone, and a field for the key."
+                   width="640" height="1422" loading="lazy" decoding="async" />
+            </figure>
+            <figure>
+              <img src="/assets/img/how-blocked.webp" alt="The herald browser showing that tiktok.com was refused, under the drawbridge illustration."
+                   width="640" height="1422" loading="lazy" decoding="async" />
+            </figure>
+          </div>
         </div>
+      </div>
+
+      <h2>Drawbridge settings explained</h2>
+      <div class="explainer" role="group" aria-label="Drawbridge settings explained">
+        <input type="radio" name="dbpage" id="dbp-1" checked />
+        <input type="radio" name="dbpage" id="dbp-2" />
+        <input type="radio" name="dbpage" id="dbp-3" />
+        <input type="radio" name="dbpage" id="dbp-4" />
+        <input type="radio" name="dbpage" id="dbp-5" />
+        <input type="radio" name="dbpage" id="dbp-6" />
+        <div class="explainer-dots">
+          <label for="dbp-1" title="Default policy, always active"><span class="visually-hidden">Default policy, always active</span></label>
+          <label for="dbp-2" title="Disconnect philosophy"><span class="visually-hidden">Disconnect philosophy</span></label>
+          <label for="dbp-3" title="Browser policy"><span class="visually-hidden">Browser policy</span></label>
+          <label for="dbp-4" title="Go with only the apps you really need"><span class="visually-hidden">Go with only the apps you really need</span></label>
+          <label for="dbp-5" title="Optional poison"><span class="visually-hidden">Optional poison</span></label>
+          <label for="dbp-6" title="Locking"><span class="visually-hidden">Locking</span></label>
+        </div>
+        <article class="explainer-page" id="dbpage-1">
+          <nav class="explainer-nav">
+            <label class="btn btn--ghost" for="dbp-6">&larr; Previous</label>
+            <span class="explainer-count">1 of 6</span>
+            <label class="btn btn--ghost" for="dbp-2">Next &rarr;</label>
+          </nav>
+          <figure class="explainer-shot">
+            <img src="/assets/img/app-en-1-policy.webp" alt="The drawbridge configuration screen, showing Default policy, always active."
+                 width="640" loading="lazy" decoding="async" />
+          </figure>
+          <div class="explainer-copy">
+            <h3>Default policy, always active</h3>
+            <p>Keeps out algorithmic social media, adult sites, gambling, ads, dating apps, games, and AI companions. The only search engines available are Google, DuckDuckGo, Bing, and Kagi. The only browsers are herald (recommended), herald mono, Chrome, Firefox Focus, Vivaldi, Comet and Via.</p>
+          </div>
+        </article>
+        <article class="explainer-page" id="dbpage-2">
+          <nav class="explainer-nav">
+            <label class="btn btn--ghost" for="dbp-1">&larr; Previous</label>
+            <span class="explainer-count">2 of 6</span>
+            <label class="btn btn--ghost" for="dbp-3">Next &rarr;</label>
+          </nav>
+          <figure class="explainer-shot">
+            <img src="/assets/img/app-en-2-disconnect.webp" alt="The drawbridge configuration screen, showing Disconnect philosophy."
+                 width="640" loading="lazy" decoding="async" />
+          </figure>
+          <div class="explainer-copy">
+            <h3>Disconnect philosophy</h3>
+            <p>Choose to be online only some of the time, or make your phone an offline ‘dumbphone’. Pick then also no browser.</p>
+          </div>
+        </article>
+        <article class="explainer-page" id="dbpage-3">
+          <nav class="explainer-nav">
+            <label class="btn btn--ghost" for="dbp-2">&larr; Previous</label>
+            <span class="explainer-count">3 of 6</span>
+            <label class="btn btn--ghost" for="dbp-4">Next &rarr;</label>
+          </nav>
+          <figure class="explainer-shot">
+            <img src="/assets/img/app-en-3-browser.webp" alt="The drawbridge configuration screen, showing Browser policy."
+                 width="640" loading="lazy" decoding="async" />
+          </figure>
+          <div class="explainer-copy">
+            <h3>Browser policy</h3>
+            <p>Choose to have any of the allowed browsers, or go with our minimalist monochrome browser. Or go entirely without browser!</p>
+          </div>
+        </article>
+        <article class="explainer-page" id="dbpage-4">
+          <nav class="explainer-nav">
+            <label class="btn btn--ghost" for="dbp-3">&larr; Previous</label>
+            <span class="explainer-count">4 of 6</span>
+            <label class="btn btn--ghost" for="dbp-5">Next &rarr;</label>
+          </nav>
+          <figure class="explainer-shot">
+            <img src="/assets/img/app-en-4-installs.webp" alt="The drawbridge configuration screen, showing Go with only the apps you really need."
+                 width="640" loading="lazy" decoding="async" />
+          </figure>
+          <div class="explainer-copy">
+            <h3>Go with only the apps you really need</h3>
+            <p>Before locking, prune down your apps and keep only those you want to have on your phone. After locking, no new apps will be allowed. Updates of existing apps do come through, so keep the Play Store to update.</p>
+            <p>If you want no browser, pick that option above. Otherwise, herald will remain installed.</p>
+            <p>Leave this off if you are not sure. A blocked app can always be blocked later; an app nobody can install is a phone somebody has to come to you about.</p>
+          </div>
+        </article>
+        <article class="explainer-page" id="dbpage-5">
+          <nav class="explainer-nav">
+            <label class="btn btn--ghost" for="dbp-4">&larr; Previous</label>
+            <span class="explainer-count">5 of 6</span>
+            <label class="btn btn--ghost" for="dbp-6">Next &rarr;</label>
+          </nav>
+          <figure class="explainer-shot">
+            <img src="/assets/img/app-en-5-options.webp" alt="The drawbridge configuration screen, showing Optional poison."
+                 width="640" loading="lazy" decoding="async" />
+          </figure>
+          <div class="explainer-copy">
+            <h3>Optional poison</h3>
+            <h4>Allow WhatsApp</h4>
+            <p>WhatsApp carries privacy risks, has toxic social media features and an annoying chatbot. Signal is always allowed on this device, even though as a group chat app with risk of cyberbullying we also recommend 14+ and/or parental guidance. Switching this off does not uninstall the app: it is suspended and hidden, and comes back with all its chats and media intact if you switch it on again. If you would rather it were really gone, uninstall it yourself before locking.</p>
+            <h4>Allow YouTube</h4>
+            <p>YouTube&#x27;s recommendation feed and Shorts are built to keep you watching, which is why it is blocked by default. Switching this on restores YouTube and its family (Kids, TV, Creator Studio, Music) and turns Google&#x27;s own Restricted Mode on for the YouTube app and for the browser. The phone enforces that, so it cannot be switched off from inside YouTube. In herald, Shorts open as ordinary videos.</p>
+            <h4>Allow Telegram</h4>
+            <p>Telegram is a good messenger wrapped around a bad one. Private chats are fine. Public channels are searchable, effectively unmoderated, and are where adult material, extremist recruitment and pirated files live on this platform. There is no setting that removes them, and ordinary chats are not end-to-end encrypted unless you start a Secret Chat every time. Signal is always allowed on this device and does the messaging part better. Switching this off does not uninstall the app: it is suspended and hidden, and comes back with all its chats and media intact if you switch it on again. If you would rather it were really gone, uninstall it yourself before locking.</p>
+            <h4>Allow long-form video streaming</h4>
+            <p>Netflix, Prime Video, Disney+, HBO Max and around fifty other subscription video services are blocked by default, because an evening disappears into one as easily as into a feed. Switching this on restores all of them at once, the apps and the websites. YouTube is not included: it has its own option, since a recommendation feed is a different thing from a film you sat down to watch.</p>
+          </div>
+        </article>
+        <article class="explainer-page" id="dbpage-6">
+          <nav class="explainer-nav">
+            <label class="btn btn--ghost" for="dbp-5">&larr; Previous</label>
+            <span class="explainer-count">6 of 6</span>
+            <label class="btn btn--ghost" for="dbp-1">Next &rarr;</label>
+          </nav>
+          <figure class="explainer-shot">
+            <img src="/assets/img/app-en-6-locking.webp" alt="The drawbridge configuration screen, showing Locking."
+                 width="640" loading="lazy" decoding="async" />
+          </figure>
+          <div class="explainer-copy">
+            <h3>Locking</h3>
+            <p>Locking forces the options you put before. You’ll need to remember (or forget) the key to go back to the unlocked mode, or use the timer. When locked, drawbridge cannot be removed, not even by factory reset.</p>
+            <p>When no timer is put, drawbridge will stay locked until you put the key. Optionally, you can put a timer for drawbridge to automatically unlock.</p>
+            <p>There will still be a key to unlock before timer runs out, but many people would rather ‘forget’ the key and just use the timer to get some time off, e.g. “4h of studying without internet”, “a weekend of camping offline”, “2 weeks without YouTube”, “3 weeks with a strict internet curfew”.</p>
+            <p>The period is fixed at the moment you lock. It cannot be shortened, extended or switched off from a locked phone, and the phone&#x27;s clock is held to network time so the date cannot be moved either.</p>
+          </div>
+        </article>
       </div>
     </div>
   </section>
@@ -96,13 +259,30 @@
       <div class="device-lists">
         <div class="card card--good">
           <h3>Should work well</h3>
-          <p>Samsung, Motorola, OnePlus, Nothing Phone, Fairphone, Sony, Nokia/HMD, and many more.</p>
+          <p>Google Pixel, Samsung, Motorola, OnePlus, Nothing Phone, Fairphone, Sony, Nokia/HMD, the Dumber Mini (LineageOS), and many more.</p>
         </div>
         <div class="card card--warn">
           <h3>May not be supported</h3>
           <p>Devices with heavily modified Android: Xiaomi, Oppo, Vivo, Redmi, Realme.</p>
         </div>
       </div>
+          <div class="phone-photos phone-photos--row" role="group" aria-label="Photographs of drawbridge locked on three phones">
+            <figure>
+              <img src="/assets/img/phone-moto-g15.webp" alt="A Motorola Moto G15 on a table showing drawbridge's locked screen, beside a hand-written card naming the phone."
+                   width="800" height="800" loading="lazy" decoding="async" />
+              <figcaption>Motorola Moto G15</figcaption>
+            </figure>
+            <figure>
+              <img src="/assets/img/phone-nothing-3a.webp" alt="A Nothing Phone (3a) on a table showing drawbridge's locked screen with an evening curfew, beside a hand-written card naming the phone."
+                   width="800" height="800" loading="lazy" decoding="async" />
+              <figcaption>Nothing Phone (3a)</figcaption>
+            </figure>
+            <figure>
+              <img src="/assets/img/phone-dumber-mini.webp" alt="A Dumber Mini keypad phone on a table showing drawbridge's locked screen above its keys, beside a hand-written card naming the phone."
+                   width="800" height="800" loading="lazy" decoding="async" />
+              <figcaption>Dumber Mini</figcaption>
+            </figure>
+          </div>
       <div class="btn-row">
         <a class="btn btn--ghost" href="/faq/">See our Q&amp;A</a>
       </div>
@@ -114,32 +294,44 @@
       <h2>The herald browser</h2>
       <p>herald (as in "messenger, harbinger" who can cross the bridge) is a browser custom made for drawbridge, but is also available as a stand-alone app for everyone to use. It is especially interesting for people who already have parental controls or app blockers in place, but find that the browser remains a necessity which can bypass restrictions and is otherwise also an unwanted time waster. Those people can install herald as their one and only browser.</p>
 
-      <div class="browser-card">
-        <div class="browser-card-head">
-          <img src="/assets/img/herald-icon.webp" alt="" class="browser-card-icon" />
-          <h3>herald</h3>
-        </div>
-        <p>The herald browser is:</p>
-        <ul>
+      <div class="browser-card browser-card--shot">
+        <div>
+          <div class="browser-card-head">
+            <img src="/assets/img/herald-icon.webp" alt="" class="browser-card-icon" />
+            <h3>herald</h3>
+          </div>
+          <p>The herald browser is:</p>
+          <ul>
 <li>Based on Firefox</li>
 <li>Blocks harmful content combining the same public and custom blocklists as drawbridge</li>
 <li>Allows no extensions (this could circumvent the block) but it does have uBlock Origin installed</li>
 <li>Has a reader mode, dark mode, etc.</li>
-        </ul>
+          </ul>
+        </div>
+        <figure class="browser-card-shot">
+          <img src="/assets/img/browser-herald.webp" alt="herald refusing tiktok.com, with drawbridge's illustration above the message."
+               width="640" loading="lazy" decoding="async" />
+        </figure>
       </div>
 
-      <div class="browser-card">
-        <div class="browser-card-head">
-          <img src="/assets/img/herald-mono-icon.webp" alt="" class="browser-card-icon" />
-          <h3>herald mono</h3>
-        </div>
-        <p>herald mono is another version of this browser, especially for people who find browsing the internet itself addictive (news, shopping, etc.). It is inspired by e-ink screens and the Firefox Focus browser to make browsing less enticing:</p>
-        <ul>
+      <div class="browser-card browser-card--shot">
+        <div>
+          <div class="browser-card-head">
+            <img src="/assets/img/herald-mono-icon.webp" alt="" class="browser-card-icon" />
+            <h3>herald mono</h3>
+          </div>
+          <p>herald mono is another version of this browser, especially for people who find browsing the internet itself addictive (news, shopping, etc.). It is inspired by e-ink screens and the Firefox Focus browser to make browsing less enticing:</p>
+          <ul>
 <li>It renders everything in black and white</li>
 <li>Pages are harder to skim past: a flick throws the page about half as far as in any other browser, so scrolling on and on takes deciding to<ul><li>Dragging is unchanged: the page still follows your finger exactly. Reader mode and colour are both still there, a menu entry away, for the page that needs them</li></ul></li>
 <li>There are no tabs. Single-tasking it is.</li>
 <li>There is a breathing pause every time you open a webpage.</li>
-        </ul>
+          </ul>
+        </div>
+        <figure class="browser-card-shot">
+          <img src="/assets/img/browser-mono.webp" alt="A newspaper article open in herald mono, rendered entirely in black and white."
+               width="640" loading="lazy" decoding="async" />
+        </figure>
       </div>
 
       <p>The browsers may be downloaded as packages from the repo directly. In the future we may foresee an entry in the Play Store.</p>

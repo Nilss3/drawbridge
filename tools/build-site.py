@@ -186,6 +186,14 @@ HOME = {
         p2='Drawbridge is a protection on your device which "raises the bridge" to harmful content and keeps it from entering your device, your life and your soul. It stops adult content, gambling, ads, algorithmic social media, AI companions, and games.',
         browser_teaser='The project also includes herald, a browser you can download and use on its own: <a href="#herald">see below</a>.',
         use_cases_lead="Drawbridge aims to solve use cases like:",
+        use_cases_how_label="How?",
+        use_cases_how=[
+            "A phone with drawbridge keeps out all social media, games, pornography, gambling, AI companions and dating. Optionally you can allow video streaming and/or YouTube. All the rest is allowed, though, and the phone functions like normal with all the other apps and tools available.",
+            "Drawbridge has an option to prevent app installs. Clean up the apps, keep the few apps you need, and lock it long-term. Updates do come through, so your banking app remains safe.",
+            "A phone with drawbridge keeps out all social media, games, pornography, gambling, AI companions and dating. Period. Simple. No discussion. Optionally you can allow WhatsApp, video streaming and/or YouTube, and you can impose a curfew. Once you decided on the latter options, lock the settings for a long time or permanently. Done.",
+            "Even though it is recommended for a child up to 14 to have only a true dumbphone (also so that society doesn&rsquo;t take smartphones for granted!), some people may choose to recycle an old Android device instead, especially when they may want an offline map, FM radio, MP3 player or possibility to share a location. Drawbridge allows you to go fully offline (blocking all web traffic), remove all browsers, and prevent app installs other than the few apps you had already. Phone calls and sms of course remain possible, and GPS and FM radio are passive receivers and remain available. An offline maps app like Organic Maps also allows location sharing through sms.",
+            "Drawbridge has an option to prevent app installs. Clean up the apps, keep the few apps you need, like Spotify, and lock it long-term.",
+        ],
         use_cases=[
             "“I need a phone without social media! It drives me crazy!”",
             "“If only there was a phone with just maps, WhatsApp, my bank app, and nothing else!”",
@@ -198,13 +206,12 @@ HOME = {
         how_h2="How it works",
         how_p1='You connect the phone to a computer once, over USB, and run the installer. There is no factory reset, and nothing on the phone is erased. This will embed drawbridge on your device. Once installed, just start it. Installing it does uninstall the apps it blocks, so expect those to go. Move anything you want to keep off the phone first.',
         how_p2="Drawbridge relies on a web filter, a block list, and automatic app uninstalls. You don't need an account, and no data leaves your device. As opposed to parental controls or app blockers, there is little to no configuration, it already has everything there to protect you. There is also no workaround.",
-        how_art_alt="A phone with a raised drawbridge across its screen: a calm green landscape inside, dark creatures shut out behind it.",
         how_cta_faq="Read the Q&amp;A",
         how_cta_install="Installation guide",
         devices_h2="On what devices?",
         devices_intro="Drawbridge should work on <strong>all Android devices</strong> running near-stock Android, or with good enterprise support.",
         good_title="Should work well",
-        good_text="Samsung, Motorola, OnePlus, Nothing Phone, Fairphone, Sony, Nokia/HMD, and many more.",
+        good_text="Google Pixel, Samsung, Motorola, OnePlus, Nothing Phone, Fairphone, Sony, Nokia/HMD, the Dumber Mini (LineageOS), and many more.",
         warn_title="May not be supported",
         warn_text="Devices with heavily modified Android: Xiaomi, Oppo, Vivo, Redmi, Realme.",
         see_faq="See our Q&amp;A",
@@ -242,6 +249,14 @@ HOME = {
         p2='Drawbridge is een bescherming op je toestel die "de brug ophaalt" voor schadelijke inhoud en verhindert dat die je toestel, je leven en je ziel binnendringt. Het houdt pornografie, gokken, advertenties, algoritmische social media, AI companions en games tegen.',
         browser_teaser='Het project omvat ook herald, een browser die je apart kan downloaden en gebruiken: <a href="#herald">zie hieronder</a>.',
         use_cases_lead="Drawbridge wil situaties zoals deze oplossen:",
+        use_cases_how_label="Hoe?",
+        use_cases_how=[
+            "Een telefoon met drawbridge houdt alle sociale media, games, pornografie, gokken, AI-gezelschapsapps en datingapps buiten. Optioneel kan je videostreaming en/of YouTube toelaten. De rest is wel gewoon toegelaten: de telefoon werkt normaal, met alle andere apps en hulpmiddelen beschikbaar.",
+            "Drawbridge heeft een optie die het installeren van apps tegenhoudt. Ruim je apps op, hou de paar apps die je nodig hebt, en vergrendel voor lange tijd. Updates komen wel door, dus je bankapp blijft veilig.",
+            "Een telefoon met drawbridge houdt alle sociale media, games, pornografie, gokken, AI-gezelschapsapps en datingapps buiten. Punt. Simpel. Geen discussie. Optioneel kan je WhatsApp, videostreaming en/of YouTube toelaten, en je kan een avondklok instellen. Heb je die laatste keuzes gemaakt, vergrendel de instellingen dan voor lange tijd of voorgoed. Klaar.",
+            "Ook al is het voor een kind tot 14 aan te raden om enkel een echte dumbphone te hebben (mede zodat de maatschappij smartphones niet als vanzelfsprekend gaat zien!), kiezen sommigen er toch voor om een oud Android-toestel te hergebruiken, zeker als ze een offline kaart, FM-radio, mp3-speler of de mogelijkheid om een locatie te delen willen. Met drawbridge kan je volledig offline gaan (al het webverkeer blokkeren), alle browsers verwijderen, en het installeren van andere apps dan die je al had tegenhouden. Bellen en sms&rsquo;en blijft natuurlijk mogelijk, en gps en FM-radio zijn passieve ontvangers en blijven beschikbaar. Een offline kaartenapp zoals Organic Maps laat ook toe je locatie via sms te delen.",
+            "Drawbridge heeft een optie die het installeren van apps tegenhoudt. Ruim je apps op, hou de paar apps die je nodig hebt &mdash; Spotify bijvoorbeeld &mdash; en vergrendel voor lange tijd.",
+        ],
         use_cases=[
             "“Ik heb een telefoon zonder social media nodig! Ik word er gek van!”",
             "“Was er maar een telefoon met alleen maps, WhatsApp, mijn bankapp, en verder niets!”",
@@ -254,13 +269,12 @@ HOME = {
         how_h2="Hoe het werkt",
         how_p1='Je verbindt de telefoon één keer met een computer via USB en voert de installer uit. Er is geen factory reset nodig, en er wordt niets op de telefoon gewist. Dat installeert drawbridge op je toestel. Eenmaal geïnstalleerd, start je het gewoon op. Bij het installeren verdwijnen wel de apps die drawbridge blokkeert, dus zet eerst weg wat je wil bewaren.',
         how_p2='Drawbridge steunt op een webfilter, een blocklist, en het automatisch verwijderen van apps. Je hebt geen account nodig, en er wordt nooit data van je toestel verzonden. In tegenstelling tot parental controls of app blockers is er nauwelijks tot geen configuratie nodig: alles staat er al klaar om je te beschermen. Er is ook geen workaround.',
-        how_art_alt="Een telefoon met een opgehaalde brug over het scherm: een rustig groen landschap binnenin, duistere wezens buitengesloten.",
         how_cta_faq="Lees de Q&amp;A",
         how_cta_install="Installatiegids",
         devices_h2="Op welke toestellen?",
         devices_intro="Drawbridge zou moeten werken op <strong>alle Android-toestellen</strong> met een bijna-stock Android, of met goede enterprise-ondersteuning.",
         good_title="Zou goed moeten werken",
-        good_text="Samsung, Motorola, OnePlus, Nothing Phone, Fairphone, Sony, Nokia/HMD, en vele andere.",
+        good_text="Google Pixel, Samsung, Motorola, OnePlus, Nothing Phone, Fairphone, Sony, Nokia/HMD, de Dumber Mini (LineageOS), en vele andere.",
         warn_title="Mogelijk niet ondersteund",
         warn_text="Toestellen met sterk aangepaste Android-versies: Xiaomi, Oppo, Vivo, Redmi, Realme.",
         see_faq="Bekijk onze Q&amp;A",
@@ -298,6 +312,14 @@ HOME = {
         p2="Drawbridge est une protection sur votre appareil qui « relève le pont-levis » face aux contenus nuisibles et les empêche d'entrer dans votre appareil, votre vie et votre âme. Elle bloque les contenus pour adultes, les jeux d'argent, la publicité, les réseaux sociaux algorithmiques, les compagnons IA et les jeux vidéo.",
         browser_teaser='Le projet comprend aussi herald, un navigateur que vous pouvez télécharger et utiliser séparément : <a href="#herald">voir plus bas</a>.',
         use_cases_lead="Drawbridge cherche à répondre à des situations comme celles-ci :",
+        use_cases_how_label="Comment ?",
+        use_cases_how=[
+            "Un téléphone avec drawbridge tient à l&rsquo;écart tous les réseaux sociaux, les jeux, la pornographie, les jeux d&rsquo;argent, les compagnons IA et les applications de rencontre. En option, vous pouvez autoriser le streaming vidéo et/ou YouTube. Tout le reste est autorisé : le téléphone fonctionne normalement, avec toutes les autres applications et tous les autres outils.",
+            "Drawbridge propose une option qui empêche l&rsquo;installation d&rsquo;applications. Faites le tri, gardez les quelques applications dont vous avez besoin, et verrouillez pour longtemps. Les mises à jour passent toujours : votre application bancaire reste sûre.",
+            "Un téléphone avec drawbridge tient à l&rsquo;écart tous les réseaux sociaux, les jeux, la pornographie, les jeux d&rsquo;argent, les compagnons IA et les applications de rencontre. Point. Simple. Sans discussion. En option, vous pouvez autoriser WhatsApp, le streaming vidéo et/ou YouTube, et vous pouvez imposer un couvre-feu. Une fois ces derniers choix faits, verrouillez les réglages pour longtemps ou définitivement. Terminé.",
+            "Même s&rsquo;il est recommandé qu&rsquo;un enfant jusqu&rsquo;à 14 ans n&rsquo;ait qu&rsquo;un vrai dumbphone (aussi pour que la société cesse de considérer le smartphone comme allant de soi !), certains préféreront recycler un vieil appareil Android, surtout s&rsquo;ils veulent une carte hors ligne, la radio FM, un lecteur MP3 ou la possibilité de partager une position. Drawbridge vous permet de passer entièrement hors ligne (en bloquant tout le trafic web), de supprimer tous les navigateurs et d&rsquo;empêcher l&rsquo;installation d&rsquo;applications autres que les quelques-unes déjà présentes. Les appels et les SMS restent bien sûr possibles, et le GPS comme la radio FM sont des récepteurs passifs et restent disponibles. Une application de cartes hors ligne comme Organic Maps permet aussi de partager sa position par SMS.",
+            "Drawbridge propose une option qui empêche l&rsquo;installation d&rsquo;applications. Faites le tri, gardez les quelques applications dont vous avez besoin &mdash; Spotify par exemple &mdash; et verrouillez pour longtemps.",
+        ],
         use_cases=[
             "« J'ai besoin d'un téléphone sans réseaux sociaux ! Ça me rend dingue ! »",
             "« Si seulement il existait un téléphone avec juste les cartes, WhatsApp, mon appli bancaire, et rien d'autre ! »",
@@ -310,13 +332,12 @@ HOME = {
         how_h2="Comment ça marche",
         how_p1="Vous reliez le téléphone à un ordinateur une seule fois, par USB, et vous lancez l'installeur. Il n'y a aucune réinitialisation, et rien n'est effacé sur le téléphone. Cela installe drawbridge sur votre appareil. Une fois installé, il suffit de le démarrer. L'installation désinstalle en revanche les applications qu'il bloque, mettez donc d'abord de côté ce que vous voulez garder.",
         how_p2="Drawbridge s'appuie sur un filtre web, une liste de blocage, et la désinstallation automatique des applications. Aucun compte n'est nécessaire, et aucune donnée ne quitte votre appareil. Contrairement aux contrôles parentaux ou aux bloqueurs d'applications, il n'y a que peu, voire aucune configuration à faire : tout est déjà en place pour vous protéger. Il n'existe pas non plus de moyen de contournement.",
-        how_art_alt="Un téléphone dont le pont-levis est relevé sur l'écran : un paysage vert et calme à l'intérieur, des créatures sombres tenues à l'écart.",
         how_cta_faq="Lire la Q&amp;A",
         how_cta_install="Guide d'installation",
         devices_h2="Sur quels appareils ?",
         devices_intro="Drawbridge devrait fonctionner sur <strong>tous les appareils Android</strong> proches d'Android stock, ou bénéficiant d'un bon support entreprise.",
         good_title="Devrait bien fonctionner",
-        good_text="Samsung, Motorola, OnePlus, Nothing Phone, Fairphone, Sony, Nokia/HMD, et bien d'autres.",
+        good_text="Google Pixel, Samsung, Motorola, OnePlus, Nothing Phone, Fairphone, Sony, Nokia/HMD, le Dumber Mini (LineageOS), et bien d'autres.",
         warn_title="Support non garanti",
         warn_text="Appareils avec une version d'Android fortement modifiée : Xiaomi, Oppo, Vivo, Redmi, Realme.",
         see_faq="Consultez notre Q&amp;A",
@@ -342,6 +363,469 @@ HOME = {
 }
 
 
+# Three screens of the running system, crossfading beside "How it works".
+#
+# The section had prose and nothing else after the photographs moved to "On
+# what devices?", and the app explainer under it starts at the *policy* — so a
+# reader met six pages of settings without ever having seen what the thing looks
+# like. These are that overview: the app open, the app locked, and a blocked
+# site in herald, which is the whole product in three pictures.
+#
+# Captured on the API 36 emulator in light mode, with drawbridge as device owner
+# and the filter running, so the block page is a real one and not a mock-up.
+HOW_SLIDES = [
+    dict(
+        # Per language: the configuration screen is translated, and a French
+        # page beside an English screenshot is a page that has been half
+        # translated. The block page is not, because herald has no translations
+        # and the words on it come from the signed document, which carries no
+        # _i18n for them — one file, honestly the same in all three.
+        file=lambda lang: f"how-unlocked-{lang}.webp",
+        alt=dict(
+            en="The drawbridge app open on a phone, unlocked, showing the policy and its settings.",
+            nl="De drawbridge-app open op een telefoon, ontgrendeld, met het beleid en de instellingen.",
+            fr="L'application drawbridge ouverte sur un téléphone, déverrouillée, montrant la politique et ses réglages.",
+        ),
+    ),
+    dict(
+        file=lambda lang: f"how-locked-{lang}.webp",
+        alt=dict(
+            en="The same app once locked: the dates it has been protecting the phone, and a field for the key.",
+            nl="Dezelfde app eenmaal vergrendeld: sinds wanneer ze de telefoon beschermt, en een veld voor de sleutel.",
+            fr="La même application une fois verrouillée : depuis quand elle protège le téléphone, et un champ pour la clé.",
+        ),
+    ),
+    dict(
+        file=lambda lang: "how-blocked.webp",
+        alt=dict(
+            en="The herald browser showing that tiktok.com was refused, under the drawbridge illustration.",
+            nl="De herald-browser die toont dat tiktok.com geweigerd is, onder de drawbridge-illustratie.",
+            fr="Le navigateur herald indiquant que tiktok.com a été refusé, sous l'illustration de drawbridge.",
+        ),
+    ),
+]
+
+BROWSER_SHOTS = dict(
+    herald=dict(
+        # Cropped to the block card. The slideshow's copy is the whole screen,
+        # because the two slides beside it are whole screens; here it would be
+        # two thirds of an empty page next to a paragraph.
+        file="browser-herald.webp",
+        alt=dict(
+            en="herald refusing tiktok.com, with drawbridge's illustration above the message.",
+            nl="herald weigert tiktok.com, met de illustratie van drawbridge boven de boodschap.",
+            fr="herald refuse tiktok.com, avec l'illustration de drawbridge au-dessus du message.",
+        ),
+    ),
+    mono=dict(
+        file="browser-mono.webp",
+        alt=dict(
+            en="A newspaper article open in herald mono, rendered entirely in black and white.",
+            nl="Een krantenartikel open in herald mono, volledig in zwart-wit weergegeven.",
+            fr="Un article de journal ouvert dans herald mono, rendu entièrement en noir et blanc.",
+        ),
+    ),
+)
+
+
+def browser_shot(which: str, lang: str) -> str:
+    """One screenshot beside a browser card.
+
+    Each card says what the browser *is* in a list of bullets, and a picture is
+    the half of that a list cannot carry: for herald, what a refusal looks like
+    to the person who hits one; for mono, that "monochrome" is the whole page and
+    not a theme setting. The mono shot is a real newspaper article rather than a
+    mock-up, because the point of it is that ordinary reading still works.
+    """
+    shot = BROWSER_SHOTS[which]
+    return (
+        f'        <figure class="browser-card-shot">\n'
+        f'          <img src="/assets/img/{shot["file"]}" alt="{shot["alt"][lang]}"\n'
+        f'               width="640" loading="lazy" decoding="async" />\n'
+        f'        </figure>'
+    )
+
+
+HOW_SLIDES_LABEL = dict(
+    en="Three screens of drawbridge running: unlocked, locked, and a site refused",
+    nl="Drie schermen van drawbridge in werking: ontgrendeld, vergrendeld, en een geweigerde site",
+    fr="Trois écrans de drawbridge en fonctionnement : déverrouillé, verrouillé, et un site refusé",
+)
+
+
+def how_slides_html(lang: str) -> str:
+    """The crossfade beside "How it works".
+
+    Markup only; the crossfade is in style.css and no script runs on this page.
+    Under prefers-reduced-motion the same three stack into a column, so a reader
+    who asked for stillness sees all three rather than one.
+    """
+    figures = []
+    for slide in HOW_SLIDES:
+        figures.append(
+            f'            <figure>\n'
+            f'              <img src="/assets/img/{slide["file"](lang)}" alt="{slide["alt"][lang]}"\n'
+            f'                   width="640" height="1422" loading="lazy" decoding="async" />\n'
+            f'            </figure>'
+        )
+    return (
+        f'          <div class="how-slides" role="group" aria-label="{HOW_SLIDES_LABEL[lang]}">\n'
+        + "\n".join(figures)
+        + "\n          </div>"
+    )
+
+
+# ---------------------------------------------------------------------------
+# Photographs of drawbridge locked on real phones
+# ---------------------------------------------------------------------------
+#
+# These sit where an illustration used to, under "How it works". The
+# illustration said what drawbridge is *for*; a photograph says it exists and
+# runs, which is the thing a page of text cannot claim on its own.
+#
+# Three phones on purpose: two manufacturers and a keypad phone, so the picture
+# carries the same message as the devices section next to it. The captions are
+# device names and are the same in every language.
+#
+# They are stacked, one under the other, rather than crossfaded in one frame.
+# The column beside them is three paragraphs, a list and two buttons tall, so
+# the room was there for all three at once -- and three photographs a reader can
+# compare in one glance say more than three that take eighteen seconds to
+# arrive, none of which can be looked at twice.
+#
+# Sources are the camera JPEGs in images/. The site copies were made with a
+# square centre crop of the full frame height, so nothing is clipped:
+#
+#   magick images/DumberMini.JPG     -crop 3888x3888+570+0 +repage \
+#       -resize 800x800 -quality 80 site/assets/img/phone-dumber-mini.webp
+#   magick images/MotoG15.JPG        -crop 3888x3888+803+0 +repage \
+#       -resize 800x800 -quality 80 site/assets/img/phone-moto-g15.webp
+#   magick images/NothingPhone3a.JPG -crop 3888x3888+920+0 +repage \
+#       -modulate 118,104,100 -resize 800x800 -quality 80 \
+#       site/assets/img/phone-nothing-3a.webp
+#
+# The Nothing frame was shot darker than the other two -- 0.31 mean luminance
+# against 0.38 -- and stacked above and below two lighter ones that reads as a
+# fault in the page. The modulate brings it to 0.37; nothing else is retouched.
+
+PHONE_PHOTOS = [
+    dict(
+        file="phone-moto-g15.webp",
+        caption="Motorola Moto G15",
+        alt=dict(
+            en="A Motorola Moto G15 on a table showing drawbridge's locked screen, beside a hand-written card naming the phone.",
+            nl="Een Motorola Moto G15 op tafel met het vergrendelscherm van drawbridge, naast een handgeschreven kaartje met de naam van de telefoon.",
+            fr="Un Motorola Moto G15 posé sur une table, affichant l'écran verrouillé de drawbridge, à côté d'une fiche manuscrite qui nomme le téléphone.",
+        ),
+    ),
+    dict(
+        file="phone-nothing-3a.webp",
+        caption="Nothing Phone (3a)",
+        alt=dict(
+            en="A Nothing Phone (3a) on a table showing drawbridge's locked screen with an evening curfew, beside a hand-written card naming the phone.",
+            nl="Een Nothing Phone (3a) op tafel met het vergrendelscherm van drawbridge en een avondcurfew, naast een handgeschreven kaartje met de naam van de telefoon.",
+            fr="Un Nothing Phone (3a) posé sur une table, affichant l'écran verrouillé de drawbridge avec un couvre-feu du soir, à côté d'une fiche manuscrite qui nomme le téléphone.",
+        ),
+    ),
+    dict(
+        file="phone-dumber-mini.webp",
+        caption="Dumber Mini",
+        alt=dict(
+            en="A Dumber Mini keypad phone on a table showing drawbridge's locked screen above its keys, beside a hand-written card naming the phone.",
+            nl="Een Dumber Mini met toetsen op tafel, met het vergrendelscherm van drawbridge boven de toetsen, naast een handgeschreven kaartje met de naam van de telefoon.",
+            fr="Un téléphone à touches Dumber Mini posé sur une table, affichant l'écran verrouillé de drawbridge au-dessus de ses touches, à côté d'une fiche manuscrite qui nomme le téléphone.",
+        ),
+    ),
+]
+
+PHOTOS_LABEL = dict(
+    en="Photographs of drawbridge locked on three phones",
+    nl="Foto's van drawbridge vergrendeld op drie telefoons",
+    fr="Photographies de drawbridge verrouillé sur trois téléphones",
+)
+
+
+def phone_photos_html(lang: str, row: bool = False) -> str:
+    """The photographs of the three phones, as a column or as a row.
+
+    **They live under "On what devices?" as of 2026-08-24**, which is the
+    question they answer: three phones, three manufacturers, one of them not
+    even running an OEM's Android, all of them running this. Under "How it
+    works" they were decoration beside text about installing, and that section
+    now runs full width with the app explainer under it.
+
+    `row` is what the move needed. Stacked, three photographs made a column
+    twice the height of the two device cards beside them; across, they sit under
+    the cards at the full width of the page and the section stays one screen.
+    """
+    figures = []
+    for photo in PHONE_PHOTOS:
+        figures.append(
+            f'            <figure>\n'
+            f'              <img src="/assets/img/{photo["file"]}" alt="{photo["alt"][lang]}"\n'
+            f'                   width="800" height="800" loading="lazy" decoding="async" />\n'
+            f'              <figcaption>{photo["caption"]}</figcaption>\n'
+            f'            </figure>'
+        )
+    variant = " phone-photos--row" if row else ""
+    return (
+        f'          <div class="phone-photos{variant}" role="group" aria-label="{PHOTOS_LABEL[lang]}">\n'
+        + "\n".join(figures)
+        + "\n          </div>"
+    )
+
+
+# ---------------------------------------------------------------------------
+# "Drawbridge app explained" — the configuration screen, one section per page
+# ---------------------------------------------------------------------------
+#
+# **Every word of explanation here is read out of the app, not written here.**
+# Four of the six pages quote an ⓘ button on the configuration screen, and those
+# buttons are the one place this project has already said each thing carefully.
+# Copying them into the site by hand would make two texts that drift, and the
+# drift would be invisible: nobody diffs a website against a policy document.
+#
+# So the pages are assembled at build time from the two places those texts
+# actually live:
+#
+#   - the signed policy, `dist/policy.signed.json`, for the profile description
+#     and the four option descriptions — the words a phone will show once it has
+#     polled, in whatever language it is set to;
+#   - the app's own string resources, `dpc/src/main/res/values*/strings.xml`,
+#     for the two controls that are device-local and therefore have no entry in
+#     the document: the install lock and the unlock timer.
+#
+# Rebuild the site and the widget is current. Change a policy description and
+# the next `python3 tools/build-site.py` carries it across on its own; there is
+# nothing to remember.
+#
+# The prose that is *not* from a button — the page titles, and pages 2 and 3 —
+# is in PAGE_COPY below, because those describe a choice rather than explain a
+# setting and the app has no equivalent text to quote.
+
+import re as _re
+
+#: The section of the configuration screen each page shows, as the middle of the
+#: filename. There is one set per language, because the app is translated and a
+#: French page beside an English screenshot is a page that has not been
+#: translated — it has been half translated, which reads worse than either.
+#: Captured in light mode with tools/capture-explainer-shots.py, which takes the
+#: language as its only argument and needs an unlocked phone or emulator.
+EXPLAINER_SECTIONS = {
+    1: "policy",
+    2: "disconnect",
+    3: "browser",
+    4: "installs",
+    5: "options",
+    6: "locking",
+}
+
+
+def explainer_shot(lang: str, page: int) -> str:
+    return f"app-{lang}-{page}-{EXPLAINER_SECTIONS[page]}.webp"
+
+PAGE_COPY = {
+    "en": dict(
+        widget_h2="Drawbridge settings explained",
+        prev="Previous",
+        next="Next",
+        of="{n} of {total}",
+        titles={
+            1: "Default policy, always active",
+            2: "Disconnect philosophy",
+            3: "Browser policy",
+            4: "Go with only the apps you really need",
+            5: "Optional poison",
+            6: "Locking",
+        },
+        page2="Choose to be online only some of the time, or make your phone an offline ‘dumbphone’. Pick then also no browser.",
+        page3="Choose to have any of the allowed browsers, or go with our minimalist monochrome browser. Or go entirely without browser!",
+        page6_lead="Locking forces the options you put before. You’ll need to remember (or forget) the key to go back to the unlocked mode, or use the timer. When locked, drawbridge cannot be removed, not even by factory reset.",
+        alt="The drawbridge configuration screen, showing {title}.",
+    ),
+    "nl": dict(
+        widget_h2="De drawbridge-instellingen uitgelegd",
+        prev="Vorige",
+        next="Volgende",
+        of="{n} van {total}",
+        titles={
+            1: "Standaardbeleid, altijd actief",
+            2: "Verbindingsfilosofie",
+            3: "Browserbeleid",
+            4: "Enkel de apps die je echt nodig hebt",
+            5: "Optioneel gif",
+            6: "Vergrendelen",
+        },
+        page2="Kies om maar een deel van de tijd online te zijn, of maak van je telefoon een offline ‘dumbphone’. Kies dan ook geen browser.",
+        page3="Kies om eender welke van de toegelaten browsers te houden, of ga voor onze minimalistische, monochrome browser. Of ga helemaal zonder browser!",
+        page6_lead="Vergrendelen legt de opties vast die je hierboven gekozen hebt. Je hebt de sleutel nodig om terug naar de ontgrendelde modus te gaan — onthouden of net vergeten — of je gebruikt de timer. Vergrendeld kan drawbridge niet verwijderd worden, ook niet met een factory reset.",
+        alt="Het configuratiescherm van drawbridge, met {title}.",
+    ),
+    "fr": dict(
+        widget_h2="Les réglages de drawbridge expliqués",
+        prev="Précédent",
+        next="Suivant",
+        of="{n} sur {total}",
+        titles={
+            1: "Politique par défaut, toujours active",
+            2: "Philosophie de connexion",
+            3: "Politique de navigateur",
+            4: "N’emportez que les applications dont vous avez vraiment besoin",
+            5: "Poison facultatif",
+            6: "Verrouillage",
+        },
+        page2="Choisissez de n’être en ligne qu’une partie du temps, ou faites de votre téléphone un « dumbphone » hors ligne. Choisissez alors aussi de n’avoir aucun navigateur.",
+        page3="Choisissez de garder n'importe lequel des navigateurs autorisés, ou optez pour notre navigateur minimaliste et monochrome. Ou passez entièrement sans navigateur !",
+        page6_lead="Le verrouillage fige les options que vous avez choisies plus haut. Il vous faudra la clé pour revenir au mode déverrouillé — la retenir, ou justement l’oublier — ou bien le minuteur. Verrouillé, drawbridge ne peut pas être supprimé, pas même par une réinitialisation d’usine.",
+        alt="L’écran de configuration de drawbridge, montrant : {title}.",
+    ),
+}
+
+
+def _policy_document() -> dict:
+    """The signed policy's payload, decoded.
+
+    The *signed* copy rather than `dist/policy.json`, deliberately: it is the
+    document a phone will actually be handed, so a description that has been
+    edited but not yet signed does not reach the site ahead of the phones.
+    """
+    import base64
+
+    envelope = json.loads((REPO_ROOT / "dist" / "policy.signed.json").read_text())
+    return json.loads(base64.b64decode(envelope["payload"]))
+
+
+def _app_string(name: str, lang: str) -> str:
+    """One string resource out of the app, as HTML.
+
+    Android's escaping is not HTML's: `\n` is a line break, and apostrophes and
+    quotes carry backslashes. Paragraph breaks are `\n\n`, so the text comes
+    back as one <p> per paragraph rather than as a wall.
+    """
+    directory = "values" if lang == "en" else f"values-{lang}"
+    path = REPO_ROOT / "dpc" / "src" / "main" / "res" / directory / "strings.xml"
+    match = _re.search(rf'<string name="{name}">(.*?)</string>', path.read_text(), _re.S)
+    if match is None:
+        raise SystemExit(
+            f"{path.relative_to(REPO_ROOT)} has no string named {name}, and the "
+            "app explainer on the homepage quotes it. Either the resource was "
+            "renamed or the widget is pointing at the wrong one."
+        )
+    raw = _re.sub(
+        r"\\u([0-9a-fA-F]{4})",
+        lambda m: chr(int(m.group(1), 16)),
+        match.group(1)
+        .replace(r"\'", "'")
+        .replace(r'\"', '"')
+        .replace(r"\n", "\n"),
+    )
+    paragraphs = [html.escape(p.strip()) for p in raw.split("\n\n") if p.strip()]
+    return "\n            ".join(f"<p>{p}</p>" for p in paragraphs)
+
+
+def _localised(entry: dict, field: str, lang: str) -> str:
+    """A policy field in [lang], falling back to the untranslated original.
+
+    The same rule the apps use — see `pick` in Policy.kt — so the site and the
+    phone show the same words rather than the site blanking where a translation
+    is missing.
+    """
+    translated = (entry.get(f"{field}_i18n") or {}).get(lang)
+    return html.escape((translated or entry.get(field) or "").strip())
+
+
+def explainer_pages(lang: str) -> list[dict]:
+    """The six pages, assembled from the policy and the app's strings."""
+    c = PAGE_COPY[lang]
+    policy = _policy_document()
+
+    profiles = policy.get("profiles") or []
+    default_id = policy.get("default_profile")
+    profile = next((p for p in profiles if p.get("id") == default_id), profiles[0])
+
+    options_html = []
+    for option in policy.get("options") or []:
+        options_html.append(
+            f'<h4>{_localised(option, "name", lang)}</h4>\n'
+            f'            <p>{_localised(option, "description", lang)}</p>'
+        )
+
+    bodies = {
+        1: f'<p>{_localised(profile, "description", lang)}</p>',
+        2: f'<p>{c["page2"]}</p>',
+        3: f'<p>{c["page3"]}</p>',
+        4: _app_string("install_lock_info", lang),
+        5: "\n            ".join(options_html),
+        6: f'<p>{c["page6_lead"]}</p>\n            ' + _app_string("lock_timer_info", lang),
+    }
+
+    return [
+        dict(n=n, title=c["titles"][n], body=bodies[n], shot=explainer_shot(lang, n))
+        for n in range(1, 7)
+    ]
+
+
+def render_explainer(lang: str) -> str:
+    """The pager itself.
+
+    **Radios and sibling selectors again**, for the reason the install page's
+    picker uses them: this site runs no JavaScript outside the USB installer,
+    and a six-page carousel is not the thing to break that for. Every page is in
+    the HTML and one is displayed, so a reader with CSS off gets six sections in
+    order under their own headings — which is a perfectly good way to read this.
+
+    Previous and next are labels pointing at the neighbouring radio, and they
+    wrap: page 1's previous is page 6. Wrapping rather than greying out, because
+    a disabled control at the start of a carousel is a thing to explain, and
+    there is nothing here that a wrap gets wrong.
+    """
+    c = PAGE_COPY[lang]
+    pages = explainer_pages(lang)
+    total = len(pages)
+
+    inputs = "\n".join(
+        f'        <input type="radio" name="dbpage" id="dbp-{p["n"]}"'
+        f'{" checked" if p["n"] == 1 else ""} />'
+        for p in pages
+    )
+    dots = "\n".join(
+        f'          <label for="dbp-{p["n"]}" title="{p["title"]}">'
+        f'<span class="visually-hidden">{p["title"]}</span></label>'
+        for p in pages
+    )
+
+    articles = []
+    for page in pages:
+        n = page["n"]
+        previous = total if n == 1 else n - 1
+        following = 1 if n == total else n + 1
+        alt = c["alt"].format(title=page["title"])
+        articles.append(f"""        <article class="explainer-page" id="dbpage-{n}">
+          <nav class="explainer-nav">
+            <label class="btn btn--ghost" for="dbp-{previous}">&larr; {c['prev']}</label>
+            <span class="explainer-count">{c['of'].format(n=n, total=total)}</span>
+            <label class="btn btn--ghost" for="dbp-{following}">{c['next']} &rarr;</label>
+          </nav>
+          <figure class="explainer-shot">
+            <img src="/assets/img/{page['shot']}" alt="{alt}"
+                 width="640" loading="lazy" decoding="async" />
+          </figure>
+          <div class="explainer-copy">
+            <h3>{page['title']}</h3>
+            {page['body']}
+          </div>
+        </article>""")
+
+    return f"""      <h2>{c['widget_h2']}</h2>
+      <div class="explainer" role="group" aria-label="{c['widget_h2']}">
+{inputs}
+        <div class="explainer-dots">
+{dots}
+        </div>
+{chr(10).join(articles)}
+      </div>"""
+
+
 def render_home(lang: str) -> str:
     c = HOME[lang]
     prefix = lang_prefix(lang)
@@ -351,7 +835,16 @@ def render_home(lang: str) -> str:
 
     herald_bullets_html = "\n".join(f"<li>{item}</li>" for item in c["herald_bullets"])
     mono_bullets_html = "\n".join(f"<li>{item}</li>" for item in c["mono_bullets"])
-    use_cases_html = "\n".join(f"        <li>{item}</li>" for item in c["use_cases"])
+    use_cases_html = "\n".join(
+        f"""        <li>
+          <span class="voice-quote">{quote}</span>
+          <details class="voice-how">
+            <summary>{c['use_cases_how_label']}</summary>
+            <p>{answer}</p>
+          </details>
+        </li>"""
+        for quote, answer in zip(c["use_cases"], c["use_cases_how"])
+    )
 
     body = f"""
   <section class="hero">
@@ -394,9 +887,11 @@ def render_home(lang: str) -> str:
           </div>
         </div>
         <div class="how-art">
-          <img src="/assets/img/howitworks.webp" alt="{c['how_art_alt']}" />
+{how_slides_html(lang)}
         </div>
       </div>
+
+{render_explainer(lang)}
     </div>
   </section>
 
@@ -414,6 +909,7 @@ def render_home(lang: str) -> str:
           <p>{c['warn_text']}</p>
         </div>
       </div>
+{phone_photos_html(lang, row=True)}
       <div class="btn-row">
         <a class="btn btn--ghost" href="{faq_href}">{c['see_faq']}</a>
       </div>
@@ -425,26 +921,32 @@ def render_home(lang: str) -> str:
       <h2>{c['browser_h2']}</h2>
       <p>{c['herald_intro']}</p>
 
-      <div class="browser-card">
-        <div class="browser-card-head">
-          <img src="/assets/img/herald-icon.webp" alt="" class="browser-card-icon" />
-          <h3>herald</h3>
-        </div>
-        <p>{c['herald_is_lead']}</p>
-        <ul>
+      <div class="browser-card browser-card--shot">
+        <div>
+          <div class="browser-card-head">
+            <img src="/assets/img/herald-icon.webp" alt="" class="browser-card-icon" />
+            <h3>herald</h3>
+          </div>
+          <p>{c['herald_is_lead']}</p>
+          <ul>
 {herald_bullets_html}
-        </ul>
+          </ul>
+        </div>
+{browser_shot("herald", lang)}
       </div>
 
-      <div class="browser-card">
-        <div class="browser-card-head">
-          <img src="/assets/img/herald-mono-icon.webp" alt="" class="browser-card-icon" />
-          <h3>herald mono</h3>
-        </div>
-        <p>{c['mono_intro']}</p>
-        <ul>
+      <div class="browser-card browser-card--shot">
+        <div>
+          <div class="browser-card-head">
+            <img src="/assets/img/herald-mono-icon.webp" alt="" class="browser-card-icon" />
+            <h3>herald mono</h3>
+          </div>
+          <p>{c['mono_intro']}</p>
+          <ul>
 {mono_bullets_html}
-        </ul>
+          </ul>
+        </div>
+{browser_shot("mono", lang)}
       </div>
 
       <p>{c['browsers_outro']}</p>
@@ -477,15 +979,64 @@ INSTALL = {
         alpha_detail="This public alpha has been tested on three devices by the people who built it: a Motorola G15, a Nothing Phone (3a) and a Dumber Mini running LineageOS. The Nothing Phone is a daily phone and runs it without trouble. It works end to end on all three. Nothing is known about how it behaves on any other phone, so don't use a device you depend on.",
         caveat_title="Installing drawbridge uninstalls the apps it blocks.",
         caveat_text="On a phone that is already in use, apps that are never allowed — social media, harmful games, browsers the policy does not sanction — start disappearing within minutes of the install, and whatever was only inside them goes too. <strong>Move what you want to keep off the phone first</strong>: export bookmarks, save photos out of an app that holds them, write down what you are signed in to. Apps you can still choose about, like WhatsApp or YouTube, are left alone until you lock. Nothing else is erased: your photos, messages and other apps stay where they are.",
-        usb_h2="Install over USB",
-        usb_qualifier="For Google (regular) Android phones and also deGoogled open-source Android devices: install over USB using the flow below.",
-        usb_steps=[
-            "<strong>Remove every account from the phone.</strong> Settings → Passwords, passkeys &amp; accounts. Android only hands over this level of control to a phone with no account on it. You sign back in at step 4.",
+        usb_qualifier="It works on ordinary Android phones with Google on them and on deGoogled open-source Android alike.",
+
+        picker_legend="What are you doing?",
+        flow_labels=[
+            "Install on a new device, or after a factory reset",
+            "Install on a device in use",
+            "Update a device that has drawbridge",
+        ],
+
+        new_intro="The easiest case: there is nothing on the phone to move off it, and nothing you chose gets uninstalled. The one thing to get right is the accounts — Android only hands over this level of control to a phone with no account left on it, so skip the sign-in during setup and sign in at the end instead.",
+        new_steps=[
+            "<strong>Go through Android's setup and skip signing in.</strong> If the phone is already past setup with accounts on it, remove them — see the flow for a phone in use, next to this one.",
+        ],
+        new_steps_2=[
+            "Enable Developer Options (tap the build number in Settings → About phone several times) and turn on <strong>USB debugging</strong>.",
+        ],
+        new_steps_3=[
+            "Connect the phone to a computer with a USB cable, and run the installer.",
+        ],
+        new_note="Apps the policy never allows still go, within minutes of the install. On a phone this new that means the manufacturer's preloaded social apps and games, and nothing you put there.",
+
+        used_steps=[
+            "<strong>Move what you want to keep off the phone.</strong> Export bookmarks, save photos out of an app that holds them, write down what you are signed in to. The warning above says what goes.",
+            "<strong>Remove every account from the phone.</strong> Settings → Passwords, passkeys &amp; accounts. <strong>Not only the Google ones.</strong> WhatsApp and Signal are accounts on this screen too, and they have to go with the rest — Android hands over this level of control only to a phone with nothing left in that list. <strong>Back up first what you would not want to lose</strong>: WhatsApp's chat backup and Signal's own backup are both made from inside those apps, before you remove the account here. You put the accounts back at the end.",
+        ],
+        used_steps_2=[
             "<strong>Delete the Private Space, if the phone has one.</strong> Settings → Security &amp; privacy → Private Space → Delete private space. Android refuses this level of control while any second profile exists, and a Private Space is hidden — it does not appear in the user switcher, and it needs its own PIN. Any other extra user is in Settings → System → Multiple users.",
             "Enable Developer Options (tap the build number in Settings → About phone several times) and turn on <strong>USB debugging</strong>.",
-            "Connect the phone to a computer with a USB cable, and run the installer.",
-            "Sign back in with a Google (or other) account.",
         ],
+        used_steps_3=[
+            "Connect the phone to a computer with a USB cable, and run the installer.",
+        ],
+
+        accounts_shots_title="Removing the accounts",
+        accounts_shots=[
+            "Settings → Passwords, passkeys and accounts.",
+            "Every account in the list, not only Google: Signal and WhatsApp are here too.",
+            "Open each one and tap Remove account.",
+        ],
+        devopts_shots_title="Turning on USB debugging",
+        devopts_shots=[
+            "Settings → About phone → Device identifiers.",
+            "Tap Build number seven times.",
+            "Settings → System → Developer options.",
+            "Turn on USB debugging.",
+        ],
+
+        accounts_back="<strong>When the installer has finished, sign back in.</strong> Settings → Passwords, passkeys &amp; accounts → Add account, for the Google account and for WhatsApp and Signal. Restore their backups from inside those apps.",
+
+        update_intro="<strong>There is an update button in drawbridge itself.</strong> Open the app on the phone and follow the instructions it gives you — it shows you what to do, with pictures. The phone can stay locked, and you do not need your key.",
+        cable_intro="If that did not work, you can do it through the USB cable instead:",
+        cable_steps=[
+            "Unlock drawbridge on the phone with your key.",
+            "Turn <strong>USB debugging</strong> back on: Settings → System → Developer options.",
+            "Plug the phone in and press the button below.",
+        ],
+        cable_note="Unlocking discards your key, and locking the phone again mints a new one to write down. That is the cost of the cable, and the reason to try the button in the app first.",
+
         coming_title="Install from your browser",
         coming_text="Install drawbridge straight from this site over USB, with no software to set up. Needs Chrome or Edge.",
         coming_btn="Install over USB",
@@ -508,15 +1059,64 @@ INSTALL = {
         alpha_detail='Deze publieke alfa is door de makers zelf op drie toestellen getest: een Motorola G15, een Nothing Phone (3a) en een Dumber Mini met LineageOS. De Nothing Phone is een dagelijkse telefoon en draait ze zonder problemen. Op alle drie werkt ze van begin tot eind. Over het gedrag op eender welke andere telefoon is niets bekend, dus gebruik geen toestel waar je van afhangt.',
         caveat_title="Bij het installeren verwijdert drawbridge de apps die het blokkeert.",
         caveat_text="Op een telefoon die al in gebruik is, verdwijnen apps die nooit toegelaten zijn — sociale media, schadelijke games, browsers die het beleid niet toelaat — binnen enkele minuten na de installatie, en wat er alleen in die apps zat, gaat mee. <strong>Zet eerst weg wat je wil bewaren</strong>: exporteer bladwijzers, haal foto's uit een app die ze vasthoudt, noteer waar je aangemeld bent. Apps waar je nog over kan kiezen, zoals WhatsApp of YouTube, blijven staan tot je vergrendelt. Verder wordt er niets gewist: je foto's, berichten en andere apps blijven staan.",
-        usb_h2="Installeren via USB",
-        usb_qualifier="Voor gewone Android-telefoons met Google én voor deGooglede open-source Android-toestellen: installeer via USB met de stappen hieronder.",
-        usb_steps=[
-            "<strong>Verwijder elk account van de telefoon.</strong> Instellingen → Wachtwoorden, toegangssleutels en accounts. Android geeft dit niveau van controle enkel weg aan een toestel waar geen account op staat. In stap 4 meld je je weer aan.",
+        usb_qualifier="Het werkt zowel op gewone Android-telefoons met Google erop als op deGooglede open-source Android.",
+
+        picker_legend="Wat ga je doen?",
+        flow_labels=[
+            "Installeren op een nieuw toestel, of na een factory reset",
+            "Installeren op een toestel dat al in gebruik is",
+            "Een toestel met drawbridge bijwerken",
+        ],
+
+        new_intro="Het eenvoudigste geval: er staat nog niets op de telefoon om weg te zetten, en er verdwijnt niets wat jij gekozen hebt. Het enige waar het op aankomt zijn de accounts — Android geeft dit niveau van controle enkel weg aan een toestel waar geen enkel account meer op staat, dus sla het aanmelden over tijdens de setup en meld je pas op het einde aan.",
+        new_steps=[
+            "<strong>Doorloop de setup van Android en sla het aanmelden over.</strong> Staat de telefoon al voorbij de setup met accounts erop, verwijder die dan — zie de stappen voor een toestel in gebruik, hiernaast.",
+        ],
+        new_steps_2=[
+            "Activeer Ontwikkelaarsopties (tik meerdere keren op het buildnummer in Instellingen → Over de telefoon) en schakel <strong>USB-debugging</strong> in.",
+        ],
+        new_steps_3=[
+            "Verbind de telefoon met een computer via een USB-kabel, en voer de installer uit.",
+        ],
+        new_note="Apps die het beleid nooit toelaat verdwijnen ook hier, binnen enkele minuten na de installatie. Op een telefoon die zo nieuw is zijn dat de vooraf geïnstalleerde sociale apps en games van de fabrikant, en niets wat jij erop gezet hebt.",
+
+        used_steps=[
+            "<strong>Zet weg wat je wil bewaren.</strong> Exporteer bladwijzers, haal foto's uit een app die ze vasthoudt, noteer waar je aangemeld bent. De waarschuwing hierboven zegt wat er verdwijnt.",
+            "<strong>Verwijder elk account van de telefoon.</strong> Instellingen → Wachtwoorden, toegangssleutels en accounts. <strong>Niet alleen die van Google.</strong> WhatsApp en Signal staan ook als account in die lijst, en ze moeten mee weg — Android geeft dit niveau van controle enkel weg aan een toestel waar niets meer in die lijst staat. <strong>Maak eerst een back-up van wat je niet wil verliezen</strong>: de chatback-up van WhatsApp en de eigen back-up van Signal maak je vanuit die apps zelf, vóór je hier het account verwijdert. Op het einde zet je de accounts terug.",
+        ],
+        used_steps_2=[
             "<strong>Verwijder de privéruimte, als de telefoon er een heeft.</strong> Instellingen → Beveiliging en privacy → Privéruimte → Privéruimte verwijderen. Android weigert dit niveau van controle zolang er een tweede profiel bestaat, en een privéruimte is verborgen — ze staat niet in de gebruikerswissel en heeft een eigen pincode. Andere extra gebruikers staan in Instellingen → Systeem → Meerdere gebruikers.",
             "Activeer Ontwikkelaarsopties (tik meerdere keren op het buildnummer in Instellingen → Over de telefoon) en schakel <strong>USB-debugging</strong> in.",
-            "Verbind de telefoon met een computer via een USB-kabel, en voer de installer uit.",
-            "Meld je weer aan met een Google-account (of een ander account).",
         ],
+        used_steps_3=[
+            "Verbind de telefoon met een computer via een USB-kabel, en voer de installer uit.",
+        ],
+
+        accounts_shots_title="De accounts verwijderen",
+        accounts_shots=[
+            "Instellingen → Wachtwoorden, toegangssleutels en accounts.",
+            "Elk account in de lijst, niet alleen Google: Signal en WhatsApp staan er ook.",
+            "Open ze één voor één en tik op Account verwijderen.",
+        ],
+        devopts_shots_title="USB-debugging inschakelen",
+        devopts_shots=[
+            "Instellingen → Over de telefoon → Apparaat-ID's.",
+            "Tik zeven keer op het buildnummer.",
+            "Instellingen → Systeem → Ontwikkelaarsopties.",
+            "Schakel USB-debugging in.",
+        ],
+
+        accounts_back="<strong>Is de installer klaar, meld je dan weer aan.</strong> Instellingen → Wachtwoorden, toegangssleutels en accounts → Account toevoegen, voor het Google-account en voor WhatsApp en Signal. Hun back-ups zet je terug vanuit die apps zelf.",
+
+        update_intro="<strong>In drawbridge zelf zit een updateknop.</strong> Open de app op de telefoon en volg de instructies die ze geeft — ze toont met beelden wat je moet doen. De telefoon mag vergrendeld blijven, en je hebt je sleutel niet nodig.",
+        cable_intro="Lukte dat niet, dan kan het ook via de USB-kabel:",
+        cable_steps=[
+            "Ontgrendel drawbridge op de telefoon met je sleutel.",
+            "Schakel <strong>USB-debugging</strong> weer in: Instellingen → Systeem → Ontwikkelaarsopties.",
+            "Verbind de telefoon en druk op de knop hieronder.",
+        ],
+        cable_note="Bij het ontgrendelen vervalt je sleutel, en bij het opnieuw vergrendelen wordt er een nieuwe gemaakt die je moet opschrijven. Dat is wat de kabel kost, en de reden om eerst de knop in de app te proberen.",
+
         coming_title="Installeren vanuit uw browser",
         coming_text="Installeer drawbridge rechtstreeks vanaf deze site via USB, zonder software op te zetten. Vereist Chrome of Edge.",
         coming_btn="Installeren via USB",
@@ -539,15 +1139,64 @@ INSTALL = {
         alpha_detail="Cette alpha publique a été testée sur trois appareils par ceux qui l'ont construite : un Motorola G15, un Nothing Phone (3a) et un Dumber Mini sous LineageOS. Le Nothing Phone est un téléphone du quotidien sur lequel elle tourne sans problème. Elle fonctionne de bout en bout sur les trois. On ne sait rien de son comportement sur un autre téléphone, donc n'utilisez pas un appareil dont vous dépendez.",
         caveat_title="L'installation de drawbridge désinstalle les applications qu'il bloque.",
         caveat_text="Sur un téléphone déjà utilisé, les applications qui ne sont jamais autorisées — réseaux sociaux, jeux nocifs, navigateurs que la politique ne sanctionne pas — disparaissent dans les minutes qui suivent l'installation, et ce qui n'existait qu'à l'intérieur d'elles disparaît avec. <strong>Mettez d'abord de côté ce que vous voulez garder</strong> : exportez vos favoris, sortez les photos d'une application qui les détient, notez où vous êtes connecté. Les applications sur lesquelles vous pouvez encore choisir, comme WhatsApp ou YouTube, restent jusqu'au verrouillage. Rien d'autre n'est effacé : vos photos, vos messages et vos autres applications restent en place.",
-        usb_h2="Installer par USB",
-        usb_qualifier="Pour les téléphones Android ordinaires avec Google comme pour les appareils Android open source dégooglisés : installez par USB en suivant les étapes ci-dessous.",
-        usb_steps=[
-            "<strong>Retirez tous les comptes du téléphone.</strong> Paramètres → Mots de passe, clés d'accès et comptes. Android n'accorde ce niveau de contrôle qu'à un téléphone ne portant aucun compte. Vous vous reconnecterez à l'étape 4.",
+        usb_qualifier="Cela fonctionne aussi bien sur les téléphones Android ordinaires avec Google que sur les Android open source dégooglisés.",
+
+        picker_legend="Que faites-vous ?",
+        flow_labels=[
+            "Installer sur un appareil neuf, ou après une réinitialisation",
+            "Installer sur un appareil déjà utilisé",
+            "Mettre à jour un appareil qui a drawbridge",
+        ],
+
+        new_intro="Le cas le plus simple : il n'y a rien à mettre de côté sur le téléphone, et rien que vous ayez choisi n'est désinstallé. La seule chose à ne pas rater, ce sont les comptes — Android n'accorde ce niveau de contrôle qu'à un téléphone ne portant plus aucun compte, alors sautez la connexion pendant la configuration et connectez-vous à la fin.",
+        new_steps=[
+            "<strong>Suivez la configuration d'Android et sautez la connexion.</strong> Si le téléphone a déjà terminé sa configuration avec des comptes dessus, retirez-les — voyez la marche à suivre pour un appareil déjà utilisé, juste à côté.",
+        ],
+        new_steps_2=[
+            "Activez les options pour développeurs (tapez plusieurs fois sur le numéro de build dans Paramètres → À propos du téléphone) et activez le <strong>débogage USB</strong>.",
+        ],
+        new_steps_3=[
+            "Connectez le téléphone à un ordinateur avec un câble USB, et lancez l'installeur.",
+        ],
+        new_note="Les applications que la politique n'autorise jamais disparaissent ici aussi, dans les minutes qui suivent l'installation. Sur un téléphone aussi neuf, ce sont les réseaux sociaux et les jeux préinstallés par le fabricant, et rien que vous y ayez mis.",
+
+        used_steps=[
+            "<strong>Mettez de côté ce que vous voulez garder.</strong> Exportez vos favoris, sortez les photos d'une application qui les détient, notez où vous êtes connecté. L'avertissement ci-dessus dit ce qui disparaît.",
+            "<strong>Retirez tous les comptes du téléphone.</strong> Paramètres → Mots de passe, clés d'accès et comptes. <strong>Pas seulement ceux de Google.</strong> WhatsApp et Signal figurent aussi comme comptes dans cette liste, et ils doivent partir avec les autres — Android n'accorde ce niveau de contrôle qu'à un téléphone dont cette liste est vide. <strong>Sauvegardez d'abord ce que vous ne voudriez pas perdre</strong> : la sauvegarde des conversations WhatsApp et celle de Signal se font depuis ces applications elles-mêmes, avant de retirer le compte ici. Vous remettrez les comptes à la fin.",
+        ],
+        used_steps_2=[
             "<strong>Supprimez l'espace privé, si le téléphone en a un.</strong> Paramètres → Sécurité et confidentialité → Espace privé → Supprimer l'espace privé. Android refuse ce niveau de contrôle tant qu'un second profil existe, et un espace privé est masqué — il n'apparaît pas dans le sélecteur d'utilisateur et possède son propre code PIN. Les autres utilisateurs supplémentaires se trouvent dans Paramètres → Système → Utilisateurs multiples.",
             "Activez les options pour développeurs (tapez plusieurs fois sur le numéro de build dans Paramètres → À propos du téléphone) et activez le <strong>débogage USB</strong>.",
-            "Connectez le téléphone à un ordinateur avec un câble USB, et lancez l'installeur.",
-            "Reconnectez-vous avec un compte Google (ou un autre).",
         ],
+        used_steps_3=[
+            "Connectez le téléphone à un ordinateur avec un câble USB, et lancez l'installeur.",
+        ],
+
+        accounts_shots_title="Retirer les comptes",
+        accounts_shots=[
+            "Paramètres → Mots de passe, clés d'accès et comptes.",
+            "Chaque compte de la liste, pas seulement Google : Signal et WhatsApp y sont aussi.",
+            "Ouvrez-les un par un et tapez sur Supprimer le compte.",
+        ],
+        devopts_shots_title="Activer le débogage USB",
+        devopts_shots=[
+            "Paramètres → À propos du téléphone → Identifiants de l'appareil.",
+            "Tapez sept fois sur le numéro de build.",
+            "Paramètres → Système → Options pour développeurs.",
+            "Activez le débogage USB.",
+        ],
+
+        accounts_back="<strong>Une fois l'installeur terminé, reconnectez-vous.</strong> Paramètres → Mots de passe, clés d'accès et comptes → Ajouter un compte, pour le compte Google comme pour WhatsApp et Signal. Leurs sauvegardes se restaurent depuis ces applications elles-mêmes.",
+
+        update_intro="<strong>drawbridge contient lui-même un bouton de mise à jour.</strong> Ouvrez l'application sur le téléphone et suivez les instructions qu'elle donne — elle montre en images ce qu'il faut faire. Le téléphone peut rester verrouillé, et votre clé n'est pas nécessaire.",
+        cable_intro="Si cela n'a pas fonctionné, vous pouvez le faire par le câble USB :",
+        cable_steps=[
+            "Déverrouillez drawbridge sur le téléphone avec votre clé.",
+            "Réactivez le <strong>débogage USB</strong> : Paramètres → Système → Options pour développeurs.",
+            "Branchez le téléphone et appuyez sur le bouton ci-dessous.",
+        ],
+        cable_note="Le déverrouillage annule votre clé, et le reverrouillage en forge une nouvelle à noter. C'est ce que coûte le câble, et la raison d'essayer d'abord le bouton dans l'application.",
+
         coming_title="Installer depuis votre navigateur",
         coming_text="Installez drawbridge directement depuis ce site par USB, sans logiciel à mettre en place. Nécessite Chrome ou Edge.",
         coming_btn="Installer par USB",
@@ -564,17 +1213,174 @@ INSTALL = {
 }
 
 
+# Screenshots of the two settings screens the preparation runs through.
+#
+# **Pictures because the words were not enough and could not be made enough.**
+# Both steps are a path through Settings, and Settings is where every
+# manufacturer diverges: the entry a reader is looking for is worded differently
+# on a Motorola than on a Nothing, sits at a different depth, and on the accounts
+# screen the important part is not a path at all but *what the list contains* --
+# that Signal and WhatsApp are accounts on it, which no wording makes as obvious
+# as one look at the screen does.
+#
+# The arrows are drawn on the source images rather than by CSS, so they survive
+# being saved, printed, or looked at with images scaled. The originals are the
+# PNG and JPEG screenshots in images/, taken on the Moto G15; site copies are
+# 480px wide WebP, and every one is padded to the same aspect ratio so the strip
+# does not come out ragged:
+#
+#   magick images/accounts-1.png -resize 480x -quality 80 \
+#       site/assets/img/step-accounts-1.webp
+#   magick images/developer-options-2.jpg -background white -gravity center \
+#       -extent 1080x2392 -resize 480x -quality 80 \
+#       site/assets/img/step-devopts-2.webp
+#
+# Only developer-options-2 needed the padding; it was cropped shorter than the
+# rest at 1080x1921, and everything else is already 9:20.
+
+SHOT_SETS = dict(
+    accounts=("step-accounts-1.webp", "step-accounts-2.webp", "step-accounts-3.webp"),
+    devopts=(
+        "step-devopts-1.webp",
+        "step-devopts-2.webp",
+        "step-devopts-3.webp",
+        "step-devopts-4.webp",
+    ),
+)
+
+
+def shot_strip(c: dict, which: str, only: tuple = ()) -> str:
+    """A row of phone screenshots with a caption under each.
+
+    `only` takes a slice of the set by 1-based position, for the update flow,
+    which needs the last two pictures of the developer-options walk and none of
+    the ones about switching Developer Options on in the first place -- a phone
+    that already has drawbridge went through that at install time.
+    """
+    files = SHOT_SETS[which]
+    captions = c[f"{which}_shots"]
+    picked = [(files[i - 1], captions[i - 1]) for i in only] if only else list(zip(files, captions))
+
+    # Wrapped in a link to the image itself: on a phone these sit two to a row at
+    # about 156px, which is enough to see where the arrow points and not enough
+    # to read the setting under it. A plain <a> to the file is "tap to enlarge"
+    # for nothing -- no script, no lightbox, and it still works from a saved page.
+    figures = "\n".join(
+        f"""          <figure>
+            <a href="/assets/img/{f}">
+              <img src="/assets/img/{f}" alt="{caption}" width="480" height="1063"
+                   loading="lazy" decoding="async" />
+            </a>
+            <figcaption>{caption}</figcaption>
+          </figure>"""
+        for f, caption in picked
+    )
+    return f"""        <div class="shot-strip" data-count="{len(picked)}">
+          <p class="shot-strip-title">{c[f'{which}_shots_title']}</p>
+          <div class="shot-strip-row">
+{figures}
+          </div>
+        </div>"""
+
+
 def render_install(lang: str) -> str:
+    """The install guide, with the three situations behind one picker.
+
+    **Three flows rather than one, as of 2026-08-24**, because the page had been
+    written for exactly one of them: a phone somebody has been using. A new phone
+    has no accounts to strip and nothing to rescue, and its whole preparation is
+    "do not sign in during setup" -- advice the old page could not give, because
+    it was busy telling everyone to remove accounts it assumed were there. A
+    phone that already has drawbridge does not want any of this: it wants to be
+    told the app has a button.
+
+    **What the picker does not hide is the caveat about apps disappearing.** It
+    is sharpest for a phone in use and nearly moot on a new one, so by shape it
+    belongs in that panel -- but it is also the one thing on this page a reader
+    cannot afford to meet after the fact, and a warning behind a click is a
+    warning two thirds of readers never see. It stays above the picker; the
+    in-use flow's first step points back up at it, and the new-device flow says
+    in a footnote why it barely applies there.
+
+    **The steps stop at the cable, and putting the accounts back comes after the
+    installer**, which is where it happens: the phone has to be account-less for
+    the install itself, so an instruction to sign in placed above the button is
+    an instruction to undo the step before it. Everything that used to follow
+    under "After setup" is gone -- the installer page carries it, at the moment
+    the install finishes, which is when a parent is looking at a phone rather
+    than at this page.
+
+    **The picker is three radio buttons and a sibling selector**, so this page
+    still runs no script -- see [render_usb_installer] for the one page on this
+    site that does, and why it has no choice. Every panel is in the HTML and one
+    of them is displayed; a reader with CSS off gets all three, in order, each
+    under its own heading, which is the honest failure mode. Radios also give the
+    group arrow-key navigation for nothing, which a set of buttons would have had
+    to be taught.
+    """
     c = INSTALL[lang]
     prefix = lang_prefix(lang)
     faq_href = f"{prefix}/faq/"
     why_href = f"{prefix}/why-blocked/"
+
+    def installer_callout() -> str:
+        return f"""<div class="callout callout--coming-soon">
+          <strong>{c['coming_title']}</strong>
+          <p style="margin: 0.6rem 0 0;">{c['coming_text']}</p>
+          <div class="btn-row" style="margin-bottom:0;">
+            <a class="btn btn--primary" href="{prefix}/install/usb/">{c['coming_btn']}</a>
+          </div>
+        </div>"""
+
+    labels = c["flow_labels"]
+    tabs = "\n".join(
+        f'          <label for="flow-{key}">{label}</label>'
+        for key, label in zip(("new", "used", "update"), labels)
+    )
+
+    new_n = len(c["new_steps"])
+    used_n = len(c["used_steps"])
+
+    panels = f"""        <section class="flow-panel" id="panel-new" aria-labelledby="flow-new-h">
+          <h2 id="flow-new-h" class="flow-panel-title">{labels[0]}</h2>
+          <p>{c['new_intro']}</p>
+          {steps_html(c['new_steps'])}
+{shot_strip(c, "accounts")}
+          {steps_html(c['new_steps_2'], start=new_n + 1)}
+{shot_strip(c, "devopts")}
+          {steps_html(c['new_steps_3'], start=new_n + 1 + len(c['new_steps_2']))}
+          <p class="footnote">{c['new_note']}</p>
+          {installer_callout()}
+          <p>{c['accounts_back']}</p>
+        </section>
+
+        <section class="flow-panel" id="panel-used" aria-labelledby="flow-used-h">
+          <h2 id="flow-used-h" class="flow-panel-title">{labels[1]}</h2>
+          {steps_html(c['used_steps'])}
+{shot_strip(c, "accounts")}
+          {steps_html(c['used_steps_2'], start=used_n + 1)}
+{shot_strip(c, "devopts")}
+          {steps_html(c['used_steps_3'], start=used_n + 1 + len(c['used_steps_2']))}
+          {installer_callout()}
+          <p>{c['accounts_back']}</p>
+        </section>
+
+        <section class="flow-panel" id="panel-update" aria-labelledby="flow-update-h">
+          <h2 id="flow-update-h" class="flow-panel-title">{labels[2]}</h2>
+          <p>{c['update_intro']}</p>
+          <p>{c['cable_intro']}</p>
+          {steps_html(c['cable_steps'])}
+{shot_strip(c, "devopts", only=(3, 4))}
+          {installer_callout()}
+          <p class="footnote">{c['cable_note']}</p>
+        </section>"""
 
     body = f"""
   <section class="section">
     <div class="wrap">
       <h1>{c['h1']}</h1>
       <p class="lede">{c['lede']}</p>
+      <p>{c['usb_qualifier']}</p>
 
       <div class="callout callout--alpha">
         <strong>{c['alpha_warning']}</strong>
@@ -586,24 +1392,19 @@ def render_install(lang: str) -> str:
         <p style="margin: 0.5rem 0 0;">{c['caveat_text']}</p>
       </div>
 
-      <h2>{c['usb_h2']}</h2>
-      <p>{c['usb_qualifier']}</p>
-      {steps_html(c['usb_steps'])}
-
-      <div class="callout callout--coming-soon">
-        <strong>{c['coming_title']}</strong>
-        <p style="margin: 0.6rem 0 0;">{c['coming_text']}</p>
-        <div class="btn-row" style="margin-bottom:0;">
-          <a class="btn btn--primary" href="{prefix}/install/usb/">{c['coming_btn']}</a>
+      <div class="flow-picker" role="group" aria-label="{c['picker_legend']}">
+        <input type="radio" name="flow" id="flow-new" checked />
+        <input type="radio" name="flow" id="flow-used" />
+        <input type="radio" name="flow" id="flow-update" />
+        <p class="flow-legend">{c['picker_legend']}</p>
+        <div class="flow-tabs">
+{tabs}
         </div>
+
+{panels}
       </div>
 
       <p class="footnote">{c['meanwhile']}</p>
-
-      <h2>{c['after_h2']}</h2>
-      {steps_html(c['after_steps'])}
-
-      <p class="footnote">{c['after_note']}</p>
 
       <p>{c['see_more'].format(faq=faq_href, why=why_href)}</p>
     </div>
@@ -628,7 +1429,7 @@ USB_INSTALLER = {
         browser_note="Needs Chrome, Edge or another Chromium browser. Firefox and Safari have no WebUSB.",
         unsupported="This browser cannot talk to USB devices. Open this page in Chrome or Edge, or use <code>tools/provision-adb.sh</code> from a terminal instead.",
         update_h2="Updating a phone that already has drawbridge",
-        update_intro="Same page, same button. It notices the phone is already managed and updates it instead. Nothing is reset and nothing on the phone is lost. drawbridge cannot update itself, so this cable is how a new version gets there.",
+        update_intro="Same page, same button. It notices the phone is already managed and updates it instead. Nothing is reset and nothing on the phone is lost. Try the phone first, though: drawbridge offers its own update on screen while it is still locked, and that route does not cost you your key. This cable is the fallback for when that will not go through.",
         update_steps=[
             "On the phone, open <strong>drawbridge</strong> and enter your key to unlock it. That is what hands USB debugging back.",
             "Turn <strong>USB debugging</strong> back on: Settings → System → Developer options.",
@@ -679,7 +1480,7 @@ USB_INSTALLER = {
         browser_note="Vereist Chrome, Edge of een andere Chromium-browser. Firefox en Safari hebben geen WebUSB.",
         unsupported="Deze browser kan niet met USB-toestellen praten. Open deze pagina in Chrome of Edge, of gebruik <code>tools/provision-adb.sh</code> vanuit een terminal.",
         update_h2="Een telefoon bijwerken die drawbridge al heeft",
-        update_intro="Zelfde pagina, zelfde knop. Die merkt dat de telefoon al beheerd wordt en werkt hem bij in plaats van hem opnieuw in te richten. Er wordt niets teruggezet en er gaat niets verloren. drawbridge kan zichzelf niet bijwerken, dus via deze kabel komt een nieuwe versie binnen.",
+        update_intro="Zelfde pagina, zelfde knop. Die merkt dat de telefoon al beheerd wordt en werkt hem bij in plaats van hem opnieuw in te richten. Er wordt niets teruggezet en er gaat niets verloren. Probeer eerst de telefoon zelf: drawbridge biedt haar eigen update aan op het scherm terwijl ze vergrendeld blijft, en die weg kost je je sleutel niet. Deze kabel is de terugvaloptie voor wanneer dat niet lukt.",
         update_steps=[
             "Open op de telefoon <strong>drawbridge</strong> en voer je sleutel in om te ontgrendelen. Daardoor komt USB-foutopsporing terug.",
             "Zet <strong>USB-foutopsporing</strong> weer aan: Instellingen → Systeem → Ontwikkelaarsopties.",
@@ -730,7 +1531,7 @@ USB_INSTALLER = {
         browser_note="Nécessite Chrome, Edge ou un autre navigateur Chromium. Firefox et Safari n'ont pas WebUSB.",
         unsupported="Ce navigateur ne peut pas communiquer avec les appareils USB. Ouvrez cette page dans Chrome ou Edge, ou utilisez <code>tools/provision-adb.sh</code> depuis un terminal.",
         update_h2="Mettre à jour un téléphone qui a déjà drawbridge",
-        update_intro="Même page, même bouton : il détecte que le téléphone est déjà géré et le met à jour au lieu de le reconfigurer. Rien n'est réinitialisé et rien n'est perdu. drawbridge ne peut pas se mettre à jour tout seul : c'est par ce câble qu'une nouvelle version arrive.",
+        update_intro="Même page, même bouton : il détecte que le téléphone est déjà géré et le met à jour au lieu de le reconfigurer. Rien n'est réinitialisé et rien n'est perdu. Essayez d'abord le téléphone lui-même : drawbridge propose sa propre mise à jour à l'écran pendant qu'il reste verrouillé, et cette voie ne vous coûte pas votre clé. Ce câble est le recours pour les cas où cela ne passe pas.",
         update_steps=[
             "Sur le téléphone, ouvrez <strong>drawbridge</strong> et saisissez votre clé pour le déverrouiller. C'est ce qui rend le débogage USB de nouveau disponible.",
             "Réactivez le <strong>débogage USB</strong> : Paramètres → Système → Options pour développeurs.",
