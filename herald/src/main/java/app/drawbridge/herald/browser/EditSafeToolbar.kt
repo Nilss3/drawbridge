@@ -1,8 +1,6 @@
 package app.drawbridge.herald.browser
 
-import mozilla.components.browser.toolbar.BrowserToolbar
 import mozilla.components.concept.toolbar.Toolbar
-import mozilla.components.support.ktx.android.view.hideKeyboard
 
 /**
  * Stops the address bar from wiping what is being typed into it.
@@ -48,8 +46,22 @@ import mozilla.components.support.ktx.android.view.hideKeyboard
  * Hooked to *stop* rather than to the commit, because every way out of edit mode
  * wants the same thing: enter, the back button, and tapping the page all end
  * with a keyboard nobody is typing into.
+ *
+ * **[dismissKeyboard] is passed in rather than done here**, and the reason is
+ * the test beside this file. Hiding a keyboard needs a `View`, so the first
+ * version of this took a `BrowserToolbar` instead of a `Toolbar` — which is
+ * final, is an Android view, and cannot be faked in a JVM unit test. That
+ * quietly took the whole class out of reach of the tests that had been pinning
+ * its first job. A lambda keeps the delegate an interface, so the fake still
+ * works and the new behaviour gets pinned too.
+ *
+ * No default: a caller that forgets it would get the old bug back with nothing
+ * to notice.
  */
-class EditSafeToolbar(private val delegate: BrowserToolbar) : Toolbar by delegate {
+class EditSafeToolbar(
+    private val delegate: Toolbar,
+    private val dismissKeyboard: () -> Unit,
+) : Toolbar by delegate {
 
     @Volatile
     private var editing = false
@@ -62,12 +74,12 @@ class EditSafeToolbar(private val delegate: BrowserToolbar) : Toolbar by delegat
 
             override fun onStopEditing() {
                 editing = false
-                delegate.hideKeyboard()
+                dismissKeyboard()
             }
 
             override fun onCancelEditing(): Boolean {
                 editing = false
-                delegate.hideKeyboard()
+                dismissKeyboard()
                 return true
             }
         })

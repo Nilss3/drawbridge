@@ -8,7 +8,8 @@ import org.junit.Test
 /**
  * The address bar clearing itself mid-typing was the whole of one bug report,
  * and the cause was a single unconditional call in a library. This pins the rule
- * that stops it.
+ * that stops it — and, since 2026-08-25, the second job the same wrapper does:
+ * putting the on-screen keyboard away when editing ends.
  */
 class EditSafeToolbarTest {
 
@@ -68,7 +69,8 @@ class EditSafeToolbarTest {
     }
 
     private val real = RecordingToolbar()
-    private val toolbar = EditSafeToolbar(real)
+    private var keyboardDismissals = 0
+    private val toolbar = EditSafeToolbar(real) { keyboardDismissals++ }
 
     private fun startEditing() = real.editListener!!.onStartEditing()
     private fun stopEditing() = real.editListener!!.onStopEditing()
@@ -122,5 +124,33 @@ class EditSafeToolbarTest {
         toolbar.setSearchTerms("otters")
 
         assertEquals("otters", real.received)
+    }
+
+    @Test
+    fun `the keyboard goes away when editing stops`() {
+        startEditing()
+        assertEquals(0, keyboardDismissals)
+
+        stopEditing()
+
+        assertEquals(1, keyboardDismissals)
+    }
+
+    @Test
+    fun `and when editing is cancelled`() {
+        startEditing()
+
+        real.editListener!!.onCancelEditing()
+
+        assertEquals(1, keyboardDismissals)
+    }
+
+    @Test
+    fun `but not merely because editing started`() {
+        startEditing()
+
+        // The keyboard is what somebody is typing on at this point. Dismissing
+        // it here would be the opposite bug.
+        assertEquals(0, keyboardDismissals)
     }
 }
