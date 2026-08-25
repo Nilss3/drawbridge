@@ -390,6 +390,24 @@ code {
   padding: 1.3rem 1.4rem;
   margin: 1.4rem 0;
 }
+/* A card with a screenshot beside it. The picture is the half the bullets
+   cannot carry: what a refusal looks like to whoever hits one, and that
+   "monochrome" is the whole page rather than a theme setting. Capped narrow —
+   it is a phone screen next to a paragraph, not the subject of the section. */
+.browser-card--shot { display: grid; grid-template-columns: 1fr minmax(0, 210px); gap: 1.6rem; align-items: start; }
+.browser-card-shot { margin: 0; }
+.browser-card-shot img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+@media (max-width: 780px) {
+  .browser-card--shot { grid-template-columns: 1fr; }
+  .browser-card-shot { max-width: 210px; margin: 0 auto; }
+}
+
 .browser-card-head { display: flex; align-items: center; gap: 0.8rem; margin-bottom: 0.6rem; }
 .browser-card-icon { width: 44px; height: 44px; border-radius: 10px; flex: 0 0 auto; box-shadow: var(--shadow); }
 .browser-card-head h3 { margin: 0; }

@@ -375,7 +375,12 @@ HOME = {
 # and the filter running, so the block page is a real one and not a mock-up.
 HOW_SLIDES = [
     dict(
-        file="how-unlocked.webp",
+        # Per language: the configuration screen is translated, and a French
+        # page beside an English screenshot is a page that has been half
+        # translated. The block page is not, because herald has no translations
+        # and the words on it come from the signed document, which carries no
+        # _i18n for them — one file, honestly the same in all three.
+        file=lambda lang: f"how-unlocked-{lang}.webp",
         alt=dict(
             en="The drawbridge app open on a phone, unlocked, showing the policy and its settings.",
             nl="De drawbridge-app open op een telefoon, ontgrendeld, met het beleid en de instellingen.",
@@ -383,7 +388,7 @@ HOW_SLIDES = [
         ),
     ),
     dict(
-        file="how-locked.webp",
+        file=lambda lang: f"how-locked-{lang}.webp",
         alt=dict(
             en="The same app once locked: the dates it has been protecting the phone, and a field for the key.",
             nl="Dezelfde app eenmaal vergrendeld: sinds wanneer ze de telefoon beschermt, en een veld voor de sleutel.",
@@ -391,14 +396,55 @@ HOW_SLIDES = [
         ),
     ),
     dict(
-        file="how-blocked.webp",
+        file=lambda lang: "how-blocked.webp",
         alt=dict(
-            en="The herald browser showing that tiktok.com was refused, with the drawbridge illustration above it.",
-            nl="De herald-browser die toont dat tiktok.com geweigerd is, met de drawbridge-illustratie erboven.",
-            fr="Le navigateur herald indiquant que tiktok.com a été refusé, avec l'illustration de drawbridge au-dessus.",
+            en="The herald browser showing that tiktok.com was refused, under the drawbridge illustration.",
+            nl="De herald-browser die toont dat tiktok.com geweigerd is, onder de drawbridge-illustratie.",
+            fr="Le navigateur herald indiquant que tiktok.com a été refusé, sous l'illustration de drawbridge.",
         ),
     ),
 ]
+
+BROWSER_SHOTS = dict(
+    herald=dict(
+        # Cropped to the block card. The slideshow's copy is the whole screen,
+        # because the two slides beside it are whole screens; here it would be
+        # two thirds of an empty page next to a paragraph.
+        file="browser-herald.webp",
+        alt=dict(
+            en="herald refusing tiktok.com, with drawbridge's illustration above the message.",
+            nl="herald weigert tiktok.com, met de illustratie van drawbridge boven de boodschap.",
+            fr="herald refuse tiktok.com, avec l'illustration de drawbridge au-dessus du message.",
+        ),
+    ),
+    mono=dict(
+        file="browser-mono.webp",
+        alt=dict(
+            en="A newspaper article open in herald mono, rendered entirely in black and white.",
+            nl="Een krantenartikel open in herald mono, volledig in zwart-wit weergegeven.",
+            fr="Un article de journal ouvert dans herald mono, rendu entièrement en noir et blanc.",
+        ),
+    ),
+)
+
+
+def browser_shot(which: str, lang: str) -> str:
+    """One screenshot beside a browser card.
+
+    Each card says what the browser *is* in a list of bullets, and a picture is
+    the half of that a list cannot carry: for herald, what a refusal looks like
+    to the person who hits one; for mono, that "monochrome" is the whole page and
+    not a theme setting. The mono shot is a real newspaper article rather than a
+    mock-up, because the point of it is that ordinary reading still works.
+    """
+    shot = BROWSER_SHOTS[which]
+    return (
+        f'        <figure class="browser-card-shot">\n'
+        f'          <img src="/assets/img/{shot["file"]}" alt="{shot["alt"][lang]}"\n'
+        f'               width="640" loading="lazy" decoding="async" />\n'
+        f'        </figure>'
+    )
+
 
 HOW_SLIDES_LABEL = dict(
     en="Three screens of drawbridge running: unlocked, locked, and a site refused",
@@ -418,7 +464,7 @@ def how_slides_html(lang: str) -> str:
     for slide in HOW_SLIDES:
         figures.append(
             f'            <figure>\n'
-            f'              <img src="/assets/img/{slide["file"]}" alt="{slide["alt"][lang]}"\n'
+            f'              <img src="/assets/img/{slide["file"](lang)}" alt="{slide["alt"][lang]}"\n'
             f'                   width="640" height="1422" loading="lazy" decoding="async" />\n'
             f'            </figure>'
         )
@@ -875,26 +921,32 @@ def render_home(lang: str) -> str:
       <h2>{c['browser_h2']}</h2>
       <p>{c['herald_intro']}</p>
 
-      <div class="browser-card">
-        <div class="browser-card-head">
-          <img src="/assets/img/herald-icon.webp" alt="" class="browser-card-icon" />
-          <h3>herald</h3>
-        </div>
-        <p>{c['herald_is_lead']}</p>
-        <ul>
+      <div class="browser-card browser-card--shot">
+        <div>
+          <div class="browser-card-head">
+            <img src="/assets/img/herald-icon.webp" alt="" class="browser-card-icon" />
+            <h3>herald</h3>
+          </div>
+          <p>{c['herald_is_lead']}</p>
+          <ul>
 {herald_bullets_html}
-        </ul>
+          </ul>
+        </div>
+{browser_shot("herald", lang)}
       </div>
 
-      <div class="browser-card">
-        <div class="browser-card-head">
-          <img src="/assets/img/herald-mono-icon.webp" alt="" class="browser-card-icon" />
-          <h3>herald mono</h3>
-        </div>
-        <p>{c['mono_intro']}</p>
-        <ul>
+      <div class="browser-card browser-card--shot">
+        <div>
+          <div class="browser-card-head">
+            <img src="/assets/img/herald-mono-icon.webp" alt="" class="browser-card-icon" />
+            <h3>herald mono</h3>
+          </div>
+          <p>{c['mono_intro']}</p>
+          <ul>
 {mono_bullets_html}
-        </ul>
+          </ul>
+        </div>
+{browser_shot("mono", lang)}
       </div>
 
       <p>{c['browsers_outro']}</p>
