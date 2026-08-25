@@ -41,6 +41,7 @@ import mozilla.components.feature.session.SessionUseCases
 import mozilla.components.feature.tabs.TabsUseCases
 import mozilla.components.feature.toolbar.ToolbarAutocompleteFeature
 import mozilla.components.feature.toolbar.ToolbarFeature
+import mozilla.components.support.ktx.android.view.hideKeyboard
 import mozilla.components.lib.state.ext.flow
 import mozilla.components.support.base.feature.LifecycleAwareFeature
 import mozilla.components.support.base.feature.UserInteractionHandler
@@ -81,7 +82,7 @@ class ToolbarIntegration(
      * real toolbar.
      */
     private val toolbarFeature = ToolbarFeature(
-        EditSafeToolbar(toolbar),
+        EditSafeToolbar(toolbar) { toolbar.hideKeyboard() },
         store,
         sessionUseCases.loadUrl,
         { searchTerms -> context.components.useCases.searchUseCases.defaultSearch.invoke(searchTerms) },
