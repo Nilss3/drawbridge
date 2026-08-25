@@ -25,6 +25,9 @@ import app.drawbridge.policy.SelectionSource
  * own defaults. That is also the strict reading, so the failure mode of a
  * drawbridge that is missing, crashed or mid-upgrade is a browser that blocks
  * more than it needs to rather than less.
+ *
+ * The same provider also answers [connectivity], which is a different kind of
+ * question and is read separately — see that function.
  */
 class DrawbridgeSelection(context: Context) : SelectionSource {
 
@@ -52,6 +55,50 @@ class DrawbridgeSelection(context: Context) : SelectionSource {
         // provider is briefly gone. Neither is worth a crash in the browser.
         Log.d(TAG, "No drawbridge selection available", e)
         null
+    }
+
+    /**
+     * Whether the phone is refusing IP traffic on purpose, and until when.
+     *
+     * Read on demand rather than cached: it is only ever consulted while an
+     * error page is being built, and by then an answer from a second ago is
+     * worth less than a fresh one — a curfew that ended a minute back is exactly
+     * the case where a cached "offline" would be wrong.
+     *
+     * Null for every ordinary reason: no drawbridge, an older drawbridge whose
+     * provider has no such columns, or a provider that threw. All three mean the
+     * browser shows the error page it always showed, which is the right answer
+     * when nothing can say otherwise.
+     */
+    fun connectivity(): Connectivity? = try {
+        resolver.query(CONTENT_URI, null, null, null, null)?.use { cursor ->
+            if (!cursor.moveToFirst() || cursor.getColumnIndex(COLUMN_OFFLINE_NOW) < 0) {
+                null
+            } else {
+                Connectivity(
+                    mode = cursor.columnOrNull(COLUMN_DISCONNECT_MODE),
+                    offlineNow = cursor.columnOrNull(COLUMN_OFFLINE_NOW) == "1",
+                    onlineAgainAt = cursor.columnOrNull(COLUMN_OFFLINE_UNTIL)?.toLongOrNull(),
+                )
+            }
+        }
+    } catch (e: Exception) {
+        Log.d(TAG, "No drawbridge connectivity available", e)
+        null
+    }
+
+    /**
+     * @param mode which philosophy is chosen, as drawbridge names it.
+     * @param offlineNow whether traffic is being refused at this moment.
+     * @param onlineAgainAt epoch millis of the next change, or null when there
+     *   is none — a phone that is offline for good, or not locked at all.
+     */
+    data class Connectivity(
+        val mode: String?,
+        val offlineNow: Boolean,
+        val onlineAgainAt: Long?,
+    ) {
+        val isCurfew: Boolean get() = mode == "CURFEW"
     }
 
     private fun android.database.Cursor.columnOrNull(name: String): String? {
@@ -82,6 +129,9 @@ class DrawbridgeSelection(context: Context) : SelectionSource {
         const val AUTHORITY = "app.drawbridge.dpc.selection"
         const val COLUMN_PROFILE_ID = "profile_id"
         const val COLUMN_OPTION_IDS = "option_ids"
+        const val COLUMN_DISCONNECT_MODE = "disconnect_mode"
+        const val COLUMN_OFFLINE_NOW = "offline_now"
+        const val COLUMN_OFFLINE_UNTIL = "offline_until"
         const val SEPARATOR = ","
 
         val CONTENT_URI: Uri = Uri.parse("content://$AUTHORITY/selection")
