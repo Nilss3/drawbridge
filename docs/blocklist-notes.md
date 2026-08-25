@@ -321,3 +321,57 @@ named. `com.facebook.mlite`, `com.twitter.android.lite` and
 `com.ss.android.ugc.aweme.lite` were checked at the same time and return 404 on
 Play: they are delisted, and listing dead packages only makes the list harder to
 read.
+
+## The manufacturers' own game centres
+
+Policy 91, from a Moto G15 during provisioning: the phone had an app called
+**Games**, `com.motorola.gamemode`, and nothing in the list touched it.
+`com.google.android.play.games` had been blocked since policy 21 and not one of
+the thirteen OEM equivalents was — a gap that had been open on every non-Pixel
+handset the project has ever run on.
+
+Two shapes, both blocked:
+
+- **Game shops and hubs**, which list, rank and install games. This is the same
+  thing Play Games is blocked for, wearing a different badge:
+  `com.huawei.gamebox`, `com.huawei.gameassistant` and `com.hihonor.gameassistant`
+  (HiGame, described by its own vendor as a mobile game app store),
+  `com.nearme.gamecenter` (Oppo/Realme, with a forum and news feed),
+  `com.xiaomi.gamecenter` and `com.xiaomi.glgm`, `com.vivo.game`,
+  `com.oplus.games`, `com.coloros.gamespace`, `com.oneplus.gamespace`,
+  `com.samsung.android.game.gamehome`, `com.transsion.wezone` (Tecno/Infinix,
+  which is a gaming mode bolted to the Palm Store), and `com.aura.oobe.lenovo`,
+  which nags until you agree to install games.
+- **Boosters that still put a Games entry in the launcher**:
+  `com.motorola.gamemode`, `com.samsung.android.game.gametools`,
+  `com.coloros.gamespaceui`, `com.vivo.gamecube`, `com.asus.gamewidget`. These
+  install nothing. They are blocked because an icon called *Games* on the home
+  screen is an invitation whether or not it can hand anything over, which is the
+  reasoning the owner applied to the Moto one.
+
+**The headless services are deliberately left alone** — `com.samsung.android.game.gos`,
+`com.xiaomi.joyose`, `com.huawei.game.kitserver`, `com.enhance.gameservice`,
+`com.samsung.android.gametuner.thin` and their siblings. They have no launcher
+entry, so they invite nothing, and they are the parts that hold frame rates and
+thermals together. Hiding them would trade a real regression for no gain.
+
+**What actually happens to them is a ladder, and it is worth being exact
+about.** `AppBlocker.remove` tries to *uninstall* first, and only hides — or,
+failing that, suspends — when it cannot: `hide` is chosen up front for a package
+carrying `FLAG_SYSTEM` or `FLAG_UPDATED_SYSTEM_APP`, and a failed uninstall
+session falls through to the same ladder afterwards.
+
+So the safety of an entry here depends on how the handset ships the app, not on
+the fact that it came with the phone. One flagged as a system app is hidden and
+comes back by dropping it from the list. One preinstalled *without* that flag —
+which is how several vendors ship their own store fronts — is uninstalled for
+the user, and no edit to this document brings it back. That is the real cost of
+a mistyped id, and it is why the ids below are taken from a database rather than
+from memory.
+
+The package ids are from the Universal Android Debloater Next Generation
+database rather than from memory, which matters: a mistyped id hides some other
+system component, and the failure would be silent.
+
+Nothing was verified on a handset of each brand. Only the Motorola one has been
+seen on a real phone; the rest are as good as their source.

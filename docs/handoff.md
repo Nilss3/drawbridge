@@ -23,7 +23,7 @@ which is kept whole on purpose.
 |---|---|---|
 | drawbridge | **0.2.19, build 44** | **0.2.19, build 44** |
 | herald | **0.1.15** | **0.1.15** |
-| policy | **89** | **90** |
+| policy | **90** | **91** |
 | install page | <https://drawbridge-project.pages.dev/install/usb/> | <https://dev.drawbridge-project.pages.dev/install/usb/> |
 | phone | the owner's Nothing Phone (A059) | the Moto G15 |
 
@@ -815,6 +815,31 @@ Consequences to state before building it, not after:
 - **The snapshot will catch whatever happened to be there**, including anything
   the parent installed to migrate data and no longer wants. Showing them the list
   before sealing it is probably not optional.
+
+### 10b. Apps disabled before the lock should stay disabled through it
+
+**Asked for on 2026-08-25, from use, and not yet looked at.** The flow is the
+one *No other apps* is for: a parent prunes the phone, disables what they do not
+want, flicks the switch, and locks. What the switch guarantees today is that no
+*new* app arrives. What it does not guarantee is that the ones already disabled
+stay that way — nothing stops them being re-enabled from Settings while the
+phone is locked, which is a hole in exactly the state the parent thought they
+were sealing.
+
+Worth knowing before anyone starts: this is a different mechanism from the rest
+of the app blocker. Everything in [what is enforced](#what-is-enforced-and-when)
+acts on packages the *policy* names, and `restoreNowAllowed` deliberately brings
+back only what the policy names. A user-disabled app is not in that set — it is
+a choice made in Settings that drawbridge never hears about — so there is no
+existing list to hang this on. The snapshot in item 10 is the obvious place: if
+locking records the installed set, it could record the *enabled* set beside it.
+
+`DISALLOW_APPS_CONTROL` is the blunt instrument that would do it, and it is
+blunt: it stops the parent managing apps too, and it may well take the Play
+Store's own update path with it, which is the thing item 10 is careful to keep.
+Whether a narrower route exists — re-disabling on a sweep rather than forbidding
+the setting — is the open question, and "if at all possible" is how the owner
+put it.
 
 ### 11. Update the website — the owner's, not a coding task
 
