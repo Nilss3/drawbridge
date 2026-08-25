@@ -189,8 +189,44 @@ code {
   border-left: 3px solid var(--slate);
   border-radius: var(--radius);
   padding: 0.85rem 1rem;
-  font-style: italic;
   color: var(--ink-soft);
+}
+.voice-quote { font-style: italic; }
+
+/* The answer to each quote, behind a "How?" the reader opens.
+ *
+ * <details> rather than the radio trick the pager and the install picker use:
+ * this is the element for exactly this, several can be open at once (which
+ * radios cannot do), and it needs no script — the same constraint as the rest
+ * of the site. The marker is dropped and the summary drawn as a small button,
+ * because a bare disclosure triangle beside a quotation reads as decoration.
+ */
+.voice-how { margin-top: 0.7rem; font-style: normal; }
+.voice-how > summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.7rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--cream);
+  color: var(--slate-dark);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  list-style: none;
+}
+.voice-how > summary::-webkit-details-marker { display: none; }
+/* A plus and a minus rather than a triangle: the small triangles are not in
+   every system font, and the one this fell back to rendered as a dot. */
+.voice-how > summary::after { content: "+"; font-size: 1em; line-height: 1; }
+.voice-how[open] > summary::after { content: "\2212"; }
+.voice-how > summary:hover { border-color: var(--slate); }
+.voice-how > p {
+  margin: 0.7rem 0 0;
+  font-size: 0.9rem;
+  line-height: 1.55;
+  color: var(--ink);
 }
 
 /* buttons */

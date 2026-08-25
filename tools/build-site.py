@@ -186,6 +186,14 @@ HOME = {
         p2='Drawbridge is a protection on your device which "raises the bridge" to harmful content and keeps it from entering your device, your life and your soul. It stops adult content, gambling, ads, algorithmic social media, AI companions, and games.',
         browser_teaser='The project also includes herald, a browser you can download and use on its own: <a href="#herald">see below</a>.',
         use_cases_lead="Drawbridge aims to solve use cases like:",
+        use_cases_how_label="How?",
+        use_cases_how=[
+            "A phone with drawbridge keeps out all social media, games, pornography, gambling, AI companions and dating. Optionally you can allow video streaming and/or YouTube. All the rest is allowed, though, and the phone functions like normal with all the other apps and tools available.",
+            "Drawbridge has an option to prevent app installs. Clean up the apps, keep the few apps you need, and lock it long-term. Updates do come through, so your banking app remains safe.",
+            "A phone with drawbridge keeps out all social media, games, pornography, gambling, AI companions and dating. Period. Simple. No discussion. Optionally you can allow WhatsApp, video streaming and/or YouTube, and you can impose a curfew. Once you decided on the latter options, lock the settings for a long time or permanently. Done.",
+            "Even though it is recommended for a child up to 14 to have only a true dumbphone (also so that society doesn&rsquo;t take smartphones for granted!), some people may choose to recycle an old Android device instead, especially when they may want an offline map, FM radio, MP3 player or possibility to share a location. Drawbridge allows you to go fully offline (blocking all web traffic), remove all browsers, and prevent app installs other than the few apps you had already. Phone calls and sms of course remain possible, and GPS and FM radio are passive receivers and remain available. An offline maps app like Organic Maps also allows location sharing through sms.",
+            "Drawbridge has an option to prevent app installs. Clean up the apps, keep the few apps you need, like Spotify, and lock it long-term.",
+        ],
         use_cases=[
             "“I need a phone without social media! It drives me crazy!”",
             "“If only there was a phone with just maps, WhatsApp, my bank app, and nothing else!”",
@@ -241,6 +249,14 @@ HOME = {
         p2='Drawbridge is een bescherming op je toestel die "de brug ophaalt" voor schadelijke inhoud en verhindert dat die je toestel, je leven en je ziel binnendringt. Het houdt pornografie, gokken, advertenties, algoritmische social media, AI companions en games tegen.',
         browser_teaser='Het project omvat ook herald, een browser die je apart kan downloaden en gebruiken: <a href="#herald">zie hieronder</a>.',
         use_cases_lead="Drawbridge wil situaties zoals deze oplossen:",
+        use_cases_how_label="Hoe?",
+        use_cases_how=[
+            "Een telefoon met drawbridge houdt alle sociale media, games, pornografie, gokken, AI-gezelschapsapps en datingapps buiten. Optioneel kan je videostreaming en/of YouTube toelaten. De rest is wel gewoon toegelaten: de telefoon werkt normaal, met alle andere apps en hulpmiddelen beschikbaar.",
+            "Drawbridge heeft een optie die het installeren van apps tegenhoudt. Ruim je apps op, hou de paar apps die je nodig hebt, en vergrendel voor lange tijd. Updates komen wel door, dus je bankapp blijft veilig.",
+            "Een telefoon met drawbridge houdt alle sociale media, games, pornografie, gokken, AI-gezelschapsapps en datingapps buiten. Punt. Simpel. Geen discussie. Optioneel kan je WhatsApp, videostreaming en/of YouTube toelaten, en je kan een avondklok instellen. Heb je die laatste keuzes gemaakt, vergrendel de instellingen dan voor lange tijd of voorgoed. Klaar.",
+            "Ook al is het voor een kind tot 14 aan te raden om enkel een echte dumbphone te hebben (mede zodat de maatschappij smartphones niet als vanzelfsprekend gaat zien!), kiezen sommigen er toch voor om een oud Android-toestel te hergebruiken, zeker als ze een offline kaart, FM-radio, mp3-speler of de mogelijkheid om een locatie te delen willen. Met drawbridge kan je volledig offline gaan (al het webverkeer blokkeren), alle browsers verwijderen, en het installeren van andere apps dan die je al had tegenhouden. Bellen en sms&rsquo;en blijft natuurlijk mogelijk, en gps en FM-radio zijn passieve ontvangers en blijven beschikbaar. Een offline kaartenapp zoals Organic Maps laat ook toe je locatie via sms te delen.",
+            "Drawbridge heeft een optie die het installeren van apps tegenhoudt. Ruim je apps op, hou de paar apps die je nodig hebt &mdash; Spotify bijvoorbeeld &mdash; en vergrendel voor lange tijd.",
+        ],
         use_cases=[
             "“Ik heb een telefoon zonder social media nodig! Ik word er gek van!”",
             "“Was er maar een telefoon met alleen maps, WhatsApp, mijn bankapp, en verder niets!”",
@@ -296,6 +312,14 @@ HOME = {
         p2="Drawbridge est une protection sur votre appareil qui « relève le pont-levis » face aux contenus nuisibles et les empêche d'entrer dans votre appareil, votre vie et votre âme. Elle bloque les contenus pour adultes, les jeux d'argent, la publicité, les réseaux sociaux algorithmiques, les compagnons IA et les jeux vidéo.",
         browser_teaser='Le projet comprend aussi herald, un navigateur que vous pouvez télécharger et utiliser séparément : <a href="#herald">voir plus bas</a>.',
         use_cases_lead="Drawbridge cherche à répondre à des situations comme celles-ci :",
+        use_cases_how_label="Comment ?",
+        use_cases_how=[
+            "Un téléphone avec drawbridge tient à l&rsquo;écart tous les réseaux sociaux, les jeux, la pornographie, les jeux d&rsquo;argent, les compagnons IA et les applications de rencontre. En option, vous pouvez autoriser le streaming vidéo et/ou YouTube. Tout le reste est autorisé : le téléphone fonctionne normalement, avec toutes les autres applications et tous les autres outils.",
+            "Drawbridge propose une option qui empêche l&rsquo;installation d&rsquo;applications. Faites le tri, gardez les quelques applications dont vous avez besoin, et verrouillez pour longtemps. Les mises à jour passent toujours : votre application bancaire reste sûre.",
+            "Un téléphone avec drawbridge tient à l&rsquo;écart tous les réseaux sociaux, les jeux, la pornographie, les jeux d&rsquo;argent, les compagnons IA et les applications de rencontre. Point. Simple. Sans discussion. En option, vous pouvez autoriser WhatsApp, le streaming vidéo et/ou YouTube, et vous pouvez imposer un couvre-feu. Une fois ces derniers choix faits, verrouillez les réglages pour longtemps ou définitivement. Terminé.",
+            "Même s&rsquo;il est recommandé qu&rsquo;un enfant jusqu&rsquo;à 14 ans n&rsquo;ait qu&rsquo;un vrai dumbphone (aussi pour que la société cesse de considérer le smartphone comme allant de soi !), certains préféreront recycler un vieil appareil Android, surtout s&rsquo;ils veulent une carte hors ligne, la radio FM, un lecteur MP3 ou la possibilité de partager une position. Drawbridge vous permet de passer entièrement hors ligne (en bloquant tout le trafic web), de supprimer tous les navigateurs et d&rsquo;empêcher l&rsquo;installation d&rsquo;applications autres que les quelques-unes déjà présentes. Les appels et les SMS restent bien sûr possibles, et le GPS comme la radio FM sont des récepteurs passifs et restent disponibles. Une application de cartes hors ligne comme Organic Maps permet aussi de partager sa position par SMS.",
+            "Drawbridge propose une option qui empêche l&rsquo;installation d&rsquo;applications. Faites le tri, gardez les quelques applications dont vous avez besoin &mdash; Spotify par exemple &mdash; et verrouillez pour longtemps.",
+        ],
         use_cases=[
             "« J'ai besoin d'un téléphone sans réseaux sociaux ! Ça me rend dingue ! »",
             "« Si seulement il existait un téléphone avec juste les cartes, WhatsApp, mon appli bancaire, et rien d'autre ! »",
@@ -765,7 +789,16 @@ def render_home(lang: str) -> str:
 
     herald_bullets_html = "\n".join(f"<li>{item}</li>" for item in c["herald_bullets"])
     mono_bullets_html = "\n".join(f"<li>{item}</li>" for item in c["mono_bullets"])
-    use_cases_html = "\n".join(f"        <li>{item}</li>" for item in c["use_cases"])
+    use_cases_html = "\n".join(
+        f"""        <li>
+          <span class="voice-quote">{quote}</span>
+          <details class="voice-how">
+            <summary>{c['use_cases_how_label']}</summary>
+            <p>{answer}</p>
+          </details>
+        </li>"""
+        for quote, answer in zip(c["use_cases"], c["use_cases_how"])
+    )
 
     body = f"""
   <section class="hero">
