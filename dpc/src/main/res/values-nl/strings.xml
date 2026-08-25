@@ -139,6 +139,9 @@
     <string name="lock_timer_weeks_3">3 weken</string>
     <string name="lock_timer_days_30">30 dagen</string>
     <string name="lock_timer_days_40">40 dagen</string>
+    <string name="lock_timer_months_2">2 maanden</string>
+    <string name="lock_timer_months_3">3 maanden</string>
+    <string name="lock_timer_months_6">6 maanden</string>
 
     <!-- Code vergeten, op een vergrendelde telefoon -->
     <string name="forgot_key_title">Code vergeten?</string>

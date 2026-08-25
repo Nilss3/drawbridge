@@ -56,15 +56,30 @@ class LockTimer(context: Context) {
         context.applicationContext.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
 
     /**
-     * How long a timed lock lasts, from two hours to forty days.
+     * How long a timed lock lasts, from two hours to six months.
      *
      * The steps are coarse on purpose. This is not a stopwatch — it is *"a day
      * offline to study", "a weekend", "a week of camping", "two weeks without an
-     * argument about the curfew", "a fasting period"* — and a picker with twelve
-     * recognisable entries is answered in one glance, where a free-form number of
-     * hours would have to be worked out. Forty days is the longest because it is
-     * Lent and Ramadan, and because a period nobody can shorten should not be
-     * open-ended.
+     * argument about the curfew", "a fasting period", "a school term"* — and a
+     * picker of recognisable entries is answered in one glance, where a
+     * free-form number of hours would have to be worked out.
+     *
+     * **Forty days used to be the ceiling** — Lent and Ramadan — on the argument
+     * that a period nobody can shorten should not be open-ended. Two, three and
+     * six months were asked for on 2026-08-24 and the argument does not survive
+     * them: a term or half a year is exactly the commitment somebody choosing
+     * this is trying to make, and refusing to offer it does not stop them, it
+     * just sends them to *no timer at all*, which is the genuinely open-ended
+     * option sitting right beside these.
+     *
+     * The months are thirty days each. Nobody picking "3 months" is counting to
+     * the calendar date, and a length that depends on which months it happens to
+     * cross would be harder to reason about than one that does not.
+     *
+     * **This does put the thirty-day steps in odd company.** They were the long
+     * end of the list and are now the middle of it, and a parent scanning for
+     * "the long one" will read past them. That is the cost, taken knowingly: the
+     * alternative is a list that stops short of what people want to choose.
      *
      * The names are the stored ids, so **renaming an entry orphans a running
      * timer's length**. Nothing enforces the deadline off this value — that is
@@ -88,6 +103,9 @@ class LockTimer(context: Context) {
         WEEKS_3(21 * DAY, R.string.lock_timer_weeks_3),
         DAYS_30(30 * DAY, R.string.lock_timer_days_30),
         DAYS_40(40 * DAY, R.string.lock_timer_days_40),
+        MONTHS_2(60 * DAY, R.string.lock_timer_months_2),
+        MONTHS_3(90 * DAY, R.string.lock_timer_months_3),
+        MONTHS_6(180 * DAY, R.string.lock_timer_months_6),
         ;
 
         companion object {

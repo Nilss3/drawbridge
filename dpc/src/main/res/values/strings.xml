@@ -208,6 +208,9 @@
     <string name="lock_timer_weeks_3">3 weeks</string>
     <string name="lock_timer_days_30">30 days</string>
     <string name="lock_timer_days_40">40 days</string>
+    <string name="lock_timer_months_2">2 months</string>
+    <string name="lock_timer_months_3">3 months</string>
+    <string name="lock_timer_months_6">6 months</string>
 
     <!-- The code-forgotten door, on a locked phone. -->
     <string name="forgot_key_title">Forgotten the code?</string>

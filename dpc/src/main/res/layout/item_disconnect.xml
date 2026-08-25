@@ -80,5 +80,38 @@
                 android:paddingTop="4dp"
                 android:textAppearance="?attr/textAppearanceBodySmall" />
         </LinearLayout>
+
+        <!-- The same shield the policy and the options carry, and it means the
+             same thing: the age this choice is usually reckoned suitable from.
+             Hidden by bindRating when a choice has no age — which is the point
+             for the offline choice, where there is nothing to be old enough for. -->
+        <FrameLayout
+            android:id="@+id/disconnectRating"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginStart="8dp">
+
+            <ImageView
+                android:id="@+id/disconnectRatingShield"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:importantForAccessibility="no"
+                android:src="@drawable/ic_rating_shield" />
+
+            <!-- Decorative: the shield's own contentDescription carries the
+                 meaning, so a screen reader saying "14" after "recommended from
+                 age 14" would just be noise. -->
+            <TextView
+                android:id="@+id/disconnectRatingText"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:importantForAccessibility="no"
+                android:paddingBottom="3dp"
+                android:textColor="@color/rating_label"
+                android:textSize="10sp"
+                android:textStyle="bold" />
+        </FrameLayout>
+
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

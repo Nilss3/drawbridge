@@ -405,6 +405,12 @@ class MainActivity : AppCompatActivity() {
             val card = inflater.inflate(R.layout.item_browser, browserContainer, false)
                 as MaterialCardView
             card.findViewById<TextView>(R.id.browserName).setText(choice.title)
+            card.bindRating(
+                R.id.browserRating,
+                R.id.browserRatingShield,
+                R.id.browserRatingText,
+                age = choice.recommendedAge,
+            )
             card.bindInfo(
                 R.id.browserInfo,
                 title = getString(choice.title),
@@ -509,21 +515,36 @@ class MainActivity : AppCompatActivity() {
         val choice: BrowserSettings.Choice,
         val title: Int,
         val description: Int,
+        /**
+         * The age a browser on the phone is reckoned suitable from, or null
+         * where the question does not arise.
+         *
+         * 14 on both of the choices that leave a browser, and nothing on the one
+         * that leaves none: a shield says *be this old before choosing this*,
+         * and there is no age at which having no browser needs permission. The
+         * two that do carry one carry the same number, which is the honest
+         * answer — mono is a gentler browser, not a younger one, and the open
+         * web is the open web in monochrome.
+         */
+        val recommendedAge: Int?,
     ) {
         ALL(
             BrowserSettings.Choice.ALL,
             R.string.browser_all_name,
             R.string.browser_all_description,
+            recommendedAge = 14,
         ),
         MONO(
             BrowserSettings.Choice.MONO_ONLY,
             R.string.browser_mono_name,
             R.string.browser_mono_description,
+            recommendedAge = 14,
         ),
         NONE(
             BrowserSettings.Choice.NONE,
             R.string.browser_none_name,
             R.string.browser_none_description,
+            recommendedAge = null,
         ),
         ;
 
@@ -561,6 +582,12 @@ class MainActivity : AppCompatActivity() {
             // "blissfully offline" does not say calls and SMS still work.
             card.findViewById<TextView>(R.id.disconnectDescription).setText(choice.description)
             card.findViewById<ImageView>(R.id.disconnectSymbol).setImageResource(choice.symbol)
+            card.bindRating(
+                R.id.disconnectRating,
+                R.id.disconnectRatingShield,
+                R.id.disconnectRatingText,
+                age = choice.recommendedAge,
+            )
             card.findViewById<RadioButton>(R.id.disconnectSelected).isChecked =
                 choice.mode == current
             card.isChecked = choice.mode == current
@@ -665,6 +692,19 @@ class MainActivity : AppCompatActivity() {
         val title: Int,
         val description: Int,
         val symbol: Int,
+        /**
+         * The age this philosophy is reckoned suitable from, read the same way
+         * as everywhere else on this screen: the age from which choosing it is
+         * usually reasonable.
+         *
+         * It runs the opposite way to the options, and that is not a mistake.
+         * An option's shield guards *allowing* something; here the permissive
+         * choice is the one that needs an age. A phone that is online whenever
+         * it is awake is the 16 one, an evening curfew is the 14 one, and a
+         * phone that is simply offline needs no age at all — there is nothing
+         * to be old enough for.
+         */
+        val recommendedAge: Int?,
     ) {
         // Online first, because it is what the phone does now: the list then
         // reads as the state you are in followed by the two you can choose,
@@ -674,18 +714,21 @@ class MainActivity : AppCompatActivity() {
             R.string.disconnect_online_name,
             R.string.disconnect_online_description,
             R.drawable.ic_disconnect_robot,
+            recommendedAge = 16,
         ),
         OFFLINE(
             DisconnectSettings.Mode.OFFLINE,
             R.string.disconnect_offline_name,
             R.string.disconnect_offline_description,
             R.drawable.ic_disconnect_lotus,
+            recommendedAge = null,
         ),
         CURFEW(
             DisconnectSettings.Mode.CURFEW,
             R.string.disconnect_curfew_name,
             R.string.disconnect_curfew_description,
             R.drawable.ic_disconnect_moon,
+            recommendedAge = 14,
         ),
     }
 

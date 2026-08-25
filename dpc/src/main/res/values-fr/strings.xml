@@ -139,6 +139,9 @@
     <string name="lock_timer_weeks_3">3 semaines</string>
     <string name="lock_timer_days_30">30 jours</string>
     <string name="lock_timer_days_40">40 jours</string>
+    <string name="lock_timer_months_2">2 mois</string>
+    <string name="lock_timer_months_3">3 mois</string>
+    <string name="lock_timer_months_6">6 mois</string>
 
     <!-- Code oublié, sur un téléphone verrouillé -->
     <string name="forgot_key_title">Code oublié ?</string>
