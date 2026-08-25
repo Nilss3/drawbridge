@@ -98,14 +98,42 @@ fi
 
 echo "Checking against required_apps in dist/policy.signed.json"
 python3 - "${dest}" <<'PY'
-import base64, hashlib, json, os, sys
+import base64, hashlib, json, os, re, shutil, subprocess, sys
 
 dest = sys.argv[1]
 policy = json.loads(
     base64.b64decode(json.load(open("dist/policy.signed.json"))["payload"])
 )
 
+
+def version_code_of(path):
+    """The versionCode inside an APK, or None when aapt2 is not to hand.
+
+    Read from the binary because typing it is exactly what went wrong on
+    2026-08-25: required_apps was re-pinned for a new release, the URLs and
+    checksums were updated, and the version codes were left behind. Every
+    checksum matched, so this script said ok, and the phones compared the
+    declared 14 against the installed 14 and never fetched herald 15.
+    """
+    aapt = shutil.which("aapt2")
+    if aapt is None:
+        sdk = os.path.expanduser("~/Library/Android/sdk/build-tools")
+        if os.path.isdir(sdk):
+            found = sorted(
+                os.path.join(sdk, d, "aapt2")
+                for d in os.listdir(sdk)
+                if os.path.exists(os.path.join(sdk, d, "aapt2"))
+            )
+            aapt = found[-1] if found else None
+    if aapt is None:
+        return None
+    out = subprocess.run([aapt, "dump", "badging", path], capture_output=True).stdout.decode()
+    found = re.search(r"versionCode='(\d+)'", out)
+    return int(found.group(1)) if found else None
+
+
 failed = False
+unchecked = 0
 for app in policy.get("required_apps", []):
     name = app["url"].rsplit("/", 1)[1]
     path = os.path.join(dest, name)
@@ -114,19 +142,39 @@ for app in policy.get("required_apps", []):
         failed = True
         continue
     digest = hashlib.sha256(open(path, "rb").read()).hexdigest()
-    if digest == app["sha256"]:
-        print(f"  ok       {name}")
-    else:
+    if digest != app["sha256"]:
         print(f"  STALE    {name} — hash differs from the policy pin")
         print(f"           policy {app['sha256']}")
         print(f"           staged {digest}")
         failed = True
+        continue
+
+    actual = version_code_of(path)
+    declared = app.get("version_code")
+    if actual is None:
+        unchecked += 1
+        print(f"  ok       {name} (version code unchecked: no aapt2)")
+    elif actual != declared:
+        # Not fatal to the download and fatal to the point of it: a phone
+        # installs a required app only when the declared version is higher than
+        # the one it has, so a stale number is an update that silently never
+        # happens.
+        print(f"  STALE    {name} — the policy declares version_code {declared},")
+        print(f"           the APK is {actual}. A phone already on {declared} compares")
+        print(f"           {declared} > {declared}, finds it false, and never fetches it.")
+        failed = True
+    else:
+        print(f"  ok       {name} (version_code {actual})")
+
+if unchecked:
+    print(f"\n{unchecked} version code(s) unchecked — put aapt2 on PATH to check them.")
 
 if failed:
     print("\nStaged artefacts do not match the signed policy.", file=sys.stderr)
-    print("If herald was rebuilt, re-pin required_apps and re-sign.", file=sys.stderr)
+    print("If herald was rebuilt, re-pin required_apps — url, sha256 *and*", file=sys.stderr)
+    print("version_code — and re-sign.", file=sys.stderr)
     sys.exit(1)
-print("\nEvery APK the policy pins is staged under the right name.")
+print("\nEvery APK the policy pins is staged under the right name and version.")
 PY
 
 ls -lh "${dest}"

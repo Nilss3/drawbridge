@@ -23,7 +23,7 @@ which is kept whole on purpose.
 |---|---|---|
 | drawbridge | 0.2.7, build 18 | **0.2.19, build 44** |
 | herald | 0.1.9 | **0.1.15** |
-| policy | **52** | **89** |
+| policy | **52** | **90** |
 | install page | <https://drawbridge-project.pages.dev/install/usb/> | <https://dev.drawbridge-project.pages.dev/install/usb/> |
 | phone | the owner's Nothing Phone (A059) | the Moto G15 |
 
@@ -218,6 +218,15 @@ the key can always unlock and put a build on the phone. See
 
 Each of these looks like a bug and is not, or bites silently:
 
+- **Re-pinning `required_apps` means three fields, not two.** `url`, `sha256`
+  *and* `version_code`. On 2026-08-25 the first two were updated for
+  v0.2.8-dev.6 and the third was left at 14, so policy 89 shipped correct
+  binaries at correct URLs that no phone would ever fetch: `AppInstaller`
+  installs a required app only when `versionCode > versionCodeOf(package)`, and
+  14 > 14 is false. Every checksum matched, so nothing complained — the phone
+  simply sat on herald 0.1.14 through restarts. Fixed in policy 90, and
+  `stage-release.sh` now reads the versionCode out of each staged APK and fails
+  when it disagrees with the document.
 - **`tools/stage-release.sh` re-copies herald whatever you are releasing.** On a
   dpc-only release herald has not been rebuilt, so what sits in
   `herald/build/outputs` is an *older local build* — not the binary the published
