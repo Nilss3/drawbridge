@@ -104,14 +104,14 @@
 
     <!-- Fallback only: the heading normally comes from the policy, so it can
          be reworded without shipping a new browser. -->
-    <string name="blocked_page_heading">Drawbridge opened</string>
+    <string name="blocked_page_heading">drawbridge is up</string>
     <!--
          The page shown when a load fails because drawbridge has taken the
          network away, rather than because anything is wrong. See OfflinePage.
     -->
-    <string name="offline_page_curfew_heading">The bridge is up</string>
-    <string name="offline_page_curfew_message">This phone is offline until the curfew ends. Nothing is broken, and there is nothing to fix — calls and text messages still work.</string>
+    <string name="offline_page_curfew_heading">drawbridge is up</string>
+    <string name="offline_page_curfew_message">This phone is offline until the curfew ends. Calls and text messages still work.</string>
     <string name="offline_page_offline_heading">This phone is offline</string>
-    <string name="offline_page_offline_message">Drawbridge is set to keep this phone off the internet. Nothing is broken, and there is nothing to fix — calls, text messages, GPS and FM radio all still work.</string>
+    <string name="offline_page_offline_message">Drawbridge is set to keep this phone off the internet. Calls, text messages, GPS and FM radio all still work.</string>
     <string name="offline_page_until">Back online at %1$s</string>
 </resources>

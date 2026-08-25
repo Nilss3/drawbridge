@@ -572,7 +572,7 @@ data class BrowserPolicy(
      * to herald's own string.
      */
     @SerialName("blocked_page_title")
-    val blockedPageTitle: String = "Drawbridge opened",
+    val blockedPageTitle: String = "drawbridge is up",
 
     /** The line under the heading on herald's block page. */
     @SerialName("blocked_page_message")

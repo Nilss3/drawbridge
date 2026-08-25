@@ -1,7 +1,7 @@
 {
-  "version": 87,
-  "issued_at": "2026-08-24T13:05:21Z",
-  "comment": "Each option gains a subject: the bare name of what it covers, so switching one off reports \"WhatsApp blocked after lock\" rather than \"Allow WhatsApp applied after lock\". Names build 43, which reads it and which strips the update screen back to one paragraph.",
+  "version": 88,
+  "issued_at": "2026-08-25T13:07:35Z",
+  "comment": "The block page says \"drawbridge is up\" rather than \"Drawbridge opened\": a raised drawbridge is the one that keeps something out, and \"opened\" said the opposite of what the page is for. app_update still names build 43.",
   "dns": {
     "upstreams": [
       "94.140.14.15",
@@ -748,7 +748,7 @@
       "Bing",
       "Kagi"
     ],
-    "blocked_page_title": "Drawbridge opened",
+    "blocked_page_title": "drawbridge is up",
     "blocked_page_message": "This website was denied access to your device, life and soul.",
     "blocked_url_patterns": [],
     "blocked_hosts": []
