@@ -72,6 +72,11 @@ object OfflinePage {
         // to be added up and is wrong a minute later. The offline philosophy has
         // no next change at all, and saying nothing is the honest version of
         // that.
+        //
+        // It is also the only detail either page carries now. Both messages used
+        // to end by listing what still works — calls, texts, GPS, FM radio —
+        // and that went on 2026-08-25: true of the phone, irrelevant in a
+        // browser, and it is not a browser's business to report on the radios.
         val until = state.onlineAgainAt
             ?.takeIf { state.isCurfew }
             ?.let { context.getString(R.string.offline_page_until, formatTime(context, it)) }
