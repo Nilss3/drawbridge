@@ -1,7 +1,7 @@
 {
-  "version": 95,
-  "issued_at": "2026-08-26T09:39:00Z",
-  "comment": "DEV CHANNEL ONLY. Pins drawbridge 0.2.20 build 45, which carries policy 94 bundled. Published after the APK by the rule that makes the circularity survivable: an APK cannot name its own hash, so the build ships one policy behind and the document naming it comes afterwards. Blocklist unchanged from 94.",
+  "version": 98,
+  "issued_at": "2026-08-26T11:23:41Z",
+  "comment": "DEV CHANNEL ONLY. Nothing changes here but the number, and the number is the point. The two channels share one counter and main reached 97 while this channel sat at 95, so a phone that had run the alpha and was then given a dev build would have fetched this document, found 95 below the 97 it held, and failed the whole refresh rather than just skipping the install. 369 blocked packages, the same set the alpha enforces; app_update, required_apps and the blocklist URLs are this channel's own and are untouched.",
   "dns": {
     "upstreams": [
       "94.140.14.15",
