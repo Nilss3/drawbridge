@@ -11,9 +11,9 @@ Drawbridge is a protection on your device which 'raises the bridge' to harmful c
 Small note: Drawbridge is slowly entering public beta. If it works well, we're giving this website a domain name to spread the word.
 
 How it works
-* Remove every account from the device (you sign back in afterwards, or not — no factory reset needed)
+* Remove every account from the device (you sign back in afterwards, or not; no factory reset needed)
 * Turn on USB debugging and plug the phone into a computer
-* Open the install page and press the button — it installs drawbridge over the cable, from the browser
+* Open the install page and press the button: it installs drawbridge over the cable, from the browser
 * Wait for set-up to finish
 
 * Start the drawbridge app and activate it

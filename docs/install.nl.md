@@ -94,7 +94,7 @@ toestaan* die op de telefoon verschijnt.
 
 **Het eenvoudigst is de installerpagina op de website**, die dit alles vanuit
 Chrome of Edge doet zonder iets op te zetten:
-<https://drawbridge-project.pages.dev/nl/install/usb/>.
+<https://drawbridge-project.pages.dev/nl/install/>.
 
 Wilt u liever een terminal, voer dan vanuit een kopie van deze repository uit:
 

@@ -51,11 +51,11 @@ that's expected, not a bug.
 
 ## What's deliberately not yet built
 
-- **The USB/WebADB installer.** The button on `/install/` is a placeholder.
-  Wiring it up means a small JS page using a library such as
-  [ya-webadb](https://github.com/yume-chan/ya-webadb) to push the DPC APK and
-  run the Device Owner provisioning step over WebUSB, from a Chromium-based
-  browser, no local software required.
+- ~~**The USB/WebADB installer.**~~ **Built.** It is written from scratch in
+  `site-src/installer/` rather than on top of a library, and since 2026-08-25 it
+  lives on `/install/` itself, below the three-situation guide, instead of on a
+  page of its own. `/install/usb/` is a redirect kept for the links already
+  handed out.
 - **why-blocked/ in Dutch and French.** Deliberately English-only — see the
   comment above `WHY_TITLE` in `tools/build-site.py`. Around 200 rows of cited
   legal and clinical claims across jurisdictions is not something to

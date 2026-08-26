@@ -24,7 +24,7 @@ which is kept whole on purpose.
 | drawbridge | **0.2.19, build 44** | **0.2.19, build 44** |
 | herald | **0.1.15** | **0.1.15** |
 | policy | **90** | **91** |
-| install page | <https://drawbridge-project.pages.dev/install/usb/> | <https://dev.drawbridge-project.pages.dev/install/usb/> |
+| install page | <https://drawbridge-project.pages.dev/install/> | <https://dev.drawbridge-project.pages.dev/install/> |
 | phone | the owner's Nothing Phone (A059) | the Moto G15 |
 
 **Both apps work end to end on real hardware.** A phone is provisioned over a
@@ -1166,8 +1166,10 @@ What is left of item 11 is the rest of the site.
   anything and cost ~650 MiB of every release. Removing an ABI means removing
   its `required_apps` entry in the same policy.
 - ~~**Build the WebADB installer.**~~ **Built, and it is the alpha's only install
-  route.** <https://drawbridge-project.pages.dev/install/usb/> provisions and
+  route.** <https://drawbridge-project.pages.dev/install/> provisions and
   updates a phone over WebUSB; `dev` serves the same page from its own build.
+  **Moved 2026-08-25**: the installer was its own page at `/install/usb/` until
+  the guide and the button were merged; that URL is now a redirect.
   **Corrected 2026-08-12**: this entry still described a disabled button, and
   justified itself with QR provisioning "working" and needing "no cable" — QR is
   retired, and the installer it was asking for is a cable path by design.

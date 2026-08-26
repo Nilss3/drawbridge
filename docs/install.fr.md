@@ -99,7 +99,7 @@ USB* qui s'affiche sur le téléphone.
 
 **Le plus simple est la page d'installation du site**, qui fait tout cela depuis
 Chrome ou Edge sans rien à mettre en place :
-<https://drawbridge-project.pages.dev/fr/install/usb/>.
+<https://drawbridge-project.pages.dev/fr/install/>.
 
 Si vous préférez un terminal, depuis une copie de ce dépôt :
 
