@@ -375,3 +375,92 @@ system component, and the failure would be silent.
 
 Nothing was verified on a handset of each brand. Only the Motorola one has been
 seen on a real phone; the rest are as good as their source.
+
+## The preinstalled app-pushers
+
+Policy 92, reported by the owner: a Moto was being bothered with games by an app
+called **Motorola App Manager**, `com.dti.motorola`. Policy 91 had just gone
+through the manufacturers' game *centres* and this is not one of them. It is
+Digital Turbine's Mobile Services Manager, and its job is to install and
+advertise apps in the background on behalf of whoever paid. The games are the
+symptom; the pusher is the cause, and it survives every game you uninstall.
+
+This is a third shape, after the game shops and the boosters. It has no icon
+worth opening, it is not a store the owner chose, and what it puts on the phone
+is chosen by an advertising auction. Two companies sell almost all of it, so the
+list is mostly two families wearing per-handset badges:
+
+- **Digital Turbine**, sold as *Mobile Services Manager*, *App Select* or
+  *Essentials*: `com.dti.motorola`, `com.dti.samsung`, `com.dti.blu`,
+  `com.dti.att`, `com.dti.amx`, `com.dti.cricket`, `com.dti.telefonica`,
+  `com.dti.tim`, `com.dti.tracfone`, `com.dti.bouyguestelecom`,
+  `com.digitalturbine.toolbar` and `com.digitalturbine.android.apps.news.att`,
+  the last of which the database records as putting full-screen adverts on the
+  unlock screen.
+- **ironSource, now Unity, sold as Aura**: `com.aura.oobe.motorola` (MotoApps),
+  `com.aura.oobe.ml`, `com.aura.oobe.solutions`, `com.aura.oobe.samsung` and
+  `com.aura.oobe.samsung.gl`, `com.aura.oobe.att`, `com.aura.jet.att`,
+  `com.aura.oobe.vodafone` (AppBox), `com.aura.oobe.deutsche`,
+  `com.aura.oobe.kddi`, `com.aura.oobe.ntt`, `com.aura.oobe.rakuten`,
+  `com.aura.oobe.softbank`, and the older AppCloud builds
+  `com.ironsource.appcloud.oobe`, `com.ironsource.appcloud.oobe.huawei` and
+  `com.ironsource.appcloud.oobe.hutchison`. `com.aura.oobe.lenovo` was already
+  blocked in policy 91, as a game hub; it is the same product.
+
+`com.aura.oobe.solutions` is the one to notice. The database describes it as a
+persistent notification that nags until you agree to install games, preinstalled
+on **Nothing and CMF phones**, which is the brand of the owner's own daily
+handset. `com.aura.oobe.ml` is the same thing for Motorola.
+
+Three more groups, same behaviour, different sellers:
+
+- **The manufacturers' own recommenders**: `com.samsung.android.app.omcagent`
+  and `com.samsung.android.mapsagent`, which auto-install "recommended apps"
+  after setup or a factory reset, `com.samsung.preloadapp`, and `com.opos.cs`,
+  Oppo's Hot Apps, which builds a home-screen folder of sponsored apps and games.
+- **Other advertising installers that ship preinstalled**: `com.inmobi.installer`,
+  `com.pinsight.dw`, `com.sprint.w.installer`, which the database records as
+  force-installing apps the owner had disabled, and
+  `com.blackview.app.cloudfolder`.
+- **Carrier containers whose whole job is pushing apps**: `com.sfr.android.sfrjeux`
+  (SFR, and it is literally called *My Games*), `com.altice.android.myapps`,
+  `com.claroColombia.contenedor`, `com.telcel.contenedor` and
+  `com.LogiaGroup.LogiaDeck`.
+
+And `com.facebook.system`, the Facebook App Installer: an empty shell whose only
+function is to offer an app this policy already removes.
+
+**The app stores are deliberately untouched.** `com.sec.android.app.samsungapps`,
+`com.xiaomi.mipicks`, `com.heytap.market`, `com.huawei.appmarket` and
+`com.vivo.appstore` stay, for the same reason `com.android.vending` does: this
+project has never blocked the shop, only what is in it, and the owner needs a
+working store to put the allowed apps on the phone. A pusher is not a shop. The
+difference that matters is who chose to open it.
+
+**Also left out, and why.** `com.telus.featuredapps` and `ro.cosmote.aps.wnwlite`
+are recorded as discontinued and showing nothing, and listing dead packages only
+makes the list harder to read. `com.samsung.android.service.stplatform` is the
+SmartThings framework and the database's note on it is an explicit guess, which
+is not enough to risk SmartThings on. `com.amazon.appmanager`,
+`com.oppo.customize` and `com.motricity.verizon.ssodownloadable` are too vaguely
+described to act on, and the last is a login component.
+`com.facebook.appmanager` and `com.facebook.services` only update and run what is
+already there.
+
+**A finding this pass did not act on.** The same database lists a set of
+*preinstalled games* rather than pushers: Candy Crush, Solitaire, Woodoku,
+Crossword Jam and Triple Tile shipping on some Samsung handsets, and Block Blast,
+Jewels Blast, Wood Blast, Tile Fun and four more on Xiaomi Poco. They are on
+nobody's list here. Whether the blocklist should name individual shovelware
+titles, or trust the pushers being gone to stop them coming back, is a decision
+for the owner rather than something to slip into a policy about app managers.
+
+The ladder in the section above applies unchanged, and it is the whole risk here:
+one of these flagged as a system app is hidden and comes back by dropping it from
+the list, one shipped without that flag is uninstalled and no edit brings it
+back. Every id is from the same Universal Android Debloater Next Generation
+database, and every one of the forty-two is on its *Recommended* tier, which is
+the tier that database reserves for packages it considers safe to remove.
+
+Only `com.dti.motorola` has been seen on a real phone, and only as a name on a
+screen. Nothing here has been verified on a handset of each brand.
