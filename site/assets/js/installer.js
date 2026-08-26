@@ -71,7 +71,7 @@ async function restoreVerifier() {
     const now = await readVerifier();
     if (now !== originalVerifier) {
         fail(
-            `Could not restore install verification — it reads "${now}" and was ` +
+            `Could not restore install verification. It reads "${now}" and was ` +
                 `"${originalVerifier}". Do not hand this phone over until it is put back:\n` +
                 `adb shell settings put global verifier_verify_adb_installs 1`,
         );
@@ -136,7 +136,7 @@ async function preflight() {
             `This phone has ${userCount} users or profiles on it, so Android will not hand over ` +
                 "device ownership while any of them exists. " +
                 (isPrivateSpace
-                    ? "One of them is a Private Space — Android's hidden profile, which does not " +
+                    ? "One of them is a Private Space, Android's hidden profile, which does not " +
                       "appear in the user switcher. Delete it in Settings → Security & privacy → " +
                       "Private Space → Delete private space. It needs its own PIN to open, and " +
                       "deleting it removes everything inside it."
@@ -199,7 +199,7 @@ async function fetchApk() {
         setStep(3, "error");
         throw new AdbError(
             "The downloaded app does not match the checksum this page expects, so it will " +
-                "not be installed.\n\nReload the page and try again — if this page was open " +
+                "not be installed.\n\nReload the page and try again. If this page was open " +
                 "before a new version was published, that is the cause.\n\nExpected " +
                 ui.apkSha256 +
                 "\nGot      " +

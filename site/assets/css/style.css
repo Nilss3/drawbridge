@@ -160,17 +160,6 @@ code {
 @media (max-width: 700px) {
   .hero-art-title { max-width: 68%; top: 4%; }
 }
-.beta-note {
-  display: inline-block;
-  font-size: 0.85rem;
-  color: var(--ink-soft);
-  background: var(--paper);
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  padding: 0.3rem 0.8rem;
-  margin-bottom: 1rem;
-}
-
 /* The people this is for, in their own words: five one-liners between the hero
    art and the explanation. A grid rather than a column, because five stacked
    cards would push the paragraph that explains the project off the screen. */
@@ -442,60 +431,81 @@ code {
   padding: 1rem 1.2rem;
   margin: 1.2rem 0;
 }
-.callout--coming-soon { border-left-color: var(--rust); }
-
-/* Alpha warning: louder than the coming-soon note, because it is telling
-   someone not to wipe a phone they depend on. */
-.callout--alpha {
+/* The loud callout. One page uses it, for the one thing on the install page a
+   reader cannot afford to find out afterwards: that installing uninstalls.
+   Named for what it does, not for what it used to say; it carried the alpha
+   notice as well until that notice was dropped on 2026-08-25. */
+.callout--warn {
   border-left-width: 4px;
   border-left-color: var(--rust);
   background: color-mix(in srgb, var(--rust) 7%, var(--paper));
 }
-.callout--alpha strong { color: var(--rust); }
+.callout--warn strong { color: var(--rust); }
 
 .footnote { font-size: 0.85rem; color: var(--ink-soft); }
 
-/* The install page's three situations, behind one picker.
+/* The install page's three situations, behind one dropdown.
  *
- * Three radios and a sibling selector, so the guide still runs no script — the
- * USB installer next door is the only page on this site that does, and it has
- * WebUSB as an excuse. Every panel is in the HTML; with CSS off a reader gets
- * all three in order under their own headings, which is the failure mode worth
- * having. The radios are moved off-screen rather than display:none'd, so they
- * keep their focus and their arrow-key navigation.
+ * A <select> and eleven lines of script. It replaced three radios and a sibling
+ * selector on 2026-08-25, when the installer moved onto this page and took its
+ * module script with it: the CSS-only trick had been worth its awkwardness only
+ * while it was buying a page with no JavaScript at all, and that page no longer
+ * exists. What the radios could never do is what a dropdown does for free on a
+ * phone, which is not take three fat tap targets of vertical space above the
+ * content they select.
+ *
+ * Every panel is in the HTML and visible by default; the script hides the two
+ * that are not chosen. With script off a reader gets all three in order under
+ * their own headings, which is the failure mode worth having.
  */
 .flow-picker { margin: 1.6rem 0 1.2rem; }
-.flow-picker > input {
+.flow-legend { display: block; font-weight: 600; margin: 0 0 0.5rem; }
+
+.flow-select {
+  font: inherit;
+  width: 100%;
+  max-width: 34rem;
+  padding: 0.75rem 2.6rem 0.75rem 1rem;
+  color: var(--ink);
+  background-color: var(--paper);
+  /* The chevron is drawn here because appearance:none takes the platform's
+     own away, and it has to be spelled out twice: a data URI cannot reach
+     currentColor, so the dark scheme gets its own copy below. */
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="8" viewBox="0 0 12 8"><path d="M1 1.5 6 6.5 11 1.5" fill="none" stroke="%23556354" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>');
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--wood);
+  border-radius: var(--radius);
+  appearance: none;
+  cursor: pointer;
+}
+@media (prefers-color-scheme: dark) {
+  .flow-select {
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="8" viewBox="0 0 12 8"><path d="M1 1.5 6 6.5 11 1.5" fill="none" stroke="%23a7b3a2" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>');
+  }
+}
+.flow-select:hover { border-color: var(--ink-soft); }
+.flow-select:focus-visible { outline: 2px solid var(--wood); outline-offset: 2px; }
+
+.flow-panel { margin-top: 1.6rem; }
+.flow-panel[hidden] { display: none; }
+
+/* The panel's own heading answers "which one am I reading" for a reader with
+   no script. With script, the dropdown a line above it already says so, and
+   two copies of the same sentence in a row reads like a mistake, so the
+   heading goes to the screen readers only. */
+.flow-panel-title { margin-top: 0; }
+.flow-picker[data-js] .flow-panel-title {
   position: absolute;
   width: 1px; height: 1px;
   margin: -1px; padding: 0; border: 0;
   overflow: hidden; clip-path: inset(50%);
 }
-.flow-legend { font-weight: 600; margin: 0 0 0.7rem; }
-.flow-tabs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.6rem; }
-@media (max-width: 780px) { .flow-tabs { grid-template-columns: 1fr; } }
-.flow-tabs label {
-  display: flex;
-  align-items: center;
-  padding: 0.8rem 1rem;
-  background: var(--paper);
-  border: 1px solid var(--line);
-  border-left: 3px solid var(--line);
-  border-radius: var(--radius);
-  font-size: 0.94rem;
-  line-height: 1.35;
-  cursor: pointer;
-}
-.flow-tabs label:hover { border-color: var(--ink-soft); border-left-color: var(--slate); }
 
-/* The panel bodies. One shows; the selected tab is marked in the same green
-   the section headings use, so "which one am I reading" is answerable without
-   scrolling back up — the panel repeats its own name as its heading too. */
-.flow-panel { display: none; margin-top: 1.6rem; }
-
-/* Screenshots of the settings screens a step walks through.
+/* Screenshots of the phone screens a step walks through.
  *
- * A row on a wide screen, two columns on a phone — four 480px pictures side by
+ * A row on a wide screen, two columns on a phone: four 480px pictures side by
  * side on a 375px screen is four pictures nobody can read, and one per row
  * turns a step into a scroll. The arrows are drawn into the images, so nothing
  * here has to position anything on top of them.
@@ -520,27 +530,6 @@ code {
   background: #fff;
 }
 .shot-strip figcaption { margin-top: 0.4rem; font-size: 0.78rem; line-height: 1.35; color: var(--ink-soft); }
-.flow-panel-title { margin-top: 0; }
-#flow-new:checked ~ #panel-new,
-#flow-used:checked ~ #panel-used,
-#flow-update:checked ~ #panel-update { display: block; }
-
-#flow-new:checked ~ .flow-tabs label[for="flow-new"],
-#flow-used:checked ~ .flow-tabs label[for="flow-used"],
-#flow-update:checked ~ .flow-tabs label[for="flow-update"] {
-  background: color-mix(in srgb, var(--wood) 10%, var(--paper));
-  border-color: var(--wood);
-  border-left-color: var(--wood);
-  color: var(--slate-dark);
-  font-weight: 600;
-}
-
-#flow-new:focus-visible ~ .flow-tabs label[for="flow-new"],
-#flow-used:focus-visible ~ .flow-tabs label[for="flow-used"],
-#flow-update:focus-visible ~ .flow-tabs label[for="flow-update"] {
-  outline: 2px solid var(--wood);
-  outline-offset: 2px;
-}
 
 /* tables (why-blocked page) */
 

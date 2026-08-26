@@ -90,7 +90,7 @@ that appears on the phone.
 
 **The easiest way is the installer page on the website**, which does all of this
 from Chrome or Edge with nothing to set up:
-<https://drawbridge-project.pages.dev/install/usb/>.
+<https://drawbridge-project.pages.dev/install/>.
 
 If you would rather use a terminal, from a copy of this repository:
 

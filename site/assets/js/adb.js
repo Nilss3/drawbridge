@@ -288,7 +288,7 @@ export class Adb {
         } catch (cause) {
             throw new AdbError(
                 "Something else on this computer is already using the phone's debug " +
-                    "connection — almost always adb.\n\n" +
+                    "connection, almost always adb.\n\n" +
                     "Close any running emulator first, then run: adb kill-server\n\n" +
                     "An emulator left running will restart the adb server by itself, so " +
                     "killing the server without closing the emulator does not help. " +
