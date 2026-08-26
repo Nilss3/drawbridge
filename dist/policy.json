@@ -1,7 +1,7 @@
 {
-  "version": 92,
-  "issued_at": "2026-08-26T08:07:18Z",
-  "comment": "The preinstalled app-pushers, which are what put games on a phone nobody asked. Found on a Moto: com.dti.motorola, Digital Turbine's Mobile Services Manager, installs and advertises apps in the background. Forty-two packages across the two advertising companies that sell this (Digital Turbine and ironSource/Unity Aura) and the manufacturers' own recommenders. The app stores themselves are untouched, as Google Play is.",
+  "version": 95,
+  "issued_at": "2026-08-26T09:39:00Z",
+  "comment": "DEV CHANNEL ONLY. Pins drawbridge 0.2.20 build 45, which carries policy 94 bundled. Published after the APK by the rule that makes the circularity survivable: an APK cannot name its own hash, so the build ships one policy behind and the document naming it comes afterwards. Blocklist unchanged from 94.",
   "dns": {
     "upstreams": [
       "94.140.14.15",
@@ -302,6 +302,8 @@
     "com.mobile.legends",
     "com.moonactive.coinmaster",
     "com.motorola.gamemode",
+    "com.motorola.paks",
+    "com.motorola.paks.notification",
     "com.movile.playkids.pkxd",
     "com.movistarplus.androidtv",
     "com.my.warface.online.fps.pvp.action.shooter",
@@ -815,9 +817,9 @@
   },
   "app_update": {
     "package_name": "app.drawbridge.dpc",
-    "version_code": 44,
-    "url": "https://dev.drawbridge-project.pages.dev/assets/dpc-32eef81d493a4a98.apk",
-    "sha256": "32eef81d493a4a9850c68ace6eaa4e878847175053824f6b0e93d1adc28b4fb2"
+    "version_code": 45,
+    "url": "https://dev.drawbridge-project.pages.dev/assets/dpc-f8c619a201397602.apk",
+    "sha256": "f8c619a201397602313fe36080b0ffa2165770f2aa64598ac387e38ea3441c24"
   },
   "required_apps": [
     {
