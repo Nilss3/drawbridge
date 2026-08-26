@@ -21,11 +21,19 @@ which is kept whole on purpose.
 
 | | `main` (the alpha) | `dev` |
 |---|---|---|
-| drawbridge | **0.2.19, build 44** | **0.2.19, build 44** |
+| drawbridge | **0.2.19, build 44** | **0.2.20, build 45** |
 | herald | **0.1.15** | **0.1.15** |
-| policy | **90** | **91** |
+| policy | **93** | **95** |
 | install page | <https://drawbridge-project.pages.dev/install/> | <https://dev.drawbridge-project.pages.dev/install/> |
 | phone | the owner's Nothing Phone (A059) | the Moto G15 |
+
+**`dev` is ahead of `main` in the policy counter again, and that is now load
+bearing rather than incidental.** The two channels draw from one sequence, and
+`PolicyManager` fails a whole refresh — not just the install — when a served
+document is *lower* than the one a device holds. So a phone that has run the
+alpha and is then given a dev build needs the dev document to be higher than
+whatever it kept, which is why the app-pusher work went out as 92 on dev, 93 on
+main, and 94/95 on dev rather than reusing a number.
 
 **Both apps work end to end on real hardware.** A phone is provisioned over a
 cable, filters DNS for every app, removes what the policy disallows, installs
