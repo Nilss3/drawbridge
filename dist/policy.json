@@ -1,7 +1,7 @@
 {
-  "version": 96,
-  "issued_at": "2026-08-26T11:08:51Z",
-  "comment": "The alpha takes Motorola's other app-pusher, com.motorola.paks and its notification component, which were still live in the platform's system-installer allowlist after com.dti.motorola was hidden. Also moves the six herald pins off /releases/latest/download/ and onto v0.2.19 by name: same binaries, same checksums, but the address no longer follows whichever release carries the Latest flag, so a dpc-only release can take that flag without herald's download turning into a 404.",
+  "version": 97,
+  "issued_at": "2026-08-26T11:12:37Z",
+  "comment": "Pins drawbridge 0.2.20 build 45, which carries policy 96 bundled. Published after the release by the rule that makes the circularity survivable: an APK cannot name its own hash, so the build ships one policy behind and the document naming it comes afterwards. Blocklist and herald pins unchanged from 96.",
   "dns": {
     "upstreams": [
       "94.140.14.15",
@@ -817,9 +817,9 @@
   },
   "app_update": {
     "package_name": "app.drawbridge.dpc",
-    "version_code": 44,
-    "url": "https://github.com/Nilss3/drawbridge/releases/download/v0.2.19/dpc-release.apk",
-    "sha256": "ed76fbb83b442a0762771c136404f3507daafc36112a512ae85098fa7bf7c22f"
+    "version_code": 45,
+    "url": "https://github.com/Nilss3/drawbridge/releases/download/v0.2.20/dpc-release.apk",
+    "sha256": "e6e6b06fd3d11e966a48c24d4607b5979e0248b4bf9148fe79c419e92f86774b"
   },
   "required_apps": [
     {
