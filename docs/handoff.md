@@ -23,7 +23,7 @@ which is kept whole on purpose.
 |---|---|---|
 | drawbridge | **0.2.20, build 45** | **0.2.20, build 45** |
 | herald | **0.1.15** | **0.1.15** |
-| policy | **97** | **95** |
+| policy | **97** | **98** |
 | install page | <https://drawbridge-project.pages.dev/install/> | <https://dev.drawbridge-project.pages.dev/install/> |
 | phone | the owner's Nothing Phone (A059) | the Moto G15 |
 
@@ -33,8 +33,9 @@ than incidental.** `PolicyManager` fails a whole refresh — not just the instal
 phone that has run one channel and is then given the other's build needs that
 channel's document to be higher than whatever it kept. The app-pusher work
 therefore went out as 92 on dev, 93 on main, 94/95 on dev and 96/97 on main
-rather than reusing a number. **`main` is currently ahead, which is the unusual
-direction: the next dev policy must be 98 or higher.**
+rather than reusing a number. Policy 98 on dev is a version bump and nothing
+else: it exists only to put this channel back above the alpha, so a phone that
+has held main's 97 accepts a dev document again.
 
 **The alpha's herald is pinned to v0.2.19 by name rather than through
 `/releases/latest/download/`, as of policy 96.** GitHub resolves that path at
@@ -45,14 +46,32 @@ quietly stopped updating the browser. The next release that actually *moves*
 herald has to update those six URLs as well as their six checksums: the same
 work as before, one field wider.
 
-**`dist/release/` on the build machine holds the dev channel's herald binaries,
-not the alpha's.** `shasum -c dist/release/SHA256SUMS` fails on `main` because
-of it, and `stage-release.sh` correctly reports six STALE files. Nothing
-published is wrong — the committed manifest and both policies carry the
-*published* hashes — but the six APKs have to be fetched back from v0.2.19
-before anything provisions a phone from this tree with `tools/provision-adb.sh`,
-which pushes herald straight out of that directory. The browser installer is
-unaffected: it only pushes the dpc, and drawbridge fetches herald itself.
+**`dist/release/` holds one channel's binaries at a time, and git cannot warn
+you which.** The APKs in it are git-ignored, so they do not change when the
+branch does: check out the other channel and the same seven files are now the
+wrong ones. `shasum -c dist/release/SHA256SUMS` is the check, and
+`tools/stage-release.sh` says the same thing in more words. Both were reporting
+six STALE herald files on `main` for a day, because the dev channel's browser
+was sitting there.
+
+Nothing published is ever wrong because of it — the committed manifest and both
+signed documents carry the hashes of what is actually *published*, which is why
+the manifest is sometimes written by hand rather than regenerated from disk.
+What it costs is `tools/provision-adb.sh`, which pushes herald straight out of
+that directory and would put the wrong channel's browser on a phone. The browser
+installer on the website is unaffected: it pushes only the dpc, and drawbridge
+fetches herald itself from the URLs the policy pins.
+
+After switching branches, re-stage:
+
+```bash
+gh release download v0.2.19      --pattern 'herald-*.apk' --dir dist/release --clobber  # main
+gh release download v0.2.8-dev.6 --pattern 'herald-*.apk' --dir dist/release --clobber  # dev
+shasum -a 256 -c dist/release/SHA256SUMS
+```
+
+The dpc in there has to be that channel's build too; the copy the website serves
+is in `site/assets/dpc-<hash>.apk` on the branch you are on.
 
 **Both apps work end to end on real hardware.** A phone is provisioned over a
 cable, filters DNS for every app, removes what the policy disallows, installs
