@@ -38,6 +38,10 @@ import kotlinx.coroutines.launch
  * anything judged wrongly — or skipped — on the way past is not revisited. A
  * decision made against an unread document does not get a second look until the
  * process restarts. See [start].
+ *
+ * A third mechanism exists for the case those two cannot see at all: a package
+ * that was judged correctly, and then the *document* changed underneath it. See
+ * [sweepOnNewPolicy].
  */
 class PackageWatcher(context: Context) {
 
@@ -149,6 +153,11 @@ class PackageWatcher(context: Context) {
             runCatching { blocker.sweep() }
                 .onFailure { Log.e(TAG, "Initial package sweep failed", it) }
 
+            // **And a policy that lands later gets a sweep of its own.** See
+            // [sweepOnNewPolicy]; the baseline is read here, after the sweep
+            // above, so the value a StateFlow replays does not sweep twice.
+            scope.launch { sweepOnNewPolicy(installedPolicyVersion()) }
+
             // **And the store gets asked about what was already here, now.**
             //
             // The sweep above can only read the cache — it runs over every
@@ -205,6 +214,53 @@ class PackageWatcher(context: Context) {
             .onFailure { Log.e(TAG, "Could not load the policy before sweeping", it) }
     }
 
+    /**
+     * Sweeps every package again whenever a *newer* policy is installed.
+     *
+     * **The fix for a gap the Moto found on 2026-08-26.** A phone runs on the
+     * copy of the policy bundled in the APK until its first poll succeeds, and
+     * that copy is always behind — it is yesterday's signed document by design,
+     * see the release procedure in docs/policy.md. `com.dti.motorola` was named
+     * by policy 92 and 93, was not in the bundled 88, and was still sitting on
+     * the phone after drawbridge had fetched and installed a document that named
+     * it.
+     *
+     * Nothing was re-reading the installed set. `PolicyManager.applyPolicy`
+     * rebuilds the DNS filter and stops there, and [sweepChanged] asks the
+     * platform which packages *changed* — which a package does not do when the
+     * policy does. So a newly named app waited for the next service start, for
+     * the lock, or for a sweep started from the settings screen. On the phone it
+     * looked like the blocklist simply not working.
+     *
+     * The store rule cannot cover for it either, and that is what made this
+     * visible rather than academic. `com.dti.motorola` is a preinstalled system
+     * app with no launcher entry, so [AppBlocker.withinStoreReach] never asks
+     * about it, and Play has no listing for an OEM preload anyway, which is
+     * `UNVERIFIED`, which means keep. The blocklist is the only rail these
+     * packages have.
+     *
+     * **Forward only, and only on a version change.** `PolicyManager.clear`
+     * publishes `Policy(version = 0)` as part of the sanctioned removal flow,
+     * and sweeping every package against an empty document is the one thing
+     * this must never do. Profile and option changes re-emit at the same
+     * version and are already swept by the screen that makes them.
+     *
+     * @param sweptAt the version the initial sweep in [start] has covered.
+     */
+    private suspend fun sweepOnNewPolicy(sweptAt: Int) {
+        var swept = sweptAt
+        DrawbridgeApplication.policy(appContext).policy.collect { policy ->
+            if (!sweepsForPolicy(swept = swept, published = policy.version)) return@collect
+            swept = policy.version
+            Log.i(TAG, "Policy $swept installed; re-evaluating every package against it")
+            runCatching { blocker.sweep() }
+                .onFailure { Log.e(TAG, "Sweep after policy $swept failed", it) }
+        }
+    }
+
+    private fun installedPolicyVersion(): Int =
+        DrawbridgeApplication.policy(appContext).policy.value.version
+
     fun stop() {
         runCatching { appContext.unregisterReceiver(receiver) }
         sweepJob = null
@@ -227,8 +283,20 @@ class PackageWatcher(context: Context) {
         }
     }
 
-    private companion object {
-        const val TAG = "PackageWatcher"
-        const val SWEEP_INTERVAL_MILLIS = 15 * 60 * 1000L
+    internal companion object {
+        private const val TAG = "PackageWatcher"
+        private const val SWEEP_INTERVAL_MILLIS = 15 * 60 * 1000L
+
+        /**
+         * Whether a policy that has just been published earns a full sweep,
+         * given the version the last sweep already covered.
+         *
+         * Expressed against plain integers rather than against the policy
+         * singleton, so every branch is reachable from a unit test — the same
+         * reasoning as [AppBlocker.withinStoreReach]. There are only three
+         * cases and two of them must not sweep, which is why this is a named
+         * function rather than a comparison inline in [sweepOnNewPolicy].
+         */
+        internal fun sweepsForPolicy(swept: Int, published: Int): Boolean = published > swept
     }
 }

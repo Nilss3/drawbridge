@@ -759,11 +759,26 @@ lock, by which time a document had long since been fetched. Removal starting at
 installation is what turned a harmless staleness into a hole, on exactly the
 phone the rule is for — the one whose junk was preloaded at the factory.
 
-Refreshed to policy 70 in build 36. **Treat it as part of cutting a release
-rather than an optional tidy-up**, and note the ordering that makes it safe: the
-bundled copy pins the *previous* build in its `app_update`, which is correct —
+Refreshed to policy 70 in build 36, and to **policy 92 on 2026-08-26**, where
+it had drifted to 88 and cost a second, smaller version of the same thing: the
+Moto's first sweep after a fresh install judged every package against a document
+that had never heard of the manufacturers' game centres or the preinstalled
+app-pushers. The ratings sweep caught the game centre, because it has a launcher
+icon and a Play listing. It could not catch `com.dti.motorola`, which has
+neither. **Treat it as part of cutting a release rather than an optional
+tidy-up**, and note the ordering that makes it safe: the bundled copy pins the
+*previous* build in its `app_update`, which is correct —
 `AppInstaller.availableSelfUpdate` compares `<=`, so a build carrying a document
 that names itself or anything older offers no update at all.
 
+The staleness is bounded now rather than merely regretted: since 2026-08-26 a
+policy arriving with a higher version sweeps every package again, so a bundled
+copy that is behind delays a removal until the first successful poll instead of
+until the next reboot or lock. See `PackageWatcher.sweepOnNewPolicy`. That makes
+this `cp` a matter of how soon the phone is right, not whether.
+
 A build's bundled copy is its own channel's document. A `dev` build bundles the
-dev policy, which says `DEV CHANNEL ONLY` in its comment; `main` bundles main's.
+dev policy; `main` bundles main's. **The `DEV CHANNEL ONLY` marker this
+paragraph used to promise is not in the dev document any more** — policies 91
+and 92 do not carry it, and nothing enforces it. Either put it back in the
+comment when signing on `dev`, or stop claiming it here.
