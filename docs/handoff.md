@@ -21,11 +21,38 @@ which is kept whole on purpose.
 
 | | `main` (the alpha) | `dev` |
 |---|---|---|
-| drawbridge | **0.2.19, build 44** | **0.2.19, build 44** |
+| drawbridge | **0.2.20, build 45** | **0.2.20, build 45** |
 | herald | **0.1.15** | **0.1.15** |
-| policy | **90** | **91** |
+| policy | **97** | **95** |
 | install page | <https://drawbridge-project.pages.dev/install/> | <https://dev.drawbridge-project.pages.dev/install/> |
 | phone | the owner's Nothing Phone (A059) | the Moto G15 |
+
+**The two channels share one policy counter, and that is load bearing rather
+than incidental.** `PolicyManager` fails a whole refresh — not just the install
+— when a served document is *lower* than the one a device already holds. So a
+phone that has run one channel and is then given the other's build needs that
+channel's document to be higher than whatever it kept. The app-pusher work
+therefore went out as 92 on dev, 93 on main, 94/95 on dev and 96/97 on main
+rather than reusing a number. **`main` is currently ahead, which is the unusual
+direction: the next dev policy must be 98 or higher.**
+
+**The alpha's herald is pinned to v0.2.19 by name rather than through
+`/releases/latest/download/`, as of policy 96.** GitHub resolves that path at
+request time to whichever release wears the Latest flag, so a drawbridge-only
+release taking that flag would have redirected herald's download to a release
+with no herald in it, and every provisioned phone would have fetched a 404 and
+quietly stopped updating the browser. The next release that actually *moves*
+herald has to update those six URLs as well as their six checksums: the same
+work as before, one field wider.
+
+**`dist/release/` on the build machine holds the dev channel's herald binaries,
+not the alpha's.** `shasum -c dist/release/SHA256SUMS` fails on `main` because
+of it, and `stage-release.sh` correctly reports six STALE files. Nothing
+published is wrong — the committed manifest and both policies carry the
+*published* hashes — but the six APKs have to be fetched back from v0.2.19
+before anything provisions a phone from this tree with `tools/provision-adb.sh`,
+which pushes herald straight out of that directory. The browser installer is
+unaffected: it only pushes the dpc, and drawbridge fetches herald itself.
 
 **Both apps work end to end on real hardware.** A phone is provisioned over a
 cable, filters DNS for every app, removes what the policy disallows, installs
