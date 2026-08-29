@@ -20,13 +20,11 @@
     <string name="menu_bookmarks">Bookmarks</string>
     <string name="menu_history">History</string>
     <string name="menu_passwords">Saved passwords</string>
-    <!-- "Ad blocker", not "content blocker": this opens uBlock Origin, which is
-         the only part of the filtering anyone here can change. The blocklist —
-         adult, gambling, social, games — is policy and is not configurable on
-         the device, and a menu entry that sounded like it covered that would be
-         promising something it cannot do. -->
-    <string name="menu_ad_blocker_settings">Ad blocker settings</string>
     <string name="menu_settings">Settings</string>
+    <!-- Plural in herald, singular in mono, which overrides this string rather
+         than branching in code: mono has exactly one tab and saying "tabs"
+         would name something it does not have. -->
+    <string name="menu_quit">Close tabs and quit</string>
 
     <string name="tabs_tray_title">Tabs</string>
     <string name="tabs_tray_new_tab">New tab</string>
@@ -94,6 +92,13 @@
     <string name="settings_filter_never_checked">never</string>
     <string name="settings_check_for_updates">Check for updates</string>
     <string name="settings_check_for_updates_summary">Checked automatically once a day. Tap to check now.</string>
+    <!-- "Ad blocker", not "content blocker": this opens uBlock Origin, which is
+         the only part of the filtering anyone here can change. The blocklist —
+         adult, gambling, social, games — is policy and is not configurable on
+         the device, and an entry that sounded like it covered that would be
+         promising something it cannot do. -->
+    <string name="settings_ad_blocker">Ad blocker</string>
+    <string name="settings_ad_blocker_summary">uBlock Origin\'s own filters, per-site switches and element picker</string>
     <string name="settings_filter_updated">Filter updated (policy version %1$d)</string>
     <string name="settings_filter_update_failed">Could not reach the policy server</string>
     <string name="settings_category_privacy">Privacy</string>

@@ -64,6 +64,16 @@ class ToolbarIntegration(
     private val sessionUseCases: SessionUseCases,
     private val tabsUseCases: TabsUseCases,
     sessionId: String? = null,
+    /**
+     * Closes every tab and leaves, for the last entry in the menu.
+     *
+     * Passed in rather than done here for the same reason [EditSafeToolbar]
+     * takes its keyboard dismissal: the leaving half needs an Activity, which
+     * this class does not have and should not acquire by casting its Context.
+     * It is one lambda rather than two halves because the order matters — the
+     * tabs have to go before the task does, or the next launch restores them.
+     */
+    private val quit: () -> Unit = {},
 ) : LifecycleAwareFeature, UserInteractionHandler {
 
     private val scope = MainScope()
@@ -210,11 +220,21 @@ class ToolbarIntegration(
     }
 
     private fun menuItems(session: TabSessionState?): List<MenuCandidate> {
+        // The navigation row is a strip of icons rather than an entry, so "New
+        // tab" directly under it is the top of the menu proper — where Chrome
+        // and Firefox both put it. Mono has neither: one page at a time is the
+        // whole point of it.
+        val head = listOfNotNull(
+            session?.let { navigationRow(it) },
+            TextMenuCandidate(context.getString(R.string.menu_new_tab)) {
+                tabsUseCases.addTab.invoke("about:blank", selectTab = true)
+            }.takeIf { Edition.hasTabs },
+        )
+
         val sessionItems = if (session == null) {
             emptyList()
         } else {
             listOfNotNull(
-                navigationRow(session),
                 // "Edit" rather than a second "Add" once the page is already
                 // bookmarked: adding twice made a duplicate with no way to see
                 // it had happened.
@@ -261,10 +281,7 @@ class ToolbarIntegration(
             )
         }
 
-        return sessionItems + listOfNotNull(
-            TextMenuCandidate(context.getString(R.string.menu_new_tab)) {
-                tabsUseCases.addTab.invoke("about:blank", selectTab = true)
-            }.takeIf { Edition.hasTabs },
+        return head + sessionItems + listOf(
             TextMenuCandidate(context.getString(R.string.menu_bookmarks)) {
                 context.startActivityNewTask(BookmarksActivity::class.java)
             },
@@ -274,17 +291,15 @@ class ToolbarIntegration(
             TextMenuCandidate(context.getString(R.string.menu_passwords)) {
                 context.startActivityNewTask(LoginsActivity::class.java)
             },
-            // uBlock Origin's own settings, opened as a tab because that is
-            // what it is: a moz-extension: page. Only offered once the
-            // extension has finished installing and has a base URL.
-            context.components.contentBlocker.dashboardUrl()?.let { url ->
-                TextMenuCandidate(context.getString(R.string.menu_ad_blocker_settings)) {
-                    tabsUseCases.addTab.invoke(url, selectTab = true)
-                }
-            },
+            // The ad blocker's own dashboard used to sit here. It is a settings
+            // screen, so it lives in settings; see SettingsFragment.
             TextMenuCandidate(context.getString(R.string.menu_settings)) {
                 context.startActivityNewTask(SettingsActivity::class.java)
             },
+            // Last, and the only way out that actually ends the process's work:
+            // the back press deliberately does moveTaskToBack instead, to keep
+            // the engine warm.
+            TextMenuCandidate(context.getString(R.string.menu_quit)) { quit() },
         )
     }
 
