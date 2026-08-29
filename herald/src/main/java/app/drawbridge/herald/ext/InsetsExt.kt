@@ -1,12 +1,14 @@
 package app.drawbridge.herald.ext
 
 import android.graphics.Rect
+import android.os.Build
 import android.view.View
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 
 /**
- * Insets this view by the system bars, on top of whatever padding it already has.
+ * Insets this view by the system bars and by the on-screen keyboard, on top of
+ * whatever padding it already has.
  *
  * From API 35 the platform lays every app out edge to edge: the status and
  * navigation bars are drawn over the window, `android:statusBarColor` is ignored,
@@ -18,6 +20,11 @@ import androidx.core.view.WindowInsetsCompat
  * background. The insets go to zero while the bars are hidden, which is what makes
  * fullscreen video need no special case — see [insetTypes] for the one type that
  * does not.
+ *
+ * The keyboard rides on [bottom], because that is the edge it comes up from and
+ * because a caller that does not want its bottom edge moved does not want it
+ * moved by an input method either. See [keyboardInsetType] for why the keyboard
+ * is in this list at all.
  */
 fun View.applySystemBarInsets(
     top: Boolean = false,
@@ -66,12 +73,48 @@ fun View.applySystemBarInsets(
  *
  * Never caught before a phone ran it: the emulator this was written against has
  * no cutout, so the inset it hinges on was zero every time it was checked.
+ *
+ * The keyboard is asked for unconditionally. It reports nothing while it is
+ * down, and a window that has hidden its bars for a video is not one an input
+ * method is about to open over — but if it does, the padding is still the right
+ * answer.
  */
 private fun insetTypes(insets: WindowInsetsCompat): Int {
-    val bars = WindowInsetsCompat.Type.systemBars()
+    val bars = WindowInsetsCompat.Type.systemBars() or keyboardInsetType(Build.VERSION.SDK_INT)
     return if (insets.isVisible(WindowInsetsCompat.Type.statusBars())) {
         bars or WindowInsetsCompat.Type.displayCutout()
     } else {
         bars
     }
 }
+
+/**
+ * The keyboard, on the versions where asking for it is not asking twice.
+ *
+ * **`adjustResize` in the manifest stopped being enough at API 35.** It resizes
+ * the window only while the decor view is fitting the system windows, and from
+ * API 35 an app is laid out edge to edge with no way back — so the input method
+ * arrives as an inset nobody applies, and it is simply drawn over the bottom of
+ * the window. A form field near the foot of a page ends up behind the keys with
+ * the page underneath none the wiser: no reflow, no scroll, because as far as
+ * Gecko is concerned the viewport never changed. Padding the browser's root by
+ * the keyboard's height shortens the engine view instead, and Gecko scrolls the
+ * focused field back into what is left, which is the shift up that every other
+ * browser does.
+ *
+ * `systemBars() or ime()` is deliberate rather than an addition: a combined mask
+ * returns the larger of the two per edge, and the keyboard is drawn over the
+ * navigation bar rather than above it. Adding them would leave a navigation
+ * bar's worth of empty chrome between the page and the keys.
+ *
+ * **Below API 30 the keyboard's inset is a guess, and it is a guess at a number
+ * the platform has already applied.** `WindowInsetsCompat` cannot ask for
+ * `Type.ime()` there — no such thing existed until Android 11 — so it infers one
+ * by reflecting into `ViewRootImpl` for the visible insets and taking whatever
+ * exceeds the stable inset. Those versions do not go edge to edge, `adjustResize`
+ * has already inset the content by exactly that much, and padding by it again
+ * would push the page up twice. So this asks for nothing on 28 and 29, where the
+ * platform still does the work itself.
+ */
+internal fun keyboardInsetType(sdkInt: Int): Int =
+    if (sdkInt >= Build.VERSION_CODES.R) WindowInsetsCompat.Type.ime() else 0
