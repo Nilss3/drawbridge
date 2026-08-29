@@ -378,6 +378,56 @@ Two consequences worth knowing:
   same state without a device: insets carrying a cutout with the bars hidden,
   asserting the padding is nothing at all.
 
+### The keyboard is the third inset, and `adjustResize` stopped applying it
+
+`android:windowSoftInputMode="adjustResize"` has been on `BrowserActivity` since
+the first commit, and until API 35 it did the whole job: the platform shortened
+the window when an input method came up, the engine view came up short with it,
+and Gecko scrolled the focused field into what was left. That is the shift up
+every other browser does.
+
+**It only resizes while the decor view is fitting the system windows**, which is
+exactly what API 35 took away. The keyboard now arrives as an inset like the
+bars, nothing applies it, and the keys are simply drawn over the bottom of the
+window. A form field near the foot of a page ends up behind them with the page
+underneath none the wiser — no reflow and no scroll, because as far as Gecko is
+concerned the viewport never changed. Reported on 2026-08-29, against a form
+near the bottom of a page. Find-in-page has the same shape of it and always did:
+its bar sits on the bottom edge and opens a keyboard by definition.
+
+So `applySystemBarInsets` asks for `ime()` alongside the bars. Two details in
+that one line:
+
+- **`systemBars() or ime()`, never `systemBars() + ime()`.** A combined mask
+  returns the larger of the two per edge, and the keyboard is drawn *over* the
+  navigation bar rather than above it. Adding them would leave a bar's worth of
+  empty chrome between the page and the keys. Android Components computes the
+  same number from the other direction — `ImeInsetsSynchronizer` gives its
+  target a bottom margin of `keyboardHeight - navbarHeight` on top of a view
+  already inset for the bar — which is the same total, arrived at by adding a
+  margin rather than by widening a mask. herald widens the mask, because it
+  already has one helper every screen goes through and none of the other screens
+  want a second mechanism.
+- **Nothing is asked for below API 30.** `WindowInsetsCompat` cannot ask the
+  platform for `Type.ime()` there — the type did not exist until Android 11 — so
+  it infers one by reflecting into `ViewRootImpl` for the visible insets and
+  taking whatever exceeds the stable inset. Those versions do not go edge to
+  edge, `adjustResize` has already inset the content by exactly that much, and
+  padding by it again would move the page up twice. herald's minimum is API 28,
+  so this is a live case rather than a hypothetical one.
+
+The manifest keeps `adjustResize`. It is still what shortens the window on
+everything below 35, and the inset reports zero there for the same reason the
+bars do.
+
+**Every screen got it, not just the browser**, because they all reach the
+keyboard through the one helper: the bookmarks, history and passwords lists
+shorten for a search field's keyboard, and settings for an
+`EditTextPreference`. The lock screen in **drawbridge** does not.
+`applyScreenInsets` is a separate helper and has not been given the same
+treatment, so the key field on `activity_lock.xml` can still end up behind the
+keys on API 35.
+
 ## herald's chrome is four colours, and some of them belong to Mozilla
 
 herald follows the phone's day/night setting. Everything it draws over comes from
