@@ -1,7 +1,7 @@
 {
-  "version": 97,
-  "issued_at": "2026-08-26T11:12:37Z",
-  "comment": "Pins drawbridge 0.2.20 build 45, which carries policy 96 bundled. Published after the release by the rule that makes the circularity survivable: an APK cannot name its own hash, so the build ships one policy behind and the document naming it comes afterwards. Blocklist and herald pins unchanged from 96.",
+  "version": 101,
+  "issued_at": "2026-08-30T09:20:00Z",
+  "comment": "Alpha. Pins herald 0.1.17, which is the dev channel's 0.1.17 built on this branch: the page now shifts up when the on-screen keyboard would cover a form field \u2014 API 35 took edge-to-edge layout away from adjustResize and the keys were simply drawn over the bottom of the page \u2014 plus \"New tab\" at the top of the browser menu, the ad blocker's dashboard moved into settings, and \"Close tabs and quit\" as the last entry. required_apps moves from v0.2.19 to this channel's own v0.2.20.1 assets at version_code 17; app_update is untouched and still names drawbridge build 45 at v0.2.20, which has not changed. 101 rather than 98: the two channels share one counter and dev reached 100, so a phone that has run dev and is then given an alpha build has to find this document higher than the one it kept. 369 blocked packages.",
   "dns": {
     "upstreams": [
       "94.140.14.15",
@@ -824,44 +824,44 @@
   "required_apps": [
     {
       "package_name": "app.drawbridge.herald",
-      "version_code": 15,
-      "url": "https://github.com/Nilss3/drawbridge/releases/download/v0.2.19/herald-arm64-v8a-release.apk",
-      "sha256": "4517218fa809a10529d0ff1f488c487ac80bea29f527bde76847580dedc3e23a",
+      "version_code": 17,
+      "url": "https://github.com/Nilss3/drawbridge/releases/download/v0.2.20.1/herald-arm64-v8a-release.apk",
+      "sha256": "8d8ebad410f01ab6688db3da5e38d18abd58998d8c625f7e869b1f78a12bea0a",
       "abi": "arm64-v8a"
     },
     {
       "package_name": "app.drawbridge.herald",
-      "version_code": 15,
-      "url": "https://github.com/Nilss3/drawbridge/releases/download/v0.2.19/herald-armeabi-v7a-release.apk",
-      "sha256": "1bd4192a819c028e8baeb5fbaa2f9b123005eec4638e3cb8bc732e73d23180e7",
+      "version_code": 17,
+      "url": "https://github.com/Nilss3/drawbridge/releases/download/v0.2.20.1/herald-armeabi-v7a-release.apk",
+      "sha256": "278a5851e76641cb343bffc0a8d3fe2a84285044ad3b0d813939dae60e9493cf",
       "abi": "armeabi-v7a"
     },
     {
       "package_name": "app.drawbridge.herald",
-      "version_code": 15,
-      "url": "https://github.com/Nilss3/drawbridge/releases/download/v0.2.19/herald-x86_64-release.apk",
-      "sha256": "593a092c11f3c024c5120bc2fb2b84084b845f5023eac43bf37f8d9e1f04bf2c",
+      "version_code": 17,
+      "url": "https://github.com/Nilss3/drawbridge/releases/download/v0.2.20.1/herald-x86_64-release.apk",
+      "sha256": "d55e39a7748b34d496cfae568c074afae80cc8a1be5e44dfb1f3ac9de1d216a7",
       "abi": "x86_64"
     },
     {
       "package_name": "app.drawbridge.heraldmono",
-      "version_code": 15,
-      "url": "https://github.com/Nilss3/drawbridge/releases/download/v0.2.19/herald-mono-arm64-v8a-release.apk",
-      "sha256": "0ae8af053cd2c2a4f027d680b2e35ee5a03ee00b1f635aadedc24f3a5468f963",
+      "version_code": 17,
+      "url": "https://github.com/Nilss3/drawbridge/releases/download/v0.2.20.1/herald-mono-arm64-v8a-release.apk",
+      "sha256": "f54d99a97cacd89a8e1af690a9299691d93c6b4085889670b38dec96f44c3c6b",
       "abi": "arm64-v8a"
     },
     {
       "package_name": "app.drawbridge.heraldmono",
-      "version_code": 15,
-      "url": "https://github.com/Nilss3/drawbridge/releases/download/v0.2.19/herald-mono-armeabi-v7a-release.apk",
-      "sha256": "97205d8d83df23fe0784fbd0e4adef83ddce443c491d742342d41550631d784a",
+      "version_code": 17,
+      "url": "https://github.com/Nilss3/drawbridge/releases/download/v0.2.20.1/herald-mono-armeabi-v7a-release.apk",
+      "sha256": "cff7c2ddce1f7f3d483b172ddd3f10092ee1facbf50f9ed2dc77293b0b3efda8",
       "abi": "armeabi-v7a"
     },
     {
       "package_name": "app.drawbridge.heraldmono",
-      "version_code": 15,
-      "url": "https://github.com/Nilss3/drawbridge/releases/download/v0.2.19/herald-mono-x86_64-release.apk",
-      "sha256": "ac227323d711979c5e1290712771ef92bb571cce2f385f34b800279446320890",
+      "version_code": 17,
+      "url": "https://github.com/Nilss3/drawbridge/releases/download/v0.2.20.1/herald-mono-x86_64-release.apk",
+      "sha256": "dcd81b4e42db1bf0319db15f89b872b25626b0f929fe528b9f1367bce52e8e31",
       "abi": "x86_64"
     }
   ],
