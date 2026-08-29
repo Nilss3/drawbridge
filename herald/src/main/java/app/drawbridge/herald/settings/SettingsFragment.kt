@@ -1,5 +1,6 @@
 package app.drawbridge.herald.settings
 
+import android.content.Intent
 import android.os.Bundle
 import android.text.format.DateUtils
 import android.view.View
@@ -11,6 +12,7 @@ import androidx.preference.PreferenceCategory
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.PreferenceScreen
 import androidx.preference.SwitchPreferenceCompat
+import app.drawbridge.herald.BrowserActivity
 import app.drawbridge.herald.HeraldPolicy
 import app.drawbridge.herald.R
 import app.drawbridge.herald.ext.requireComponents
@@ -74,6 +76,27 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 setSummary(R.string.settings_check_for_updates_summary)
                 setOnPreferenceClickListener {
                     refreshPolicy()
+                    true
+                }
+            },
+        )
+
+        // The two filtering layers read together here: the policy's blocklist
+        // above, which nobody on the phone can change, and uBlock Origin below,
+        // which is the part that is configurable. It was in the browser menu
+        // until 0.1.16 — a settings screen reached from somewhere other than
+        // settings.
+        screen.addPreference(
+            Preference(context).apply {
+                setTitle(R.string.settings_ad_blocker)
+                setSummary(R.string.settings_ad_blocker_summary)
+                // The dashboard is a moz-extension: page and has no URL until
+                // the extension has finished installing. Disabled rather than
+                // absent, so the row does not appear and disappear between one
+                // visit to this screen and the next.
+                isEnabled = requireComponents.contentBlocker.dashboardUrl() != null
+                setOnPreferenceClickListener {
+                    openAdBlockerDashboard()
                     true
                 }
             },
@@ -181,6 +204,19 @@ class SettingsFragment : PreferenceFragmentCompat() {
             Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
             updateFilterStatus()
         }
+    }
+
+    /**
+     * Opens uBlock Origin's dashboard in a tab, because that is what it is: a
+     * page the extension serves, not a screen this app can host. Settings
+     * closes behind it, so back from the dashboard is the browser rather than
+     * this list.
+     */
+    private fun openAdBlockerDashboard() {
+        val url = requireComponents.contentBlocker.dashboardUrl() ?: return
+        requireComponents.useCases.tabsUseCases.addTab.invoke(url, selectTab = true)
+        startActivity(Intent(requireContext(), BrowserActivity::class.java))
+        requireActivity().finish()
     }
 
     private fun clearBrowsingData() {

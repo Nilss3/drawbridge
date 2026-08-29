@@ -149,6 +149,7 @@ class BrowserFragment :
                 sessionUseCases = components.useCases.sessionUseCases,
                 tabsUseCases = components.useCases.tabsUseCases,
                 sessionId = sessionId,
+                quit = ::closeTabsAndQuit,
             ),
             owner = this,
             view = view,
@@ -398,6 +399,23 @@ class BrowserFragment :
 
     private fun showTabs() {
         (activity as? BrowserActivity)?.showFragment(TabsTrayFragment())
+    }
+
+    /**
+     * The menu's way out, and the opposite of the back press.
+     *
+     * Back deliberately calls `moveTaskToBack` so the engine stays warm — see
+     * [BrowserActivity]. This is for the person who wants the browser actually
+     * put away: the tabs go, and the task goes with them rather than sitting in
+     * the recents list showing the last page read.
+     *
+     * The tabs are removed *before* the task, because the session is snapshotted
+     * on the way out; finishing first would leave them to be restored on the
+     * next launch, which is the one thing this entry promises not to do.
+     */
+    private fun closeTabsAndQuit() {
+        requireComponents.useCases.tabsUseCases.removeAllTabs()
+        requireActivity().finishAndRemoveTask()
     }
 
     private fun fullScreenChanged(enabled: Boolean) {

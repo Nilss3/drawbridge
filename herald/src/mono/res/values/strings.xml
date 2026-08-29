@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">herald mono</string>
+
+    <!-- One tab, so one tab to close. See the note beside the plural in
+         src/main; this is the same reason app_name is overridden here rather
+         than switched on Edition. -->
+    <string name="menu_quit">Close tab and quit</string>
 </resources>
