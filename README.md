@@ -227,6 +227,7 @@ Then:
 - [docs/blocklist-notes.md](docs/blocklist-notes.md) — what is on the list, and what could not be blocked as asked
 - [docs/app-ratings.md](docs/app-ratings.md) — **spec, not built**: admitting apps by the Play Store's own rating and category, so the curated list stops being the plan
 - [docs/removal.md](docs/removal.md) — taking it off again
+- [docs/repo-layout.md](docs/repo-layout.md) — the long form of the layout below: every folder, and where each list lives
 - [docs/design-decisions.md](docs/design-decisions.md) — why it works the way it does
 - [docs/handoff.md](docs/handoff.md) — current state, what is untested, what to do next
 
@@ -246,6 +247,10 @@ tools/        policytool.py (sign policy),
               build-site.py (generates site/ from site-src/)
 keys/         signing keys — never committed
 ```
+
+[docs/repo-layout.md](docs/repo-layout.md) is the same map at the level of
+individual files, and lists every blocklist and allowlist in the project
+with the layer that reads it.
 
 Nothing under `art/` is read at build time. `tools/make-artwork.sh` derives the
 adaptive-icon layers, herald's block-page scene, drawbridge's hero image and the
