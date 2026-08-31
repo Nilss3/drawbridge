@@ -1,7 +1,7 @@
 {
-  "version": 101,
-  "issued_at": "2026-08-30T09:20:00Z",
-  "comment": "Alpha. Pins herald 0.1.17, which is the dev channel's 0.1.17 built on this branch: the page now shifts up when the on-screen keyboard would cover a form field \u2014 API 35 took edge-to-edge layout away from adjustResize and the keys were simply drawn over the bottom of the page \u2014 plus \"New tab\" at the top of the browser menu, the ad blocker's dashboard moved into settings, and \"Close tabs and quit\" as the last entry. required_apps moves from v0.2.19 to this channel's own v0.2.20.1 assets at version_code 17; app_update is untouched and still names drawbridge build 45 at v0.2.20, which has not changed. 101 rather than 98: the two channels share one counter and dev reached 100, so a phone that has run dev and is then given an alpha build has to find this document higher than the one it kept. 369 blocked packages.",
+  "version": 103,
+  "issued_at": "2026-08-31T12:40:00Z",
+  "comment": "Alpha. Pins drawbridge 0.2.21 build 46, which stops the tunnel telling every app the connection is metered: VpnService defaults setMetered to true and nothing said otherwise, so apps careful with a data allowance \u2014 podcast clients, photo sync, backup, updaters \u2014 behaved as though the phone were on mobile data even on Wi-Fi. The tunnel now inherits meteredness from the network under it. app_update moves to build 46 and, with it, from a GitHub release asset to this channel's own Pages site, which is where every dpc-only release serves its APK. required_apps is untouched and still names herald 0.1.17 at v0.2.20.1. 103 rather than 102, because the counter is shared and dev reached 102. 369 blocked packages.",
   "dns": {
     "upstreams": [
       "94.140.14.15",
@@ -817,9 +817,9 @@
   },
   "app_update": {
     "package_name": "app.drawbridge.dpc",
-    "version_code": 45,
-    "url": "https://github.com/Nilss3/drawbridge/releases/download/v0.2.20/dpc-release.apk",
-    "sha256": "e6e6b06fd3d11e966a48c24d4607b5979e0248b4bf9148fe79c419e92f86774b"
+    "version_code": 46,
+    "url": "https://drawbridge-project.pages.dev/assets/dpc-d80a13d71930c77f.apk",
+    "sha256": "d80a13d71930c77f75bf46256dca6899d9a005eed33f28fc1a69df33961a570d"
   },
   "required_apps": [
     {

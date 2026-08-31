@@ -21,9 +21,9 @@ which is kept whole on purpose.
 
 | | `main` (the alpha) | `dev` |
 |---|---|---|
-| drawbridge | **0.2.20, build 45** | **0.2.20, build 45** |
+| drawbridge | **0.2.21, build 46** | **0.2.21, build 46** |
 | herald | **0.1.17** | **0.1.17** |
-| policy | **101** | **100** |
+| policy | **103** | **102** |
 | install page | <https://drawbridge-project.pages.dev/install/> | <https://dev.drawbridge-project.pages.dev/install/> |
 | phone | the owner's Nothing Phone (A059) | the Moto G15 |
 
