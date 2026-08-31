@@ -89,6 +89,45 @@ inventory every way around it.
 through the app and its own domains. Blocking Snapchat covers it. There is no way
 to keep Snapchat while removing My AI from outside the app.
 
+### WhatsApp Channels
+
+**Cannot be blocked separately, and the way around that is not worth its price.**
+Channels is a surface inside WhatsApp, like Shorts inside YouTube. Measured on a
+phone on 2026-08-31: the tab, the channel list and the *Find channels* directory
+all ride connections that are already open for ordinary chats —
+`whatsapp-chatd-edge-*.facebook.com` for the content and
+`whatsapp-cdn-*.fbcdn.net` for the media, the same CDN chat images come from.
+Opening the tab, scrolling the list and loading the directory added **no new
+host at all**. There is no channel domain to block; anything that stops Channels
+stops conversations, which is what the `whatsapp` option already does wholesale.
+
+**The overlay route works and was declined.** Balance Phone blocks the tab with
+an accessibility service that recognises the screen and draws over it. Three
+things stand against copying it:
+
+- **It cannot be keyed reliably.** The tab label is translated — `Updates` in
+  English and something else in every other language — so text matching is a
+  per-language table. Resource ids survive translation but churn across WhatsApp
+  releases, and there is no separate activity to watch for: Updates is a fragment
+  inside `com.whatsapp/.Main`.
+- **It costs the wrong permission.** An accessibility service can read every
+  screen in every app. That is a large widening of what the phone trusts
+  drawbridge with, to suppress one tab.
+- **A Device Owner cannot even turn it on by itself.** Verified against the API
+  36 framework: `setSecureSetting` allows two settings and neither is this one,
+  `setPermittedAccessibilityServices` only restricts what the *user* may enable,
+  and `setPermissionGrantState` is runtime permissions only. It takes the
+  provisioning cable — either writing `enabled_accessibility_services` directly,
+  or granting drawbridge `WRITE_SECURE_SETTINGS`, which carries the `development`
+  protection flag so `pm grant` accepts it. Both work. Only the second survives
+  contact, because there is **no `DISALLOW_CONFIG_ACCESSIBILITY`**: nothing stops
+  the user switching the service off in Settings again.
+
+**And it is moot, which is what settled it.** `web.whatsapp.com` carries the same
+Updates surface. That host *is* blockable by DNS, and without touching the app,
+since the app never contacts it — exactly backwards from useful. Closing the
+cheap half while the app's own tab stays open buys nothing.
+
 ### Grok
 
 **Blocked as a standalone app and site; inside X it was already covered.** Grok
