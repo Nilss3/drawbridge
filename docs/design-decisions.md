@@ -252,6 +252,48 @@ midnight crossings, unnamed days on either side, and the week wrapping — three
 chances to be subtly wrong on exactly one day of the week. A week of minutes is
 ~10k comparisons of a pure function, at a once-per-boundary rate.
 
+## The tunnel does not claim to be metered, it inherits
+
+`VpnService.Builder` defaults `setMetered` to **true**, and nothing here said
+otherwise until 2026-08-30. So from the moment the filter came up, every app
+behind it saw a metered connection — on Wi-Fi, on ethernet, on anything.
+
+Apps that are careful with somebody's data allowance then behave as though the
+phone were on a mobile plan. AntennaPod says *"Your VPN makes it seem like your
+connection is metered"* and asks before each download; the same logic sits in
+podcast clients, photo sync, backup tools and app updaters. That is a quiet tax
+on every provisioned phone, and it is the opposite of what this filter is for:
+it moves no data, it only answers DNS.
+
+`setMetered(false)` does not mean *unmetered*. It means **inherit from the
+underlying network**, which is the honest answer for a tunnel that carries
+nothing but lookups. Measured on the API 36 emulator, and the point is that it
+moves both ways:
+
+| Underlying | Tunnel |
+|---|---|
+| Wi-Fi (`NOT_METERED`) | `NOT_METERED` |
+| Cellular (metered) | metered |
+
+It tracks a Wi-Fi toggle live, without re-establishing the tunnel. So a phone on
+mobile data still tells its apps to be careful, because it still should — this
+stops the filter lying, it does not make it lie the other way.
+
+**API 29, and the minimum here is 28.** On 28 the tunnel stays metered: the
+call does not exist, and neither does the platform's notion of a VPN inheriting
+meteredness.
+
+**Worth knowing for anything that gates on metered-ness.** `UpdateWorker` will
+not pull a ~235 MiB browser over a metered link, and asks
+`ConnectivityManager` directly rather than through a WorkManager constraint.
+drawbridge excludes its own package from the tunnel, so that question has always
+been answered by the *underlying* network and was never affected by this bug —
+but the exclusion is wrapped in a `runCatching` that logs and continues, and on a
+device where it failed, drawbridge would have been reading its own tunnel's
+answer and would never have installed herald on Wi-Fi. That coupling is gone
+now: whatever the exclusion does, the tunnel reports what the network under it
+reports.
+
 ## The encrypted upstream uses DoT, not DoH
 
 The upstream resolver is reached over DNS-over-TLS (`tls://all.dns.mullvad.net`),

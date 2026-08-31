@@ -7,6 +7,7 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.net.VpnService
+import android.os.Build
 import android.os.ParcelFileDescriptor
 import android.util.Log
 import androidx.core.app.NotificationCompat
@@ -271,6 +272,29 @@ class DnsFilterService : VpnService() {
                     builder.addRoute(parsed, if (parsed is Inet6Address) 128 else 32)
                 }.onFailure { Log.w(TAG, "Could not blackhole $address", it) }
             }
+        }
+
+        // **A VPN is metered until it says otherwise, and this one has no
+        // business saying so.** `VpnService.Builder` defaults `setMetered` to
+        // true, so from the moment the filter comes up every app behind it sees
+        // a metered connection — on Wi-Fi, on ethernet, on anything. Apps that
+        // are careful with somebody's data allowance then behave as if the phone
+        // were on a mobile plan: AntennaPod says "Your VPN makes it seem like
+        // your connection is metered" and asks before each download, and the
+        // same logic sits in podcast, backup, photo-sync and update clients
+        // everywhere. Reported on 2026-08-30 by the owner, on Wi-Fi.
+        //
+        // False rather than a computed value: it means *inherit from the
+        // underlying network*, which is the honest answer for a tunnel that
+        // carries nothing but DNS. On mobile data the phone still reports
+        // metered, because it still is — this stops the filter lying, it does
+        // not make it lie the other way.
+        //
+        // API 29, and the minimum here is 28. On 28 the tunnel stays metered and
+        // there is no call to make: `setMetered` does not exist, and neither
+        // does the platform's own notion of a VPN inheriting meteredness.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            builder.setMetered(false)
         }
 
         runCatching { builder.addDisallowedApplication(packageName) }
