@@ -21,9 +21,9 @@ which is kept whole on purpose.
 
 | | `main` (the alpha) | `dev` |
 |---|---|---|
-| drawbridge | **0.2.20, build 45** | **0.2.20, build 45** |
-| herald | **0.1.15** | **0.1.17** |
-| policy | **97** | **100** |
+| drawbridge | **0.2.20, build 45** | **0.2.21, build 46** |
+| herald | **0.1.17** | **0.1.17** |
+| policy | **101** | **102** |
 | install page | <https://drawbridge-project.pages.dev/install/> | <https://dev.drawbridge-project.pages.dev/install/> |
 | phone | the owner's Nothing Phone (A059) | the Moto G15 |
 
@@ -35,12 +35,13 @@ channel's document to be higher than whatever it kept. The app-pusher work
 therefore went out as 92 on dev, 93 on main, 94/95 on dev and 96/97 on main
 rather than reusing a number. Policy 98 on dev was a version bump and nothing
 else: it existed only to put this channel back above the alpha, so a phone that
-had held main's 97 would accept a dev document again. Policies 99 and 100
-carry the first real changes since: herald 0.1.16 at `v0.2.8-dev.7`, then
-0.1.17 at `v0.2.8-dev.8`.
+had held main's 97 would accept a dev document again. It ran on from there:
+99 and 100 on dev for herald 0.1.16 and 0.1.17, 101 on main for the same
+browser built on that branch, and 102 back on dev for drawbridge build 46.
 
-**The alpha's herald is pinned to v0.2.19 by name rather than through
-`/releases/latest/download/`, as of policy 96.** GitHub resolves that path at
+**The alpha's herald is pinned by name rather than through
+`/releases/latest/download/`, as of policy 96 — at `v0.2.20.1` since policy
+101, and at `v0.2.19` before that.** GitHub resolves that path at
 request time to whichever release wears the Latest flag, so a drawbridge-only
 release taking that flag would have redirected herald's download to a release
 with no herald in it, and every provisioned phone would have fetched a 404 and
@@ -67,7 +68,7 @@ fetches herald itself from the URLs the policy pins.
 After switching branches, re-stage:
 
 ```bash
-gh release download v0.2.19      --pattern 'herald-*.apk' --dir dist/release --clobber  # main
+gh release download v0.2.20.1    --pattern 'herald-*.apk' --dir dist/release --clobber  # main
 gh release download v0.2.8-dev.8 --pattern 'herald-*.apk' --dir dist/release --clobber  # dev
 shasum -a 256 -c dist/release/SHA256SUMS
 ```

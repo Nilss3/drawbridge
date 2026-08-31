@@ -1,7 +1,7 @@
 {
-  "version": 100,
-  "issued_at": "2026-08-29T16:05:00Z",
-  "comment": "DEV CHANNEL ONLY. Pins herald 0.1.17: \"New tab\" moves to the top of the browser menu, the ad blocker's dashboard moves out of that menu and into settings under Content filter, and \"Close tabs and quit\" \u2014 singular in mono \u2014 becomes the last entry, for putting the browser away rather than backgrounding it. required_apps moves to this channel's own v0.2.8-dev.8 assets at version_code 17; app_update is untouched and still names drawbridge build 45, which has not changed. 369 blocked packages, the same set the alpha enforces.",
+  "version": 102,
+  "issued_at": "2026-08-31T10:15:00Z",
+  "comment": "DEV CHANNEL ONLY. Pins drawbridge 0.2.21 build 46, which stops the tunnel telling every app the connection is metered: VpnService defaults setMetered to true and nothing said otherwise, so apps that are careful with a data allowance \u2014 AntennaPod, photo sync, backup, updaters \u2014 behaved as though the phone were on mobile data even on Wi-Fi. The tunnel now inherits meteredness from the network under it. app_update moves to build 46 at this channel's Pages URL; required_apps is untouched and still names herald 0.1.17 at v0.2.8-dev.8. 102 rather than 101, because the counter is shared and the alpha reached 101. 369 blocked packages.",
   "dns": {
     "upstreams": [
       "94.140.14.15",
@@ -817,9 +817,9 @@
   },
   "app_update": {
     "package_name": "app.drawbridge.dpc",
-    "version_code": 45,
-    "url": "https://dev.drawbridge-project.pages.dev/assets/dpc-f8c619a201397602.apk",
-    "sha256": "f8c619a201397602313fe36080b0ffa2165770f2aa64598ac387e38ea3441c24"
+    "version_code": 46,
+    "url": "https://dev.drawbridge-project.pages.dev/assets/dpc-fc786232bc48153e.apk",
+    "sha256": "fc786232bc48153e2edf317498716775a78658ae12d3cc43cda1d1b4aee63d8e"
   },
   "required_apps": [
     {
