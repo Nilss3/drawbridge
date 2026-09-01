@@ -18,6 +18,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.widget.doAfterTextChanged
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import app.drawbridge.herald.BrowserActivity
@@ -60,6 +61,16 @@ class BookmarksActivity : AppCompatActivity() {
     private var query: String = ""
     private var searchJob: Job? = null
 
+    /**
+     * The ticked rows, or null when selection mode is off.
+     *
+     * Ordered, because "move these into a folder" should land them in the order
+     * they appear on screen rather than in whatever order a hash set iterates.
+     */
+    private var selected: LinkedHashSet<String>? = null
+
+    private lateinit var touchHelper: ItemTouchHelper
+
     private data class Crumb(val guid: String, val title: String)
 
     private val exportLauncher =
@@ -85,6 +96,9 @@ class BookmarksActivity : AppCompatActivity() {
             inflateMenu(R.menu.menu_bookmarks)
             setOnMenuItemClickListener { item ->
                 when (item.itemId) {
+                    R.id.action_select_all -> selectAll()
+                    R.id.action_move_to_folder -> moveSelectedDialog()
+                    R.id.action_delete_selected -> confirmDeleteSelected()
                     R.id.action_new_folder -> newFolderDialog()
                     R.id.action_import -> importLauncher.launch(IMPORT_MIME)
                     R.id.action_export -> exportLauncher.launch(exportFileName())
@@ -113,17 +127,23 @@ class BookmarksActivity : AppCompatActivity() {
         adapter = BookmarkListAdapter(
             onClick = ::onRowClicked,
             onOverflow = ::showRowMenu,
+            onLongClick = ::onRowLongClicked,
+            onDragHandleTouched = { holder -> touchHelper.startDrag(holder) },
         )
 
-        findViewById<RecyclerView>(R.id.entryList).apply {
+        val list = findViewById<RecyclerView>(R.id.entryList).apply {
             layoutManager = LinearLayoutManager(this@BookmarksActivity)
             adapter = this@BookmarksActivity.adapter
         }
 
+        touchHelper = ItemTouchHelper(reorderCallback()).apply { attachToRecyclerView(list) }
+
         onBackPressedDispatcher.addCallback(
             this,
             object : OnBackPressedCallback(true) {
-                override fun handleOnBackPressed() = goUp()
+                override fun handleOnBackPressed() {
+                    if (selected != null) exitSelection() else goUp()
+                }
             },
         )
 
@@ -158,6 +178,14 @@ class BookmarksActivity : AppCompatActivity() {
     }
 
     private fun onRowClicked(row: BookmarkRow) {
+        selected?.let { current ->
+            if (!current.remove(row.guid)) current.add(row.guid)
+            // The last untick leaves the mode rather than sitting in an empty
+            // selection with a Delete button that would do nothing.
+            if (current.isEmpty()) exitSelection() else applySelection()
+            return
+        }
+
         if (row.isFolder) {
             path.addLast(Crumb(row.guid, row.title))
             // Descending out of a set of search results would land in a folder
@@ -178,6 +206,174 @@ class BookmarksActivity : AppCompatActivity() {
         }
     }
 
+    // ------------------------------------------------------- selection mode
+
+    private fun onRowLongClicked(row: BookmarkRow) {
+        if (selected != null) return
+        selected = linkedSetOf(row.guid)
+        applySelection()
+    }
+
+    private fun exitSelection() {
+        selected = null
+        applySelection()
+    }
+
+    private fun selectAll() {
+        val current = selected ?: return
+        current.clear()
+        current.addAll(adapter.currentList.map { it.guid })
+        applySelection()
+    }
+
+    /**
+     * Pushes the selection into the adapter and the app bar together.
+     *
+     * The two have to move as one: a count in the title with no checkboxes
+     * under it, or checkboxes with the import menu still up, are both states
+     * somebody can act on wrongly.
+     */
+    private fun applySelection() {
+        val current = selected
+        adapter.selection = current
+        toolbar.menu.clear()
+
+        if (current == null) {
+            toolbar.inflateMenu(R.menu.menu_bookmarks)
+            toolbar.title = if (query.isEmpty()) path.last().title else getString(R.string.bookmarks_search_results)
+            toolbar.setNavigationOnClickListener { goUp() }
+        } else {
+            toolbar.inflateMenu(R.menu.menu_bookmarks_selection)
+            toolbar.title = getString(R.string.bookmarks_selected_count, current.size)
+            toolbar.setNavigationOnClickListener { exitSelection() }
+        }
+        updateArrangeable()
+    }
+
+    /**
+     * Dragging is offered only where an order exists to change.
+     *
+     * Search results are a view across the whole tree, so a position in them
+     * means nothing — and writing one would reorder some folder the user cannot
+     * see.
+     */
+    private fun updateArrangeable() {
+        adapter.arrangeable = query.isEmpty() && selected == null
+    }
+
+    private fun confirmDeleteSelected() {
+        val current = selected?.toList().orEmpty()
+        if (current.isEmpty()) return
+
+        AlertDialog.Builder(this)
+            .setTitle(R.string.bookmarks_delete_selected_title)
+            .setMessage(R.string.bookmarks_delete_selected_message)
+            .setNegativeButton(android.R.string.cancel, null)
+            .setPositiveButton(R.string.bookmarks_delete_selected) { _, _ ->
+                lifecycleScope.launch {
+                    current.forEach { repository.delete(it) }
+                    exitSelection()
+                    refresh()
+                }
+            }
+            .show()
+    }
+
+    private fun moveSelectedDialog() {
+        val current = selected?.toList().orEmpty()
+        if (current.isEmpty()) return
+
+        lifecycleScope.launch {
+            // A folder cannot be moved inside itself or into its own
+            // descendants: Places would accept it and the subtree would leave
+            // the tree, reachable from nothing.
+            val forbidden = buildSet {
+                current.forEach { guid ->
+                    add(guid)
+                    addAll(repository.descendantFolders(guid))
+                }
+            }
+            val folders = repository.folderPaths(getString(R.string.menu_bookmarks))
+                .filterNot { it.guid in forbidden }
+
+            if (folders.isEmpty()) {
+                Toast.makeText(
+                    this@BookmarksActivity,
+                    R.string.bookmarks_move_into_itself,
+                    Toast.LENGTH_SHORT,
+                ).show()
+                return@launch
+            }
+
+            AlertDialog.Builder(this@BookmarksActivity)
+                .setTitle(R.string.bookmarks_move_to_folder)
+                .setNegativeButton(android.R.string.cancel, null)
+                .setItems(folders.map { it.label }.toTypedArray()) { _, which ->
+                    lifecycleScope.launch {
+                        repository.moveInto(current, folders[which].guid)
+                        Toast.makeText(
+                            this@BookmarksActivity,
+                            getString(R.string.bookmarks_moved, current.size),
+                            Toast.LENGTH_SHORT,
+                        ).show()
+                        exitSelection()
+                        refresh()
+                    }
+                }
+                .show()
+        }
+    }
+
+    // ------------------------------------------------------------ reordering
+
+    /**
+     * Drag to reorder, committed on drop rather than on every frame.
+     *
+     * `onMove` only rearranges the list the adapter is showing, so the row
+     * follows the finger; `clearView` is where the new index is written. Writing
+     * on each `onMove` would be one database round trip per row crossed, and a
+     * half-finished drag would leave the order it happened to pass through.
+     */
+    private fun reorderCallback() = object : ItemTouchHelper.SimpleCallback(
+        ItemTouchHelper.UP or ItemTouchHelper.DOWN,
+        0,
+    ) {
+        private var moved = false
+
+        override fun isLongPressDragEnabled() = false
+
+        override fun onMove(
+            recyclerView: RecyclerView,
+            viewHolder: RecyclerView.ViewHolder,
+            target: RecyclerView.ViewHolder,
+        ): Boolean {
+            val from = viewHolder.bindingAdapterPosition
+            val to = target.bindingAdapterPosition
+            if (from == RecyclerView.NO_POSITION || to == RecyclerView.NO_POSITION) return false
+
+            val rows = adapter.currentList.toMutableList()
+            rows.add(to, rows.removeAt(from))
+            adapter.submitList(rows)
+            moved = true
+            return true
+        }
+
+        override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) = Unit
+
+        override fun clearView(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder) {
+            super.clearView(recyclerView, viewHolder)
+            if (!moved) return
+            moved = false
+
+            val parentGuid = path.last().guid
+            val order = adapter.currentList.map { it.guid }
+            lifecycleScope.launch {
+                order.forEachIndexed { index, guid -> repository.move(guid, parentGuid, index) }
+                refresh()
+            }
+        }
+    }
+
     private suspend fun refresh() {
         val current = path.last()
         val rows = if (query.isEmpty()) {
@@ -188,8 +384,12 @@ class BookmarksActivity : AppCompatActivity() {
             BookmarkRow.from(repository.search(query))
         }
 
-        toolbar.title = if (query.isEmpty()) current.title else getString(R.string.bookmarks_search_results)
+        if (selected == null) {
+            toolbar.title =
+                if (query.isEmpty()) current.title else getString(R.string.bookmarks_search_results)
+        }
         adapter.submitList(rows)
+        updateArrangeable()
         emptyView.setText(
             when {
                 query.isNotEmpty() -> R.string.bookmarks_no_results
@@ -267,16 +467,16 @@ class BookmarksActivity : AppCompatActivity() {
     }
 
     private fun newFolderDialog() {
-        val field = EditText(this).apply {
-            setHint(R.string.bookmark_field_title)
-            setSingleLine()
-            val pad = resources.getDimensionPixelSize(R.dimen.dialog_field_padding)
-            setPadding(pad, pad, pad, 0)
-        }
+        // Inflated rather than built here: a bare EditText with setPadding pads
+        // the text away from its own underline instead of insetting the field,
+        // which is why this dialog's field never lined up with the edit
+        // dialog's. See dialog_folder_name.xml.
+        val view = layoutInflater.inflate(R.layout.dialog_folder_name, null)
+        val field = view.findViewById<EditText>(R.id.folderNameField)
 
         AlertDialog.Builder(this)
             .setTitle(R.string.bookmarks_new_folder)
-            .setView(field)
+            .setView(view)
             .setNegativeButton(android.R.string.cancel, null)
             .setPositiveButton(R.string.bookmarks_create) { _, _ ->
                 val title = field.text.toString().trim()

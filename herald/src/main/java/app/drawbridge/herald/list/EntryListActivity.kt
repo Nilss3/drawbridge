@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.widget.doAfterTextChanged
@@ -65,6 +66,33 @@ abstract class EntryListActivity : AppCompatActivity() {
     /** Invoked by the "clear all" action in the app bar. */
     protected abstract suspend fun deleteAll()
 
+    /** Title of the dialog that guards "clear all". */
+    protected abstract val clearAllTitleResId: Int
+
+    /** Body of that dialog: what exactly is about to go. */
+    protected abstract val clearAllMessageResId: Int
+
+    /**
+     * Nothing here is recoverable and none of it is synced anywhere, so the
+     * overflow's one destructive entry asks first. It used to delete on the tap
+     * — an accidental brush of a menu item and every saved password on the
+     * phone was gone, with no undo and no copy. The bookmarks screen had
+     * guarded this from the beginning; these two never did.
+     */
+    private fun confirmClearAll() {
+        AlertDialog.Builder(this)
+            .setTitle(clearAllTitleResId)
+            .setMessage(clearAllMessageResId)
+            .setNegativeButton(android.R.string.cancel, null)
+            .setPositiveButton(R.string.action_clear_all) { _, _ ->
+                lifecycleScope.launch {
+                    deleteAll()
+                    refresh()
+                }
+            }
+            .show()
+    }
+
     private lateinit var adapter: EntryAdapter
     private lateinit var emptyView: TextView
 
@@ -83,10 +111,7 @@ abstract class EntryListActivity : AppCompatActivity() {
             inflateMenu(R.menu.menu_entry_list)
             setOnMenuItemClickListener { item ->
                 if (item.itemId == R.id.action_clear_all) {
-                    lifecycleScope.launch {
-                        deleteAll()
-                        refresh()
-                    }
+                    confirmClearAll()
                     true
                 } else {
                     false
