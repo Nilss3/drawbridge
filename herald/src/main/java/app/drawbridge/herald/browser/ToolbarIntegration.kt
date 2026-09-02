@@ -2,8 +2,11 @@ package app.drawbridge.herald.browser
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.drawable.Drawable
 import android.widget.Toast
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.DrawableCompat
 import app.drawbridge.herald.Edition
 import app.drawbridge.herald.R
 import app.drawbridge.herald.bookmarks.BookmarksActivity
@@ -85,6 +88,49 @@ class ToolbarIntegration(
 
     private val menuController: MenuController = BrowserMenuController()
 
+    private val iconTint by lazy { ContextCompat.getColor(context, R.color.menu_icon) }
+
+    /**
+     * Reader view, in the address bar rather than only in the menu.
+     *
+     * It appears exactly when Gecko says the page has an article in it, which
+     * is the same signal the menu entry has always used — so the button is not
+     * a new capability, it is the existing one where the eye already is. The
+     * menu entry stays: it is the only place the state is *named*, and a page
+     * action that has vanished because a page turned out not to be readerable
+     * cannot explain itself.
+     *
+     * `selected` is a field on the button rather than a lambda, so the
+     * collector below has to push reader state into it; `false` on the second
+     * argument stops that push being mistaken for a tap.
+     */
+    private val readerButton: BrowserToolbar.ToggleButton by lazy {
+        BrowserToolbar.ToggleButton(
+            image = tinted(mozilla.components.ui.icons.R.drawable.mozac_ic_reader_view_24),
+            imageSelected = tinted(mozilla.components.ui.icons.R.drawable.mozac_ic_reader_view_fill_24),
+            contentDescription = context.getString(R.string.menu_reader_view),
+            contentDescriptionSelected = context.getString(R.string.reader_view_off),
+            visible = {
+                val reader = store.state.selectedTab?.readerState
+                reader?.readerable == true || reader?.active == true
+            },
+        ) { ReaderViewIntegration.toggle?.invoke() }
+    }
+
+    /**
+     * A leading icon for a menu entry.
+     *
+     * Every entry has one and none is decorative: a menu where some rows are
+     * indented by an icon and others are not reads as broken, and the eye uses
+     * the icon column to find the row it wants without reading any of them.
+     */
+    private fun icon(resId: Int) = DrawableMenuIcon(context, resId, tint = iconTint)
+
+    private fun tinted(resId: Int): Drawable =
+        AppCompatResources.getDrawable(context, resId)!!.mutate().also {
+            DrawableCompat.setTint(it, iconTint)
+        }
+
     /**
      * The presenter writes into the toolbar on every state update, including
      * into the field being typed in. [EditSafeToolbar] is what stops that; see
@@ -147,11 +193,20 @@ class ToolbarIntegration(
             updateAutocompleteProviders(listOf(historyStorage, shippedDomainsProvider))
         }
 
+        toolbar.addPageAction(readerButton)
+
         scope.launch {
             store.flow()
                 .map { it.selectedTab }
                 .distinctUntilChanged()
-                .collect { menuController.submitList(menuItems(it)) }
+                .collect { tab ->
+                    menuController.submitList(menuItems(tab))
+                    // The button's own `visible` lambda is only consulted when
+                    // the toolbar re-reads its actions, so a page becoming
+                    // readerable has to say so.
+                    readerButton.setSelected(tab?.readerState?.active == true, false)
+                    toolbar.invalidateActions()
+                }
         }
 
         // Whether the page is already bookmarked decides one menu entry, and
@@ -226,7 +281,10 @@ class ToolbarIntegration(
         // whole point of it.
         val head = listOfNotNull(
             session?.let { navigationRow(it) },
-            TextMenuCandidate(context.getString(R.string.menu_new_tab)) {
+            TextMenuCandidate(
+                context.getString(R.string.menu_new_tab),
+                start = icon(mozilla.components.ui.icons.R.drawable.mozac_ic_plus_24),
+            ) {
                 tabsUseCases.addTab.invoke("about:blank", selectTab = true)
             }.takeIf { Edition.hasTabs },
         )
@@ -239,25 +297,38 @@ class ToolbarIntegration(
                 // bookmarked: adding twice made a duplicate with no way to see
                 // it had happened.
                 if (session.content.url == bookmarkedUrl) {
-                    TextMenuCandidate(context.getString(R.string.bookmark_edit)) {
+                    TextMenuCandidate(
+                        context.getString(R.string.bookmark_edit),
+                        start = icon(mozilla.components.ui.icons.R.drawable.mozac_ic_bookmark_fill_24),
+                    ) {
                         context.startActivity(
                             BookmarksActivity.editIntent(context, session.content.url),
                         )
                     }
                 } else {
-                    TextMenuCandidate(context.getString(R.string.menu_add_bookmark)) {
+                    TextMenuCandidate(
+                        context.getString(R.string.menu_add_bookmark),
+                        start = icon(mozilla.components.ui.icons.R.drawable.mozac_ic_bookmark_24),
+                    ) {
                         addBookmark(session.content.title, session.content.url)
                     }
                 },
-                TextMenuCandidate(context.getString(R.string.menu_share)) {
+                TextMenuCandidate(
+                    context.getString(R.string.menu_share),
+                    start = icon(mozilla.components.ui.icons.R.drawable.mozac_ic_share_android_24),
+                ) {
                     context.share(session.content.url)
                 },
-                TextMenuCandidate(context.getString(R.string.menu_find_in_page)) {
+                TextMenuCandidate(
+                    context.getString(R.string.menu_find_in_page),
+                    start = icon(mozilla.components.ui.icons.R.drawable.mozac_ic_search_24),
+                ) {
                     FindInPageIntegration.launch?.invoke()
                 },
                 CompoundMenuCandidate(
                     text = context.getString(R.string.menu_desktop_site),
                     isChecked = session.content.desktopMode,
+                    start = icon(mozilla.components.ui.icons.R.drawable.mozac_ic_device_desktop_24),
                     end = CompoundMenuCandidate.ButtonType.SWITCH,
                 ) { checked -> sessionUseCases.requestDesktopSite.invoke(checked) },
                 // Only offered where there is an article to strip down to;
@@ -265,41 +336,63 @@ class ToolbarIntegration(
                 CompoundMenuCandidate(
                     text = context.getString(R.string.menu_reader_view),
                     isChecked = session.readerState.active,
+                    start = icon(mozilla.components.ui.icons.R.drawable.mozac_ic_reader_view_24),
                     end = CompoundMenuCandidate.ButtonType.SWITCH,
                 ) { ReaderViewIntegration.toggle?.invoke() }
                     .takeIf { session.readerState.readerable },
-                TextMenuCandidate(context.getString(R.string.menu_reader_view_options)) {
+                TextMenuCandidate(
+                    context.getString(R.string.menu_reader_view_options),
+                    start = icon(mozilla.components.ui.icons.R.drawable.mozac_ic_reader_view_customize_24),
+                ) {
                     ReaderViewIntegration.showControls?.invoke()
                 }.takeIf { session.readerState.active },
                 // Mono only, and only worth offering while the page is still
                 // grey: colour lasts until you navigate away, so an entry that
                 // said "show in colour" on an already-coloured page would be
                 // offering to do nothing.
-                TextMenuCandidate(context.getString(R.string.menu_show_colour)) {
+                TextMenuCandidate(
+                    context.getString(R.string.menu_show_colour),
+                    start = icon(mozilla.components.ui.icons.R.drawable.mozac_ic_image_24),
+                ) {
                     GreyscaleIntegration.current?.restoreColour()
                 }.takeIf { Edition.greyscale && GreyscaleIntegration.current?.isColourRestored == false },
             )
         }
 
         return head + sessionItems + listOf(
-            TextMenuCandidate(context.getString(R.string.menu_bookmarks)) {
+            TextMenuCandidate(
+                context.getString(R.string.menu_bookmarks),
+                start = icon(mozilla.components.ui.icons.R.drawable.mozac_ic_bookmark_tray_24),
+            ) {
                 context.startActivityNewTask(BookmarksActivity::class.java)
             },
-            TextMenuCandidate(context.getString(R.string.menu_history)) {
+            TextMenuCandidate(
+                context.getString(R.string.menu_history),
+                start = icon(mozilla.components.ui.icons.R.drawable.mozac_ic_history_24),
+            ) {
                 context.startActivityNewTask(HistoryActivity::class.java)
             },
-            TextMenuCandidate(context.getString(R.string.menu_passwords)) {
+            TextMenuCandidate(
+                context.getString(R.string.menu_passwords),
+                start = icon(mozilla.components.ui.icons.R.drawable.mozac_ic_login_24),
+            ) {
                 context.startActivityNewTask(LoginsActivity::class.java)
             },
             // The ad blocker's own dashboard used to sit here. It is a settings
             // screen, so it lives in settings; see SettingsFragment.
-            TextMenuCandidate(context.getString(R.string.menu_settings)) {
+            TextMenuCandidate(
+                context.getString(R.string.menu_settings),
+                start = icon(mozilla.components.ui.icons.R.drawable.mozac_ic_settings_24),
+            ) {
                 context.startActivityNewTask(SettingsActivity::class.java)
             },
             // Last, and the only way out that actually ends the process's work:
             // the back press deliberately does moveTaskToBack instead, to keep
             // the engine warm.
-            TextMenuCandidate(context.getString(R.string.menu_quit)) { quit() },
+            TextMenuCandidate(
+                context.getString(R.string.menu_quit),
+                start = icon(mozilla.components.ui.icons.R.drawable.mozac_ic_cross_24),
+            ) { quit() },
         )
     }
 
