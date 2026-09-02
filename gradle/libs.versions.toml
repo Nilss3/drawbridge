@@ -5,7 +5,7 @@ ksp = "2.3.21-2.0.5"
 
 # Mozilla Android Components. GeckoView comes in transitively from
 # browser-engine-gecko, so it is deliberately not pinned separately.
-mozac = "153.0"
+mozac = "153.0.4"
 
 coroutines = "1.10.2"
 androidxCore = "1.17.0"
