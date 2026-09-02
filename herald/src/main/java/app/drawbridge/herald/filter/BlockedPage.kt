@@ -18,13 +18,20 @@ object BlockedPage {
 
     fun create(context: Context, url: String): String {
         val browser = HeraldPolicy.manager(context).policy.value.browser
-        val title = browser.blockedPageTitle.ifBlank { context.getString(R.string.blocked_page_heading) }
+
+        // The language herald itself resolved to, not the phone's raw setting:
+        // it is whatever picked values-nl or values-fr, so the heading from the
+        // document and the strings around it cannot disagree.
+        val language = context.resources.configuration.locales[0].language
+
+        val title = browser.displayBlockedPageTitle(language)
+            .ifBlank { context.getString(R.string.blocked_page_heading) }
         val host = app.drawbridge.policy.ContentFilter.hostOf(url) ?: url
 
         return HeraldCard.html(
             context = context,
             title = title,
-            message = browser.blockedPageMessage,
+            message = browser.displayBlockedPageMessage(language),
             footnote = host,
             monospaceFootnote = true,
         )
