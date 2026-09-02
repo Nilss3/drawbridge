@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    herald en français.
+
+    Il n\'y a pas de sélecteur de langue dans herald, et il ne devrait pas y en
+    avoir : Android choisit ce dossier lui-même d\'après la langue du système.
+    drawbridge en a un parce que la langue par application y est un réglage que
+    le parent choisit ; voir Languages.kt là-bas.
+
+    Non traduits, délibérément : herald, drawbridge et uBlock Origin sont des
+    noms propres.
+-->
+<resources>
+
+    <string name="toolbar_hint">Rechercher ou saisir une adresse</string>
+    <string name="share_via">Partager via</string>
+
+    <string name="menu_forward">Suivant</string>
+    <string name="menu_refresh">Actualiser</string>
+    <string name="menu_stop">Arrêter</string>
+    <string name="menu_new_tab">Nouvel onglet</string>
+    <string name="menu_add_bookmark">Ajouter un marque-page</string>
+    <string name="menu_share">Partager</string>
+    <string name="menu_find_in_page">Rechercher dans la page</string>
+    <string name="menu_desktop_site">Site pour ordinateur</string>
+    <string name="menu_reader_view">Mode lecture</string>
+    <string name="menu_reader_view_options">Options du mode lecture</string>
+    <string name="reader_view_off">Désactiver le mode lecture</string>
+    <string name="menu_show_colour">Afficher cette page en couleur</string>
+    <string name="pause_message">Une pause pour réfléchir pendant le chargement</string>
+    <string name="menu_bookmarks">Marque-pages</string>
+    <string name="menu_history">Historique</string>
+    <string name="menu_passwords">Mots de passe enregistrés</string>
+    <string name="menu_settings">Paramètres</string>
+    <string name="menu_quit">Fermer les onglets et quitter</string>
+
+    <string name="tabs_tray_title">Onglets</string>
+    <string name="tabs_tray_new_tab">Nouvel onglet</string>
+    <string name="tabs_tray_close_tab">Fermer l\'onglet</string>
+    <string name="tabs_tray_close_all">Tout fermer</string>
+    <string name="tabs_tray_done">Terminé</string>
+
+    <string name="entry_delete">Supprimer</string>
+    <string name="action_clear_all">Tout effacer</string>
+    <string name="history_empty">Pas encore d\'historique.</string>
+    <string name="history_search_hint">Rechercher dans l\'historique</string>
+    <string name="history_no_results">Aucune page ne correspond.</string>
+    <string name="history_clear_all_title">Effacer tout l\'historique ?</string>
+    <string name="history_clear_all_message">Chaque page que vous avez visitée est oubliée. Cette action est irréversible.</string>
+    <string name="bookmarks_empty">Pas encore de marque-pages.</string>
+    <string name="bookmarks_folder_empty">Ce dossier est vide.</string>
+    <string name="bookmarks_search_hint">Rechercher dans les marque-pages</string>
+    <string name="bookmarks_search_results">Résultats de recherche</string>
+    <string name="bookmarks_no_results">Aucun marque-page ne correspond.</string>
+    <string name="bookmarks_new_folder">Nouveau dossier</string>
+    <string name="bookmarks_edit_folder">Modifier le dossier</string>
+    <string name="bookmarks_create">Créer</string>
+    <string name="bookmarks_save">Enregistrer</string>
+    <string name="bookmarks_incomplete">Remplissez d\'abord chaque champ.</string>
+    <string name="bookmark_reorder">Réorganiser</string>
+    <string name="bookmarks_select_all">Tout sélectionner</string>
+    <string name="bookmarks_move_to_folder">Déplacer vers un dossier…</string>
+    <string name="bookmarks_delete_selected">Supprimer</string>
+    <string name="bookmarks_selected_count">%1$d sélectionné(s)</string>
+    <string name="bookmarks_delete_selected_title">Supprimer les éléments sélectionnés ?</string>
+    <string name="bookmarks_delete_selected_message">Supprimer un dossier supprime tout ce qu\'il contient. Cette action est irréversible.</string>
+    <string name="bookmarks_moved">%1$d déplacé(s)</string>
+    <string name="bookmarks_move_into_itself">Un dossier ne peut pas être déplacé dans lui-même.</string>
+    <string name="bookmarks_clear_all_title">Supprimer tous les marque-pages ?</string>
+    <string name="bookmarks_clear_all_message">Chaque marque-page et chaque dossier est supprimé. Cette action est irréversible.</string>
+    <string name="bookmark_actions">Actions du marque-page</string>
+    <string name="bookmark_edit">Modifier le marque-page</string>
+    <string name="bookmark_field_title">Nom</string>
+    <string name="bookmark_field_url">Adresse</string>
+    <string name="bookmark_field_folder">Dossier</string>
+    <string name="bookmark_added">Marque-page ajouté</string>
+
+    <string name="bookmarks_import">Importer des marque-pages…</string>
+    <string name="bookmarks_import_action">Importer</string>
+    <string name="bookmarks_export">Exporter les marque-pages…</string>
+    <string name="bookmarks_imported_folder">Importé %1$s</string>
+    <plurals name="bookmarks_import_confirm">
+        <item quantity="one">Importer %1$d marque-page dans un nouveau dossier ?</item>
+        <item quantity="other">Importer %1$d marque-pages dans un nouveau dossier ?</item>
+    </plurals>
+    <plurals name="bookmarks_import_confirm_truncated">
+        <item quantity="one">Le fichier est plus volumineux que ce que herald peut lire. Importer le premier %1$d marque-page dans un nouveau dossier ?</item>
+        <item quantity="other">Le fichier est plus volumineux que ce que herald peut lire. Importer les %1$d premiers marque-pages dans un nouveau dossier ?</item>
+    </plurals>
+    <plurals name="bookmarks_imported">
+        <item quantity="one">%1$d marque-page importé</item>
+        <item quantity="other">%1$d marque-pages importés</item>
+    </plurals>
+    <string name="bookmarks_import_nothing">Aucun marque-page trouvé dans ce fichier.</string>
+    <string name="bookmarks_exported">Marque-pages exportés</string>
+    <string name="bookmarks_transfer_failed">Impossible de lire ou d\'écrire ce fichier.</string>
+    <string name="logins_empty">Pas encore de mots de passe enregistrés.</string>
+    <string name="logins_search_hint">Rechercher dans les mots de passe enregistrés</string>
+    <string name="logins_no_results">Aucun mot de passe enregistré ne correspond.</string>
+    <string name="logins_no_username">(pas de nom d\'utilisateur)</string>
+    <string name="logins_clear_all_title">Supprimer tous les mots de passe enregistrés ?</string>
+    <string name="logins_clear_all_message">Chaque mot de passe enregistré est supprimé de ce téléphone. Ils ne sont conservés nulle part ailleurs et cette action est irréversible.</string>
+
+    <string name="settings_category_general">Général</string>
+    <string name="settings_new_tab_bookmarks">Marque-pages sur les nouveaux onglets</string>
+    <string name="settings_new_tab_bookmarks_summary">Afficher la liste des marque-pages au lieu d\'une page vide.</string>
+    <string name="settings_category_search">Recherche</string>
+    <string name="settings_search_engine">Moteur de recherche</string>
+    <string name="settings_search_engine_loading">Chargement…</string>
+    <string name="settings_category_filter">Filtre de contenu</string>
+    <string name="settings_filter_status">État du filtre</string>
+    <string name="settings_filter_status_summary">Politique version %1$d, mise à jour %2$s</string>
+    <string name="settings_filter_never_checked">jamais</string>
+    <string name="settings_check_for_updates">Rechercher des mises à jour</string>
+    <string name="settings_check_for_updates_summary">Vérifié automatiquement une fois par jour. Touchez pour vérifier maintenant.</string>
+    <string name="settings_ad_blocker">Bloqueur de publicités</string>
+    <string name="settings_ad_blocker_summary">Les filtres, les réglages par site et le sélecteur d\'éléments d\'uBlock Origin</string>
+    <string name="settings_filter_updated">Filtre mis à jour (politique version %1$d)</string>
+    <string name="settings_filter_update_failed">Impossible de joindre le serveur de politique</string>
+    <string name="settings_category_privacy">Confidentialité</string>
+    <string name="settings_clear_browsing_data">Effacer les données de navigation</string>
+    <string name="settings_browsing_data_cleared">Données de navigation effacées</string>
+    <string name="settings_category_about">À propos</string>
+    <string name="settings_version">Version</string>
+
+    <string name="blocked_page_heading">le pont-levis est levé</string>
+    <string name="offline_page_curfew_heading">le pont-levis est levé</string>
+    <string name="offline_page_curfew_message">Ce téléphone est hors ligne jusqu\'à la fin du couvre-feu.</string>
+    <string name="offline_page_offline_heading">Ce téléphone est hors ligne</string>
+    <string name="offline_page_offline_message">Drawbridge est réglé pour garder ce téléphone à l\'écart d\'internet.</string>
+    <string name="offline_page_until">De nouveau en ligne à %1$s</string>
+</resources>

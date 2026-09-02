@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">herald mono</string>
+    <!-- A name, not a word: the same in every language. -->
+    <string name="app_name" translatable="false">herald mono</string>
 
     <!-- One tab, so one tab to close. See the note beside the plural in
          src/main; this is the same reason app_name is overridden here rather

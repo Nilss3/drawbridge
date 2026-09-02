@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">herald</string>
+    <!-- A name, not a word: the same in every language. -->
+    <string name="app_name" translatable="false">herald</string>
 
     <string name="toolbar_hint">Search or enter address</string>
     <string name="share_via">Share via</string>

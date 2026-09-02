@@ -702,6 +702,19 @@ privilege does not extend to setting the system language; there is no such API,
 and there is no way to set herald's locale from another app either. So the picker
 changes what the parent reads on the configuration screen, and nothing else.
 
+**herald is translated into the same three languages and has no picker**, which
+is the right answer for it rather than a gap. Android resolves `values-nl` and
+`values-fr` from the system language on its own, so a Dutch phone gets a Dutch
+browser with no code in herald at all — and since the picker could never have
+reached herald anyway, adding one would have meant a second place to set a
+language that the parent would then have to keep in step with the phone.
+
+No `locales_config.xml` either, deliberately: that file exists to offer a
+*per-app* language in Settings, which is the one thing herald should not have.
+It follows the phone. `app_name` is marked `translatable="false"` in both
+flavours — herald and herald mono are names, and lint fails the build over an
+untranslated string otherwise.
+
 Below API 33 AppCompat only persists the choice if
 `AppLocalesMetadataHolderService` is declared with `autoStoreLocales`; without it
 the picker works until the process dies and then silently forgets.
