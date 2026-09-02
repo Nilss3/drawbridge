@@ -1,7 +1,7 @@
 {
-  "version": 104,
-  "issued_at": "2026-09-02T09:30:00Z",
-  "comment": "DEV CHANNEL ONLY. Pins herald 0.1.18: bookmarks can be dragged into order, selected in bulk and moved into a folder together, which matters because the bookmarks page is also the new tab page; clearing saved passwords and history asks before it deletes, where both used to go on the tap; reader view gains a button in the address bar beside the menu entry, and every menu entry gains an icon. The engine takes four weeks of fixes as GeckoView 153.0.20260810162159 \u2014 the 154 and 155 lines both need compileSdk 37, which the current Gradle plugin cannot compile against. required_apps moves to this channel's own v0.2.8-dev.9 assets at version_code 18; app_update is untouched and still names drawbridge build 46, which has not changed. 104 rather than 103, because the counter is shared and the alpha reached 103. 369 blocked packages.",
+  "version": 105,
+  "issued_at": "2026-09-02T11:10:00Z",
+  "comment": "DEV CHANNEL ONLY. Adds Dutch and French to the block page. Its heading and message come from this document rather than from herald's string resources, so that the wording can change without shipping a browser \u2014 which also made it the one screen that stayed English on a Dutch phone while every screen around it turned. blocked_page_title_i18n and blocked_page_message_i18n are the same shape and same fallback as a profile's name_i18n, so a build that has never heard of them ignores them and shows English. Nothing else changes: required_apps still names herald 0.1.18 at v0.2.8-dev.9 and app_update still names drawbridge build 46. 369 blocked packages.",
   "dns": {
     "upstreams": [
       "94.140.14.15",
@@ -811,7 +811,15 @@
       "Kagi"
     ],
     "blocked_page_title": "drawbridge is up",
+    "blocked_page_title_i18n": {
+      "nl": "drawbridge staat omhoog",
+      "fr": "le pont-levis est lev\u00e9"
+    },
     "blocked_page_message": "This website was denied access to your device, life and soul.",
+    "blocked_page_message_i18n": {
+      "nl": "Deze website kreeg geen toegang tot je toestel, je leven en je ziel.",
+      "fr": "Ce site s\u2019est vu refuser l\u2019acc\u00e8s \u00e0 votre appareil, votre vie et votre \u00e2me."
+    },
     "blocked_url_patterns": [],
     "blocked_hosts": []
   },
