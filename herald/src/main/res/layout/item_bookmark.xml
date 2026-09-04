@@ -12,6 +12,16 @@
     android:paddingStart="16dp"
     android:paddingEnd="4dp">
 
+    <!-- Shown only in selection mode; the new tab page never turns it on. -->
+    <CheckBox
+        android:id="@+id/bookmarkCheck"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:clickable="false"
+        android:focusable="false"
+        android:visibility="gone" />
+
     <ImageView
         android:id="@+id/bookmarkIcon"
         android:layout_width="24dp"
@@ -45,6 +55,17 @@
             android:textAppearance="?attr/textAppearanceListItemSecondary"
             android:visibility="gone" />
     </LinearLayout>
+
+    <!-- The drag handle. Visible only while the list is arrangeable and not in
+         selection mode: dragging and multi-select both want the long press. -->
+    <ImageView
+        android:id="@+id/bookmarkDragHandle"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:contentDescription="@string/bookmark_reorder"
+        android:padding="12dp"
+        android:src="@drawable/ic_drag_handle"
+        android:visibility="gone" />
 
     <ImageButton
         android:id="@+id/bookmarkOverflow"

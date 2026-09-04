@@ -702,6 +702,19 @@ privilege does not extend to setting the system language; there is no such API,
 and there is no way to set herald's locale from another app either. So the picker
 changes what the parent reads on the configuration screen, and nothing else.
 
+**herald is translated into the same three languages and has no picker**, which
+is the right answer for it rather than a gap. Android resolves `values-nl` and
+`values-fr` from the system language on its own, so a Dutch phone gets a Dutch
+browser with no code in herald at all — and since the picker could never have
+reached herald anyway, adding one would have meant a second place to set a
+language that the parent would then have to keep in step with the phone.
+
+No `locales_config.xml` either, deliberately: that file exists to offer a
+*per-app* language in Settings, which is the one thing herald should not have.
+It follows the phone. `app_name` is marked `translatable="false"` in both
+flavours — herald and herald mono are names, and lint fails the build over an
+untranslated string otherwise.
+
 Below API 33 AppCompat only persists the choice if
 `AppLocalesMetadataHolderService` is declared with `autoStoreLocales`; without it
 the picker works until the process dies and then silently forgets.
@@ -1737,11 +1750,95 @@ Which is also the whole way in, and it is the one drawbridge already uses for
 everything else: unlock, install, lock again. The lock re-takes the snapshot, so
 whatever is on the phone at that moment is what it keeps.
 
-## drawbridge does not prevent a factory reset
+## Trial mode is the default, and permanence is a one-way door
 
-An earlier version set `DISALLOW_FACTORY_RESET`. Its documentation says it stops
-a user factory resetting *from Settings*, and [removal](removal.md) said for
-months that the recovery-mode path could not be blocked by any app.
+**Asked for on 2026-09-04, and it names something that had been true and unnamed
+since the beginning.** Every phone this project has ever provisioned could be
+handed back through the overflow menu: unlock, *Deactivate drawbridge
+restrictions*, uninstall. That is the right default for software people are
+trying out — it is what made the beta possible to hand to anybody — and it is
+also, for a household that has finished trying it out, the whole lock reduced to
+whoever can reach that menu.
+
+So the state has a name now, and a second one beside it:
+
+| | unlocked | locked |
+|---|---|---|
+| **trial** | deactivate from the menu, then uninstall | factory reset |
+| **permanent** | factory reset | factory reset, after unlocking |
+
+Three of those four cells are what the phone already did. The fourth is
+`DISALLOW_FACTORY_RESET`, and it is the section directly below this one — the
+restriction this project measured, retired, and spent a year not setting.
+
+**What changed is not the risk but the exits.** The reason it was retired is
+unchanged and still measured: it takes the wipe out of the *recovery menu*, so a
+phone carrying it whose key is gone is a phone for a firmware flash. What did not
+exist in August is the clock. [The lock timer](#losing-the-key-a-delay-not-a-back-door)
+can end a lock on a schedule chosen before it is sealed, and the code-forgotten
+door on the lock screen can start a thirty days afterwards — so a lost key now
+costs a wait rather than a handset, and it becomes honest to offer the
+restriction to a household that asks for it. It could not have shipped before the
+timer did, and next step 9 in [handoff](handoff.md) said so in advance.
+
+**It is one way, and that is the feature rather than an omission.** There is no
+`makeTrial`. A switch that could be flicked back would make permanent mode mean
+*trial mode plus one tap*, and the top-right cell of that table would be a lie:
+an unlocked phone whose parent can return to trial mode can still be deactivated
+from the menu, just with a step in front of it. The button says so before it acts,
+in three sentences, and it is the only irreversible control in the app that is
+not itself a removal.
+
+**Three properties keep it from meaning *bricked*, and all three are asserted in
+tests:**
+
+- **An unlocked phone can always be wiped.** The restriction is keyed on the
+  lock, so whoever holds the key unlocks and resets in two steps. Permanence
+  costs the *hand it back with its data* route, not the *reclaim the handset*
+  one.
+- **A trial phone is never touched.** `DISALLOW_FACTORY_RESET` moved from
+  `RETIRED_RESTRICTIONS` into `MANAGED_RESTRICTIONS` as a conditional entry,
+  which keeps the migration guarantee the retirement existed for:
+  `applyUserRestrictions` clears every managed restriction the current state
+  leaves out, so a phone carrying it from an August build is still stripped of it
+  on every apply. Being in *both* lists would be worse than neither — set and
+  cleared inside one apply, and permanent mode would silently do nothing.
+- **A lost key is answered by the timer**, which is the only reason any of this
+  is offerable.
+
+**Deliberately not keyed on `RETAIN_ADB_ACCESS`**, unlike the debugging rule it
+sits beside. adb and the recovery menu are different doors, and softening this
+one in debug builds would leave the restriction that matters most as the one
+never exercised before it ships. Nothing is stranded by that: `pm clear` on a
+debug handset drops the key, which unlocks the phone, which clears the
+restriction on the next apply.
+
+Watched working end to end on the API 36 emulator as a real Device Owner on
+2026-09-04, all four cells: trial unlocked and trial locked carry no
+`no_factory_reset`; permanent locked carries it; typing the key in takes it
+straight back off. The trial-locked run is the one worth having — it is the
+regression that would have stranded every phone already in the field.
+
+**And on hardware the same day, in both directions**, which is the half the
+emulator cannot supply: `dumpsys` proves the restriction is set, only a handset
+proves that it reaches the recovery menu. Locked and permanent, the dev phone
+offered no wipe in Settings and none in recovery; unlocked, it was back in both.
+The second half is the one that had to hold — a restriction that goes on and
+does not come off is the failure this restriction was retired for, and it is the
+promise the confirmation dialog makes before an irreversible button.
+
+## A factory reset is prevented only in permanent mode
+
+**Until 2026-09-04 this section said drawbridge never prevented one, and the
+measurement below is why.** It is still the default and still what every trial
+phone does; what changed is that a household can now ask for the opposite, and
+[the section above](#trial-mode-is-the-default-and-permanence-is-a-one-way-door)
+is that decision. Everything here is the evidence it rests on.
+
+An earlier version set `DISALLOW_FACTORY_RESET` unconditionally. Its
+documentation says it stops a user factory resetting *from Settings*, and
+[removal](removal.md) said for months that the recovery-mode path could not be
+blocked by any app.
 
 Both were wrong, measured on a Moto G15 on 2026-08-07. With the restriction in
 force the hardware recovery menu offered no "Wipe data/factory reset" and no
@@ -1750,10 +1847,13 @@ reappeared the moment drawbridge gave up Device Owner. A phone whose key had bee
 lost was reclaimable only by sideloading firmware from a PC.
 
 That is not a price a parent should pay for mislaying a piece of paper, so the
-restriction is gone. It is also listed in `RETIRED_RESTRICTIONS` and actively
-cleared on every apply, because dropping an entry from the applied set does
-nothing for the devices that already carry it — and those are exactly the devices
-that must not stay stuck.
+restriction stopped being applied. It sat in `RETIRED_RESTRICTIONS` and was
+actively cleared on every apply, because dropping an entry from the applied set
+does nothing for the devices that already carry it — and those are exactly the
+devices that must not stay stuck. It is a conditional member of
+`MANAGED_RESTRICTIONS` now, which is the same guarantee by a different route:
+`applyUserRestrictions` clears what the current state leaves out, and on a
+trial-mode phone the condition is false in every state.
 
 **What replaces it is not prevention but detection and consequence:**
 
@@ -1766,11 +1866,14 @@ that must not stay stuck.
   protected for a year and now reports a date from Tuesday has been reset,
   whatever else it looks like. See below.
 
-The honest trade is that a determined child who knows the screen lock can now
-factory reset the phone from Settings. They end up with a wiped device, an FRP
-challenge only the parent can answer, and a date that gives them away. That is a
-worse outcome for them than it was, and a far better one for a parent who simply
-lost the key.
+The honest trade, **in trial mode**, is that a determined child who knows the
+screen lock can factory reset the phone from Settings. They end up with a wiped
+device, an FRP challenge only the parent can answer, and a date that gives them
+away. That is a worse outcome for them than it was, and a far better one for a
+parent who simply lost the key.
+
+A household that finds that trade the wrong way round is what permanent mode is
+for, and it closes exactly this hole and no other.
 
 ## Losing the key: a delay, not a back door
 

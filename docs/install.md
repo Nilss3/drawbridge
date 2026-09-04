@@ -221,11 +221,20 @@ the filter is active; it cannot be switched off.
 
 ---
 
-## A factory reset removes drawbridge, and nothing stops one
+## A factory reset removes drawbridge, unless you have made it permanent
 
 Anyone can hold down the power and volume buttons to reach recovery mode and wipe
-the phone, or do it from Settings if they know the screen lock. No app can
-prevent this, drawbridge included.
+the phone, or do it from Settings if they know the screen lock. That is true of
+the phone you have just set up, and it is the state every phone starts in —
+**trial mode**, which the configuration screen says at the top.
+
+**There is one way to close it, and it is deliberate.** *Make it permanent*, on
+that same screen, takes the wipe away from a phone that is **locked** — from
+Settings and from recovery alike — until somebody unlocks it with the key. It
+cannot be undone from the phone, and the only way back from a lost key is then
+the thirty-day timer on the lock screen. Everything below this line describes
+trial mode, which is what you have unless you pressed that button. See
+[removal](removal.md).
 
 **Factory Reset Protection does not cover this, despite what you may read** —
 including in earlier versions of this guide. On a fully managed phone it is not

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The app bar while rows are being picked. Replaces menu_bookmarks wholesale
+     rather than hiding items in it: import, export and clear-all have nothing
+     to do with a selection, and leaving them one tap away from a set of ticked
+     rows is how the wrong destructive thing gets pressed. -->
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/action_select_all"
+        android:title="@string/bookmarks_select_all"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_move_to_folder"
+        android:title="@string/bookmarks_move_to_folder"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_delete_selected"
+        android:title="@string/bookmarks_delete_selected"
+        app:showAsAction="never" />
+</menu>

@@ -15,6 +15,7 @@ import app.drawbridge.dpc.R
 import app.drawbridge.dpc.apps.BrowserSettings
 import app.drawbridge.dpc.security.LockTimer
 import app.drawbridge.dpc.security.ParentKey
+import app.drawbridge.dpc.security.Permanence
 
 /**
  * Everything that requires Device Owner privilege.
@@ -437,11 +438,10 @@ class DeviceOwnerManager(context: Context) {
      * Actively removes restrictions older versions applied and this one does not.
      *
      * Dropping an entry from [MANAGED_RESTRICTIONS] stops it being *set* on new
-     * devices and does nothing at all for devices that already carry it — and
-     * [DISALLOW_FACTORY_RESET] is the one restriction where that gap is
-     * unacceptable, since a phone still carrying it cannot be wiped from
-     * recovery. Clearing it here means any device picks up the fix on its next
-     * apply, which is every process start on a locked phone.
+     * devices and does nothing at all for devices that already carry it, which
+     * for a restriction nobody can reach from the phone is permanent. Clearing
+     * it here means any device picks up the fix on its next apply, which is
+     * every process start on a locked phone.
      */
     private fun clearRetiredRestrictions() {
         RETIRED_RESTRICTIONS.forEach { restriction ->
@@ -460,6 +460,7 @@ class DeviceOwnerManager(context: Context) {
         return restrictionsFor(
             isLocked = locked,
             retainAdbAccess = BuildConfig.RETAIN_ADB_ACCESS,
+            isPermanent = Permanence(appContext).isPermanent,
         )
     }
 
@@ -577,8 +578,29 @@ class DeviceOwnerManager(context: Context) {
         private const val TAG = "DeviceOwnerManager"
 
         /**
-         * The restriction set for a given state, and the only place the
-         * USB-debugging rule lives.
+         * The restriction set for a given state, and the only place the two
+         * conditional rules live.
+         *
+         * **Two entries move, and they move on different questions.**
+         * [UserManager.DISALLOW_DEBUGGING_FEATURES] asks whether the phone is
+         * locked; [UserManager.DISALLOW_FACTORY_RESET] asks whether it is locked
+         * *and* the household has left trial mode. Everything else is
+         * unconditional. Writing the rule as a filter over
+         * [MANAGED_RESTRICTIONS] rather than as a subtraction keeps that
+         * property checkable: a restriction is applied when its own clause says
+         * so and cleared by [applyUserRestrictions] otherwise, and there is no
+         * third list for one to hide in.
+         *
+         * **The factory-reset rule is [Permanence], and what it costs is set
+         * out there.** In short: a phone in trial mode can always be wiped, and
+         * that is what makes trial mode safe to hand to somebody; a permanent
+         * one can be wiped by whoever can unlock it, and by nobody else until
+         * the lock-screen timer runs out. It is deliberately *not* keyed on
+         * [retainAdbAccess] — adb and the recovery menu are different doors, and
+         * a debug build should exercise the real restriction rather than a
+         * softened one. Nothing is stranded by that: `pm clear` on a debug
+         * handset drops the key, which unlocks the phone, which clears the
+         * restriction on the next apply.
          *
          * **USB debugging follows the lock, not the protection.** Every other
          * restriction here is keyed on [ParentKey.protectedSince] through
@@ -621,12 +643,17 @@ class DeviceOwnerManager(context: Context) {
          * install lock is carried entirely by the closed set in
          * [app.drawbridge.dpc.apps.AppBlocker] now.
          */
-        fun restrictionsFor(isLocked: Boolean, retainAdbAccess: Boolean): List<String> =
-            if (!isLocked || retainAdbAccess) {
-                MANAGED_RESTRICTIONS - UserManager.DISALLOW_DEBUGGING_FEATURES
-            } else {
-                MANAGED_RESTRICTIONS
+        fun restrictionsFor(
+            isLocked: Boolean,
+            retainAdbAccess: Boolean,
+            isPermanent: Boolean = false,
+        ): List<String> = MANAGED_RESTRICTIONS.filter { restriction ->
+            when (restriction) {
+                UserManager.DISALLOW_DEBUGGING_FEATURES -> isLocked && !retainAdbAccess
+                UserManager.DISALLOW_FACTORY_RESET -> isLocked && isPermanent
+                else -> true
             }
+        }
 
         val MANAGED_RESTRICTIONS: List<String> = buildList {
             add(UserManager.DISALLOW_CONFIG_VPN)
@@ -655,26 +682,54 @@ class DeviceOwnerManager(context: Context) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 add(UserManager.DISALLOW_CONFIG_PRIVATE_DNS)
             }
+            // Conditional, and the condition is in [restrictionsFor]: locked,
+            // and permanent. It is listed here anyway — that is what makes
+            // [applyUserRestrictions] clear it from every phone the condition
+            // does not hold on, which is every trial-mode phone on every
+            // process start.
+            //
+            // **This restriction does far more than its name and documentation
+            // suggest, and the measurement is the reason permanence exists as a
+            // deliberate choice rather than as the default.** It does not merely
+            // hide the entry in Settings: measured on a Moto G15 on 2026-08-07,
+            // it strips "Wipe data/factory reset" out of the **hardware recovery
+            // menu** as well, and the entry only reappears once drawbridge gives
+            // up Device Owner. So a phone carrying it whose key is gone is
+            // reclaimable only by reflashing firmware from a PC.
+            //
+            // It was applied unconditionally by builds up to 2026-08-07, and
+            // then retired for exactly that reason: nobody should pay a handset
+            // for mislaying a piece of paper. What changed is not the risk but
+            // the exits. [LockTimer] can end a lock on a schedule chosen before
+            // it was sealed, and the code-forgotten door on the lock screen can
+            // start a thirty-day one afterwards — so a lost key now costs a wait
+            // rather than a device, and it is honest to offer the restriction to
+            // a household that asks for it. It is still never on by default, and
+            // the screen that offers it says what it takes away before it takes
+            // it.
+            add(UserManager.DISALLOW_FACTORY_RESET)
         }
 
         /**
          * Applied by earlier versions, and now removed on sight.
          *
-         * [UserManager.DISALLOW_FACTORY_RESET] does far more than its name and
-         * documentation suggest. It does not merely hide the entry in Settings:
-         * measured on a Moto G15 on 2026-08-07, it strips "Wipe data/factory
-         * reset" out of the **hardware recovery menu** as well, and the entry
-         * reappears the moment drawbridge gives up Device Owner. A phone whose
-         * key is lost is then reclaimable only by reflashing firmware from a PC.
+         * **[UserManager.DISALLOW_FACTORY_RESET] used to be the other entry
+         * here, and it left on the day permanent mode arrived.** It is not
+         * un-retired so much as re-aimed: it is in [MANAGED_RESTRICTIONS] now,
+         * behind a condition that is false on every phone this list was
+         * protecting, so a trial-mode handset is cleared of it on exactly the
+         * same schedule as before — every apply, which is every process start on
+         * a locked phone. The measurement that retired it, and what changed
+         * around it, are on that entry.
          *
-         * That is not a price a parent should pay for mislaying a piece of
-         * paper, so drawbridge no longer sets it. What holds the line instead is
-         * Factory Reset Protection, which is why
-         * [provisioning](../../../../../../../docs/provisioning.md) asks for the
-         * parent's Google account and only theirs, and the protected-since date,
-         * which makes a reset visible after the fact.
+         * The reason it can be a conditional rather than a permanent absence is
+         * that the thing keeping a lost key from costing a handset is no longer
+         * only Factory Reset Protection and the protected-since date. There is a
+         * clock now — see [LockTimer] and the code-forgotten door on the lock
+         * screen — and a household that wants the restriction has a way back
+         * that does not involve a PC.
          *
-         * **[UserManager.DISALLOW_INSTALL_APPS] joined it on 2026-08-16, one
+         * **[UserManager.DISALLOW_INSTALL_APPS] arrived here on 2026-08-16, one
          * build after it was added, and the reason is measured rather than
          * reasoned.** It was the install lock's prevention layer, and the open
          * question written down beside it was whether the platform would let
@@ -706,7 +761,6 @@ class DeviceOwnerManager(context: Context) {
          * a locked phone.
          */
         val RETIRED_RESTRICTIONS: List<String> = listOf(
-            UserManager.DISALLOW_FACTORY_RESET,
             UserManager.DISALLOW_INSTALL_APPS,
         )
     }

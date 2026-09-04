@@ -41,6 +41,7 @@ import app.drawbridge.dpc.curfew.DisconnectSettings
 import app.drawbridge.dpc.policy.SelectionProvider
 import app.drawbridge.dpc.security.LockTimer
 import app.drawbridge.dpc.security.ParentKey
+import app.drawbridge.dpc.security.Permanence
 import app.drawbridge.dpc.update.AppInstaller
 import app.drawbridge.dpc.vpn.DnsFilterService
 import app.drawbridge.policy.PolicyManager
@@ -79,8 +80,11 @@ class MainActivity : AppCompatActivity() {
     private val browsers by lazy { BrowserSettings(this) }
     private val installLock by lazy { InstallLockSettings(this) }
     private val lockTimer by lazy { LockTimer(this) }
+    private val permanence by lazy { Permanence(this) }
 
     private lateinit var updateNotice: View
+    private lateinit var permanenceTitle: TextView
+    private lateinit var permanenceButton: Button
     private lateinit var disconnectContainer: LinearLayout
     private lateinit var curfewSchedule: LinearLayout
     private lateinit var curfewWeekdayButton: Button
@@ -136,6 +140,8 @@ class MainActivity : AppCompatActivity() {
         findViewById<View>(R.id.root).applyScreenInsets()
 
         updateNotice = findViewById(R.id.updateNotice)
+        permanenceTitle = findViewById(R.id.permanenceTitle)
+        permanenceButton = findViewById(R.id.permanenceButton)
         disconnectContainer = findViewById(R.id.disconnectContainer)
         curfewSchedule = findViewById(R.id.curfewSchedule)
         curfewWeekdayButton = findViewById(R.id.curfewWeekdayButton)
@@ -156,6 +162,13 @@ class MainActivity : AppCompatActivity() {
         optionsFootnote = findViewById(R.id.optionsFootnote)
 
         bindLanguages(findViewById(R.id.languageField))
+
+        permanenceButton.setOnClickListener { confirmPermanence() }
+        findViewById<View>(R.id.root).bindInfo(
+            R.id.permanenceInfo,
+            title = getString(R.string.permanence_info_title),
+            body = getString(R.string.permanence_info),
+        )
 
         findViewById<Button>(R.id.lockButton).setOnClickListener { confirmLock() }
         findViewById<Button>(R.id.updateButton).setOnClickListener {
@@ -185,6 +198,26 @@ class MainActivity : AppCompatActivity() {
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_main, menu)
         return true
+    }
+
+    /**
+     * **Permanent mode is this line.** Everything else the mode does is one
+     * conditional restriction that only bites on a locked phone; what a parent
+     * actually chose when they pressed the button is that this item stops
+     * existing.
+     *
+     * Hidden here rather than removed from `menu_main.xml`, because the menu is
+     * inflated once and the mode can change while the screen is open —
+     * [confirmPermanence] calls `invalidateOptionsMenu` for exactly this.
+     *
+     * The activity behind it refuses as well, in [RemoveActivity.onCreate]. Two
+     * checks for one rule is usually a smell; here the rule is *the phone cannot
+     * be handed back without a wipe*, and a hidden menu item is a statement
+     * about a menu.
+     */
+    override fun onPrepareOptionsMenu(menu: Menu): Boolean {
+        menu.findItem(R.id.actionRemove)?.isVisible = !permanence.isPermanent
+        return super.onPrepareOptionsMenu(menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
@@ -255,6 +288,7 @@ class MainActivity : AppCompatActivity() {
      * it belongs on the lock screen, which is where it already was.
      */
     private fun render() {
+        renderPermanence()
         updateNotice.visibility =
             if (AppInstaller(this).availableSelfUpdate() != null) View.VISIBLE else View.GONE
 
@@ -282,6 +316,64 @@ class MainActivity : AppCompatActivity() {
             renderPolicies()
             renderOptions()
         }
+    }
+
+    // --- Trial and permanent mode --------------------------------------------
+
+    /**
+     * The banner at the top, in whichever of its two states applies.
+     *
+     * The ⓘ is bound once in [onCreate] rather than here: its text is the same
+     * in both states on purpose. A parent who has just made the phone permanent
+     * is the person most likely to want to re-read what that meant, and an
+     * explanation that shortened itself the moment it became irreversible would
+     * be withholding it exactly then.
+     */
+    private fun renderPermanence() {
+        val permanent = permanence.isPermanent
+        permanenceTitle.setText(
+            if (permanent) R.string.permanence_permanent_title else R.string.permanence_trial_title,
+        )
+        permanenceButton.visibility = if (permanent) View.GONE else View.VISIBLE
+    }
+
+    /**
+     * The one irreversible button on this screen that is not a removal, and the
+     * dialog is sized to that.
+     *
+     * It says the two things the banner cannot fit. That it cannot be undone —
+     * there is no `makeTrial`, by design, and a parent who expected a switch
+     * would find out at the worst possible moment. And what each of the two
+     * states costs, unlocked and locked, because "permanent" on its own does not
+     * tell anybody that the *wipe* goes too.
+     *
+     * It stops there on purpose. The thirty-day door and its one condition — no
+     * other timer already running, which
+     * [LockActivity.offerForgottenKeyTimer] enforces — are in the ⓘ, one tap
+     * away and still on screen behind this dialog. A confirmation long enough to
+     * be skimmed protects nobody.
+     *
+     * Nothing is applied to the device here beyond the flag itself. Permanence
+     * only ever adds a restriction to a *locked* phone, and this screen is
+     * unreachable while locked, so the restriction lands at the next lock like
+     * every other setting above it. [DeviceOwnerManager.reapplyIfProtected] is
+     * called anyway: it is a no-op in this state, and it is one line against the
+     * day somebody makes the mode mean something on an unlocked phone too.
+     */
+    private fun confirmPermanence() {
+        AlertDialog.Builder(this)
+            .setTitle(R.string.permanence_confirm_title)
+            .setMessage(R.string.permanence_confirm_message)
+            .setPositiveButton(R.string.permanence_confirm_yes) { _, _ -> makePermanent() }
+            .setNegativeButton(android.R.string.cancel, null)
+            .show()
+    }
+
+    private fun makePermanent() {
+        permanence.makePermanent()
+        deviceOwner.reapplyIfProtected()
+        invalidateOptionsMenu()
+        renderPermanence()
     }
 
     // --- The lock timer ------------------------------------------------------

@@ -21,9 +21,9 @@ which is kept whole on purpose.
 
 | | `main` (the alpha) | `dev` |
 |---|---|---|
-| drawbridge | **0.2.21, build 46** | **0.2.21, build 46** |
-| herald | **0.1.17** | **0.1.17** |
-| policy | **103** | **102** |
+| drawbridge | **0.2.22, build 47** | **0.2.22, build 47** |
+| herald | **0.1.19** | **0.1.19** |
+| policy | **108** | **107** |
 | install page | <https://drawbridge-project.pages.dev/install/> | <https://dev.drawbridge-project.pages.dev/install/> |
 | phone | the owner's Nothing Phone (A059) | the Moto G15 |
 
@@ -33,19 +33,30 @@ than incidental.** `PolicyManager` fails a whole refresh — not just the instal
 phone that has run one channel and is then given the other's build needs that
 channel's document to be higher than whatever it kept. The app-pusher work
 therefore went out as 92 on dev, 93 on main, 94/95 on dev and 96/97 on main
-rather than reusing a number. It ran on through the keyboard fix: 99 and 100 on
-dev for herald 0.1.16 and 0.1.17, then 101 on main for the same browser built on
-this branch, which is why the alpha's number jumps four.
+rather than reusing a number. Policy 98 on dev was a version bump and nothing
+else: it existed only to put this channel back above the alpha, so a phone that
+had held main's 97 would accept a dev document again. It ran on from there:
+99 and 100 on dev for herald 0.1.16 and 0.1.17, 101 on main for the same
+browser built on that branch, and 102 back on dev for drawbridge build 46. It
+has kept running: 103 on main, 104 to 107 on dev across herald 0.1.18, the block
+page's translations and permanent mode, and **108 on main**, which is the alpha
+taking all of that at once.
 
 **The alpha's herald is pinned by name rather than through
-`/releases/latest/download/`, as of policy 96 — at `v0.2.20.1` since policy
-101, and at `v0.2.19` before that.** GitHub resolves that path at
-request time to whichever release wears the Latest flag, so a drawbridge-only
-release taking that flag would have redirected herald's download to a release
-with no herald in it, and every provisioned phone would have fetched a 404 and
-quietly stopped updating the browser. The next release that actually *moves*
-herald has to update those six URLs as well as their six checksums: the same
-work as before, one field wider.
+`/releases/latest/download/`, as of policy 96 — at `v0.2.22` since policy 108,
+at `v0.2.20.1` from policy 101, and at `v0.2.19` before that.** GitHub resolves
+that path at request time to whichever release wears the Latest flag, so a
+drawbridge-only release taking that flag would have redirected herald's download
+to a release with no herald in it, and every provisioned phone would have fetched
+a 404 and quietly stopped updating the browser. A release that actually *moves*
+herald has to update those six URLs as well as their six checksums, and the
+`version_code` beside them — thirteen fields, and policy 108 moved all thirteen.
+
+**The Latest flag is now cosmetic, and worth keeping accurate anyway.** Nothing
+a phone fetches resolves through it since policy 96; what still does is the
+website's own *browsers* link in `tools/build-site.py`, on both channels. So the
+alpha's newest release takes it — `v0.2.22` holds it now — and dev's stay
+pre-releases, which is why dev's site links at main's build.
 
 **`dist/release/` holds one channel's binaries at a time, and git cannot warn
 you which.** The APKs in it are git-ignored, so they do not change when the
@@ -66,8 +77,8 @@ fetches herald itself from the URLs the policy pins.
 After switching branches, re-stage:
 
 ```bash
-gh release download v0.2.20.1    --pattern 'herald-*.apk' --dir dist/release --clobber  # main
-gh release download v0.2.8-dev.6 --pattern 'herald-*.apk' --dir dist/release --clobber  # dev
+gh release download v0.2.22      --pattern 'herald-*.apk' --dir dist/release --clobber  # main
+gh release download v0.2.8-dev.10 --pattern 'herald-*.apk' --dir dist/release --clobber # dev
 shasum -a 256 -c dist/release/SHA256SUMS
 ```
 
@@ -209,7 +220,31 @@ the key can always unlock and put a build on the phone. See
 
 ## What has been watched working, and what has not
 
-**Watched working on hardware**, most recently on 2026-08-19 with build 40:
+**Watched working on hardware**, most recently on 2026-09-04 with build 47:
+
+- **Permanent mode takes the factory reset out of the recovery menu, and
+  unlocking gives it back** — both watched by the owner on the dev phone on
+  2026-09-04, hours after build 47 shipped. Locked, the phone offers no wipe in
+  Settings **and none in recovery**; unlocked, it is back in both.
+
+  This is the half an emulator cannot show. `dumpsys` proves the restriction is
+  *set*; only a handset proves what the restriction *does*, and the thing it
+  does — reaching into the hardware recovery menu — is documented nowhere and is
+  the entire reason this feature is opt-in and one way rather than the default.
+  The August measurement therefore reproduces through the new conditional
+  wiring, in both directions.
+
+  **The second half is the one that had to hold.** A restriction that goes on
+  and does not come off is the failure this project retired it for, and it is
+  the promise the confirmation dialog makes to a parent before they press an
+  irreversible button: *drawbridge will need to be unlocked (through key or
+  timer) for factory reset to become available again.* That sentence is now
+  measured rather than reasoned.
+
+  So permanence is watched working in the two places that matter — the emulator
+  for the state machine, all four cells including trial-and-locked, the one that
+  would have stranded every phone in the field; hardware for the consequence,
+  both ways. Nothing about it is left on inference.
 
 - **Android Auto connects wirelessly with the filter running.** Confirmed in the
   car on 2026-08-19, which closes the one thing this project had shipped and
@@ -296,6 +331,15 @@ Each of these looks like a bug and is not, or bites silently:
 - **Testing removal wipes the key**, and so does `pm clear`. Both leave the
   device unlocked, which is right — but it means a test run never exercises the
   challenge screen unless you lock again first.
+
+  **`pm clear` takes permanent mode with it**, since the flag is a preference
+  like every other device-local setting. Inferred from the line above rather
+  than measured, and it follows: same `shared_prefs` directory, same wipe. That
+  is the only way back to trial mode on a dev phone short of a factory reset,
+  and it is not a hole in permanence — `pm clear` already unlocks a locked
+  drawbridge outright, and it is reachable only over adb, which
+  `DISALLOW_DEBUGGING_FEATURES` takes away for as long as the lock holds. On a
+  release handset the cable is the key holder's tool, not a bypass.
 - **The reveal screen cannot be screenshotted.** `FLAG_SECURE` is on it
   deliberately, so `screencap` returns black and there is no way to read the key
   back out of an image. Use `adb shell uiautomator dump`, which is not blocked.
@@ -784,27 +828,46 @@ absent from the allowed list is installed and removed on a loop, which is the
 trap the two-list rule exists to prevent. Whatever ships must keep those two in
 agreement.
 
-### 9. Lock factory reset — last, and only with the timer
+### 9. ~~Lock factory reset — last, and only with the timer~~ — done 2026-09-04, as **permanent mode**
 
-**The prerequisite exists as of 2026-08-17**, and is not quite what this entry
-assumed: what was built is a delayed *unlock* rather than a delayed self-removal,
-which answers the same problem because removal lives behind the lock. A real
-two-hour timer was watched lifting on the Moto the same day. Everything else in
-this entry stands, including the objection that matters — this escape runs
-*inside* drawbridge, so a crash loop or a bad update takes it with it, where a
-factory reset never involved drawbridge at all.
+**Shipped on the terms this entry set, and not one step earlier.** The
+prerequisite it named — the lock timer, proven on hardware — arrived on
+2026-08-17, and `DISALLOW_FACTORY_RESET` went back on 2026-09-04 behind a switch
+the household has to press rather than for everybody.
 
-`DISALLOW_FACTORY_RESET` goes back **only** with that timer proven on hardware,
-and deliberately after everything above — unless step 2 shows that FRP does not
-hold, in which case this moves up, because the backstop it was removed in favour
-of would not exist. While features are being built, a
-mistake that bricks a handset costs a device; with a factory reset available it
-costs ten minutes. See
-[design-decisions](design-decisions.md#losing-the-key-a-delay-not-a-back-door).
+What was built is a named pair of modes. **Trial** is what every phone has always
+been and still is by default; **permanent** is a button at the top of the
+configuration screen. Four cells, three of which are unchanged:
 
-Remember that reinstating it means reversing the `RETIRED_RESTRICTIONS`
-migration too, and that today's escape works even when drawbridge is completely
-broken while a timer-based one does not.
+| | unlocked | locked |
+|---|---|---|
+| **trial** | deactivate from the menu, then uninstall | factory reset |
+| **permanent** | factory reset | factory reset, after unlocking |
+
+The restriction moved out of `RETIRED_RESTRICTIONS` and into
+`MANAGED_RESTRICTIONS` as a conditional entry, which is how the migration
+guarantee survives: `applyUserRestrictions` clears every managed restriction the
+current state leaves out, so a phone carrying it from an August build is still
+stripped of it on every apply. Being in both lists would set and clear it inside
+one apply and make permanent mode silently inert — there is a test for that.
+
+Watched on the API 36 emulator as a real Device Owner, all four cells, including
+the trial-locked one that would have stranded every phone in the field.
+
+**The objection this entry has always carried still stands and is not answered.**
+The escape from a permanent locked phone runs *inside* drawbridge: a crash loop
+or a bad update takes the thirty-day door with it, where a factory reset never
+involved drawbridge at all. What limits it is that the mode is opt-in, one way,
+and preceded by a dialog that says what it takes away — so nobody arrives there
+without having read it. **Do not make it the default**, and weigh it against
+[step 1](#1-get-drawbridge-able-to-update-itself-again): an unaided update channel
+does not exist, so a permanent locked phone with a broken drawbridge on it has
+thirty days and then nothing.
+
+Still open from the original entry: **step 2** — if FRP turns out not to hold, the
+backstop trial mode relies on does not exist, and the case for recommending
+permanent mode gets stronger rather than weaker. See
+[design-decisions](design-decisions.md#trial-mode-is-the-default-and-permanence-is-a-one-way-door).
 
 ### 10. "This phone, these apps, nothing else" — and the apps still update
 
@@ -911,6 +974,17 @@ because anyone should generate it:
 - **What a blocked site looks like in Chrome**, which is a question the other
   four browsers create and nothing answers. In herald it is drawbridge's block
   page; everywhere else it is a DNS error that reads as "the internet is broken".
+- **Two sentences on the site are currently false, and 2026-09-04 is what makes
+  them fixable.** `tools/build-site.py` says *"When locked, drawbridge cannot be
+  removed, not even by factory reset"* (page 6 of the tour, both languages) and
+  *"While locked ... even a factory reset is no longer possible!"* (the FAQ).
+  Neither has ever been true: a locked phone in trial mode is wiped from
+  Settings or recovery like any other. They describe **permanent mode**, which
+  now exists — so the fix is to say *in permanent mode* rather than to soften
+  the claim, and to say that trial mode is what a phone starts in. The FAQ's
+  *"cannot be removed at all without a factory reset"* is right for both modes
+  and needs nothing. This is the one item in this list that is a correctness
+  problem rather than a gap.
 
 Remember `site/` is generated: edit `site-src/` and `tools/build-site.py`, run
 `python3 tools/build-site.py`, and commit what it writes. Hand-edited HTML in

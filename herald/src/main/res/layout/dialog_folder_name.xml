@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    One field, in a container that carries the padding.
+
+    The field used to be built in code with setPadding on the EditText itself,
+    which pads the *text* away from the field's own underline rather than
+    insetting the field within the dialog: the text sat indented while the
+    underline still ran the full width. Same paddings as dialog_bookmark_edit,
+    so the two dialogs line up with each other.
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingStart="24dp"
+    android:paddingTop="16dp"
+    android:paddingEnd="24dp"
+    android:paddingBottom="0dp">
+
+    <EditText
+        android:id="@+id/folderNameField"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/bookmark_field_title"
+        android:importantForAutofill="no"
+        android:inputType="textCapSentences"
+        android:maxLines="1"
+        tools:ignore="LabelFor" />
+</LinearLayout>

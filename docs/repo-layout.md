@@ -54,7 +54,7 @@ dpc/src/main/java/app/drawbridge/dpc/
   apps/store/                the store rule: StoreCatalogue, StoreListing, StoreScan
   admin/                     Device Owner: provisioning, the admin receiver, the log
   curfew/                    CurfewController and its worker — the evening with no internet
-  security/                  ParentKey and the lock timer
+  security/                  ParentKey, the lock timer, and Permanence — trial or permanent
   update/                    AppInstaller — installs herald and drawbridge itself
   policy/SelectionProvider.kt  the content provider herald reads the selection from
   ui/                        MainActivity, LockActivity, RemoveActivity, DiagnosticsActivity,

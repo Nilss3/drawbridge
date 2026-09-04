@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Mono heeft precies één tabblad, dus enkelvoud. app_name staat hier niet:
+    "herald mono" is een naam en blijft in elke taal hetzelfde.
+-->
+<resources>
+    <string name="menu_quit">Tabblad sluiten en afsluiten</string>
+</resources>

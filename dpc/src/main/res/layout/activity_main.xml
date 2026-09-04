@@ -25,6 +25,86 @@
         android:paddingTop="8dp"
         android:paddingBottom="32dp">
 
+        <!--
+            Above the language picker, which is otherwise first on the screen.
+
+            It earns that place by not being a decision. Everything below it is
+            something the parent chooses; this says what the phone already *is*,
+            and a parent who has forgotten which of the two phones they set up is
+            the trial one should not have to go looking. It is also the one line
+            on this screen that changes what the overflow menu contains, so it
+            belongs where the menu is.
+
+            Two states, one card. In trial mode it offers the button; afterwards
+            it drops the button and keeps the ⓘ, because the state is still worth
+            stating and the explanation is still worth having. It never
+            disappears — a banner that vanished on being pressed would leave the
+            parent with no confirmation that anything happened, and no way back
+            to the text that told them what they had done.
+        -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/permanenceNotice"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="24dp"
+            android:layout_marginBottom="20dp"
+            app:cardElevation="0dp"
+            app:strokeWidth="1dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingStart="16dp"
+                android:paddingTop="4dp"
+                android:paddingEnd="4dp"
+                android:paddingBottom="6dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/permanenceTitle"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textAppearance="?attr/textAppearanceTitleSmall" />
+
+                    <ImageButton
+                        android:id="@+id/permanenceInfo"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:scaleType="center"
+                        android:src="@drawable/ic_info" />
+                </LinearLayout>
+
+                <!--
+                    Deliberately not match_parent: a full-width button here would
+                    read as the action of the screen, and the action of this
+                    screen is Lock.
+
+                    **No margin, and it used to carry a negative one.** -4dp put
+                    the button's border 11px to the *left* of the title above it
+                    while its label sat 52px to the right, so neither edge lined
+                    up with anything — measured on the API 36 emulator, where the
+                    card's content box starts at x=105 and the button started at
+                    x=94. Flush at zero, the border and the title share a left
+                    edge, and the label is indented inside its own box the way
+                    every other button on this screen is.
+                -->
+                <Button
+                    android:id="@+id/permanenceButton"
+                    style="?attr/materialButtonOutlinedStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/permanence_action" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
         <TextView
             style="@style/TextAppearance.Drawbridge.SectionHeading.First"
             android:layout_width="match_parent"

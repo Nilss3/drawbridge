@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    herald in het Nederlands.
+
+    Er is geen taalkiezer in herald en die hoort er ook niet: Android kiest deze
+    map zelf op basis van de systeemtaal. drawbridge heeft er wel een, omdat een
+    per-app-taal daar iets is wat de ouder instelt; zie Languages.kt daar.
+
+    Niet vertaald, en met opzet: herald, drawbridge en uBlock Origin zijn namen.
+-->
+<resources>
+
+    <string name="toolbar_hint">Zoek of voer een adres in</string>
+    <string name="share_via">Delen via</string>
+
+    <string name="menu_forward">Vooruit</string>
+    <string name="menu_refresh">Vernieuwen</string>
+    <string name="menu_stop">Stoppen</string>
+    <string name="menu_new_tab">Nieuw tabblad</string>
+    <string name="menu_add_bookmark">Bladwijzer toevoegen</string>
+    <string name="menu_share">Delen</string>
+    <string name="menu_find_in_page">Zoeken op pagina</string>
+    <string name="menu_desktop_site">Desktopsite</string>
+    <string name="menu_reader_view">Leesweergave</string>
+    <string name="menu_reader_view_options">Opties voor leesweergave</string>
+    <string name="reader_view_off">Leesweergave uitzetten</string>
+    <string name="menu_show_colour">Deze pagina in kleur tonen</string>
+    <string name="pause_message">Even nadenken terwijl de pagina laadt</string>
+    <string name="menu_bookmarks">Bladwijzers</string>
+    <string name="menu_history">Geschiedenis</string>
+    <string name="menu_passwords">Opgeslagen wachtwoorden</string>
+    <string name="menu_settings">Instellingen</string>
+    <string name="menu_quit">Tabbladen sluiten en afsluiten</string>
+
+    <string name="tabs_tray_title">Tabbladen</string>
+    <string name="tabs_tray_new_tab">Nieuw tabblad</string>
+    <string name="tabs_tray_close_tab">Tabblad sluiten</string>
+    <string name="tabs_tray_close_all">Alles sluiten</string>
+    <string name="tabs_tray_done">Klaar</string>
+
+    <string name="entry_delete">Verwijderen</string>
+    <string name="action_clear_all">Alles wissen</string>
+    <string name="history_empty">Nog geen geschiedenis.</string>
+    <string name="history_search_hint">Geschiedenis doorzoeken</string>
+    <string name="history_no_results">Geen enkele pagina komt overeen.</string>
+    <string name="history_clear_all_title">Alle geschiedenis wissen?</string>
+    <string name="history_clear_all_message">Elke pagina die je bezocht hebt wordt vergeten. Dit kan niet ongedaan gemaakt worden.</string>
+    <string name="bookmarks_empty">Nog geen bladwijzers.</string>
+    <string name="bookmarks_folder_empty">Deze map is leeg.</string>
+    <string name="bookmarks_search_hint">Bladwijzers doorzoeken</string>
+    <string name="bookmarks_search_results">Zoekresultaten</string>
+    <string name="bookmarks_no_results">Geen enkele bladwijzer komt overeen.</string>
+    <string name="bookmarks_new_folder">Nieuwe map</string>
+    <string name="bookmarks_edit_folder">Map bewerken</string>
+    <string name="bookmarks_create">Aanmaken</string>
+    <string name="bookmarks_save">Opslaan</string>
+    <string name="bookmarks_incomplete">Vul eerst elk veld in.</string>
+    <string name="bookmark_reorder">Herschikken</string>
+    <string name="bookmarks_select_all">Alles selecteren</string>
+    <string name="bookmarks_move_to_folder">Verplaatsen naar map…</string>
+    <string name="bookmarks_delete_selected">Verwijderen</string>
+    <string name="bookmarks_selected_count">%1$d geselecteerd</string>
+    <string name="bookmarks_delete_selected_title">De geselecteerde items verwijderen?</string>
+    <string name="bookmarks_delete_selected_message">Een map verwijderen verwijdert ook alles wat erin zit. Dit kan niet ongedaan gemaakt worden.</string>
+    <string name="bookmarks_moved">%1$d verplaatst</string>
+    <string name="bookmarks_move_into_itself">Een map kan niet in zichzelf verplaatst worden.</string>
+    <string name="bookmarks_clear_all_title">Elke bladwijzer verwijderen?</string>
+    <string name="bookmarks_clear_all_message">Elke bladwijzer en map wordt verwijderd. Dit kan niet ongedaan gemaakt worden.</string>
+    <string name="bookmark_actions">Bladwijzeracties</string>
+    <string name="bookmark_edit">Bladwijzer bewerken</string>
+    <string name="bookmark_field_title">Naam</string>
+    <string name="bookmark_field_url">Adres</string>
+    <string name="bookmark_field_folder">Map</string>
+    <string name="bookmark_added">Bladwijzer toegevoegd</string>
+
+    <string name="bookmarks_import">Bladwijzers importeren…</string>
+    <string name="bookmarks_import_action">Importeren</string>
+    <string name="bookmarks_export">Bladwijzers exporteren…</string>
+    <string name="bookmarks_imported_folder">Geïmporteerd %1$s</string>
+    <plurals name="bookmarks_import_confirm">
+        <item quantity="one">%1$d bladwijzer in een nieuwe map importeren?</item>
+        <item quantity="other">%1$d bladwijzers in een nieuwe map importeren?</item>
+    </plurals>
+    <plurals name="bookmarks_import_confirm_truncated">
+        <item quantity="one">Het bestand is groter dan herald leest. De eerste %1$d bladwijzer in een nieuwe map importeren?</item>
+        <item quantity="other">Het bestand is groter dan herald leest. De eerste %1$d bladwijzers in een nieuwe map importeren?</item>
+    </plurals>
+    <plurals name="bookmarks_imported">
+        <item quantity="one">%1$d bladwijzer geïmporteerd</item>
+        <item quantity="other">%1$d bladwijzers geïmporteerd</item>
+    </plurals>
+    <string name="bookmarks_import_nothing">Geen bladwijzers gevonden in dat bestand.</string>
+    <string name="bookmarks_exported">Bladwijzers geëxporteerd</string>
+    <string name="bookmarks_transfer_failed">Kon dat bestand niet lezen of schrijven.</string>
+    <string name="logins_empty">Nog geen opgeslagen wachtwoorden.</string>
+    <string name="logins_search_hint">Opgeslagen wachtwoorden doorzoeken</string>
+    <string name="logins_no_results">Geen enkel opgeslagen wachtwoord komt overeen.</string>
+    <string name="logins_no_username">(geen gebruikersnaam)</string>
+    <string name="logins_clear_all_title">Elk opgeslagen wachtwoord verwijderen?</string>
+    <string name="logins_clear_all_message">Elk opgeslagen wachtwoord wordt van deze telefoon verwijderd. Ze staan nergens anders bewaard en dit kan niet ongedaan gemaakt worden.</string>
+
+    <string name="settings_category_general">Algemeen</string>
+    <string name="settings_new_tab_bookmarks">Bladwijzers op nieuwe tabbladen</string>
+    <string name="settings_new_tab_bookmarks_summary">Toon de bladwijzerlijst in plaats van een lege pagina.</string>
+    <string name="settings_category_search">Zoeken</string>
+    <string name="settings_search_engine">Zoekmachine</string>
+    <string name="settings_search_engine_loading">Laden…</string>
+    <string name="settings_category_filter">Inhoudsfilter</string>
+    <string name="settings_filter_status">Filterstatus</string>
+    <string name="settings_filter_status_summary">Beleidsversie %1$d, laatst bijgewerkt %2$s</string>
+    <string name="settings_filter_never_checked">nooit</string>
+    <string name="settings_check_for_updates">Controleren op updates</string>
+    <string name="settings_check_for_updates_summary">Wordt automatisch één keer per dag gecontroleerd. Tik om nu te controleren.</string>
+    <string name="settings_ad_blocker">Advertentieblokkering</string>
+    <string name="settings_ad_blocker_summary">De eigen filters, schakelaars per site en elementkiezer van uBlock Origin</string>
+    <string name="settings_filter_updated">Filter bijgewerkt (beleidsversie %1$d)</string>
+    <string name="settings_filter_update_failed">Kon de beleidsserver niet bereiken</string>
+    <string name="settings_category_privacy">Privacy</string>
+    <string name="settings_clear_browsing_data">Browsegegevens wissen</string>
+    <string name="settings_browsing_data_cleared">Browsegegevens gewist</string>
+    <string name="settings_category_about">Over</string>
+    <string name="settings_version">Versie</string>
+
+    <string name="blocked_page_heading">drawbridge staat omhoog</string>
+    <string name="offline_page_curfew_heading">drawbridge staat omhoog</string>
+    <string name="offline_page_curfew_message">Deze telefoon is offline tot de avondklok voorbij is.</string>
+    <string name="offline_page_offline_heading">Deze telefoon is offline</string>
+    <string name="offline_page_offline_message">Drawbridge is ingesteld om deze telefoon van het internet te houden.</string>
+    <string name="offline_page_until">Weer online om %1$s</string>
+</resources>

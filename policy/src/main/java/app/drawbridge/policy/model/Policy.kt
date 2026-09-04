@@ -574,10 +574,25 @@ data class BrowserPolicy(
     @SerialName("blocked_page_title")
     val blockedPageTitle: String = "drawbridge is up",
 
+    /**
+     * Translations of [blockedPageTitle], keyed by two-letter language code.
+     *
+     * The block page is the one screen in herald whose words come from the
+     * document rather than from `values-xx`, so it was the one screen that
+     * stayed English on a Dutch phone while everything around it turned. Same
+     * shape and same fallback as a profile's `name_i18n`.
+     */
+    @SerialName("blocked_page_title_i18n")
+    val blockedPageTitleByLanguage: Map<String, String> = emptyMap(),
+
     /** The line under the heading on herald's block page. */
     @SerialName("blocked_page_message")
     val blockedPageMessage: String =
         "This website was denied access to your device, life and soul.",
+
+    /** Translations of [blockedPageMessage]. */
+    @SerialName("blocked_page_message_i18n")
+    val blockedPageMessageByLanguage: Map<String, String> = emptyMap(),
 
     /**
      * Finer-grained than DNS can be: regular expressions matched against the
@@ -593,7 +608,15 @@ data class BrowserPolicy(
      */
     @SerialName("blocked_hosts")
     val blockedHosts: List<String> = emptyList(),
-)
+) {
+    /** [blockedPageTitle] in [language], or the untranslated original. */
+    fun displayBlockedPageTitle(language: String): String =
+        pick(blockedPageTitle, blockedPageTitleByLanguage, language)
+
+    /** [blockedPageMessage] in [language], or the untranslated original. */
+    fun displayBlockedPageMessage(language: String): String =
+        pick(blockedPageMessage, blockedPageMessageByLanguage, language)
+}
 
 @Serializable
 data class BlocklistSource(

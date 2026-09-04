@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">herald</string>
+    <!-- A name, not a word: the same in every language. -->
+    <string name="app_name" translatable="false">herald</string>
 
     <string name="toolbar_hint">Search or enter address</string>
     <string name="share_via">Share via</string>
@@ -15,6 +16,7 @@
     <string name="menu_desktop_site">Desktop site</string>
     <string name="menu_reader_view">Reader view</string>
     <string name="menu_reader_view_options">Reader view options</string>
+    <string name="reader_view_off">Turn off reader view</string>
     <string name="menu_show_colour">Show this page in colour</string>
     <string name="pause_message">Pause to think while loading</string>
     <string name="menu_bookmarks">Bookmarks</string>
@@ -37,6 +39,8 @@
     <string name="history_empty">No history yet.</string>
     <string name="history_search_hint">Search history</string>
     <string name="history_no_results">No pages match that.</string>
+    <string name="history_clear_all_title">Clear all history?</string>
+    <string name="history_clear_all_message">Every page you have visited is forgotten. This cannot be undone.</string>
     <string name="bookmarks_empty">No bookmarks yet.</string>
     <string name="bookmarks_folder_empty">This folder is empty.</string>
     <string name="bookmarks_search_hint">Search bookmarks</string>
@@ -47,6 +51,15 @@
     <string name="bookmarks_create">Create</string>
     <string name="bookmarks_save">Save</string>
     <string name="bookmarks_incomplete">Fill in every field first.</string>
+    <string name="bookmark_reorder">Reorder</string>
+    <string name="bookmarks_select_all">Select all</string>
+    <string name="bookmarks_move_to_folder">Move to folder…</string>
+    <string name="bookmarks_delete_selected">Delete</string>
+    <string name="bookmarks_selected_count">%1$d selected</string>
+    <string name="bookmarks_delete_selected_title">Delete the selected items?</string>
+    <string name="bookmarks_delete_selected_message">Deleting a folder deletes everything inside it. This cannot be undone.</string>
+    <string name="bookmarks_moved">Moved %1$d</string>
+    <string name="bookmarks_move_into_itself">A folder cannot be moved into itself.</string>
     <string name="bookmarks_clear_all_title">Remove every bookmark?</string>
     <string name="bookmarks_clear_all_message">Every bookmark and folder is deleted. This cannot be undone.</string>
     <string name="bookmark_actions">Bookmark actions</string>
@@ -79,6 +92,8 @@
     <string name="logins_search_hint">Search saved passwords</string>
     <string name="logins_no_results">No saved passwords match that.</string>
     <string name="logins_no_username">(no username)</string>
+    <string name="logins_clear_all_title">Delete every saved password?</string>
+    <string name="logins_clear_all_message">Every saved password is deleted from this phone. They are stored nowhere else and this cannot be undone.</string>
 
     <string name="settings_category_general">General</string>
     <string name="settings_new_tab_bookmarks">Bookmarks on new tabs</string>

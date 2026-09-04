@@ -3,11 +3,34 @@
 There are two ways off a managed device. One is clean and loses nothing; the
 other wipes the phone.
 
+**Which of them you have depends on the mode**, and every phone starts in the
+first one:
+
+| | unlocked | locked |
+|---|---|---|
+| **trial** | deactivate from the menu, then uninstall | factory reset |
+| **permanent** | factory reset | factory reset, after unlocking |
+
+**Trial mode** is what a phone is when you set it up, and what this whole file
+describes unless it says otherwise. **Permanent mode** is a button at the top of
+the configuration screen — *Make it permanent* — that takes the first column
+away for good: the menu entry below stops being offered, and once the phone is
+locked the factory reset needs the key too. There is no way back to trial mode
+from the phone, which is the point of it; see
+[design-decisions](design-decisions.md#trial-mode-is-the-default-and-permanence-is-a-one-way-door).
+
+If the key is lost on a permanent phone, the way back is the thirty-day timer in
+[If the key is gone](#if-the-key-is-gone) below — the same door, and on a
+permanent phone it is the only one.
+
 ## The sanctioned way
 
 Open **drawbridge**, type the key you were given when the phone was locked, then
 **⋮ → Deactivate drawbridge restrictions**. It is in the overflow menu rather
 than on the screen, because it happens once in the life of a phone.
+
+**On a phone in permanent mode that entry is not there**, and nothing else on the
+phone does this job. Skip to [the other way](#the-other-way-a-factory-reset).
 
 Nothing else is asked for. Getting past the lock screen already answered the only
 question there is, and asking the same thing twice is ceremony rather than
@@ -55,14 +78,25 @@ from the record's point of view it is one.
 
 ### If the key is gone
 
-There is no way back into the *settings*. This is a deliberate design choice, and
-the price of having no account: an email reset would reintroduce exactly the
-dependency the project exists to avoid.
+There is no way *straight* back into the settings, and there is no reset link.
+That is a deliberate design choice and the price of having no account: an email
+reset would reintroduce exactly the dependency the project exists to avoid.
 
-The phone itself is not lost, though. A factory reset — from Settings or from
-recovery — always works and always has drawbridge off the other side of it. You
-lose the data on the device, which is the same thing you would lose by replacing
-the phone, and nothing more. See the destructive path below.
+**What there is instead is a clock.** On the lock screen, **⋮ → Forgot the
+code** starts a thirty-day timer, after which the phone unlocks itself. Anybody
+holding the phone can start it — there is no way to tell a parent who lost a
+piece of paper from a teenager who says they did — and what makes that
+survivable is that it is slow and loud: the keyguard names the date for every one
+of those thirty days, and typing the key in cancels it. It can only be started
+when no other timer is already running, and it is the only door on a phone in
+permanent mode.
+
+The phone itself is not lost either. **In trial mode** a factory reset — from
+Settings or from recovery — always works and always has drawbridge off the other
+side of it. You lose the data on the device, which is the same thing you would
+lose by replacing the phone, and nothing more. See the destructive path below.
+**In permanent mode** the reset needs the phone unlocked first, so it is the
+timer above, and then the wipe.
 
 Wrong attempts are **not** throttled, and do not need to be. The key is twenty
 Crockford base-32 characters — a hundred bits — so guessing is not a threat
@@ -75,20 +109,27 @@ Booting into hardware recovery mode (usually power + volume) and choosing "Wipe
 data / factory reset" removes everything, including drawbridge. A factory reset
 from Settings does the same.
 
-**Both routes stay open on purpose.** drawbridge does not set
-`DISALLOW_FACTORY_RESET`, and an earlier version that did has been corrected —
-that restriction turned out to strip the wipe entry out of the *recovery menu*
-too, not merely out of Settings, which is documented nowhere and was measured on
-a Moto G15 on 2026-08-07. A phone whose key had been lost was then reclaimable
-only by reflashing firmware from a PC. Nothing this project protects is worth a
-dead handset, so nothing prevents a reset any more.
+**Both routes stay open on purpose in trial mode**, which is every phone that has
+not been made permanent. drawbridge does not set `DISALLOW_FACTORY_RESET` there,
+and an early version that set it unconditionally was corrected — that restriction
+turned out to strip the wipe entry out of the *recovery menu* too, not merely out
+of Settings, which is documented nowhere and was measured on a Moto G15 on
+2026-08-07. A phone whose key had been lost was then reclaimable only by
+reflashing firmware from a PC. Nothing this project protects is worth a dead
+handset, so nothing prevents a reset unless somebody deliberately asks for it.
 
 What holds the line instead is Factory Reset Protection and the protected-since
 date, both described below.
 
+**In permanent mode, on a locked phone, both routes are shut** — Settings and
+recovery alike, for the reason just described. Unlocking opens them again, so the
+sequence is the key (or the thirty-day timer above), then the wipe. That is the
+whole of what permanent mode buys and the whole of what it costs; the decision is
+in [design-decisions](design-decisions.md#trial-mode-is-the-default-and-permanence-is-a-one-way-door).
+
 If you are looking at a phone provisioned by an older build and it still refuses
-to offer a reset, open drawbridge once: the restriction is cleared on sight from
-version 0.2.0 onwards.
+to offer a reset, open drawbridge once: from version 0.2.0 onwards the
+restriction is cleared from any phone that is not both permanent and locked.
 
 What happens next depends on the device:
 

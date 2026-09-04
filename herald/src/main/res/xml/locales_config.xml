@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    The languages herald is translated into. From API 33 the system reads this
+    to build the per-app language entry in Settings.
+
+    herald has no picker of its own and should not get one: it follows the
+    phone, which is the whole point. This file only lets someone override that
+    from Settings for herald alone — the same door drawbridge offers inside its
+    own screens, in the place Android puts it.
+
+    Keep it in step with the values-xx folders.
+-->
+<locale-config xmlns:android="http://schemas.android.com/apk/res/android">
+    <locale android:name="en" />
+    <locale android:name="nl" />
+    <locale android:name="fr" />
+</locale-config>

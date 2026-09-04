@@ -15,6 +15,7 @@ import app.drawbridge.dpc.apps.store.StoreCatalogue
 import app.drawbridge.dpc.security.LockTimer
 import app.drawbridge.dpc.security.LockTimerController
 import app.drawbridge.dpc.security.ParentKey
+import app.drawbridge.dpc.security.Permanence
 import app.drawbridge.dpc.vpn.DnsFilterService
 
 /**
@@ -32,9 +33,21 @@ class RemoveActivity : AppCompatActivity() {
 
     private val parentKey by lazy { ParentKey(this) }
     private val deviceOwner by lazy { DeviceOwnerManager(this) }
+    private val permanence by lazy { Permanence(this) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Permanent mode is the absence of this screen, so it closes before it
+        // draws — no message, because there is nothing to tell somebody who
+        // cannot have arrived here through the menu that hides the item. What
+        // this catches is a stale menu, a restored task, or a future entrance
+        // somebody adds without reading [Permanence].
+        if (permanence.isPermanent) {
+            finish()
+            return
+        }
+
         setContentView(R.layout.activity_remove)
 
         findViewById<View>(R.id.root).applyScreenInsets()
@@ -89,6 +102,10 @@ class RemoveActivity : AppCompatActivity() {
         // should ask the store afresh rather than believe a cache from before it
         // was removed.
         StoreCatalogue(this).clear()
+        // Unreachable while it is set — this activity is what permanence
+        // forecloses — and cleared here so the list of device-local state that
+        // goes on the way out stays complete. See [Permanence.clear].
+        permanence.clear()
 
         val message = when {
             !wasOwner -> getString(R.string.remove_done_not_owner)

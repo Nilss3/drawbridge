@@ -66,6 +66,54 @@ class BookmarkRepository(private val storage: PlacesBookmarksStorage) {
         Unit
     }
 
+    /**
+     * Puts [guid] at [position] among its siblings, or moves it into
+     * [parentGuid] at that position.
+     *
+     * `position` has been null everywhere else in this file, which means
+     * *append* — fine for adding, useless for arranging. Places keeps children
+     * in position order and both the bookmarks screen and the new tab page read
+     * them in the order it returns, so writing a position here is the whole of
+     * reordering: nothing sorts on top of it.
+     */
+    suspend fun move(guid: String, parentGuid: String, position: Int) = io {
+        storage.updateNode(
+            guid,
+            BookmarkInfo(
+                parentGuid = parentGuid,
+                position = position.coerceAtLeast(0).toUInt(),
+                // Null leaves each field as it is; this call is about where the
+                // node sits, not what it says.
+                title = null,
+                url = null,
+            ),
+        )
+        Unit
+    }
+
+    /**
+     * Moves several nodes into [parentGuid], keeping the order they were given
+     * in and appending them after whatever is already there.
+     *
+     * Sequential rather than concurrent on purpose: positions are relative to
+     * siblings, so two moves racing into the same folder can land on the same
+     * index and the loser is silently reordered.
+     */
+    suspend fun moveInto(guids: List<String>, parentGuid: String) = io {
+        val start = children(parentGuid).size
+        guids.forEachIndexed { offset, guid ->
+            storage.updateNode(
+                guid,
+                BookmarkInfo(
+                    parentGuid = parentGuid,
+                    position = (start + offset).toUInt(),
+                    title = null,
+                    url = null,
+                ),
+            )
+        }
+    }
+
     suspend fun delete(guid: String) = io {
         storage.deleteNode(guid)
         Unit

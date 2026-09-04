@@ -526,9 +526,12 @@ class LockActivity : AppCompatActivity() {
         // restrictions or the filter — so the line stays and only the date goes.
         val deviceOwner = DeviceOwnerManager(this)
         deviceOwner.updateLockScreenInfo()
-        // One restriction does come off: USB debugging, which follows the lock
-        // rather than the protection so that a parent holding the key can put a
-        // fix on the phone over a cable. See DeviceOwnerManager.restrictionsFor.
+        // One restriction does come off, and on a permanent phone two: USB
+        // debugging, which follows the lock rather than the protection so that a
+        // parent holding the key can put a fix on the phone over a cable, and —
+        // in permanent mode only — the factory reset, because unlocking is
+        // exactly what permanence says gives the wipe back. See
+        // DeviceOwnerManager.restrictionsFor.
         deviceOwner.applyUserRestrictions()
 
         // And the phone comes back online, whatever the disconnect philosophy

@@ -20,6 +20,8 @@ class LoginsActivity : EntryListActivity() {
     override val emptyMessageResId = R.string.logins_empty
     override val searchHintResId = R.string.logins_search_hint
     override val noResultsMessageResId = R.string.logins_no_results
+    override val clearAllTitleResId = R.string.logins_clear_all_title
+    override val clearAllMessageResId = R.string.logins_clear_all_message
 
     private val storage by lazy { components.core.loginsStorage }
 

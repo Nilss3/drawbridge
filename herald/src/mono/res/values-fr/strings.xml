@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Mono n\'a qu\'un seul onglet, d\'où le singulier. app_name ne figure pas ici :
+    « herald mono » est un nom et reste identique dans toutes les langues.
+-->
+<resources>
+    <string name="menu_quit">Fermer l\'onglet et quitter</string>
+</resources>

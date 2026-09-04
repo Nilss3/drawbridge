@@ -14,6 +14,8 @@ class HistoryActivity : EntryListActivity() {
     override val emptyMessageResId = R.string.history_empty
     override val searchHintResId = R.string.history_search_hint
     override val noResultsMessageResId = R.string.history_no_results
+    override val clearAllTitleResId = R.string.history_clear_all_title
+    override val clearAllMessageResId = R.string.history_clear_all_message
 
     private val storage by lazy { components.core.historyStorage }
 
