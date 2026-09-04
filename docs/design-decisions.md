@@ -1819,6 +1819,14 @@ Watched working end to end on the API 36 emulator as a real Device Owner on
 straight back off. The trial-locked run is the one worth having — it is the
 regression that would have stranded every phone already in the field.
 
+**And on hardware the same day, in both directions**, which is the half the
+emulator cannot supply: `dumpsys` proves the restriction is set, only a handset
+proves that it reaches the recovery menu. Locked and permanent, the dev phone
+offered no wipe in Settings and none in recovery; unlocked, it was back in both.
+The second half is the one that had to hold — a restriction that goes on and
+does not come off is the failure this restriction was retired for, and it is the
+promise the confirmation dialog makes before an irreversible button.
+
 ## A factory reset is prevented only in permanent mode
 
 **Until 2026-09-04 this section said drawbridge never prevented one, and the

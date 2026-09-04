@@ -213,21 +213,29 @@ the key can always unlock and put a build on the phone. See
 
 **Watched working on hardware**, most recently on 2026-09-04 with build 47:
 
-- **Permanent mode takes the factory reset out of the recovery menu**, confirmed
-  by the owner on the dev phone on 2026-09-04, hours after build 47 shipped. This
-  is the August measurement reproducing through the *new* wiring, and it is the
-  half an emulator cannot show: `dumpsys` proves the restriction is set, and only
-  a handset proves what the restriction actually does. A phone that is permanent
-  and locked offers no wipe in Settings **and none in recovery**.
+- **Permanent mode takes the factory reset out of the recovery menu, and
+  unlocking gives it back** — both watched by the owner on the dev phone on
+  2026-09-04, hours after build 47 shipped. Locked, the phone offers no wipe in
+  Settings **and none in recovery**; unlocked, it is back in both.
 
-  Which means the four cells are now measured in the two places that matter —
-  the emulator for the state machine (all four, including trial-and-locked, the
-  one that would have stranded every phone in the field), hardware for the
-  consequence. What remains unwatched is the way back: **nobody has watched
-  `no_factory_reset` come off a real handset on unlock.** It comes off on the
-  emulator, and `applyUserRestrictions` is the same code on both, so this is a
-  loose end rather than a doubt — but it is the loose end that matters most,
-  because it is the claim the confirmation dialog makes.
+  This is the half an emulator cannot show. `dumpsys` proves the restriction is
+  *set*; only a handset proves what the restriction *does*, and the thing it
+  does — reaching into the hardware recovery menu — is documented nowhere and is
+  the entire reason this feature is opt-in and one way rather than the default.
+  The August measurement therefore reproduces through the new conditional
+  wiring, in both directions.
+
+  **The second half is the one that had to hold.** A restriction that goes on
+  and does not come off is the failure this project retired it for, and it is
+  the promise the confirmation dialog makes to a parent before they press an
+  irreversible button: *drawbridge will need to be unlocked (through key or
+  timer) for factory reset to become available again.* That sentence is now
+  measured rather than reasoned.
+
+  So permanence is watched working in the two places that matter — the emulator
+  for the state machine, all four cells including trial-and-locked, the one that
+  would have stranded every phone in the field; hardware for the consequence,
+  both ways. Nothing about it is left on inference.
 
 - **Android Auto connects wirelessly with the filter running.** Confirmed in the
   car on 2026-08-19, which closes the one thing this project had shipped and
