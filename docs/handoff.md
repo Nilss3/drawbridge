@@ -211,7 +211,23 @@ the key can always unlock and put a build on the phone. See
 
 ## What has been watched working, and what has not
 
-**Watched working on hardware**, most recently on 2026-08-19 with build 40:
+**Watched working on hardware**, most recently on 2026-09-04 with build 47:
+
+- **Permanent mode takes the factory reset out of the recovery menu**, confirmed
+  by the owner on the dev phone on 2026-09-04, hours after build 47 shipped. This
+  is the August measurement reproducing through the *new* wiring, and it is the
+  half an emulator cannot show: `dumpsys` proves the restriction is set, and only
+  a handset proves what the restriction actually does. A phone that is permanent
+  and locked offers no wipe in Settings **and none in recovery**.
+
+  Which means the four cells are now measured in the two places that matter —
+  the emulator for the state machine (all four, including trial-and-locked, the
+  one that would have stranded every phone in the field), hardware for the
+  consequence. What remains unwatched is the way back: **nobody has watched
+  `no_factory_reset` come off a real handset on unlock.** It comes off on the
+  emulator, and `applyUserRestrictions` is the same code on both, so this is a
+  loose end rather than a doubt — but it is the loose end that matters most,
+  because it is the claim the confirmation dialog makes.
 
 - **Android Auto connects wirelessly with the filter running.** Confirmed in the
   car on 2026-08-19, which closes the one thing this project had shipped and
@@ -257,14 +273,6 @@ the key can always unlock and put a build on the phone. See
   been on this list since build 30.
 - **A second person installing any of this**, from the website, without the
   author in the room.
-- **Permanent mode on real hardware.** All four cells of its matrix were watched
-  on the API 36 emulator as a Device Owner on 2026-09-04, which is where the
-  restriction's *presence* can be measured. What an emulator cannot show is the
-  thing that retired this restriction in the first place: whether the wipe entry
-  really disappears from a **hardware recovery menu**, and comes back on unlock.
-  That was measured on a Moto G15 in August and should be measured again the
-  first time a phone is made permanent — deliberately, on the G15 and never on
-  the alpha.
 - **Mono's slower fling on a real phone.** It is measured and watched working on
   the emulator, where scrolling is a scripted swipe rather than a thumb — see
   [next step 12](#12-herald-mono-take-out-always-on-reader-view--done-2026-08-19).
@@ -306,6 +314,15 @@ Each of these looks like a bug and is not, or bites silently:
 - **Testing removal wipes the key**, and so does `pm clear`. Both leave the
   device unlocked, which is right — but it means a test run never exercises the
   challenge screen unless you lock again first.
+
+  **`pm clear` takes permanent mode with it**, since the flag is a preference
+  like every other device-local setting. Inferred from the line above rather
+  than measured, and it follows: same `shared_prefs` directory, same wipe. That
+  is the only way back to trial mode on a dev phone short of a factory reset,
+  and it is not a hole in permanence — `pm clear` already unlocks a locked
+  drawbridge outright, and it is reachable only over adb, which
+  `DISALLOW_DEBUGGING_FEATURES` takes away for as long as the lock holds. On a
+  release handset the cable is the key holder's tool, not a bypass.
 - **The reveal screen cannot be screenshotted.** `FLAG_SECURE` is on it
   deliberately, so `screencap` returns black and there is no way to read the key
   back out of an image. Use `adb shell uiautomator dump`, which is not blocked.
