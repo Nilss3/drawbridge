@@ -1,7 +1,7 @@
 {
-  "version": 105,
-  "issued_at": "2026-09-02T11:10:00Z",
-  "comment": "DEV CHANNEL ONLY. Adds Dutch and French to the block page. Its heading and message come from this document rather than from herald's string resources, so that the wording can change without shipping a browser \u2014 which also made it the one screen that stayed English on a Dutch phone while every screen around it turned. blocked_page_title_i18n and blocked_page_message_i18n are the same shape and same fallback as a profile's name_i18n, so a build that has never heard of them ignores them and shows English. Nothing else changes: required_apps still names herald 0.1.18 at v0.2.8-dev.9 and app_update still names drawbridge build 46. 369 blocked packages.",
+  "version": 106,
+  "issued_at": "2026-09-02T12:05:00Z",
+  "comment": "DEV CHANNEL ONLY. Pins herald 0.1.19, which reads the block page translations policy 105 added and follows the phone's language for everything else. required_apps moves to this channel's own v0.2.8-dev.10 assets at version_code 19; app_update is untouched and still names drawbridge build 46, which has not changed \u2014 the block page i18n fields are additive with defaults, so the dpc parses this document without a rebuild. 369 blocked packages.",
   "dns": {
     "upstreams": [
       "94.140.14.15",
@@ -832,44 +832,44 @@
   "required_apps": [
     {
       "package_name": "app.drawbridge.herald",
-      "version_code": 18,
-      "url": "https://github.com/Nilss3/drawbridge/releases/download/v0.2.8-dev.9/herald-arm64-v8a-release.apk",
-      "sha256": "4bee435a70a136c56647aef7a215b6fdb6f46b48f38e8b099538821783bc5ad5",
+      "version_code": 19,
+      "url": "https://github.com/Nilss3/drawbridge/releases/download/v0.2.8-dev.10/herald-arm64-v8a-release.apk",
+      "sha256": "5911c2020aecb64ca32d3b590998eba1c18af54273ba3ac7d307ea39b5ee4061",
       "abi": "arm64-v8a"
     },
     {
       "package_name": "app.drawbridge.herald",
-      "version_code": 18,
-      "url": "https://github.com/Nilss3/drawbridge/releases/download/v0.2.8-dev.9/herald-armeabi-v7a-release.apk",
-      "sha256": "6f47bf1f041f4151f35d967241d4b32cd5269451111da88bd2c1b538d249567c",
+      "version_code": 19,
+      "url": "https://github.com/Nilss3/drawbridge/releases/download/v0.2.8-dev.10/herald-armeabi-v7a-release.apk",
+      "sha256": "0ec1f567080ba041d9b8a61c4775c8f4afbc3983706d398287a3171bd16c3092",
       "abi": "armeabi-v7a"
     },
     {
       "package_name": "app.drawbridge.herald",
-      "version_code": 18,
-      "url": "https://github.com/Nilss3/drawbridge/releases/download/v0.2.8-dev.9/herald-x86_64-release.apk",
-      "sha256": "c00d573b0b7b36c2acc86e06aa93fc929e8a0ada2fe8ae9d5c1c28f825f8bccb",
+      "version_code": 19,
+      "url": "https://github.com/Nilss3/drawbridge/releases/download/v0.2.8-dev.10/herald-x86_64-release.apk",
+      "sha256": "a697c6547670f26a0125598090f06a86dc4b31c01774af8fc4ed0b0e88f881a2",
       "abi": "x86_64"
     },
     {
       "package_name": "app.drawbridge.heraldmono",
-      "version_code": 18,
-      "url": "https://github.com/Nilss3/drawbridge/releases/download/v0.2.8-dev.9/herald-mono-arm64-v8a-release.apk",
-      "sha256": "2605dbf134095242d6b0cc1691f7228bb0325a913f6275b75c1893b634a5c599",
+      "version_code": 19,
+      "url": "https://github.com/Nilss3/drawbridge/releases/download/v0.2.8-dev.10/herald-mono-arm64-v8a-release.apk",
+      "sha256": "baf79e37fd0e4476426b2c962b76eb5ef2d79f26a18eae2367db481f4b546a05",
       "abi": "arm64-v8a"
     },
     {
       "package_name": "app.drawbridge.heraldmono",
-      "version_code": 18,
-      "url": "https://github.com/Nilss3/drawbridge/releases/download/v0.2.8-dev.9/herald-mono-armeabi-v7a-release.apk",
-      "sha256": "8fd22c724fd45fc4a4d79b18b92940fa99e8aae7ca2a2a97af77ef02c32fcfa5",
+      "version_code": 19,
+      "url": "https://github.com/Nilss3/drawbridge/releases/download/v0.2.8-dev.10/herald-mono-armeabi-v7a-release.apk",
+      "sha256": "21d49f9662eb57c91bbbf95e5f6d6c38c0cf5bc68f1bb3a24b543ba2c462d092",
       "abi": "armeabi-v7a"
     },
     {
       "package_name": "app.drawbridge.heraldmono",
-      "version_code": 18,
-      "url": "https://github.com/Nilss3/drawbridge/releases/download/v0.2.8-dev.9/herald-mono-x86_64-release.apk",
-      "sha256": "8322f517f066f033e8fa4819e0054aa3a7f4ae1eac5f8426a9389b4fa661f00e",
+      "version_code": 19,
+      "url": "https://github.com/Nilss3/drawbridge/releases/download/v0.2.8-dev.10/herald-mono-x86_64-release.apk",
+      "sha256": "9de449691cefaad52867016b60fc6f944a69acf53f23f19783468128d9ba737a",
       "abi": "x86_64"
     }
   ],

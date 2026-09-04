@@ -22,8 +22,8 @@ which is kept whole on purpose.
 | | `main` (the alpha) | `dev` |
 |---|---|---|
 | drawbridge | **0.2.21, build 46** | **0.2.21, build 46** |
-| herald | **0.1.17** | **0.1.18** |
-| policy | **103** | **104** |
+| herald | **0.1.17** | **0.1.19** |
+| policy | **103** | **106** |
 | install page | <https://drawbridge-project.pages.dev/install/> | <https://dev.drawbridge-project.pages.dev/install/> |
 | phone | the owner's Nothing Phone (A059) | the Moto G15 |
 
@@ -69,7 +69,7 @@ After switching branches, re-stage:
 
 ```bash
 gh release download v0.2.20.1    --pattern 'herald-*.apk' --dir dist/release --clobber  # main
-gh release download v0.2.8-dev.9 --pattern 'herald-*.apk' --dir dist/release --clobber  # dev
+gh release download v0.2.8-dev.10 --pattern 'herald-*.apk' --dir dist/release --clobber # dev
 shasum -a 256 -c dist/release/SHA256SUMS
 ```
 
