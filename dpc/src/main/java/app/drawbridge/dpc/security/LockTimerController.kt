@@ -91,9 +91,14 @@ class LockTimerController(context: Context) {
      * restriction set are keyed on [ParentKey.protectedSince], which survives
      * this exactly as it survives a parent unlocking to change a setting. What
      * comes back is the configuration screen, USB debugging, and the network —
-     * and, through the configuration screen's overflow menu, the ability to
-     * remove drawbridge altogether. That last one is the point of the forty-day
-     * door and the reason the countdown is on the keyguard.
+     * and, on a phone still in trial mode, the ability to remove drawbridge
+     * altogether from that screen's overflow menu. That last one is the point of
+     * the forty-day door and the reason the countdown is on the keyguard.
+     *
+     * **In permanent mode it is the factory reset that comes back instead**, and
+     * the door leads to the same place by a longer route: the phone can be
+     * wiped, which is what [Permanence] promises an unlocked phone can always
+     * be, but not handed back with its data on it.
      *
      * The order is [app.drawbridge.dpc.ui.LockActivity.attemptUnlock]'s order,
      * for the reasons documented there: the key goes first, because everything
@@ -117,7 +122,9 @@ class LockTimerController(context: Context) {
         // because it is.
         owner.updateLockScreenInfo()
         // USB debugging follows the lock rather than the protection, so this is
-        // where it comes back. See DeviceOwnerManager.restrictionsFor.
+        // where it comes back — and on a phone in permanent mode the factory
+        // reset comes back with it, which is the whole point of the timer being
+        // the answer to a lost key there. See DeviceOwnerManager.restrictionsFor.
         owner.applyUserRestrictions()
         // And the phone comes back online whatever the disconnect philosophy
         // says, because an unlocked drawbridge is a phone somebody is about to

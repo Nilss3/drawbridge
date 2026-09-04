@@ -8,6 +8,16 @@
     <string name="admin_description">Maintient le filtre de contenu actif et empêche de le retirer sans la clé.</string>
     <string name="permission_read_selection">lire la politique drawbridge choisie et ses options</string>
 
+    <!-- Mode d'essai et mode définitif. -->
+    <string name="permanence_trial_title">Drawbridge en mode d\'essai</string>
+    <string name="permanence_permanent_title">Drawbridge est définitif</string>
+    <string name="permanence_action">Rendre définitif</string>
+    <string name="permanence_info_title">Mode d\'essai et mode définitif</string>
+    <string name="permanence_info">Le mode d\'essai sert à tester drawbridge, à l\'essayer, ou simplement à l\'utiliser de façon temporaire. En mode d\'essai, drawbridge se désinstalle plus facilement.\n\nDéverrouillé\nMode d\'essai : drawbridge peut être désactivé depuis le menu, puis désinstallé.\nMode définitif : drawbridge ne peut plus être retiré que par une réinitialisation d\'usine.\n\nVerrouillé\nMode d\'essai : drawbridge peut être retiré par une réinitialisation d\'usine.\nMode définitif : il faut déverrouiller pour pouvoir réinitialiser. Par sécurité, une minuterie de déverrouillage de 30 jours peut être lancée si aucune autre minuterie n\'était en cours et que vous avez oublié la clé.\n\nRendre drawbridge définitif ne peut pas être annulé depuis le téléphone.</string>
+    <string name="permanence_confirm_title">Rendre drawbridge définitif ?</string>
+    <string name="permanence_confirm_message">Cette action est irréversible, c\'est vraiment définitif. Déverrouillé, drawbridge ne peut plus être retiré que par une réinitialisation d\'usine. Lorsque drawbridge est verrouillé, même la réinitialisation d\'usine n\'est pas disponible : il faudra déverrouiller drawbridge (avec la clé ou la minuterie) pour que la réinitialisation d\'usine redevienne possible.</string>
+    <string name="permanence_confirm_yes">Rendre définitif</string>
+
     <string name="language_heading">Langue</string>
 
     <string name="welcome_title">Bienvenue dans drawbridge</string>

@@ -8,6 +8,16 @@
     <string name="admin_description">Houdt de inhoudsfilter aan en zorgt dat die niet verwijderd kan worden zonder de sleutel.</string>
     <string name="permission_read_selection">het gekozen drawbridge-beleid en de opties lezen</string>
 
+    <!-- Proef- en definitieve modus. -->
+    <string name="permanence_trial_title">Drawbridge in proefmodus</string>
+    <string name="permanence_permanent_title">Drawbridge is definitief</string>
+    <string name="permanence_action">Definitief maken</string>
+    <string name="permanence_info_title">Proefmodus en definitieve modus</string>
+    <string name="permanence_info">De proefmodus is om drawbridge te testen, uit te proberen of gewoon tijdelijk te gebruiken. In de proefmodus is drawbridge makkelijker te verwijderen.\n\nOntgrendeld\nProefmodus: drawbridge kan via het menu worden uitgeschakeld en daarna verwijderd.\nDefinitieve modus: drawbridge kan alleen nog weg met een fabrieksreset.\n\nVergrendeld\nProefmodus: drawbridge kan weg met een fabrieksreset.\nDefinitieve modus: ontgrendelen is nodig om te kunnen resetten. Als veiligheidsmaatregel kan een ontgrendeltimer van 30 dagen worden gestart wanneer er geen andere timer liep en je de sleutel vergeten bent.\n\nDrawbridge definitief maken kan niet ongedaan worden gemaakt vanaf de telefoon.</string>
+    <string name="permanence_confirm_title">Drawbridge definitief maken?</string>
+    <string name="permanence_confirm_message">Dit kan niet ongedaan worden gemaakt, het is echt definitief. Ontgrendeld kan drawbridge alleen nog weg met een fabrieksreset. Wanneer drawbridge vergrendeld is, is zelfs de fabrieksreset niet beschikbaar en moet drawbridge eerst ontgrendeld worden (met de sleutel of de timer) voordat de fabrieksreset weer beschikbaar wordt.</string>
+    <string name="permanence_confirm_yes">Definitief maken</string>
+
     <string name="language_heading">Taal</string>
 
     <string name="welcome_title">Welkom bij drawbridge</string>

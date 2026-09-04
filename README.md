@@ -177,11 +177,14 @@ locking again, which re-takes the set. See
   black-holed by name and by IP. What is left is an app asking its own
   infrastructure over HTTPS, which is indistinguishable from ordinary traffic
   without IP-range rules.
-- **A factory reset removes everything, and nothing stops one.** Recovery mode or
-  Settings, either works. Factory Reset Protection does *not* cover this: it is
-  not armed on a fully managed device by default, tested on hardware on
-  2026-08-10. What stands in for prevention is detection — the protected-since
-  date on the lock screen, which a reset cannot forge.
+- **A factory reset removes everything, and in trial mode nothing stops one.**
+  Recovery mode or Settings, either works. Factory Reset Protection does *not*
+  cover this: it is not armed on a fully managed device by default, tested on
+  hardware on 2026-08-10. What stands in for prevention is detection — the
+  protected-since date on the lock screen, which a reset cannot forge. A phone
+  the parent has deliberately made **permanent** is the exception, and only while
+  it is locked; see
+  [trial mode and permanence](docs/design-decisions.md#trial-mode-is-the-default-and-permanence-is-a-one-way-door).
 - **Between boot and the filter starting**, DNS is briefly unfiltered. See
   [always-on VPN without lockdown](docs/design-decisions.md#always-on-vpn-runs-without-lockdown).
 - **YouTube ads are served from the same domains as the videos**, so neither the

@@ -21,9 +21,9 @@ which is kept whole on purpose.
 
 | | `main` (the alpha) | `dev` |
 |---|---|---|
-| drawbridge | **0.2.21, build 46** | **0.2.21, build 46** |
+| drawbridge | **0.2.21, build 46** | **0.2.22, build 47** |
 | herald | **0.1.17** | **0.1.19** |
-| policy | **103** | **106** |
+| policy | **103** | **107** |
 | install page | <https://drawbridge-project.pages.dev/install/> | <https://dev.drawbridge-project.pages.dev/install/> |
 | phone | the owner's Nothing Phone (A059) | the Moto G15 |
 
@@ -257,6 +257,14 @@ the key can always unlock and put a build on the phone. See
   been on this list since build 30.
 - **A second person installing any of this**, from the website, without the
   author in the room.
+- **Permanent mode on real hardware.** All four cells of its matrix were watched
+  on the API 36 emulator as a Device Owner on 2026-09-04, which is where the
+  restriction's *presence* can be measured. What an emulator cannot show is the
+  thing that retired this restriction in the first place: whether the wipe entry
+  really disappears from a **hardware recovery menu**, and comes back on unlock.
+  That was measured on a Moto G15 in August and should be measured again the
+  first time a phone is made permanent — deliberately, on the G15 and never on
+  the alpha.
 - **Mono's slower fling on a real phone.** It is measured and watched working on
   the emulator, where scrolling is a scripted swipe rather than a thumb — see
   [next step 12](#12-herald-mono-take-out-always-on-reader-view--done-2026-08-19).
@@ -786,27 +794,46 @@ absent from the allowed list is installed and removed on a loop, which is the
 trap the two-list rule exists to prevent. Whatever ships must keep those two in
 agreement.
 
-### 9. Lock factory reset — last, and only with the timer
+### 9. ~~Lock factory reset — last, and only with the timer~~ — done 2026-09-04, as **permanent mode**
 
-**The prerequisite exists as of 2026-08-17**, and is not quite what this entry
-assumed: what was built is a delayed *unlock* rather than a delayed self-removal,
-which answers the same problem because removal lives behind the lock. A real
-two-hour timer was watched lifting on the Moto the same day. Everything else in
-this entry stands, including the objection that matters — this escape runs
-*inside* drawbridge, so a crash loop or a bad update takes it with it, where a
-factory reset never involved drawbridge at all.
+**Shipped on the terms this entry set, and not one step earlier.** The
+prerequisite it named — the lock timer, proven on hardware — arrived on
+2026-08-17, and `DISALLOW_FACTORY_RESET` went back on 2026-09-04 behind a switch
+the household has to press rather than for everybody.
 
-`DISALLOW_FACTORY_RESET` goes back **only** with that timer proven on hardware,
-and deliberately after everything above — unless step 2 shows that FRP does not
-hold, in which case this moves up, because the backstop it was removed in favour
-of would not exist. While features are being built, a
-mistake that bricks a handset costs a device; with a factory reset available it
-costs ten minutes. See
-[design-decisions](design-decisions.md#losing-the-key-a-delay-not-a-back-door).
+What was built is a named pair of modes. **Trial** is what every phone has always
+been and still is by default; **permanent** is a button at the top of the
+configuration screen. Four cells, three of which are unchanged:
 
-Remember that reinstating it means reversing the `RETIRED_RESTRICTIONS`
-migration too, and that today's escape works even when drawbridge is completely
-broken while a timer-based one does not.
+| | unlocked | locked |
+|---|---|---|
+| **trial** | deactivate from the menu, then uninstall | factory reset |
+| **permanent** | factory reset | factory reset, after unlocking |
+
+The restriction moved out of `RETIRED_RESTRICTIONS` and into
+`MANAGED_RESTRICTIONS` as a conditional entry, which is how the migration
+guarantee survives: `applyUserRestrictions` clears every managed restriction the
+current state leaves out, so a phone carrying it from an August build is still
+stripped of it on every apply. Being in both lists would set and clear it inside
+one apply and make permanent mode silently inert — there is a test for that.
+
+Watched on the API 36 emulator as a real Device Owner, all four cells, including
+the trial-locked one that would have stranded every phone in the field.
+
+**The objection this entry has always carried still stands and is not answered.**
+The escape from a permanent locked phone runs *inside* drawbridge: a crash loop
+or a bad update takes the thirty-day door with it, where a factory reset never
+involved drawbridge at all. What limits it is that the mode is opt-in, one way,
+and preceded by a dialog that says what it takes away — so nobody arrives there
+without having read it. **Do not make it the default**, and weigh it against
+[step 1](#1-get-drawbridge-able-to-update-itself-again): an unaided update channel
+does not exist, so a permanent locked phone with a broken drawbridge on it has
+thirty days and then nothing.
+
+Still open from the original entry: **step 2** — if FRP turns out not to hold, the
+backstop trial mode relies on does not exist, and the case for recommending
+permanent mode gets stronger rather than weaker. See
+[design-decisions](design-decisions.md#trial-mode-is-the-default-and-permanence-is-a-one-way-door).
 
 ### 10. "This phone, these apps, nothing else" — and the apps still update
 
@@ -913,6 +940,17 @@ because anyone should generate it:
 - **What a blocked site looks like in Chrome**, which is a question the other
   four browsers create and nothing answers. In herald it is drawbridge's block
   page; everywhere else it is a DNS error that reads as "the internet is broken".
+- **Two sentences on the site are currently false, and 2026-09-04 is what makes
+  them fixable.** `tools/build-site.py` says *"When locked, drawbridge cannot be
+  removed, not even by factory reset"* (page 6 of the tour, both languages) and
+  *"While locked ... even a factory reset is no longer possible!"* (the FAQ).
+  Neither has ever been true: a locked phone in trial mode is wiped from
+  Settings or recovery like any other. They describe **permanent mode**, which
+  now exists — so the fix is to say *in permanent mode* rather than to soften
+  the claim, and to say that trial mode is what a phone starts in. The FAQ's
+  *"cannot be removed at all without a factory reset"* is right for both modes
+  and needs nothing. This is the one item in this list that is a correctness
+  problem rather than a gap.
 
 Remember `site/` is generated: edit `site-src/` and `tools/build-site.py`, run
 `python3 tools/build-site.py`, and commit what it writes. Hand-edited HTML in

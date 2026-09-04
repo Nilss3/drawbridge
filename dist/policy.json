@@ -1,7 +1,7 @@
 {
-  "version": 106,
-  "issued_at": "2026-09-02T12:05:00Z",
-  "comment": "DEV CHANNEL ONLY. Pins herald 0.1.19, which reads the block page translations policy 105 added and follows the phone's language for everything else. required_apps moves to this channel's own v0.2.8-dev.10 assets at version_code 19; app_update is untouched and still names drawbridge build 46, which has not changed \u2014 the block page i18n fields are additive with defaults, so the dpc parses this document without a rebuild. 369 blocked packages.",
+  "version": 107,
+  "issued_at": "2026-09-04T11:40:00Z",
+  "comment": "DEV CHANNEL ONLY. Pins drawbridge 0.2.22 build 47, which adds trial and permanent mode: every phone stays removable through the menu as before, and a parent who presses Make it permanent gives that up and, once locked, gives up the factory reset with it. required_apps is untouched and still names this channel's v0.2.8-dev.10 herald 0.1.19 \u2014 the browser has not changed. 369 blocked packages.",
   "dns": {
     "upstreams": [
       "94.140.14.15",
@@ -825,9 +825,9 @@
   },
   "app_update": {
     "package_name": "app.drawbridge.dpc",
-    "version_code": 46,
-    "url": "https://dev.drawbridge-project.pages.dev/assets/dpc-fc786232bc48153e.apk",
-    "sha256": "fc786232bc48153e2edf317498716775a78658ae12d3cc43cda1d1b4aee63d8e"
+    "version_code": 47,
+    "url": "https://dev.drawbridge-project.pages.dev/assets/dpc-85b8544295a8f617.apk",
+    "sha256": "85b8544295a8f617f1645f43165a999dc6f4164be18ae92909774019d2ef6fc1"
   },
   "required_apps": [
     {

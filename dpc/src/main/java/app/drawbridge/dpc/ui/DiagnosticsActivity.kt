@@ -14,17 +14,18 @@ import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import app.drawbridge.dpc.admin.DrawbridgeDeviceAdminReceiver
 import app.drawbridge.dpc.BuildConfig
 import app.drawbridge.dpc.DrawbridgeApplication
 import app.drawbridge.dpc.R
 import app.drawbridge.dpc.admin.DeviceOwnerManager
+import app.drawbridge.dpc.admin.DrawbridgeDeviceAdminReceiver
 import app.drawbridge.dpc.admin.ProvisioningLog
 import app.drawbridge.dpc.apps.AppBlocker
 import app.drawbridge.dpc.apps.InstallLockSettings
 import app.drawbridge.dpc.apps.store.StoreCatalogue
 import app.drawbridge.dpc.curfew.DisconnectSettings
 import app.drawbridge.dpc.security.LockTimer
+import app.drawbridge.dpc.security.Permanence
 import app.drawbridge.dpc.vpn.DnsFilterService
 import java.time.LocalDateTime
 
@@ -90,6 +91,20 @@ class DiagnosticsActivity : AppCompatActivity() {
             appendLine("device_provisioned:  ${globalSetting("device_provisioned")}")
             appendLine()
             appendLine("device owner:      ${deviceOwner.isDeviceOwner}")
+            // Trial or permanent, which decides whether this phone can be
+            // handed back without a wipe. It is one flag with no other trace on
+            // the device -- the banner that shows it is behind the key, so on a
+            // locked phone this is the only place that says which mode it is
+            // in, and "was this one made permanent?" is exactly the question
+            // somebody will be asking when they open this screen.
+            appendLine(
+                "mode:              " +
+                    if (Permanence(this@DiagnosticsActivity).isPermanent) {
+                        "permanent"
+                    } else {
+                        "trial"
+                    },
+            )
             // What the keyguard tells whoever picks the phone up. Reported
             // because it is the one thing standing in for factory reset
             // protection, and "it should be there" is not the same as seeing it.

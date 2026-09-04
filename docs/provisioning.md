@@ -56,7 +56,7 @@ one.** The old instruction was the parent's account and never the child's; its
 justification was Factory Reset Protection, and **that reason is void** — FRP is
 not armed on a fully managed device by default, and a Settings reset does not
 trigger it whatever accounts are present, tested on the G15 on 2026-08-10. See
-[design-decisions](design-decisions.md#drawbridge-does-not-prevent-a-factory-reset).
+[design-decisions](design-decisions.md#a-factory-reset-is-prevented-only-in-permanent-mode).
 
 What is left does not support the old rule. Play works for whoever holds the
 phone whichever account is signed in, so the parent's account withholds nothing —

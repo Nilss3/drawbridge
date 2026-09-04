@@ -9,6 +9,31 @@
     <string name="admin_description">Keeps the content filter switched on and stops it from being removed without the key.</string>
     <string name="permission_read_selection">read the chosen drawbridge policy and options</string>
 
+    <!--
+        Trial and permanent mode, at the top of the configuration screen.
+
+        The info text is a two-by-two matrix and is written as one: what happens
+        unlocked, what happens locked, in each of the two modes. It is laid out
+        rather than described because a parent deciding this is comparing cells,
+        and a paragraph that says the same thing makes them hold four facts in
+        their head at once.
+
+        The confirmation says the two things the banner cannot: that it cannot be
+        undone, and what each of the two states actually costs. Neither is
+        optional — this is the only irreversible button in the app that is not
+        also a removal — and it deliberately stops there rather than repeating
+        the ⓘ. The thirty-day door's conditions are in that text, one tap away,
+        and a confirmation nobody finishes reading protects nobody.
+    -->
+    <string name="permanence_trial_title">Drawbridge in trial mode</string>
+    <string name="permanence_permanent_title">Drawbridge is permanent</string>
+    <string name="permanence_action">Make it permanent</string>
+    <string name="permanence_info_title">Trial and permanent mode</string>
+    <string name="permanence_info">Trial mode is for testing, trying out drawbridge, or generally for using drawbridge temporarily. While in trial mode, drawbridge can be uninstalled more easily.\n\nUnlocked\nTrial mode: drawbridge can be deactivated through the menu and then uninstalled.\nPermanent mode: drawbridge can only be removed through a factory reset.\n\nLocked\nTrial mode: drawbridge can be removed through a factory reset.\nPermanent mode: unlocking is required to factory reset. As a security measure, a 30-day unlock timer can be started when no other timer was set and you forgot the key.\n\nMaking drawbridge permanent cannot be undone from the phone.</string>
+    <string name="permanence_confirm_title">Make drawbridge permanent?</string>
+    <string name="permanence_confirm_message">This cannot be undone, it\'s really permanent. When unlocked, drawbridge can only be removed through factory reset. When drawbridge is locked, even factory reset is unavailable and drawbridge will need to be unlocked (through key or timer) for factory reset to become available again.</string>
+    <string name="permanence_confirm_yes">Make it permanent</string>
+
     <!-- Language, first on the screen: pick it before reading the rest. -->
     <string name="language_heading">Language</string>
     <string name="language_english" translatable="false">English</string>
