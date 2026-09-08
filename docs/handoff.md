@@ -684,7 +684,7 @@ is on it is genuinely on it.
 
 | | |
 |---|---|
-| **Open** | **10b** (apps disabled before the lock), measured and confirmed 2026-09-08 |
+| **Open** | Nothing. The last item, 10b, was measured and fixed on 2026-09-08. |
 | **Closed as shipped** | 4, 6, 10 — built, and the entries had gone stale |
 | **Closed as answered** | 2 and 2a — FRP was tested and does not hold |
 | **Closed as won't do** | 5 (F-Droid) |
@@ -1081,11 +1081,11 @@ Consequences to state before building it, not after:
   the parent installed to migrate data and no longer wants. Showing them the list
   before sealing it is probably not optional.
 
-### 10b. Apps disabled before the lock should stay disabled through it
+### 10b. ~~Apps disabled before the lock should stay disabled through it~~ — fixed 2026-09-08
 
-**Asked for on 2026-08-25 from use, and confirmed still open on 2026-09-08 —
-measured this time rather than reasoned.** On the API 36 emulator as a real
-Device Owner, with drawbridge build 47:
+**Asked for on 2026-08-25 from use, measured on 2026-09-08, and fixed the same
+day.** What was measured first, because a defect nobody has reproduced is not
+one worth fixing. On the API 36 emulator as a real Device Owner, with build 47:
 
 1. `pm disable-user com.google.android.deskclock`, which is what the Settings
    button does. Confirmed disabled.
@@ -1099,11 +1099,57 @@ The platform side agrees: `no_control_apps` appears nowhere in `dumpsys user`,
 because `DISALLOW_APPS_CONTROL` is referenced nowhere in this codebase. So
 Settings is behaving correctly and nothing has ever stood in its way.
 
-The flow this breaks is the one *No other apps* is for: a parent prunes the
+The flow this broke is the one *No other apps* is for: a parent prunes the
 phone, disables what they do not want, flicks the switch, and locks. What the
-switch guarantees is that no *new* app arrives. What it does not guarantee is
-that the ones already disabled stay that way, which is a hole in exactly the
+switch guaranteed was that no *new* app arrives. What it did not guarantee was
+that the ones already disabled stay that way, which was a hole in exactly the
 state the parent thought they were sealing.
+
+**What was built: [DisabledApps], a set recorded at the lock and enforced by
+hiding.** The same shape as the install lock's snapshot, and not gated on its
+switch, for the same reason that one is not — a parent who switches an app off
+and then seals the phone has said what they want, and nothing on the screen tells
+them it only holds if some other switch is on.
+
+What differs is what enforcement *means*. **drawbridge cannot re-disable an
+app**: `setApplicationEnabledSetting` is for an app's own components and no
+Device Owner API disables a package on the user's behalf. What it can do is
+`hideOrSuspend`, the lever every reversible removal here already uses, and a
+hidden app is not in Settings' list at all — so the child cannot undo it the way
+they undid the disable. The sequence is: switched off at the lock, switched back
+on by somebody, hidden by the next sweep.
+
+**Two orderings are load-bearing.** The hold runs *after* `restoreNowAllowed` in
+the sweep, because that un-hides what the policy now allows and a package the
+parent switched off can be one of those — held first, it would be handed straight
+back inside the same sweep. And the release has its own caller on the unlock
+paths rather than riding the fifteen-minute sweep, because a parent unlocks the
+phone *to manage apps* and one that stayed invisible for a quarter of an hour is
+one they would conclude was uninstalled.
+
+**What it gives up, and there is no way round it:** on unlock the app comes back
+*enabled*, not switched off again, because nothing can switch an app off on the
+user's behalf. The parent sees it in Settings and can switch it off before the
+next lock, which re-records it. The alternative was leaving an app hidden through
+an unlock, where the parent cannot see it, cannot manage it and has no way to
+find out why it is gone.
+
+**Watched working end to end** on the same emulator, same day, with the fix in:
+
+- switched off, locked, and the set records exactly that one package;
+- re-enabled from Settings, and the next sweep hid it: gone from the launcher's
+  package list, still on the disk, drawbridge still locked. Settings can no
+  longer even open its app-info page, so the Enable button that started all this
+  is unreachable;
+- survives a reboot in that state;
+- unlocked, and `Releasing com.google.android.deskclock: the lock it was held
+  for is over` — `hidden=false`, back in the list.
+
+**One methodology trap, and it cost half an hour.** `pm enable` followed
+immediately by `adb reboot` loses the change: package state is flushed
+asynchronously, so the boot reads the old value and the app comes back disabled.
+It reads exactly like the fix silently re-disabling things. Let the write settle
+before rebooting, or verify the state after the reboot before believing anything.
 
 Worth knowing before anyone starts: this is a different mechanism from the rest
 of the app blocker. Everything in [what is enforced](#what-is-enforced-and-when)

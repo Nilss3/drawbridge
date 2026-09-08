@@ -534,6 +534,11 @@ class LockActivity : AppCompatActivity() {
         // DeviceOwnerManager.restrictionsFor.
         deviceOwner.applyUserRestrictions()
 
+        // Anything held only because it was switched off before the lock comes
+        // back now rather than at the next sweep: a parent who unlocks to manage
+        // apps must not find one of them invisible for fifteen minutes.
+        DrawbridgeApplication.releaseOnUnlock(this)
+
         // And the phone comes back online, whatever the disconnect philosophy
         // says: an unlocked drawbridge is a parent working on the phone, and
         // everything they unlocked to do — install something, move data off,

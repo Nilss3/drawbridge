@@ -1605,6 +1605,49 @@ It still requires Device Owner — these are silent `PackageInstaller` sessions 
 and an unrequested run still waits for an unmetered network, because 235 MiB per
 browser on somebody's mobile data is its own kind of surprise.
 
+## A disable the parent made is held by hiding, because nothing can re-disable
+
+**The hole, measured on 2026-09-08 before it was fixed:** a parent switches an
+app off in Settings, locks drawbridge, and anybody holding the phone can switch
+it straight back on. The Enable button is there on a locked phone and it works.
+Android is behaving correctly — `DISALLOW_APPS_CONTROL` is the only restriction
+that would stop it, and drawbridge does not set it because it stops the parent
+managing apps too and may take the Play Store's own update path with it, which
+is the thing [the install lock](#the-install-lock-is-a-closed-set-not-a-date-and-not-a-flag)
+is careful to keep.
+
+So the fix could not be a restriction, and it could not be a re-disable either:
+`setApplicationEnabledSetting` only reaches an app's own components, and no
+Device Owner API disables a package on the user's behalf. **What is left is
+hiding**, which is the lever every reversible removal here already uses, and
+which is *stronger* than the disable it replaces — a hidden app is not in
+Settings' list at all, so there is no button to press.
+
+`DisabledApps` records the switched-off set at every lock, like the install
+lock's snapshot and for the same reason: recorded at the lock, it is never older
+than the lock. It is not gated on that switch, because a parent who switches an
+app off and then seals the phone has said what they want and nothing on the
+screen tells them it depends on some other control.
+
+**The set is empty rather than null when it has never been taken, and that is
+the opposite of the install lock's snapshot.** That one has to distinguish
+*never taken* from *this phone carries nothing*, because an empty installed set
+is a rule that removes the whole device. This rule only withholds packages it
+names, so both mean *withhold nothing* and there is no third state to model.
+
+**What it gives up.** On unlock the app comes back *enabled*, not switched off
+again — nothing can switch it off. The parent sees it in Settings and can switch
+it off before the next lock, which re-records the set. That is a real loss of
+fidelity and it is the honest one: the alternative is an app left hidden through
+an unlock, which the parent cannot see, cannot manage, and has no way to find out
+about.
+
+**And what it must never do is release an app the policy still refuses.** A
+package can be hidden for two reasons at once — the parent switched it off *and*
+the document disallows it, which is WhatsApp with its option off. Giving it back
+because the lock ended would be drawbridge undoing its own policy on the
+parent's behalf, so the policy is consulted before every release.
+
 ## The install lock is a closed set, not a date and not a flag
 
 **Built 2026-08-16, and it is the answer to a problem the blocklist cannot

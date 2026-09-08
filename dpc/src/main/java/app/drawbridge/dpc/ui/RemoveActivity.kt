@@ -10,6 +10,7 @@ import app.drawbridge.dpc.DrawbridgeApplication
 import app.drawbridge.dpc.R
 import app.drawbridge.dpc.admin.DeviceOwnerManager
 import app.drawbridge.dpc.apps.AppBlocker
+import app.drawbridge.dpc.apps.DisabledApps
 import app.drawbridge.dpc.apps.InstallLockSettings
 import app.drawbridge.dpc.apps.store.StoreCatalogue
 import app.drawbridge.dpc.security.LockTimer
@@ -97,6 +98,10 @@ class RemoveActivity : AppCompatActivity() {
         // a reinstalled drawbridge measure the device against a set from before
         // it was removed.
         InstallLockSettings(this).clear()
+        // The same reasoning, for the set that holds apps the parent had
+        // switched off: it enforces nothing once the lock is gone, and a
+        // reinstall should not find a phone measured against a previous life.
+        DisabledApps(this).clear()
         // Derived data about apps on a phone drawbridge no longer manages. It
         // enforces nothing once the rule is gone, and a reinstalled drawbridge
         // should ask the store afresh rather than believe a cache from before it
