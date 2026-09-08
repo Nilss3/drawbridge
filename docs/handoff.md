@@ -88,9 +88,18 @@ is in `site/assets/dpc-<hash>.apk` on the branch you are on.
 **Both apps work end to end on real hardware.** A phone is provisioned over a
 cable, filters DNS for every app, removes what the policy disallows, installs
 herald by itself, locks behind a hundred-bit key, and can be handed back with no
-data loss. What is *not* settled is everything in
-[next steps](#reasonable-next-steps), and the alpha is one person's daily phone
-rather than a released product.
+data loss.
+
+**The `main` channel is a public beta as of 2026-09-08, not an alpha**, and most
+of [next steps](#reasonable-next-steps) closed on the same day — three of those
+items turned out to describe features that had already shipped. The word *alpha*
+still appears throughout this file, in `docs/` and on the site; it has not been
+renamed, and anywhere it appears it means this channel.
+
+**The owner's own phone runs it, in trial mode deliberately.** Permanent mode is
+shipped and works, and a phone that has it cannot receive a fix if drawbridge
+itself breaks — see [next step 1](#1-get-drawbridge-able-to-update-itself-again),
+which is closed as unfixable rather than as solved.
 
 ### Read this first: two channels, and which is which
 
@@ -659,30 +668,49 @@ now records this as settled rather than open.
 The MVP is done and shipped. What follows is a feature roadmap, in the order the
 owner set on 2026-08-08, not a defect list.
 
-**Where the list actually stands, 2026-09-04.** Enough of it has closed that the
-numbering no longer reads as a queue, so this is the short version:
+**The owner closed most of this on 2026-09-08, and the reason is worth reading
+before the list below.** Three items — 4, 6 and 10 — described features that were
+*already shipped*, which is how a roadmap written in August reads after a month
+of building against it. One asked for a test that had already been run and
+answered. Two are decisions rather than work. So the list is now short, and what
+is on it is genuinely on it.
 
 | | |
 |---|---|
-| **Done** | 9 (permanent mode), 12, 12b's first half, 12d, 12e, 12f, and *Localise herald* out of the standing items |
-| **Blocked on Google, not on work** | **1** — no unaided update channel exists, and nothing in this repo can make one |
-| **Blocked on a measurement nobody has taken** | **2** — whether FRP holds, which 2a and the install advice both hang on |
-| **Ready to build, nothing in the way** | **4**, **5**, **6**, **10**, **10b** |
-| **The owner's, not a coding task** | **11**, and the rest of **13** |
-| **Small and cosmetic** | 12b's second half, 12c, 12g |
+| **Open** | **10b** (apps disabled before the lock), **11** (the site, narrowed to trial mode), and two standing items |
+| **Closed as shipped** | 4, 6, 10 — built, and the entries had gone stale |
+| **Closed as answered** | 2 and 2a — FRP was tested and does not hold |
+| **Closed as won't do** | 5 (F-Droid) |
+| **Closed as not ours to fix** | 1 — Play Protect, on Google-certified phones |
+| **Closed as done enough** | 12b, 12c, 12g — the app is in public beta |
 
-**Two of these got heavier today rather than lighter.** Permanent mode shipping
-makes **1** the sharper problem it always was: a permanent, locked phone whose
-drawbridge is broken has the thirty-day timer and then nothing, because there is
-no way to push it a fix. And **2** stopped being only about the alpha's backstop
-— if FRP does not hold, trial mode's whole answer to a determined child is the
-protected-since date, and the case for recommending permanence gets stronger.
+**What replaces item 2 is worth stating in one line, because everything else
+rests on it:** Factory Reset Protection does not hold, so the protection is the
+*lock* plus the `drawbridge protecting` line on the keyguard — a phone that has
+been wiped stops saying it, and that is the tamper check. Permanent mode is the
+only thing that actually prevents a reset, and only while locked.
 
-**Nothing on this list is blocked on the two channels being apart any more.**
-They are level as of today, so the next feature can be built on `dev` and carried
-in one commit rather than seven.
+**Nothing left is blocked on the two channels being apart.** They are level as of
+2026-09-04, so the next feature can be built on `dev` and carried in one commit
+rather than seven.
 
-### 1. Get drawbridge able to update itself again
+### 1. ~~Get drawbridge able to update itself again~~ — closed 2026-09-08, not ours to fix
+
+**Closed by the owner as a known limitation of Google-certified phones.** The
+evidence below is unchanged and still worth reading, because it is what anybody
+who rediscovers this will need: Play Protect refuses `app.drawbridge.dpc` by
+package name, the probe with the same code and the same key installs fine, and
+no manifest edit this project can make has moved it. The three remaining rounds
+are written down at the end of this entry and are there if somebody wants them —
+they are not a next step, because the decision is that this is Google's to
+change and not drawbridge's.
+
+**The consequence is permanent and should be designed around rather than
+waited on.** Treat every release as unable to reach a locked, deployed phone.
+That is also why the owner's own beta phone stays in **trial mode**: a broken
+drawbridge there is a factory reset away from recoverable, where a permanent
+locked one has the thirty-day timer and then nothing.
+
 
 **No longer blocking provisioning** — `tools/provision-adb.sh` gets a certified
 handset provisioned today, and that is what the top of this file is about. What
@@ -751,7 +779,27 @@ chose that. It is opt-in, it is one way, and the dialog says so — but the
 argument for closing item 1 is now stronger than it has ever been, and the
 argument for recommending permanence to anybody else is weaker until it is.
 
-### 2. Put a Google account on the phone and find out whether FRP works
+### 2. ~~Put a Google account on the phone and find out whether FRP works~~ — answered, and the answer is no
+
+**Closed 2026-09-08. The test had already been run — on the Moto, and FRP did
+not hold** — which is why this entry read as asking for work that was done. The
+result is recorded in 2a below and in `provisioning.md`, and this entry sat here
+for weeks asking for it anyway.
+
+**What the safety actually rests on**, now that the backstop it was written
+around is gone:
+
+- **The lock.** It is the only thing that withholds anything from whoever is
+  holding the phone, and in permanent mode it is what withholds the factory
+  reset too.
+- **`drawbridge protecting` on the keyguard**, with the protected-since date in
+  the app. A phone that has been wiped stops saying it. That is detection rather
+  than prevention, and it is deliberately the cheap check: you do not have to
+  audit anything, you have to notice that a sentence you expect is missing.
+
+Everything below is the original entry, kept because the reasoning explains why
+the wording in the install guides changed.
+
 
 **Before any feature work, and second only to the update channel above.**
 Everything the factory-reset decision rests on is currently taken from Google's
@@ -791,7 +839,22 @@ below already says, and what `DeviceOwnerRestrictionsTest` asserts. **Corrected
 2026-08-12**; this entry described the restriction as live for two days after it
 came out.
 
-### 2a. Decide whether "never the child's account" is still advice worth giving
+### 2a. ~~Decide whether "never the child's account" is still advice worth giving~~ — settled with 2, 2026-09-08
+
+**The rule is void and the guides no longer give it.** FRP was the whole reason
+for it, FRP was tested on the Moto and does not hold, so what is left of the
+argument points partly the other way: Play access is symmetrical whichever
+account is signed in, while the parent's account on a child's phone syncs the
+parent's mail, photos and saved payment method onto a handset somebody else
+carries.
+
+**The replacement wording is *"use an account you do not mind the child having,
+or none at all"***, which `provisioning.md` already says the long way round. The
+Family Link half is answered too, and is a point in drawbridge's favour rather
+than a limitation: it cannot supervise a managed device at all, and it stops
+being something a parent can rely on at 13 anyway, which is the age this project
+is built for.
+
 
 **Raised by the owner on 2026-08-10, and it deserves a straight answer rather
 than inertia.** Every install guide and both website pages say to sign in with
@@ -846,7 +909,16 @@ write it down — it is the sentence a parent will search for.
 Note `DISALLOW_MODIFY_ACCOUNTS` is still never applied, so accounts can be added
 to a locked phone without unlocking it. That is the state this was tried in.
 
-### 4. A setting for video streaming, with or without YouTube
+### 4. ~~A setting for video streaming, with or without YouTube~~ — shipped
+
+**Closed 2026-09-08: both options exist and are in the signed document.** The
+policy carries `youtube` (*Allow YouTube*) and `streaming` (*Allow long-form
+video streaming*) as separate switches, which is exactly the two-questions split
+this entry asked for. It went out during the options work and nobody came back
+to strike the entry.
+
+The note below about safe search is still true and still worth keeping.
+
 
 Two separate questions a parent will ask differently: "may this phone stream
 video at all", and "may it use YouTube". The policy already models options
@@ -856,14 +928,35 @@ turned off. Note that YouTube is currently blocked outright in `social.txt`, and
 that the safe-search rewrite only takes effect if it stops being blocked — the
 comment at the top of that list explains the interaction.
 
-### 5. Install F-Droid by default
+### 5. ~~Install F-Droid by default~~ — won't do, 2026-09-08
+
+**The owner's decision.** Nothing is broken by it: F-Droid is unblocked, so a
+parent who wants it installs it, and on a phone with *No other apps* switched on
+they install it before locking like anything else.
+
+The reasoning below is kept because it names the cost that made it not worth it —
+pinning an APK by URL and SHA-256 means every F-Droid release is a policy edit,
+or the pin goes stale and phones stop updating it. herald does not have that
+problem because this project cuts herald's releases itself.
+
 
 It is useful, it is how a managed phone gets software that is not on Play, and
 it is already unblocked. Adding it to `required_apps` means hosting or pinning
 its APK the same way herald is — by URL and SHA-256 — and deciding whether it is
 required (reinstalled if removed) or merely allowed.
 
-### 6. A setting for browsers: none, or herald only
+### 6. ~~A setting for browsers: none, or herald only~~ — shipped
+
+**Closed 2026-09-08, and the owner's "I don't understand" was the right reaction
+to it.** All three positions have been on the configuration screen for weeks:
+*Allow the browsers*, *herald mono only*, and *No browser at all*. The entry
+described a feature that was already built, which is the worst kind of stale —
+it reads as a plan rather than as a description, and there is no way to tell from
+the outside.
+
+What is worth keeping is the invariant it was really guarding, so it moves into
+the body below rather than being deleted with it.
+
 
 Today the policy names `allowed_browser_packages` and the blocker removes
 everything else. "No browser at all" is a stricter position some parents will
@@ -913,7 +1006,18 @@ backstop trial mode relies on does not exist, and the case for recommending
 permanent mode gets stronger rather than weaker. See
 [design-decisions](design-decisions.md#trial-mode-is-the-default-and-permanence-is-a-one-way-door).
 
-### 10. "This phone, these apps, nothing else" — and the apps still update
+### 10. ~~"This phone, these apps, nothing else"~~ — shipped, as the snapshot at lock
+
+**Closed 2026-09-08: built exactly as this entry proposed.**
+`InstallLockSettings` records the user-installed set at every lock and treats it
+as a closed set from then on; *No other apps* is the switch. The design notes
+below were the plan and are now the description, which is why they are kept
+whole — the intersection rule and the `EXTRA_REPLACING` reasoning are properties
+of the shipped code, not of a proposal.
+
+**What is still open is 10b**, immediately below, which is the same feature's
+missing half.
+
 
 **Asked for on 2026-08-11, and it is mostly already built.** The request people
 actually make is not a curated blocklist: it is *let me install the handful of
@@ -995,7 +1099,29 @@ Whether a narrower route exists — re-disabling on a sweep rather than forbiddi
 the setting — is the open question, and "if at all possible" is how the owner
 put it.
 
-### 11. Update the website — the owner's, not a coding task
+### 11. The website — narrowed on 2026-09-08 to one thing
+
+**Everything else on this list is documented now**, the owner confirms: the three
+toggles, the disconnect philosophy, the browsers, the device count. What is left
+is **trial and permanent mode**, and it is deliberately not written yet — the
+feature is four days old, has been on one phone, and the owner wants it settled
+before the site describes it to strangers.
+
+**Two sentences are wrong until it is**, and they are wrong in the dangerous
+direction — they promise more than the software does. In `tools/build-site.py`:
+*"When locked, drawbridge cannot be removed, not even by factory reset"* (tour
+page 6, EN and NL) and *"even a factory reset is no longer possible!"* (the FAQ).
+Neither has ever been true of a phone in trial mode, which is every phone unless
+somebody presses the button. **They describe permanent mode, which now exists**,
+so the fix is to say *in permanent mode* rather than to soften the claim — and
+that fix arrives with the rest of the trial-mode copy rather than before it.
+
+Remember `site/` is generated: edit `site-src/` and `tools/build-site.py`, run
+`python3 tools/build-site.py`, and commit what it writes. Hand-edited HTML in
+`site/` is overwritten without warning.
+
+**The old list, all of it now done:**
+
 
 **Raised 2026-08-13 and assigned to the owner.** The site still describes the
 project as it was on 2026-08-11 and is now wrong or thin in several places. It is
@@ -1070,7 +1196,13 @@ article, and the fling shortened on a first run with a fresh profile. How 0.05
 *feels* in the hand, over a day, is the open question, and the number is one
 constant to move.
 
-### 12b. Two small things on the configuration screen, reported 2026-08-19
+### 12b. ~~Two small things on the configuration screen~~ — closed 2026-09-08
+
+**The first was fixed on 2026-08-24; the second is closed as done enough.** The
+app is in public beta, and an activity title one step larger than somebody would
+have chosen is not what is holding it back. Both are kept below because the first
+one's diagnosis is a trap worth remembering.
+
 
 Both visual, from the owner running build 41. **The first is fixed; the second
 is still open.**
@@ -1109,7 +1241,13 @@ browsers* is silent. What was **not** checked is a phone — nothing here depend
 on device-owner state, but the emulator is not a device owner, so the toast
 paths ran with the enforcement behind them doing nothing.
 
-### 12c. Comet and Via, and what any new browser has to be checked against
+### 12c. ~~Comet and Via~~ — cleared and shipped; kept as the checklist for the next browser
+
+**Closed 2026-09-08 as an item.** Both browsers are allowed on both channels.
+What survives is the three questions below, which are not a task — they are what
+to run *if somebody asks for a browser to be added*, and the third one is the one
+that would otherwise be discovered the hard way.
+
 
 **Both were cleared by the owner on 2026-08-19 and are now on both channels.**
 Neither has a VPN option and neither has a DNS setting, which is the thing that
@@ -1160,7 +1298,13 @@ which would make allowing it here a formality and its *absence* from the list
 meaningless. That is worth knowing before trusting the browser rule to be
 complete.
 
-### 12g. The browser cards need logos for browsers the phone does not have
+### 12g. ~~The browser cards need logos for browsers the phone does not have~~ — closed 2026-09-08
+
+**Closed as done enough**, with the app in public beta. The card under-promises
+rather than over-promises — it draws the browsers that are really there — and the
+ⓘ description names all of them in three languages, which is the fallback this
+entry itself identified. Kept for the two options, if it ever grates.
+
 
 **Reported 2026-08-19, once Comet and Via were allowed.** The browser choice
 cards describe themselves with the launcher icons of the browsers *actually
@@ -1305,7 +1449,8 @@ PEGI 3, and the streaming services the one switch governs. **Regenerate them whe
 those lists change** — they are in `site-src/block-list.md` as plain markdown,
 so nothing will tell you they have drifted.
 
-What is left of item 11 is the rest of the site.
+What is left of item 11 is trial and permanent mode, and only that — see the
+narrowed entry above.
 
 ### Standing items, unchanged
 
