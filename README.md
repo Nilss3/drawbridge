@@ -141,7 +141,7 @@ locking again, which re-takes the set. See
 
 - **Connections to hardcoded IPs with no DNS lookup** bypass a DNS-level filter,
   and **TikTok Lite does exactly this**. This entry used to say no mainstream app
-  worked that way; that was measured and found false on 2026-08-18. On an alpha
+  worked that way; that was measured and found false on 2026-08-18. On a beta
   phone with every TikTok and ByteDance name returning NXDOMAIN — `tiktok.com`,
   `api.snssdk.com`, `tiktokv.eu`, `tiktokcdn-eu.com` and the rest, with
   `example.com` resolving as the control — a cold-started TikTok Lite played video

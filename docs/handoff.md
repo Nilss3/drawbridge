@@ -19,11 +19,11 @@ which is kept whole on purpose.
 
 ## Where it stands
 
-| | `main` (the alpha) | `dev` |
+| | `main` (the beta) | `dev` |
 |---|---|---|
 | drawbridge | **0.2.22, build 47** | **0.2.22, build 47** |
 | herald | **0.1.19** | **0.1.19** |
-| policy | **108** | **107** |
+| policy | **109** | **107** |
 | install page | <https://drawbridge-project.pages.dev/install/> | <https://dev.drawbridge-project.pages.dev/install/> |
 | phone | the owner's Nothing Phone (A059) | the Moto G15 |
 
@@ -34,15 +34,15 @@ phone that has run one channel and is then given the other's build needs that
 channel's document to be higher than whatever it kept. The app-pusher work
 therefore went out as 92 on dev, 93 on main, 94/95 on dev and 96/97 on main
 rather than reusing a number. Policy 98 on dev was a version bump and nothing
-else: it existed only to put this channel back above the alpha, so a phone that
+else: it existed only to put this channel back above the beta, so a phone that
 had held main's 97 would accept a dev document again. It ran on from there:
 99 and 100 on dev for herald 0.1.16 and 0.1.17, 101 on main for the same
 browser built on that branch, and 102 back on dev for drawbridge build 46. It
 has kept running: 103 on main, 104 to 107 on dev across herald 0.1.18, the block
-page's translations and permanent mode, and **108 on main**, which is the alpha
+page's translations and permanent mode, and **108 on main**, which is the beta
 taking all of that at once.
 
-**The alpha's herald is pinned by name rather than through
+**The beta's herald is pinned by name rather than through
 `/releases/latest/download/`, as of policy 96 — at `v0.2.22` since policy 108,
 at `v0.2.20.1` from policy 101, and at `v0.2.19` before that.** GitHub resolves
 that path at request time to whichever release wears the Latest flag, so a
@@ -55,7 +55,7 @@ herald has to update those six URLs as well as their six checksums, and the
 **The Latest flag is now cosmetic, and worth keeping accurate anyway.** Nothing
 a phone fetches resolves through it since policy 96; what still does is the
 website's own *browsers* link in `tools/build-site.py`, on both channels. So the
-alpha's newest release takes it — `v0.2.22` holds it now — and dev's stay
+beta's newest release takes it — `v0.2.22` holds it now — and dev's stay
 pre-releases, which is why dev's site links at main's build.
 
 **`dist/release/` holds one channel's binaries at a time, and git cannot warn
@@ -90,11 +90,18 @@ cable, filters DNS for every app, removes what the policy disallows, installs
 herald by itself, locks behind a hundred-bit key, and can be handed back with no
 data loss.
 
-**The `main` channel is a public beta as of 2026-09-08, not an alpha**, and most
-of [next steps](#reasonable-next-steps) closed on the same day — three of those
-items turned out to describe features that had already shipped. The word *alpha*
-still appears throughout this file, in `docs/` and on the site; it has not been
-renamed, and anywhere it appears it means this channel.
+**The `main` channel is a public beta as of 2026-09-08**, and most of
+[next steps](#reasonable-next-steps) closed on the same day — three of those
+items turned out to describe features that had already shipped.
+
+**It was called the alpha until then, and the word is gone**: renamed across
+`README.md`, `docs/`, `tools/` and the site on 2026-09-08, thirty-eight
+occurrences. Two things were deliberately left alone. **Image transparency is
+also called alpha** and has nothing to do with any of this — `make-artwork.sh`,
+the launcher-icon comments and one line of
+[design-decisions](design-decisions.md) keep the word. And **GitHub releases
+older than `v0.2.22` still say *alpha* in their titles**, because they were
+alphas; the record is not rewritten, only the current release was retitled.
 
 **The owner's own phone runs it, in trial mode deliberately.** Permanent mode is
 shipped and works, and a phone that has it cannot receive a fix if drawbridge
@@ -103,7 +110,7 @@ which is closed as unfixable rather than as solved.
 
 ### Read this first: two channels, and which is which
 
-**`main` is usually behind, and that is not neglect** — the alpha is what a
+**`main` is usually behind, and that is not neglect** — the beta is what a
 tester installs and what the owner's own daily phone runs, so dev work sits on
 the Moto until it has been found *not* wanting. **Right now they are level**, as
 of 2026-09-04: both channels run the same source at drawbridge 0.2.22 build 47
@@ -118,9 +125,9 @@ between branches means carrying everything *except* those, and the third and
 fourth are the ones that look carryable and are not.
 
 **Three things keep the two apart, and getting any of them wrong breaks the
-alpha:**
+beta:**
 
-1. **The alpha's herald is pinned by name**, at `v0.2.22` since policy 108. It
+1. **The beta's herald is pinned by name**, at `v0.2.22` since policy 108. It
    used to resolve through `/releases/latest/download/` — whichever release wore
    the Latest flag — and that stopped in policy 96, because a drawbridge-only
    release taking the flag would have pointed herald's download at a release with
@@ -195,7 +202,7 @@ Two consequences follow, and both are lived with rather than fixed:
 
 - **drawbridge cannot update itself *unattended*.** The Update screen exists,
   explains why, and asks the parent to pause Play Protect for a minute — and
-  that route works: the owner took the alpha from build 18 to build 41 with it
+  that route works: the owner took the beta from build 18 to build 41 with it
   on 2026-08-19, no cable involved. What is still missing is an update that
   needs nobody at the phone. See
   [next step 1](#1-get-drawbridge-able-to-update-itself-again).
@@ -222,7 +229,7 @@ the key can always unlock and put a build on the phone. See
 - **Moto G15** (Android 15, MediaTek) — the dev phone. Everything on `dev` is
   tested here first. It is also where every hardware surprise in
   [Traps](#traps-that-cost-time-here) came from.
-- **Nothing Phone (3a)** (model A059) — the alpha phone, the owner's daily
+- **Nothing Phone (3a)** (model A059) — the beta phone, the owner's daily
   device, on `main`. Do not experiment on it. Running build 41 without
   trouble as of 2026-08-19, which is what the website's beta note now says.
 - **Dumber Mini** (LineageOS 21, Android 14) — a third handset, and the first
@@ -558,11 +565,11 @@ Each of these looks like a bug and is not, or bites silently:
 - **`store to scan` falling to zero is the only sign the store rule is armed.** An
   unscanned app is `unverified`, which means *keep*, so a rule that never ran and
   a rule that found nothing look identical from the outside.
-## The alpha found what the dev phone could not
+## The beta found what the dev phone could not
 
-**A Nothing Phone on the alpha, 2026-08-18: TikTok Lite installed and played
+**A Nothing Phone on the beta, 2026-08-18: TikTok Lite installed and played
 video; Instagram Lite installed and showed nothing.** Both were installable
-because neither package was listed and the alpha has no store rule. Only one of
+because neither package was listed and the beta has no store rule. Only one of
 them *worked*, and that difference is the finding.
 
 It took two rounds, and the second is the more useful lesson.
@@ -586,7 +593,7 @@ the service splits by region, and the other half does not announce itself. See
 [policy.md](policy.md#adding-a-service-to-a-domain-list-the-checklist).
 
 **Round three settled it, and the answer was not a domain.** Measured over adb on
-the alpha phone, 2026-08-18, with policy 52 applied:
+the beta phone, 2026-08-18, with policy 52 applied:
 
 ```
 example.com                    resolves -> 172.66.147.243     (control)
@@ -621,7 +628,7 @@ down as measured rather than assumed.
 
 **What actually stops it** is the app layer — `blocked_packages`, which uninstalls
 it, and on `dev` the store rule, which catches it by rating without anybody naming
-it. The package was deliberately taken *off* the alpha's list in policy 53 so the
+it. The package was deliberately taken *off* the beta's list in policy 53 so the
 app could serve as the probe for exactly this test; **it should go back now that
 the test has answered.**
 
@@ -677,7 +684,7 @@ is on it is genuinely on it.
 
 | | |
 |---|---|
-| **Open** | **10b** (apps disabled before the lock), **11** (the site, narrowed to trial mode), and two standing items |
+| **Open** | **10b** (apps disabled before the lock), **11** (the site, narrowed to trial mode), and one standing item — *drop the unused ABIs* |
 | **Closed as shipped** | 4, 6, 10 — built, and the entries had gone stale |
 | **Closed as answered** | 2 and 2a — FRP was tested and does not hold |
 | **Closed as won't do** | 5 (F-Droid) |
@@ -1116,19 +1123,39 @@ somebody presses the button. **They describe permanent mode, which now exists**,
 so the fix is to say *in permanent mode* rather than to soften the claim — and
 that fix arrives with the rest of the trial-mode copy rather than before it.
 
+**The site already describes trial mode — as a temporary beta relaxation**, and
+that framing is what has to change rather than the facts. Found on 2026-09-08
+while renaming *alpha* to *beta*: the FAQ carries a footnote, in all three
+languages, saying *"during beta testing this is more relaxed… a factory reset is
+always possible, even while locked; while unlocked, drawbridge can also simply be
+switched off and removed"*. That is trial mode, exactly, written before it had a
+name — and the two claims it hangs off (*"cannot be removed at all without a
+factory reset"*, *"a locked drawbridge cannot be removed"*) are permanent mode,
+also written before it had a name.
+
+So the FAQ is not wrong so much as **inverted**: it presents permanence as the
+norm and trial as a phase that will end by itself, when the shipped software has
+trial as the default and permanence as a button the parent presses. That is the
+copy change, and it is mostly a reframing of text that already exists.
+
+**One place has the claim with no footnote at all**, and that one is simply
+false: `page6_lead` on tour page 6, in all three languages — *"When locked,
+drawbridge cannot be removed, not even by factory reset."*
+
 Remember `site/` is generated: edit `site-src/` and `tools/build-site.py`, run
 `python3 tools/build-site.py`, and commit what it writes. Hand-edited HTML in
-`site/` is overwritten without warning.
+`site/` is overwritten without warning — **except `site/assets/css/style.css`,
+which nothing generates and which is edited in place.**
 
 **The old list, all of it now done:**
 
 
 **Raised 2026-08-13 and assigned to the owner.** The site still describes the
 project as it was on 2026-08-11 and is now wrong or thin in several places. It is
-listed here because it is real work with a deadline attached to the alpha, not
+listed here because it is real work with a deadline attached to the beta, not
 because anyone should generate it:
 
-- **The alpha warning is out of date in the good direction.** It says *"tested on
+- **The beta warning is out of date in the good direction.** It says *"tested on
   exactly one device: a Motorola G15, by the people who built it"*. Two handsets
   now, on different OEMs and different Android versions.
 - **The three toggles are not mentioned anywhere.** WhatsApp 14+, YouTube 16+ and
@@ -1271,7 +1298,7 @@ Comet is Perplexity's browser. The rating rule has no opinion on it — the stor
 says PEGI 3 — so the only thing that decides is the browser list, which is why
 this is a browser decision rather than a whitelist one.
 
-**What to look at before it goes near the alpha**, in the order that would settle
+**What to look at before it goes near the beta**, in the order that would settle
 it fastest:
 
 1. **Does it speak its own DNS?** It is Chromium underneath, so it has *Use
@@ -1389,7 +1416,7 @@ DNS going somewhere the filter cannot see.
 
 **Not on any handset yet**: the fix is in the DPC, so it needs a build. It only
 matters for a phone locked *after* somebody set a Private DNS host, which is a
-first-install situation, so existing phones are unaffected — the alpha reads
+first-install situation, so existing phones are unaffected — the beta reads
 `off`.
 
 ### 13. A copy pass over the app, then the website — the app half is done
@@ -1454,25 +1481,29 @@ narrowed entry above.
 
 ### Standing items, unchanged
 
-- **The QR is blocked on certified hardware, and it is not the allowlist.** The
-  old note here said to retry every couple of weeks because the allowlist "has
-  never blocked this project". That is out of date twice over: QR provisioning is
-  now blocked, and the mechanism is the Play Protect PHA classification on the
-  package name rather than the DPC allowlist — the two show different warning
-  text. See the Play Protect section.
+- ~~**The QR is blocked on certified hardware**~~ — **closed 2026-09-08, won't
+  do for now.** The mechanism is unchanged and worth keeping: it is the Play
+  Protect PHA classification on the package name, not the DPC allowlist — the two
+  show different warning text — so QR provisioning could only ever work on a
+  handset with no Play Protect, which means a de-Googled one.
 
-  **adb provisioning is not blocked**, and is the supported route today; see the
-  section at the top of this file. The QR path is still worth reclaiming — it
-  yields a phone without the OEM's downloaded preloads, which adb does not — and
-  it is expected to work untouched on a handset with no Play Protect at all.
-  **That last part is untested**, and is the next thing to put on hardware.
+  **The owner's reasoning is that the audience for it is empty.** Somebody
+  running a de-Googled phone already knows adb; that is how the ROM got there.
+  And the one advantage the QR path had over the cable — a phone without the
+  OEM's downloaded preloads — is available to them anyway, because they can
+  factory reset and provision straight afterwards. They also do not need the
+  awkward step the QR flow was going to save: **skipping the account during
+  setup**, which is only awkward on a phone that has a Google account to skip.
+
+  So the cable is the route, on every handset, and `tools/provision-adb.sh` and
+  the WebUSB installer are it.
 - ~~**Keep both keys backed up.**~~ **Done, 2026-08-11.** All three — release
   keystore, policy key, emergency key — are offline. Keep any new key in the same
   place; the backup is only as good as the next person knowing it exists.
 - **Drop unused ABIs.** `armeabi-v7a` and `x86_64` have never been downloaded by
   anything and cost ~650 MiB of every release. Removing an ABI means removing
   its `required_apps` entry in the same policy.
-- ~~**Build the WebADB installer.**~~ **Built, and it is the alpha's only install
+- ~~**Build the WebADB installer.**~~ **Built, and it is the beta's only install
   route.** <https://drawbridge-project.pages.dev/install/> provisions and
   updates a phone over WebUSB; `dev` serves the same page from its own build.
   **Moved 2026-08-25**: the installer was its own page at `/install/usb/` until
@@ -1834,7 +1865,7 @@ APK from the channel's Pages site and re-pins `app_update`.
 | 31–32 | 62–65 | The store rule ships: Play's rating and category decide, with a whitelist paying for *Parental guidance*. |
 | 28–30 | 57–61 | The install lock — a closed set taken at the lock, not a date. `DISALLOW_INSTALL_APPS` retired for blocking Play Store *updates*. |
 | 25–27 | 51–56 | The curfew as three disconnect philosophies; the browser chooser; herald mono. |
-| 18 | 50 | **`v0.2.7`, the alpha `main` still runs.** |
+| 18 | 50 | **`v0.2.7`, the beta `main` still runs.** |
 
 **Anything older is in `git log` and in [design-decisions](design-decisions.md).**
 The investigations that used to fill this file — Play Protect, FRP, the QR path,

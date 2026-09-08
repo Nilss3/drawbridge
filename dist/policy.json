@@ -1,7 +1,7 @@
 {
-  "version": 108,
-  "issued_at": "2026-09-04T17:45:00Z",
-  "comment": "ALPHA. The alpha catches up with seven features off the dev channel. Pins drawbridge 0.2.22 build 47, which adds trial and permanent mode, and herald 0.1.19 at this branch's own v0.2.22 assets at version_code 19 \u2014 six URLs and six checksums move with it. Adds the block page's Dutch and French, which herald 0.1.19 reads and earlier builds ignore. 369 blocked packages.",
+  "version": 109,
+  "issued_at": "2026-09-08T09:20:00Z",
+  "comment": "BETA. Identical to policy 108 in every field a phone acts on. The only change is this comment, which called the channel the alpha; it is the public beta as of 2026-09-08. Still pins drawbridge 0.2.22 build 47 and herald 0.1.19 at v0.2.22. 369 blocked packages.",
   "dns": {
     "upstreams": [
       "94.140.14.15",

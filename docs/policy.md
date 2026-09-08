@@ -449,7 +449,7 @@ since a policy signed there names a branch that may never be pushed.
 
 **It is derived rather than typed, and that is the point.** Hand-editing the
 branch into a URL is the obvious version and the dangerous one, because it
-survives a merge — `dev`'s policy landing on `main` would point every alpha phone
+survives a merge — `dev`'s policy landing on `main` would point every beta phone
 at `dev`'s lists. Re-signing on `main` is now enough to undo that, and re-signing
 is already the documented step after any edit.
 
@@ -517,12 +517,12 @@ Note the no-cache header is a request, not a guarantee: some CDNs deliberately
 ignore request-side no-cache. If a phone still reports the old version inside
 five minutes, wait rather than debug.
 
-### Cutting a release without disturbing the alpha
+### Cutting a release without disturbing the beta
 
 **The rule that matters: `required_apps` resolves herald through
 `/releases/latest/download/`.** Whichever GitHub release carries the **latest**
 flag is what every phone on `main` installs. So a herald release can change the
-alpha even when drawbridge does not move at all.
+beta even when drawbridge does not move at all.
 
 A dev-channel release therefore goes:
 
@@ -537,7 +537,7 @@ A dev-channel release therefore goes:
    `/latest/`, and re-sign.
 
 `v0.2.5` holds `latest` and should keep it until a herald build is meant to reach
-the alpha. That is the single flag standing between the dev channel and every
+the beta. That is the single flag standing between the dev channel and every
 tester's phone.
 
 **Two fields never travel between branches.** `app_update` and `required_apps`
