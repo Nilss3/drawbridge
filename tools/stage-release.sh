@@ -55,7 +55,17 @@ else
 fi
 mkdir -p "${dest}"
 
-abis=(arm64-v8a armeabi-v7a x86_64)
+# **Three places have to agree on this list**, and this is the cheapest of them
+# to get wrong silently: the `splits` block in herald/build.gradle.kts decides
+# what is built, `required_apps` in dist/policy.json decides what phones fetch,
+# and this decides what is published under the names that policy pins. Dropping
+# an ABI means all three, in one release.
+#
+# arm64 only since 2026-09-08; the download counts behind that are in
+# herald/build.gradle.kts. The missing-file check below stays loud on purpose —
+# an ABI in this list that Gradle did not build is a release that would go out
+# short, and the policy check further down would then blame the policy.
+abis=(arm64-v8a)
 
 echo "Staging ${build_type} APKs into ${dest}/"
 
