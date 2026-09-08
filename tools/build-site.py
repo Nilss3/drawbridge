@@ -637,7 +637,7 @@ PAGE_COPY = {
         },
         page2="Choose to be online only some of the time, or make your phone an offline ‘dumbphone’. Pick then also no browser.",
         page3="Choose to have any of the allowed browsers, or go with our minimalist monochrome browser. Or go entirely without browser!",
-        page6_lead="Locking forces the options you put before. You’ll need to remember (or forget) the key to go back to the unlocked mode, or use the timer. When locked, drawbridge cannot be removed, not even by factory reset.",
+        page6_lead="Locking forces the options you put before. You’ll need to remember (or forget) the key to go back to the unlocked mode, or use the timer. When locked, the settings cannot be changed. In permanent mode a locked drawbridge cannot be removed either, not even by factory reset.",
         alt="The drawbridge configuration screen, showing {title}.",
     ),
     "nl": dict(
@@ -655,7 +655,7 @@ PAGE_COPY = {
         },
         page2="Kies om maar een deel van de tijd online te zijn, of maak van je telefoon een offline ‘dumbphone’. Kies dan ook geen browser.",
         page3="Kies om eender welke van de toegelaten browsers te houden, of ga voor onze minimalistische, monochrome browser. Of ga helemaal zonder browser!",
-        page6_lead="Vergrendelen legt de opties vast die je hierboven gekozen hebt. Je hebt de sleutel nodig om terug naar de ontgrendelde modus te gaan (onthouden of net vergeten), of je gebruikt de timer. Vergrendeld kan drawbridge niet verwijderd worden, ook niet met een factory reset.",
+        page6_lead="Vergrendelen legt de opties vast die je hierboven gekozen hebt. Je hebt de sleutel nodig om terug naar de ontgrendelde modus te gaan (onthouden of net vergeten), of je gebruikt de timer. Vergrendeld kunnen de instellingen niet wijzigen. In de definitieve modus kan een vergrendelde drawbridge ook niet verwijderd worden, ook niet met een factory reset.",
         alt="Het configuratiescherm van drawbridge, met {title}.",
     ),
     "fr": dict(
@@ -673,7 +673,7 @@ PAGE_COPY = {
         },
         page2="Choisissez de n’être en ligne qu’une partie du temps, ou faites de votre téléphone un « dumbphone » hors ligne. Choisissez alors aussi de n’avoir aucun navigateur.",
         page3="Choisissez de garder n'importe lequel des navigateurs autorisés, ou optez pour notre navigateur minimaliste et monochrome. Ou passez entièrement sans navigateur !",
-        page6_lead="Le verrouillage fige les options que vous avez choisies plus haut. Il vous faudra la clé pour revenir au mode déverrouillé (la retenir, ou justement l’oublier), ou bien le minuteur. Verrouillé, drawbridge ne peut pas être supprimé, pas même par une réinitialisation d’usine.",
+        page6_lead="Le verrouillage fige les options que vous avez choisies plus haut. Il vous faudra la clé pour revenir au mode déverrouillé (la retenir, ou justement l’oublier), ou bien le minuteur. Verrouillé, les réglages ne peuvent plus changer. En mode définitif, un drawbridge verrouillé ne peut pas non plus être supprimé, pas même par une réinitialisation d’usine.",
         alt="L’écran de configuration de drawbridge, montrant : {title}.",
     ),
 }
@@ -1665,12 +1665,21 @@ FAQ = {
             ("p", "Every other website and app works normally: tools, office, weather, banking, public transport, school, work, and so on. Most messengers work too: Signal, Threema, Briar, Session. Private mobile communication is, after all, one of the main purposes of a smartphone."),
 
             ("h2", "How does the drawbridge app work?"),
-            ("p", 'As soon as drawbridge is installed, the device is <strong>irrevocably protected</strong> against the categories above, and <strong>the apps that are never allowed are removed</strong>: social media, games, dating, most of what is rated PEGI 7 or higher, and every browser except the allowed ones. That already happens at installation, and it holds until you remove drawbridge by factory-resetting the device. On top of that you can apply further restrictions: switch off WhatsApp, Telegram, YouTube and/or video streaming, set a curfew, go fully offline, have no browser at all, or allow only a handful of apps. Those restrictions take effect only once you "lock" drawbridge. Unlocking needs a code, or you can set a timer. For as long as drawbridge is locked there is no way to change the settings or to remove drawbridge.'),
+            ("p", 'As soon as drawbridge is installed, the device is <strong>irrevocably protected</strong> against the categories above, and <strong>the apps that are never allowed are removed</strong>: social media, games, dating, most of what is rated PEGI 7 or higher, and every browser except the allowed ones. That already happens at installation, and it holds until you remove drawbridge (see below). On top of that you can apply further restrictions: switch off WhatsApp, Telegram, YouTube and/or video streaming, set a curfew, go fully offline, have no browser at all, or allow only a handful of apps. Those restrictions take effect only once you "lock" drawbridge. Unlocking needs a code, or you can set a timer. For as long as drawbridge is locked there is no way to change the settings.'),
             ("p", "The drawbridge app is the control centre of drawbridge. It lets you allow certain apps and websites after all, restrict the internet even further, or turn the phone into something close to a dumbphone. These additional settings only take effect once you lock drawbridge."),
 
+            ("h3", "Trial mode and permanent mode"),
+            ("p", 'Every phone starts in <strong>trial mode</strong> and stays there unless you change it. It is meant for testing drawbridge, or for using it for a while, and it keeps drawbridge easy to remove. A button at the top of the app, "Make it permanent", closes that door. It cannot be undone from the phone.'),
+            ("ul", [
+                "<strong>Trial mode, unlocked:</strong> switch drawbridge off in the app menu, then uninstall it. A factory reset works too.",
+                "<strong>Trial mode, locked:</strong> the settings cannot be changed. A factory reset still removes drawbridge.",
+                "<strong>Permanent mode, unlocked:</strong> only a factory reset removes drawbridge.",
+                "<strong>Permanent mode, locked:</strong> even a factory reset is unavailable. Unlock drawbridge first, with the code or the timer, and it becomes available again.",
+            ]),
+
             ("h3", "Locking"),
-            ("p", 'Drawbridge cannot be removed at all without a factory reset of the device: the default policy is irrevocable until a factory reset.<sup><a href="#beta">1</a></sup> This is drawbridge\'s baseline protection.'),
-            ("p", 'Once you lock drawbridge, the other settings take effect (see below). While locked, the settings can no longer be changed and drawbridge cannot be removed at all: even a factory reset is no longer possible!'),
+            ("p", "The default policy cannot be switched off while drawbridge is installed. That is drawbridge's baseline protection, and removing drawbridge is the only way past it."),
+            ("p", "Once you lock drawbridge, the other settings take effect (see below). While locked, the settings can no longer be changed, and in permanent mode drawbridge cannot be removed until it is unlocked."),
             ("p", "When you lock it, you are given a code first. This code is different every time, so write it down again each time! The code is what lifts the lock."),
             ("ul", [
                 "<strong>Locking for good</strong>: the code is deliberately hard to remember. <strong>You can choose not to write the code down, and then the phone stays locked forever and ever!</strong>",
@@ -1697,7 +1706,8 @@ FAQ = {
             ("p", "Drawbridge has both a network filter and an on-device filter, and is therefore about as watertight as it gets. Even so, there are still websites and apps that will occasionally show something harmful, or that can get around a network filter. Do not hesitate to report it."),
             ("p", "A consequence of this filter is that you cannot use VPNs or pick your own DNS (the DNS that is used is encrypted and privacy-focused). You also cannot configure other users, use the private space, or create a guest account. For those same reasons you cannot use parental control apps, not even Google Family Link (which, incidentally, only goes up to 13 anyway). Screen time settings on the device do remain possible. Finally, while locked, you cannot use developer settings."),
             ("h4", "Removing it"),
-            ("p", 'The only way to remove drawbridge is a factory reset. That resets the whole device and loses your data with it. It is effectively the same as buying a new device, but without the money. <strong>The factory reset is also only possible while drawbridge is unlocked. A locked drawbridge cannot be removed.</strong><sup><a href="#beta">1</a></sup>'),
+            ("p", "How you remove drawbridge depends on the mode. In <strong>trial mode</strong>, unlock it, choose \"Deactivate drawbridge restrictions\" in the app menu, and uninstall it. Nothing on the phone is lost."),
+            ("p", "In <strong>permanent mode</strong> the only way is a factory reset. That resets the whole device and loses your data with it. It is effectively the same as buying a new device, but without the money. <strong>While drawbridge is locked, even the factory reset is unavailable: unlock it first.</strong>"),
             ("p", "If you have locked drawbridge without a timer and no longer know the code, or have lost it, there is still one way out: in the menu of a locked drawbridge you can choose 'forgot the code'. There you can start a timer of 30 days, after which drawbridge unlocks. This exists to stop anyone accidentally ending up with a worthless device that can no longer be passed on or sold. That is not the intention. The wait cannot be shortened, the unlock date is shown on the phone's lock screen for the whole period, and unlocking with the code before then cancels it: so anyone in the household can start it, and the person holding the code stays in charge."),
             ("h4", "Checking the time"),
             ("p", 'Parents who use drawbridge for their children have one extra check, to see whether drawbridge has been unlocked or the phone has perhaps even been reset: at the bottom of the phone\'s lock screen it says that the phone is protected by drawbridge, with the time it was last locked. You can find the same thing in the drawbridge app itself. That time has to match the moment you locked drawbridge for your teenager. If a timer is running, the lock screen counts down instead ("drawbridge unlocks in 3 days") and the lock time is then in the app.'),
@@ -1721,7 +1731,6 @@ FAQ = {
             ("h2", "Why does my phone say it is 'managed by my organisation' or by an 'IT admin'?"),
             ("p", "Drawbridge is a device policy controller, and those are normally used for company phones and kiosks. You can ignore these messages."),
 
-            ("note", '<p><strong>1.</strong> During beta testing this is more relaxed. For safety reasons, because of possible unexpected bugs, and because a beta tester probably does not want drawbridge forever:</p><ul><li>a factory reset is always possible, even while locked</li><li>while unlocked, drawbridge can also simply be switched off and removed from the phone without a factory reset</li></ul>'),
         ],
     ),
     "nl": dict(
@@ -1738,12 +1747,21 @@ FAQ = {
             ("p", "Alle andere websites en apps werken gewoon: tools, office, weerbericht, banking, publiek transport, school, werk, etc. Ook werken de meeste messengers: Signal, Threema, Briar, Session. Private mobiele communicatie is namelijk een hoofddoel van een smartphone."),
 
             ("h2", "Hoe werkt de drawbridge app?"),
-            ("p", "Van zodra drawbridge geïnstalleerd is, wordt het toestel <strong>onherroepelijk beschermd</strong> tegen bovenstaande categorieën, en <strong>worden de apps die nooit toegelaten zijn verwijderd</strong>: sociale media, games, dating, de meeste PEGI-7 of hoger, en alle browsers behalve de toegestane. Dat gebeurt reeds bij de installatie, en is geldig tot je drawbridge verwijdert door een factory reset van je toestel. Je kan daarbovenop verdere restricties toepassen: WhatsApp, Telegram, YouTube en/of videostreaming uitschakelen, een avondklok instellen, helemaal offline gaan, geen browser hebben, of slechts enkele apps toestaan. Deze restricties gaan pas in bij het 'vergrendelen' van drawbridge. Voor het ontgrendelen heb je een code nodig, of je kan een timer instellen. Zolang drawbridge vergrendeld is, is er geen manier om de instellingen te veranderen of drawbridge te verwijderen."),
+            ("p", "Van zodra drawbridge geïnstalleerd is, wordt het toestel <strong>onherroepelijk beschermd</strong> tegen bovenstaande categorieën, en <strong>worden de apps die nooit toegelaten zijn verwijderd</strong>: sociale media, games, dating, de meeste PEGI-7 of hoger, en alle browsers behalve de toegestane. Dat gebeurt reeds bij de installatie, en is geldig tot je drawbridge verwijdert (zie onder). Je kan daarbovenop verdere restricties toepassen: WhatsApp, Telegram, YouTube en/of videostreaming uitschakelen, een avondklok instellen, helemaal offline gaan, geen browser hebben, of slechts enkele apps toestaan. Deze restricties gaan pas in bij het 'vergrendelen' van drawbridge. Voor het ontgrendelen heb je een code nodig, of je kan een timer instellen. Zolang drawbridge vergrendeld is, is er geen manier om de instellingen te veranderen."),
             ("p", "De drawbridge app is het controlecentrum van drawbridge en laat de gebruiker toe bepaalde apps en websites toch te gebruiken, het internet juist nog meer te beperken of de telefoon bijna helemaal een dumbphone te maken. Deze bijkomende instellingen gaan pas van kracht als men drawbridge vergrendelt."),
 
+            ("h3", "Proefmodus en definitieve modus"),
+            ("p", 'Elke telefoon start in <strong>proefmodus</strong> en blijft daar tenzij je dat wijzigt. Die is bedoeld om drawbridge te testen, of om het een tijdje te gebruiken, en houdt drawbridge makkelijk verwijderbaar. Een knop bovenaan de app, "Definitief maken", sluit die deur. Dat kan niet ongedaan gemaakt worden vanaf de telefoon.'),
+            ("ul", [
+                "<strong>Proefmodus, ontgrendeld:</strong> zet drawbridge uit via het menu van de app en verwijder het. Een factory reset kan ook.",
+                "<strong>Proefmodus, vergrendeld:</strong> de instellingen kunnen niet wijzigen. Een factory reset verwijdert drawbridge nog steeds.",
+                "<strong>Definitieve modus, ontgrendeld:</strong> alleen een factory reset verwijdert drawbridge.",
+                "<strong>Definitieve modus, vergrendeld:</strong> zelfs een factory reset is niet beschikbaar. Ontgrendel drawbridge eerst, met de code of de timer, dan kan het weer.",
+            ]),
+
             ("h3", "Vergrendelen"),
-            ("p", 'Drawbridge kan sowieso niet worden verwijderd zonder een factory reset van het toestel: de standaard policy is onherroepelijk tot factory reset.<sup><a href="#beta">1</a></sup> Dit is de basisbescherming van drawbridge.'),
-            ("p", "Als men drawbridge vergrendelt, dan gaan de andere instellingen van kracht (zie onder). Wanneer vergrendeld kunnen de instellingen niet meer wijzigen en kan drawbridge ook helemaal niet worden verwijderd, zelfs een factory reset is niet meer mogelijk!"),
+            ("p", "De standaard policy kan niet uitgezet worden zolang drawbridge geïnstalleerd is. Dat is de basisbescherming van drawbridge, en drawbridge verwijderen is de enige weg eromheen."),
+            ("p", "Als men drawbridge vergrendelt, dan gaan de andere instellingen van kracht (zie onder). Wanneer vergrendeld kunnen de instellingen niet meer wijzigen, en in de definitieve modus kan drawbridge niet verwijderd worden zolang het vergrendeld is."),
             ("p", "Bij vergrendeling krijgt men eerst een code. Deze code is elke keer anders, schrijf die dus telkens opnieuw op! De code is nodig om de vergrendeling op te heffen."),
             ("ul", [
                 "<strong>Definitief vergrendelen</strong>: de code is opzettelijk moeilijk te onthouden. <strong>Je kan ervoor kiezen de code niet op te schrijven en dan blijft de telefoon vergrendeld voor eeuwig en altijd!</strong>",
@@ -1770,7 +1788,8 @@ FAQ = {
             ("p", "Drawbridge heeft zowel een netwerkfilter als on-device filter en is daarom zo goed als waterdicht. Toch zijn er nog websites en apps die af en toe iets schadelijks zullen tonen of een netwerkfilter kunnen omzeilen. Aarzel niet om dit te melden."),
             ("p", "Het gevolg van deze filter is dat men geen VPN's kan gebruiken of zelf een DNS kan kiezen (de gekozen DNS is wel versleuteld en privacygericht). Men kan ook geen andere gebruikers configureren, de private space gebruiken of een gastaccount maken. Wegens deze zelfde redenen kan men geen parental control apps gebruiken, zelfs niet Google Family Link (deze laatste is overigens toch maar tot 13 jaar). Schermtijd-instellingen op het toestel blijven wel mogelijk. Tenslotte kan men, wanneer vergrendeld, geen developer settings gebruiken."),
             ("h4", "Verwijderen"),
-            ("p", 'De enige manier om drawbridge te verwijderen is een factory reset. Daarmee reset je het hele toestel en ben je ook je data kwijt. Het staat eigenlijk gelijk aan een nieuw toestel kopen maar zonder de monetaire kost. <strong>De factory reset is bovendien enkel mogelijk wanneer drawbridge ontgrendeld is. Een vergrendelde drawbridge kan niet worden verwijderd.</strong><sup><a href="#beta">1</a></sup>'),
+            ("p", "Hoe je drawbridge verwijdert hangt af van de modus. In de <strong>proefmodus</strong> ontgrendel je het, kies je \"drawbridge-beperkingen uitschakelen\" in het menu van de app, en verwijder je het. Er gaat niets verloren op de telefoon."),
+            ("p", "In de <strong>definitieve modus</strong> is een factory reset de enige weg. Daarmee reset je het hele toestel en ben je ook je data kwijt. Het staat eigenlijk gelijk aan een nieuw toestel kopen maar zonder de monetaire kost. <strong>Zolang drawbridge vergrendeld is, is zelfs de factory reset niet beschikbaar: ontgrendel het eerst.</strong>"),
             ("p", "Indien je drawbridge hebt vergrendeld zonder timer en de code niet meer weet of bent kwijtgespeeld, dan is er nog één manier: in het menu van een vergrendelde drawbridge kan je kiezen voor 'code vergeten'. Daar kan je een timer starten van 30 dagen, waarna drawbridge wordt ontgrendeld. Dit is om te voorkomen dat iemand per ongeluk een waardeloos toestel zou krijgen dat men dan niet meer kan doorgeven of verkopen. Dat is niet de bedoeling. De wachttijd kan niet ingekort worden, de datum staat de hele periode op het vergrendelscherm van de telefoon, en ontgrendelen met de code stopt ze: iedereen in het gezin kan ze dus starten, en wie de code heeft, houdt de controle."),
             ("h4", "Controle op tijdstip"),
             ("p", "Ouders die drawbridge gebruiken voor hun kinderen, hebben een extra controle om na te gaan of drawbridge niet werd ontgrendeld of de telefoon misschien zelfs werd gereset: op het lockscreen van de telefoon staat er onderaan dat de telefoon wordt beschermd door drawbridge, met het tijdstip van laatste vergrendeling. Dit kan je ook terugvinden in de drawbridge app zelf. Dit tijdstip moet overeenkomen met wanneer jij voor je tiener drawbridge hebt vergrendeld. Loopt er een timer, dan telt het lockscreen in plaats daarvan af (\"drawbridge ontgrendelt over 3 dagen\") en staat het tijdstip van vergrendeling in de app."),
@@ -1794,7 +1813,6 @@ FAQ = {
             ("h2", "Waarom zegt mijn telefoon dat het wordt 'beheerd door mijn organisatie' of door een 'IT-admin'?"),
             ("p", "Drawbridge is een device policy controller, en die worden normaal gebruikt voor bedrijfstelefoons en kiosken. Je mag deze teksten negeren."),
 
-            ("note", '<p><strong>1.</strong> Tijdens de beta-testing is dit soepeler. Om veiligheidsredenen, wegens eventuele onverwachte bugs, en omdat een beta-tester waarschijnlijk niet voor altijd drawbridge wil:</p><ul><li>een factory reset is altijd mogelijk, zelfs wanneer vergrendeld</li><li>wanneer ontgrendeld kan drawbridge ook gewoon worden uitgeschakeld en van de telefoon verwijderd zonder factory reset</li></ul>'),
         ],
     ),
     "fr": dict(
@@ -1811,12 +1829,21 @@ FAQ = {
             ("p", "Tous les autres sites et applications fonctionnent normalement : outils, bureautique, météo, banque, transports en commun, école, travail, etc. La plupart des messageries fonctionnent aussi : Signal, Threema, Briar, Session. La communication mobile privée est en effet l'un des buts premiers d'un smartphone."),
 
             ("h2", "Comment fonctionne l'application drawbridge ?"),
-            ("p", "Dès que drawbridge est installé, l'appareil est <strong>protégé de façon irrévocable</strong> contre les catégories ci-dessus, et <strong>les applications qui ne sont jamais autorisées sont supprimées</strong> : réseaux sociaux, jeux, rencontres, la plupart des contenus classés PEGI 7 ou plus, et tous les navigateurs sauf ceux qui sont autorisés. Cela se produit dès l'installation, et vaut jusqu'à ce que vous retiriez drawbridge par une réinitialisation d'usine de l'appareil. Vous pouvez y ajouter d'autres restrictions : désactiver WhatsApp, Telegram, YouTube et/ou le streaming vidéo, instaurer un couvre-feu, passer entièrement hors ligne, n'avoir aucun navigateur, ou n'autoriser que quelques applications. Ces restrictions ne prennent effet qu'au moment où vous « verrouillez » drawbridge. Le déverrouillage demande un code, ou vous pouvez régler une minuterie. Tant que drawbridge est verrouillé, il n'y a aucun moyen de modifier les réglages ni de retirer drawbridge."),
+            ("p", "Dès que drawbridge est installé, l'appareil est <strong>protégé de façon irrévocable</strong> contre les catégories ci-dessus, et <strong>les applications qui ne sont jamais autorisées sont supprimées</strong> : réseaux sociaux, jeux, rencontres, la plupart des contenus classés PEGI 7 ou plus, et tous les navigateurs sauf ceux qui sont autorisés. Cela se produit dès l'installation, et vaut jusqu'à ce que vous retiriez drawbridge (voir plus bas). Vous pouvez y ajouter d'autres restrictions : désactiver WhatsApp, Telegram, YouTube et/ou le streaming vidéo, instaurer un couvre-feu, passer entièrement hors ligne, n'avoir aucun navigateur, ou n'autoriser que quelques applications. Ces restrictions ne prennent effet qu'au moment où vous « verrouillez » drawbridge. Le déverrouillage demande un code, ou vous pouvez régler une minuterie. Tant que drawbridge est verrouillé, il n'y a aucun moyen de modifier les réglages."),
             ("p", "L'application drawbridge est le centre de contrôle de drawbridge : elle permet d'autoriser malgré tout certaines applications et certains sites, de restreindre encore davantage l'internet, ou de transformer le téléphone en quasi-dumbphone. Ces réglages supplémentaires ne prennent effet qu'au moment où vous verrouillez drawbridge."),
 
+            ("h3", "Mode d\'essai et mode définitif"),
+            ("p", 'Chaque téléphone démarre en <strong>mode d\'essai</strong> et y reste tant que vous n\'y changez rien. Il sert à tester drawbridge, ou à l\'utiliser un temps, et garde drawbridge facile à retirer. Un bouton en haut de l\'application, « Rendre définitif », ferme cette porte. Cela ne peut pas être annulé depuis le téléphone.'),
+            ("ul", [
+                "<strong>Mode d\'essai, déverrouillé :</strong> désactivez drawbridge dans le menu de l\'application, puis désinstallez-le. Une réinitialisation d\'usine fonctionne aussi.",
+                "<strong>Mode d\'essai, verrouillé :</strong> les réglages ne peuvent plus changer. Une réinitialisation d\'usine retire toujours drawbridge.",
+                "<strong>Mode définitif, déverrouillé :</strong> seule une réinitialisation d\'usine retire drawbridge.",
+                "<strong>Mode définitif, verrouillé :</strong> même la réinitialisation d\'usine est indisponible. Déverrouillez drawbridge d\'abord, avec le code ou la minuterie, et elle redevient possible.",
+            ]),
+
             ("h3", "Verrouiller"),
-            ("p", 'Drawbridge ne peut de toute façon pas être retiré sans une réinitialisation d\'usine de l\'appareil : la politique par défaut est irrévocable jusqu\'à cette réinitialisation.<sup><a href="#beta">1</a></sup> C\'est la protection de base de drawbridge.'),
-            ("p", "Lorsque vous verrouillez drawbridge, les autres réglages prennent effet (voir plus bas). Une fois verrouillé, les réglages ne peuvent plus être modifiés et drawbridge ne peut plus du tout être retiré : même une réinitialisation d'usine n'est plus possible !"),
+            ("p", "La politique par défaut ne peut pas être désactivée tant que drawbridge est installé. C'est la protection de base de drawbridge, et le retirer est la seule façon de la lever."),
+            ("p", "Lorsque vous verrouillez drawbridge, les autres réglages prennent effet (voir plus bas). Une fois verrouillé, les réglages ne peuvent plus être modifiés, et en mode définitif drawbridge ne peut pas être retiré tant qu'il n'est pas déverrouillé."),
             ("p", "Au moment du verrouillage, vous recevez d'abord un code. Ce code est différent à chaque fois, notez-le donc à nouveau chaque fois ! Le code est nécessaire pour lever le verrouillage."),
             ("ul", [
                 "<strong>Verrouiller définitivement</strong> : le code est volontairement difficile à retenir. <strong>Vous pouvez choisir de ne pas le noter, et le téléphone reste alors verrouillé pour toujours !</strong>",
@@ -1843,7 +1870,8 @@ FAQ = {
             ("p", "Drawbridge combine un filtre réseau et un filtre sur l'appareil, et est donc à peu près aussi étanche que possible. Il reste néanmoins des sites et des applications qui montreront de temps à autre quelque chose de nuisible, ou qui parviennent à contourner un filtre réseau. N'hésitez pas à le signaler."),
             ("p", "La conséquence de ce filtre est que vous ne pouvez pas utiliser de VPN ni choisir vous-même un DNS (le DNS utilisé est chiffré et respectueux de la vie privée). Vous ne pouvez pas non plus configurer d'autres utilisateurs, utiliser l'espace privé ou créer un compte invité. Pour ces mêmes raisons, vous ne pouvez pas utiliser d'applications de contrôle parental, pas même Google Family Link (qui, de toute façon, ne va que jusqu'à 13 ans). Les réglages de temps d'écran sur l'appareil restent possibles. Enfin, une fois verrouillé, vous ne pouvez plus utiliser les options pour développeurs."),
             ("h4", "Retirer drawbridge"),
-            ("p", 'La seule manière de retirer drawbridge est une réinitialisation d\'usine. Elle réinitialise l\'appareil entier et vous fait perdre vos données. Cela revient en pratique à acheter un nouvel appareil, mais sans le coût. <strong>La réinitialisation d\'usine n\'est en outre possible que lorsque drawbridge est déverrouillé. Un drawbridge verrouillé ne peut pas être retiré.</strong><sup><a href="#beta">1</a></sup>'),
+            ("p", "La façon de retirer drawbridge dépend du mode. En <strong>mode d'essai</strong>, déverrouillez-le, choisissez « Désactiver les restrictions drawbridge » dans le menu de l'application, et désinstallez-le. Rien n'est perdu sur le téléphone."),
+            ("p", "En <strong>mode définitif</strong>, la seule voie est une réinitialisation d'usine. Elle réinitialise l'appareil entier et vous fait perdre vos données. Cela revient en pratique à acheter un nouvel appareil, mais sans le coût. <strong>Tant que drawbridge est verrouillé, même la réinitialisation d'usine est indisponible : déverrouillez-le d'abord.</strong>"),
             ("p", "Si vous avez verrouillé drawbridge sans minuterie et que vous ne connaissez plus le code ou que vous l'avez perdu, il reste une possibilité : dans le menu d'un drawbridge verrouillé, vous pouvez choisir « code oublié ». Vous pouvez y lancer une minuterie de 30 jours, au terme de laquelle drawbridge se déverrouille. Cela évite que quelqu'un se retrouve par accident avec un appareil sans valeur, qu'il ne pourrait plus transmettre ni revendre. Ce n'est pas le but. L'attente ne peut pas être raccourcie, la date de déverrouillage reste affichée sur l'écran de verrouillage du téléphone pendant toute la période, et déverrouiller avec le code y met fin : n'importe qui dans le foyer peut donc la lancer, et celui qui détient le code garde la main."),
             ("h4", "Contrôle de l'heure"),
             ("p", "Les parents qui utilisent drawbridge pour leurs enfants disposent d'un contrôle supplémentaire, pour vérifier si drawbridge n'a pas été déverrouillé, ou si le téléphone a peut-être même été réinitialisé : en bas de l'écran de verrouillage du téléphone, il est indiqué que le téléphone est protégé par drawbridge, avec l'heure du dernier verrouillage. Vous retrouvez la même information dans l'application drawbridge elle-même. Cette heure doit correspondre au moment où vous avez verrouillé drawbridge pour votre adolescent. Si une minuterie est en cours, l'écran de verrouillage affiche plutôt un compte à rebours (« drawbridge se déverrouille dans 3 jours ») et l'heure du verrouillage se trouve alors dans l'application."),
@@ -1867,7 +1895,6 @@ FAQ = {
             ("h2", "Pourquoi mon téléphone dit-il qu'il est « géré par mon organisation » ou par un « administrateur informatique » ?"),
             ("p", "Drawbridge est un device policy controller, et ceux-ci sont normalement utilisés pour les téléphones d'entreprise et les bornes en libre-service. Vous pouvez ignorer ces messages."),
 
-            ("note", '<p><strong>1.</strong> Pendant la phase de bêta-test, c\'est plus souple. Pour des raisons de sécurité, en raison d\'éventuels bugs inattendus, et parce qu\'un bêta-testeur ne veut probablement pas garder drawbridge pour toujours :</p><ul><li>une réinitialisation d\'usine est toujours possible, même lorsque drawbridge est verrouillé</li><li>lorsqu\'il est déverrouillé, drawbridge peut aussi être simplement désactivé et retiré du téléphone sans réinitialisation d\'usine</li></ul>'),
         ],
     ),
 }
@@ -1885,7 +1912,9 @@ def render_faq(lang: str) -> str:
             items = "\n".join(f"<li>{item}</li>" for item in payload)
             parts.append(f"<ul>\n{items}\n</ul>")
         elif kind == "note":
-            # The beta caveat that both footnote markers in the text point at.
+            # An aside the text points a footnote marker at. Unused since
+            # 2026-09-08, when the beta caveat it carried was replaced by saying
+            # outright what trial and permanent mode each do.
             parts.append(f'<aside class="callout" id="beta">{payload}</aside>')
         else:
             # A kind nobody handles used to vanish silently, which on a page

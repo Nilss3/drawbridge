@@ -684,7 +684,7 @@ is on it is genuinely on it.
 
 | | |
 |---|---|
-| **Open** | **10b** (apps disabled before the lock), **11** (the site, narrowed to trial mode), and one standing item — *drop the unused ABIs* |
+| **Open** | **10b** (apps disabled before the lock), and one standing item, *drop the unused ABIs* |
 | **Closed as shipped** | 4, 6, 10 — built, and the entries had gone stale |
 | **Closed as answered** | 2 and 2a — FRP was tested and does not hold |
 | **Closed as won't do** | 5 (F-Droid) |
@@ -1106,7 +1106,7 @@ Whether a narrower route exists — re-disabling on a sweep rather than forbiddi
 the setting — is the open question, and "if at all possible" is how the owner
 put it.
 
-### 11. The website — narrowed on 2026-09-08 to one thing
+### 11. ~~The website~~ — done 2026-09-08
 
 **Everything else on this list is documented now**, the owner confirms: the three
 toggles, the disconnect philosophy, the browsers, the device count. What is left
@@ -1123,24 +1123,29 @@ somebody presses the button. **They describe permanent mode, which now exists**,
 so the fix is to say *in permanent mode* rather than to soften the claim — and
 that fix arrives with the rest of the trial-mode copy rather than before it.
 
-**The site already describes trial mode — as a temporary beta relaxation**, and
-that framing is what has to change rather than the facts. Found on 2026-09-08
-while renaming *alpha* to *beta*: the FAQ carries a footnote, in all three
-languages, saying *"during beta testing this is more relaxed… a factory reset is
-always possible, even while locked; while unlocked, drawbridge can also simply be
-switched off and removed"*. That is trial mode, exactly, written before it had a
-name — and the two claims it hangs off (*"cannot be removed at all without a
-factory reset"*, *"a locked drawbridge cannot be removed"*) are permanent mode,
-also written before it had a name.
+**The site described trial mode already, as a temporary beta relaxation**, and
+the fix was that framing rather than the facts. The FAQ carried a footnote in
+three languages saying *"during beta testing this is more relaxed"*, hung off
+two claims that were really permanent mode. So it was inverted rather than
+wrong: permanence as the norm, trial as a phase that ends by itself, where the
+software has trial as the default and permanence as a button.
 
-So the FAQ is not wrong so much as **inverted**: it presents permanence as the
-norm and trial as a phase that will end by itself, when the shipped software has
-trial as the default and permanence as a button the parent presses. That is the
-copy change, and it is mostly a reframing of text that already exists.
+**What shipped**, in English, Dutch and French:
 
-**One place has the claim with no footnote at all**, and that one is simply
-false: `page6_lead` on tour page 6, in all three languages — *"When locked,
-drawbridge cannot be removed, not even by factory reset."*
+- A new **Trial mode and permanent mode** section in the FAQ, with the four
+  states as a list. It says outright that a phone starts in trial mode and that
+  *Make it permanent* cannot be undone from the phone.
+- **The three beta footnotes are gone**, and with them the `<sup>` markers. There
+  is nothing left to caveat.
+- **Removing it** now answers per mode: deactivate from the menu in trial mode
+  with nothing lost, factory reset in permanent mode, and not even that until it
+  is unlocked.
+- **Tour page 6**, which carried the claim with no footnote and was simply false.
+- Two sentences under *How does the drawbridge app work?* that promised what
+  only permanent mode delivers.
+
+Checked against the generated HTML afterwards: no page still says a locked
+drawbridge cannot be removed without saying *in permanent mode*.
 
 Remember `site/` is generated: edit `site-src/` and `tools/build-site.py`, run
 `python3 tools/build-site.py`, and commit what it writes. Hand-edited HTML in
