@@ -96,11 +96,29 @@ android {
 
     // GeckoView ships native libraries for every ABI; a universal APK would be
     // several hundred MB. Split per ABI instead.
+    //
+    // **arm64 only, since 2026-09-08.** `armeabi-v7a` and `x86_64` were built and
+    // published for a year and never once fetched by a phone. The GitHub
+    // download counts are what settles it, and the shape of them is the proof:
+    // across every release the two are *identical* — 2/2, 3/3, 7/7, 16/16 — which
+    // is what bulk `gh release download --pattern 'herald-*.apk'` looks like when
+    // it grabs all six at once. arm64 is higher in every single release, and that
+    // excess is the only real device traffic there has ever been. A 32-bit phone
+    // would have shown up as armeabi-v7a exceeding x86_64, and none ever did.
+    //
+    // It costs about 650 MiB of every release, which is most of one.
+    //
+    // **What this gives up**, and both are recoverable by putting an ABI back
+    // here and adding its `required_apps` entry in the same policy: a 32-bit-only
+    // handset would fetch no herald at all and end up on a phone with no browser,
+    // and an **x86_64 emulator** can no longer install herald from the policy.
+    // The second is the one that will actually be noticed — on Apple Silicon the
+    // emulator is arm64 and unaffected, on an Intel host it is not.
     splits {
         abi {
             isEnable = true
             reset()
-            include("arm64-v8a", "armeabi-v7a", "x86_64")
+            include("arm64-v8a")
             isUniversalApk = false
         }
     }
