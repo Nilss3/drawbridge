@@ -684,7 +684,7 @@ is on it is genuinely on it.
 
 | | |
 |---|---|
-| **Open** | **10b** (apps disabled before the lock), and one standing item, *drop the unused ABIs* |
+| **Open** | **10b** (apps disabled before the lock), measured and confirmed 2026-09-08 |
 | **Closed as shipped** | 4, 6, 10 — built, and the entries had gone stale |
 | **Closed as answered** | 2 and 2a — FRP was tested and does not hold |
 | **Closed as won't do** | 5 (F-Droid) |
@@ -1083,13 +1083,27 @@ Consequences to state before building it, not after:
 
 ### 10b. Apps disabled before the lock should stay disabled through it
 
-**Asked for on 2026-08-25, from use, and not yet looked at.** The flow is the
-one *No other apps* is for: a parent prunes the phone, disables what they do not
-want, flicks the switch, and locks. What the switch guarantees today is that no
-*new* app arrives. What it does not guarantee is that the ones already disabled
-stay that way — nothing stops them being re-enabled from Settings while the
-phone is locked, which is a hole in exactly the state the parent thought they
-were sealing.
+**Asked for on 2026-08-25 from use, and confirmed still open on 2026-09-08 —
+measured this time rather than reasoned.** On the API 36 emulator as a real
+Device Owner, with drawbridge build 47:
+
+1. `pm disable-user com.google.android.deskclock`, which is what the Settings
+   button does. Confirmed disabled.
+2. Locked drawbridge through the UI, key minted and committed.
+3. Opened Settings for that package. **The Enable button is there**, on a locked
+   phone, and tapping it re-enabled the app.
+4. drawbridge was still locked afterwards, key hash still stored. Nothing about
+   this was an unlock.
+
+The platform side agrees: `no_control_apps` appears nowhere in `dumpsys user`,
+because `DISALLOW_APPS_CONTROL` is referenced nowhere in this codebase. So
+Settings is behaving correctly and nothing has ever stood in its way.
+
+The flow this breaks is the one *No other apps* is for: a parent prunes the
+phone, disables what they do not want, flicks the switch, and locks. What the
+switch guarantees is that no *new* app arrives. What it does not guarantee is
+that the ones already disabled stay that way, which is a hole in exactly the
+state the parent thought they were sealing.
 
 Worth knowing before anyone starts: this is a different mechanism from the rest
 of the app blocker. Everything in [what is enforced](#what-is-enforced-and-when)
@@ -1505,9 +1519,26 @@ narrowed entry above.
 - ~~**Keep both keys backed up.**~~ **Done, 2026-08-11.** All three — release
   keystore, policy key, emergency key — are offline. Keep any new key in the same
   place; the backup is only as good as the next person knowing it exists.
-- **Drop unused ABIs.** `armeabi-v7a` and `x86_64` have never been downloaded by
-  anything and cost ~650 MiB of every release. Removing an ABI means removing
-  its `required_apps` entry in the same policy.
+- ~~**Drop unused ABIs.**~~ **Done 2026-09-08, and the claim is now measured.**
+  This entry asserted that `armeabi-v7a` and `x86_64` had never been downloaded;
+  the GitHub counts say they had been, 218 and 220 times. **The shape of the
+  numbers is what settles it, not the totals.** In every single release the two
+  are *identical* to each other — 2/2, 3/3, 7/7, 16/16 — which is what a bulk
+  `gh release download --pattern 'herald-*.apk'` looks like taking all six at
+  once, and arm64 is higher in every release. That excess is the only device
+  traffic there has ever been, and a 32-bit handset in the field would have
+  shown up as `armeabi-v7a` exceeding `x86_64`. None ever did.
+
+  A release went from 1.3 GB to **449 MB**. **Three places had to agree**, which
+  is the part worth remembering: the `splits` block in
+  `herald/build.gradle.kts`, `required_apps` in the policy, and the `abis` list
+  in `tools/stage-release.sh`, which hardcoded three and hard-fails on a missing
+  build. All three now carry a comment naming the other two.
+
+  **What it gives up**, both recoverable by putting an ABI back in those three
+  places: a 32-bit-only handset fetches no herald and ends up with no browser,
+  and an **x86_64 emulator** can no longer install herald from the policy. Only
+  the second is likely to be noticed, and only on an Intel host.
 - ~~**Build the WebADB installer.**~~ **Built, and it is the beta's only install
   route.** <https://drawbridge-project.pages.dev/install/> provisions and
   updates a phone over WebUSB; `dev` serves the same page from its own build.
