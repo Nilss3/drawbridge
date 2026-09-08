@@ -90,7 +90,7 @@ def local_list_path(url: str) -> str | None:
     """The repo-relative path of a blocklist this repo hosts, or None.
 
     Recognises the URL on any channel, because the same list is served from
-    `main` for the alpha and from `dev` for test builds.
+    `main` for the beta and from `dev` for test builds.
     """
     if not url.startswith(LOCAL_LIST_URL_BASE):
         return None
@@ -120,7 +120,7 @@ def rewrite_local_list_urls(document: dict) -> None:
 
     Hand-editing the branch into the URL is the obvious fix and the dangerous
     one, because it survives a merge: `dev`'s policy landing on `main` would
-    point every alpha phone at `dev`'s lists. Deriving it from the checked-out
+    point every beta phone at `dev`'s lists. Deriving it from the checked-out
     branch instead means signing on `main` always produces `main` URLs, and the
     trap cannot be set.
 

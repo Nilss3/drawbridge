@@ -2111,7 +2111,7 @@ def check_installer_preconditions() -> dict:
     [build_all] calls *after* clearing `site/` — so a refusal left the tree with
     every generated page deleted and nothing to replace them. It happened on
     2026-08-13, with the staged APK belonging to the dev channel and the policy
-    pinning the alpha's: the check was right, the site was gone, and only git had
+    pinning the beta's: the check was right, the site was gone, and only git had
     a copy.
 
     A tool that destroys its output before deciding whether it may proceed is one

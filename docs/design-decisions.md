@@ -644,7 +644,7 @@ an always-on VPN needs a cable and someone holding the key. As a signed policy
 field it reaches a locked phone at its next poll, and the tunnel is rebuilt on
 any change to the `dns` block, so the fix lands without a reboot. Both parsers
 set `ignoreUnknownKeys`, so a policy carrying the field is still valid to a build
-that predates it — which matters when the alpha and dev run different versions
+that predates it — which matters when the beta and dev run different versions
 of drawbridge against policies of the same lineage.
 
 ## A blocked iframe is denied, not given a block page
@@ -1063,7 +1063,7 @@ with no drawbridge behind it, and has to work anyway.
 
 The cost is that they can disagree, and on 2026-08-13 they did. herald read
 `PolicyConfig`'s default URL, which is `main`'s, while drawbridge read whichever
-channel it was built for. A dev phone therefore ran herald against the alpha's
+channel it was built for. A dev phone therefore ran herald against the beta's
 policy and drawbridge against dev's: one app unblocking what the other still
 blocked, with nothing on the device to say so. It was found because herald
 reported policy 50 on a phone whose drawbridge was on 49.

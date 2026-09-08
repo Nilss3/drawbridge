@@ -433,7 +433,7 @@ code {
 }
 /* The loud callout. One page uses it, for the one thing on the install page a
    reader cannot afford to find out afterwards: that installing uninstalls.
-   Named for what it does, not for what it used to say; it carried the alpha
+   Named for what it does, not for what it used to say; it carried the beta
    notice as well until that notice was dropped on 2026-08-25. */
 .callout--warn {
   border-left-width: 4px;
