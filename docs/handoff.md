@@ -21,9 +21,9 @@ which is kept whole on purpose.
 
 | | `main` (the alpha) | `dev` |
 |---|---|---|
-| drawbridge | **0.2.21, build 46** | **0.2.22, build 47** |
-| herald | **0.1.17** | **0.1.19** |
-| policy | **103** | **107** |
+| drawbridge | **0.2.22, build 47** | **0.2.22, build 47** |
+| herald | **0.1.19** | **0.1.19** |
+| policy | **108** | **107** |
 | install page | <https://drawbridge-project.pages.dev/install/> | <https://dev.drawbridge-project.pages.dev/install/> |
 | phone | the owner's Nothing Phone (A059) | the Moto G15 |
 
@@ -37,17 +37,26 @@ rather than reusing a number. Policy 98 on dev was a version bump and nothing
 else: it existed only to put this channel back above the alpha, so a phone that
 had held main's 97 would accept a dev document again. It ran on from there:
 99 and 100 on dev for herald 0.1.16 and 0.1.17, 101 on main for the same
-browser built on that branch, and 102 back on dev for drawbridge build 46.
+browser built on that branch, and 102 back on dev for drawbridge build 46. It
+has kept running: 103 on main, 104 to 107 on dev across herald 0.1.18, the block
+page's translations and permanent mode, and **108 on main**, which is the alpha
+taking all of that at once.
 
 **The alpha's herald is pinned by name rather than through
-`/releases/latest/download/`, as of policy 96 — at `v0.2.20.1` since policy
-101, and at `v0.2.19` before that.** GitHub resolves that path at
-request time to whichever release wears the Latest flag, so a drawbridge-only
-release taking that flag would have redirected herald's download to a release
-with no herald in it, and every provisioned phone would have fetched a 404 and
-quietly stopped updating the browser. The next release that actually *moves*
-herald has to update those six URLs as well as their six checksums: the same
-work as before, one field wider.
+`/releases/latest/download/`, as of policy 96 — at `v0.2.22` since policy 108,
+at `v0.2.20.1` from policy 101, and at `v0.2.19` before that.** GitHub resolves
+that path at request time to whichever release wears the Latest flag, so a
+drawbridge-only release taking that flag would have redirected herald's download
+to a release with no herald in it, and every provisioned phone would have fetched
+a 404 and quietly stopped updating the browser. A release that actually *moves*
+herald has to update those six URLs as well as their six checksums, and the
+`version_code` beside them — thirteen fields, and policy 108 moved all thirteen.
+
+**The Latest flag is now cosmetic, and worth keeping accurate anyway.** Nothing
+a phone fetches resolves through it since policy 96; what still does is the
+website's own *browsers* link in `tools/build-site.py`, on both channels. So the
+alpha's newest release takes it — `v0.2.22` holds it now — and dev's stay
+pre-releases, which is why dev's site links at main's build.
 
 **`dist/release/` holds one channel's binaries at a time, and git cannot warn
 you which.** The APKs in it are git-ignored, so they do not change when the
@@ -68,7 +77,7 @@ fetches herald itself from the URLs the policy pins.
 After switching branches, re-stage:
 
 ```bash
-gh release download v0.2.20.1    --pattern 'herald-*.apk' --dir dist/release --clobber  # main
+gh release download v0.2.22      --pattern 'herald-*.apk' --dir dist/release --clobber  # main
 gh release download v0.2.8-dev.10 --pattern 'herald-*.apk' --dir dist/release --clobber # dev
 shasum -a 256 -c dist/release/SHA256SUMS
 ```
@@ -85,20 +94,30 @@ rather than a released product.
 
 ### Read this first: two channels, and which is which
 
-**`main` is deliberately behind, and that is not neglect.** The alpha is what a
-tester installs and what the owner's own daily phone runs. Policy *content* is
-kept roughly in step; the *builds* are not, because the dev work is still being
-found wanting on hardware roughly once a day.
+**`main` is usually behind, and that is not neglect** — the alpha is what a
+tester installs and what the owner's own daily phone runs, so dev work sits on
+the Moto until it has been found *not* wanting. **Right now they are level**, as
+of 2026-09-04: both channels run the same source at drawbridge 0.2.22 build 47
+and herald 0.1.19, and only the policy documents differ. That is the exception
+rather than the resting state, and it is what a catch-up release looks like the
+day it lands.
+
+**When they are level, the difference is entirely in four files** —
+`gradle.properties`, `site-src/channel.txt`, `dist/policy.json` and the bundled
+copy at `policy/src/main/assets/drawbridge/default-policy.json`. Carrying source
+between branches means carrying everything *except* those, and the third and
+fourth are the ones that look carryable and are not.
 
 **Three things keep the two apart, and getting any of them wrong breaks the
 alpha:**
 
-1. **`required_apps` resolves through `/releases/latest/download/`.** Whichever
-   GitHub release holds the **latest** flag is what every alpha phone installs.
-   `v0.2.5` holds it, which is why herald 0.1.9 is what `main` delivers. The dev
-   releases are pre-releases explicitly **not** flagged latest, and dev's policy
-   pins their **versioned** URLs instead. A herald release that took `latest`
-   would change the alpha without drawbridge moving at all.
+1. **The alpha's herald is pinned by name**, at `v0.2.22` since policy 108. It
+   used to resolve through `/releases/latest/download/` — whichever release wore
+   the Latest flag — and that stopped in policy 96, because a drawbridge-only
+   release taking the flag would have pointed herald's download at a release with
+   no herald in it. So the Latest flag no longer decides what a phone installs;
+   what it still decides is where the website's *browsers* link goes. The dev
+   releases stay pre-releases, and dev's policy pins its own versioned URLs.
 2. **`policytool.py sign` rewrites blocklist URLs to the branch it runs on**, so
    signing on `main` produces `main` URLs and the merge trap cannot be set by
    hand. `app_update` and `required_apps` are **not** rewritten — they are
@@ -640,6 +659,29 @@ now records this as settled rather than open.
 The MVP is done and shipped. What follows is a feature roadmap, in the order the
 owner set on 2026-08-08, not a defect list.
 
+**Where the list actually stands, 2026-09-04.** Enough of it has closed that the
+numbering no longer reads as a queue, so this is the short version:
+
+| | |
+|---|---|
+| **Done** | 9 (permanent mode), 12, 12b's first half, 12d, 12e, 12f, and *Localise herald* out of the standing items |
+| **Blocked on Google, not on work** | **1** — no unaided update channel exists, and nothing in this repo can make one |
+| **Blocked on a measurement nobody has taken** | **2** — whether FRP holds, which 2a and the install advice both hang on |
+| **Ready to build, nothing in the way** | **4**, **5**, **6**, **10**, **10b** |
+| **The owner's, not a coding task** | **11**, and the rest of **13** |
+| **Small and cosmetic** | 12b's second half, 12c, 12g |
+
+**Two of these got heavier today rather than lighter.** Permanent mode shipping
+makes **1** the sharper problem it always was: a permanent, locked phone whose
+drawbridge is broken has the thirty-day timer and then nothing, because there is
+no way to push it a fix. And **2** stopped being only about the alpha's backstop
+— if FRP does not hold, trial mode's whole answer to a determined child is the
+protected-since date, and the case for recommending permanence gets stronger.
+
+**Nothing on this list is blocked on the two channels being apart any more.**
+They are level as of today, so the next feature can be built on `dev` and carried
+in one commit rather than seven.
+
 ### 1. Get drawbridge able to update itself again
 
 **No longer blocking provisioning** — `tools/provision-adb.sh` gets a certified
@@ -697,6 +739,17 @@ switch Play Protect off, which a locked device should not permit anyway.
 
 **Do not ship a build that assumes this is solved.** Treat every release as
 unable to reach a deployed phone, and weigh changes accordingly.
+
+**Permanent mode raised the stakes on this, 2026-09-04.** A phone in trial mode
+that drawbridge has broken is recoverable by anybody: factory reset, from
+Settings or from recovery, and the handset is back. A phone that is permanent
+*and* locked has neither — the wipe is gone until it unlocks, and unlocking
+needs a key or the thirty-day timer, both of which run **inside** the app that is
+broken. So the failure this entry describes has gone from *no fix reaches the
+phone* to *no fix reaches the phone and nothing else can*, for phones whose owner
+chose that. It is opt-in, it is one way, and the dialog says so — but the
+argument for closing item 1 is now stronger than it has ever been, and the
+argument for recommending permanence to anybody else is weaker until it is.
 
 ### 2. Put a Google account on the phone and find out whether FRP works
 
@@ -1107,7 +1160,7 @@ which would make allowing it here a formality and its *absence* from the list
 meaningless. That is worth knowing before trusting the browser rule to be
 complete.
 
-### 12d. The browser cards need logos for browsers the phone does not have
+### 12g. The browser cards need logos for browsers the phone does not have
 
 **Reported 2026-08-19, once Comet and Via were allowed.** The browser choice
 cards describe themselves with the launcher icons of the browsers *actually
@@ -1221,15 +1274,12 @@ decision about what each control actually promises. What changed:
   a new one every time, written down or deliberately forgotten, and the reveal
   no longer carries the paragraph about settings not being sealed.
 
-**Two of the owner's items are policy, not app, and are prepared but unsigned**
-in `dist/policy.json` (version 75): the default profile's ⓘ text, and
-`default_enabled: true` on every option. **Until that document is signed the app
-contradicts itself** — the Options section says drawbridge allows all of the
-following while every switch reads off. One command closes it:
-
-```
-python3 tools/policytool.py sign --in dist/policy.json --out dist/policy.signed.json
-```
+~~**Two of the owner's items are policy, not app, and are prepared but
+unsigned**~~ — **signed and shipped long ago.** The default profile's ⓘ text and
+`default_enabled: true` on all four options are live on both channels; checked
+against policy 108 on 2026-09-04. The contradiction this described — the Options
+section promising drawbridge allows all of the following while every switch read
+off — is gone.
 
 **A second pass followed on the same day, from the phone, and it split in two.**
 Half of what wanted changing is in `values/`, which needs a build; the other half
@@ -1285,9 +1335,15 @@ What is left of item 11 is the rest of the site.
   **Corrected 2026-08-12**: this entry still described a disabled button, and
   justified itself with QR provisioning "working" and needing "no cable" — QR is
   retired, and the installer it was asking for is a cable path by design.
-- **Localise herald.** drawbridge speaks three languages; the browser is
-  English-only, ~45 strings. drawbridge cannot set it — a per-app locale cannot
-  be set by another app — so herald needs its own picker.
+- ~~**Localise herald.**~~ **Done 2026-09-02, and the picker turned out to be
+  unnecessary.** Both editions speak English, Dutch and French, and they follow
+  the *phone's* language rather than offering a choice — `locales_config.xml`
+  plus `values-nl` and `values-fr`. This entry assumed herald would need its own
+  picker because drawbridge cannot set another app's locale; that is still true
+  and irrelevant, since neither app has to when both read the system setting.
+  drawbridge keeps its picker because a parent may want the *configuration*
+  screen in a language the phone is not in. The block page came with it, and that
+  half is the signed document's — see `blocked_page_title_i18n`.
 
 ---
 
