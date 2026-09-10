@@ -25,15 +25,41 @@
         android:paddingTop="8dp"
         android:paddingBottom="32dp">
 
-        <!--
-            Above the language picker, which is otherwise first on the screen.
+        <TextView
+            style="@style/TextAppearance.Drawbridge.SectionHeading.First"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/language_heading" />
 
-            It earns that place by not being a decision. Everything below it is
-            something the parent chooses; this says what the phone already *is*,
-            and a parent who has forgotten which of the two phones they set up is
-            the trial one should not have to go looking. It is also the one line
-            on this screen that changes what the overflow menu contains, so it
-            belongs where the menu is.
+        <!-- No hint: the section heading above already says "Language", and a
+             floating label would say it a second time. -->
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="24dp"
+            android:layout_marginBottom="28dp">
+
+            <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                android:id="@+id/languageField"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="none" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!--
+            Under the language picker and above everything else, as of
+            2026-09-10. It went in above the picker, on the reasoning that it is
+            not a decision — it says what the phone already *is*, where
+            everything below is something the parent chooses. That was the wrong
+            way round: this card is four lines of English on a screen whose first
+            job is to stop being in a language the reader does not have, and the
+            header of this file has said so from the beginning. Pick the
+            language, then read the card.
+
+            It keeps the top otherwise, because a parent who has forgotten which
+            of two phones they set up as the trial one should not have to go
+            looking.
 
             Two states, one card. In trial mode it offers the button; afterwards
             it drops the button and keeps the ⓘ, because the state is still worth
@@ -126,28 +152,6 @@
                     android:text="@string/permanence_remove_action" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
-
-        <TextView
-            style="@style/TextAppearance.Drawbridge.SectionHeading.First"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/language_heading" />
-
-        <!-- No hint: the section heading above already says "Language", and a
-             floating label would say it a second time. -->
-        <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="24dp"
-            android:layout_marginBottom="28dp">
-
-            <com.google.android.material.textfield.MaterialAutoCompleteTextView
-                android:id="@+id/languageField"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="none" />
-        </com.google.android.material.textfield.TextInputLayout>
 
         <!--
             Shown whole rather than cropped to a band. The master is composed as
