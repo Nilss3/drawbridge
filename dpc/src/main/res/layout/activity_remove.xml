@@ -11,13 +11,15 @@
         android:orientation="vertical"
         android:padding="24dp">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingBottom="8dp"
-            android:text="@string/remove_title"
-            android:textAppearance="?attr/textAppearanceHeadlineSmall" />
-
+        <!--
+            No heading. The action bar already carries `remove_title` as this
+            activity's label, and until 2026-09-10 this screen said the same
+            words again directly under it. That was tolerable while both read
+            "Deactivate drawbridge restrictions" and merely looked repetitive;
+            with the shorter title it is the same three words twice in the top
+            eighth of the screen. What a parent needs first here is the warning,
+            so the warning is what they get.
+        -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

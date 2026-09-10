@@ -26,8 +26,12 @@ permanent phone it is the only one.
 ## The sanctioned way
 
 Open **drawbridge**, type the key you were given when the phone was locked, then
-**⋮ → Deactivate drawbridge restrictions**. It is in the overflow menu rather
-than on the screen, because it happens once in the life of a phone.
+**Deactivate drawbridge**, the second button on the trial-mode card at the top.
+It sat in the overflow menu until 2026-09-10, on the reasoning that it happens
+once in the life of a phone — true of the action, and the wrong place for it once
+the mode had a name. Deactivating and *Make it permanent* are the two things you
+can do about the mode your phone is in, and one of them hiding in a menu made the
+pair unreadable.
 
 **On a phone in permanent mode that entry is not there**, and nothing else on the
 phone does this job. Skip to [the other way](#the-other-way-a-factory-reset).

@@ -1390,7 +1390,7 @@ it is a taunt.
 
 It gives nothing away, for exactly the reason USB debugging is keyed there:
 unlocking costs the parent's key, and an unlocked drawbridge already offers
-complete removal from its own overflow menu. Whoever reaches this state can undo
+complete removal from its own trial-mode card. Whoever reaches this state can undo
 everything anyway.
 
 **The cost, said plainly.** Every other browser is removed because a browser with
@@ -1797,7 +1797,7 @@ whatever is on the phone at that moment is what it keeps.
 
 **Asked for on 2026-09-04, and it names something that had been true and unnamed
 since the beginning.** Every phone this project has ever provisioned could be
-handed back through the overflow menu: unlock, *Deactivate drawbridge
+handed back from the configuration screen: unlock, *Deactivate drawbridge
 restrictions*, uninstall. That is the right default for software people are
 trying out — it is what made the beta possible to hand to anybody — and it is
 also, for a household that has finished trying it out, the whole lock reduced to
@@ -2002,7 +2002,7 @@ exactly as it was, which is precisely what a parent unlocking to change a settin
 already gets.
 
 It answers the same problem for one reason: **removal lives behind the lock.**
-`RemoveActivity` is in the unlocked screen's overflow menu, so a phone that
+`RemoveActivity` is on the unlocked screen's trial-mode card, so a phone that
 unlocks itself is a phone whose owner can then remove drawbridge, keep it and
 re-lock, or hand it on. The timer therefore did not need to implement a teardown
 of its own — the teardown was already written, and pointing a clock at the *lock*
@@ -2294,7 +2294,7 @@ then never be fixed at all. Every bug found after deployment would be permanent.
 
 **It costs nothing that was not already given away.** An unlocked drawbridge is a
 drawbridge whose configuration screen is open, and that screen offers complete
-removal in its overflow menu. Somebody holding the key can already undo
+removal on its trial-mode card. Somebody holding the key can already undo
 everything, with or without adb. The restriction only ever protected against
 somebody who does *not* have the key, and that person cannot unlock the phone in
 the first place.
