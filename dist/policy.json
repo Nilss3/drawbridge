@@ -1,7 +1,7 @@
 {
-  "version": 112,
-  "issued_at": "2026-09-08T12:30:00Z",
-  "comment": "DEV CHANNEL ONLY. Pins drawbridge 0.2.23 build 48, which holds apps the parent had switched off before locking. Switching one back on from Settings used to work on a locked phone; the next sweep now hides it instead, and unlocking gives it back. herald is unchanged at 0.1.19, arm64 only, at this channel's v0.2.8-dev.11. 369 blocked packages.",
+  "version": 113,
+  "issued_at": "2026-09-10T13:20:00Z",
+  "comment": "DEV CHANNEL ONLY. Pins drawbridge 0.2.24 build 49. Deactivating moves out of the overflow menu onto the trial-mode card beside Make it permanent, and both disappear together once the phone is made permanent. Its warning is rewritten and corrects the app on a point the docs settled in August: drawbridge goes inert and can then be uninstalled like any other app, and a factory reset was never needed to reactivate. herald is unchanged at 0.1.19, arm64 only, at this channel's v0.2.8-dev.11. 369 blocked packages.",
   "dns": {
     "upstreams": [
       "94.140.14.15",
@@ -825,9 +825,9 @@
   },
   "app_update": {
     "package_name": "app.drawbridge.dpc",
-    "version_code": 48,
-    "url": "https://dev.drawbridge-project.pages.dev/assets/dpc-ddba3dc7d3d37017.apk",
-    "sha256": "ddba3dc7d3d37017931d16d9cab9aa78caeb08d07122ed6d4538d33b7171d3a5"
+    "version_code": 49,
+    "url": "https://dev.drawbridge-project.pages.dev/assets/dpc-7e2926ebc970ce27.apk",
+    "sha256": "7e2926ebc970ce27770dbc579e3429afb09d0989eeacc21764ab675d096e605f"
   },
   "required_apps": [
     {
