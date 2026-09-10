@@ -48,18 +48,64 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <!--
-            Under the language picker and above everything else, as of
-            2026-09-10. It went in above the picker, on the reasoning that it is
-            not a decision — it says what the phone already *is*, where
-            everything below is something the parent chooses. That was the wrong
-            way round: this card is four lines of English on a screen whose first
-            job is to stop being in a language the reader does not have, and the
-            header of this file has said so from the beginning. Pick the
-            language, then read the card.
+            Shown whole rather than cropped to a band. The master is composed as
+            one picture: the reader on his bench at the left and the monsters at
+            the right are the point of it, and a centre crop to a letterbox takes
+            the spire tips off the top and the feet off the bottom. wrap_content
+            with adjustViewBounds lets the height follow the width.
 
-            It keeps the top otherwise, because a parent who has forgotten which
-            of two phones they set up as the trial one should not have to go
-            looking.
+            The master went from square to 16:9 on 2026-08-19 for what that costs
+            here: shown whole, a square picture filled the top of the screen and
+            pushed the language picker, the policy and the options below the
+            fold, so the first thing a parent saw was all illustration. Same
+            rule, half the height, nothing cropped.
+        -->
+        <com.google.android.material.imageview.ShapeableImageView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="24dp"
+            android:layout_marginBottom="20dp"
+            android:adjustViewBounds="true"
+            android:contentDescription="@string/welcome_scene_description"
+            android:scaleType="fitCenter"
+            android:src="@drawable/welcome_scene"
+            app:shapeAppearanceOverlay="@style/ShapeAppearance.Drawbridge.Hero" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="24dp"
+            android:paddingBottom="8dp"
+            android:text="@string/welcome_title"
+            android:textAppearance="?attr/textAppearanceHeadlineSmall" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="24dp"
+            android:paddingBottom="20dp"
+            android:text="@string/welcome_subtitle"
+            android:textAppearance="?attr/textAppearanceBodyMedium" />
+
+        <!--
+            Under the welcome and above every control, which took two moves on
+            2026-09-10 to arrive at.
+
+            It went in at the very top, on the reasoning that it is not a
+            decision — it says what the phone already *is*, where everything
+            below is something the parent chooses. Both halves of that placement
+            were wrong. Above the **language picker**, it was four lines of
+            English on a screen whose first job is to stop being in a language
+            the reader does not have. Above the **welcome**, it was a status
+            strip standing where the app introduces itself, which is what the
+            picture and the two lines under it are for.
+
+            So: pick the language, meet the app, then read what mode this
+            particular phone is in — and then the controls, with the card sitting
+            directly above the first of them. It is still above everything a
+            parent chooses, which is the part of the original reasoning that
+            holds: somebody who has forgotten which of two phones is the trial
+            one should not have to go looking.
 
             Two states, one card. In trial mode it offers the button; afterwards
             it drops the button and keeps the ⓘ, because the state is still worth
@@ -152,46 +198,6 @@
                     android:text="@string/permanence_remove_action" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
-
-        <!--
-            Shown whole rather than cropped to a band. The master is composed as
-            one picture: the reader on his bench at the left and the monsters at
-            the right are the point of it, and a centre crop to a letterbox takes
-            the spire tips off the top and the feet off the bottom. wrap_content
-            with adjustViewBounds lets the height follow the width.
-
-            The master went from square to 16:9 on 2026-08-19 for what that costs
-            here: shown whole, a square picture filled the top of the screen and
-            pushed the language picker, the policy and the options below the
-            fold, so the first thing a parent saw was all illustration. Same
-            rule, half the height, nothing cropped.
-        -->
-        <com.google.android.material.imageview.ShapeableImageView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="24dp"
-            android:layout_marginBottom="20dp"
-            android:adjustViewBounds="true"
-            android:contentDescription="@string/welcome_scene_description"
-            android:scaleType="fitCenter"
-            android:src="@drawable/welcome_scene"
-            app:shapeAppearanceOverlay="@style/ShapeAppearance.Drawbridge.Hero" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="24dp"
-            android:paddingBottom="8dp"
-            android:text="@string/welcome_title"
-            android:textAppearance="?attr/textAppearanceHeadlineSmall" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="24dp"
-            android:paddingBottom="20dp"
-            android:text="@string/welcome_subtitle"
-            android:textAppearance="?attr/textAppearanceBodyMedium" />
 
         <!--
             **The policy comes first, as of 2026-08-15, and the sentence under it
