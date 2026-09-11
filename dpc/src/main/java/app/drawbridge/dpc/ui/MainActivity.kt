@@ -517,8 +517,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
-     * One icon per browser the *policy* allows under this choice, or the
-     * prohibition sign when it allows none.
+     * The first few browsers the *policy* allows under this choice and a **+**
+     * for the rest, or the prohibition sign when it allows none.
+     *
+     * **Capped since 2026-09-11**, when the allowed list reached eight and the
+     * row outgrew the card. Which four, and why those, is
+     * [BrowserSettings.iconRow]; the **+** only ever means "there are more",
+     * never decoration, so a choice allowing exactly four draws no **+**.
      *
      * **Every allowed browser, not merely the installed ones**, which is the
      * distinction that matters and the one this got wrong first. The row answers
@@ -542,7 +547,13 @@ class MainActivity : AppCompatActivity() {
             )
             return
         }
-        packages.sorted().forEach { row.addView(browserIcon(iconOf(it))) }
+        val icons = BrowserSettings.iconRow(packages)
+        icons.shown.forEach { row.addView(browserIcon(iconOf(it))) }
+        if (icons.more) {
+            row.addView(
+                browserIcon(ContextCompat.getDrawable(this@MainActivity, R.drawable.ic_more_browsers)),
+            )
+        }
     }
 
     /**

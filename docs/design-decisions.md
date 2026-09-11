@@ -1422,8 +1422,17 @@ available.
 
 Each choice shows the icons of the browsers it allows. That is not decoration
 standing in for a sentence — it *is* the sentence, and a better one: "all the
-allowed browsers" is a claim to take on trust, five icons somebody recognises is
-the same claim, checkable at a glance.
+allowed browsers" is a claim to take on trust, a handful of icons somebody
+recognises is the same claim, checkable at a glance.
+
+**Four and a +, since 2026-09-11.** Vanadium made the list eight and the row
+outgrew the card, so it draws herald, Chrome, Firefox Focus and Vivaldi, the four
+this build has pictures of, and a **+** for the rest. That gives up the
+*complete at a glance* half of the argument above and keeps the *recognisable*
+half; the policy's own description, one tap away on the policy card, still names
+every browser. The + appears only when something is behind it, so a choice
+allowing exactly four draws none. See `BrowserSettings.iconRow`, which also makes
+sure *herald mono only* still draws herald mono rather than an empty row.
 
 **They come from the policy's list, not from what happens to be installed**,
 which was the first version and was wrong. The row answers *what does this choice
@@ -1432,11 +1441,14 @@ not make Vivaldi any less allowed. Reading only installed apps made the same
 choice look different on two phones, and look *smaller* than it is on a phone
 whose browsers the choice above had just removed.
 
-So each icon resolves in descending order of how true it is: the installed app's
-own launcher icon, then a bundled copy, then a globe. The third rung matters
-because the map is keyed by package name while the allowed list is a signed
-document that changes without an app update — a browser added tomorrow gets the
-globe rather than leaving a hole in a row whose whole job is being complete.
+So each icon is a bundled copy of the product's mark, or a globe for a browser
+this build has no picture of. **Not the installed app's launcher icon**, which an
+earlier version of this paragraph described as the first rung and the code
+stopped using before 2026-09-11: themed icons and OEM restyling made the same
+choice look different on two phones, which is the one thing the row exists not
+to do. The globe matters because the map is keyed by package name while the
+allowed list is a signed document that changes without an app update, so a
+browser added tomorrow gets the globe rather than a hole in the row.
 
 **On the bundled third-party marks.** They identify the products they belong to,
 which is what any browser picker does, and it is a different act from the rating

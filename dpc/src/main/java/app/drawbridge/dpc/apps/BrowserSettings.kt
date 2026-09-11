@@ -66,6 +66,9 @@ class BrowserSettings(context: Context) {
     // which is a question it already asks well — see
     // `DeviceOwnerManager.releaseDefaultBrowser`.
 
+    /** What a choice's icon row draws: some browsers, and whether a **+** follows them. */
+    data class IconRow(val shown: List<String>, val more: Boolean)
+
     companion object {
         private const val PREFS_NAME = "drawbridge_browsers"
         private const val KEY_CHOICE = "choice"
@@ -86,6 +89,44 @@ class BrowserSettings(context: Context) {
             Choice.ALL -> policy.browserPackages
             Choice.MONO_ONLY -> policy.browserPackages.intersect(setOf(MONO_PACKAGE))
             Choice.NONE -> emptySet()
+        }
+
+        /**
+         * The browsers an icon row draws first, in this order.
+         *
+         * **These four because they are the ones this build has pictures of**;
+         * herald mono, being herald's second face, waits behind the **+** with
+         * the rest. The row stopped drawing every allowed browser on 2026-09-11,
+         * when Vanadium made the list eight: at 28dp each plus spacing that is
+         * wider than the card on a small phone, and the policy's own description
+         * already names every one of them.
+         */
+        val FEATURED_BROWSERS: List<String> = listOf(
+            "app.drawbridge.herald",
+            "com.android.chrome",
+            "org.mozilla.focus",
+            "com.vivaldi.browser",
+        )
+
+        /**
+         * The icons for a set of allowed browsers: the featured ones first, in
+         * [FEATURED_BROWSERS] order, then the rest alphabetically, cut at [max],
+         * with [IconRow.more] set exactly when something was cut.
+         *
+         * **Falls through to the rest rather than drawing nothing** when no
+         * featured browser is allowed. That is *herald mono only*, whose one
+         * browser is not featured, and any future document that stops
+         * sanctioning Chrome. A card that allows a browser must never draw a row
+         * that reads as allowing none.
+         *
+         * Pure, like [allowedBrowsers], so what the card claims can be checked
+         * without inflating it.
+         */
+        fun iconRow(allowed: Set<String>, max: Int = FEATURED_BROWSERS.size): IconRow {
+            val ordered = FEATURED_BROWSERS.filter { it in allowed } +
+                (allowed - FEATURED_BROWSERS.toSet()).sorted()
+            val shown = ordered.take(max)
+            return IconRow(shown = shown, more = ordered.size > shown.size)
         }
 
         /**

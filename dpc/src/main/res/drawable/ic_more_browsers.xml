@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    The + at the end of a browser row: this choice allows more browsers than the
+    row draws. Added 2026-09-11, when the list reached eight; see
+    BrowserSettings.iconRow for which are drawn and why.
+
+    A circled plus rather than a bare one, and the same tint and size as the
+    globe beside it, so it reads as one more round shape in the row rather than
+    as a button. It is not one: the whole card is what a parent taps.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24"
+    android:tint="?attr/colorPrimary">
+
+    <path
+        android:fillColor="@android:color/white"
+        android:pathData="M13,7h-2v4H7v2h4v4h2v-4h4v-2h-4V7zM12,2C6.48,2 2,6.48 2,12s4.48,10 10,10 10,-4.48 10,-10S17.52,2 12,2zM12,20c-4.41,0 -8,-3.59 -8,-8s3.59,-8 8,-8 8,3.59 8,8 -3.59,8 -8,8z" />
+</vector>

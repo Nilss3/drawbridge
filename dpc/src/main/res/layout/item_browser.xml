@@ -55,8 +55,9 @@
                 android:layout_height="wrap_content"
                 android:textAppearance="?attr/textAppearanceTitleMedium" />
 
-            <!-- Filled from code with one ImageView per allowed browser that is
-                 actually on this phone. -->
+            <!-- Filled from code: the first few browsers this choice allows, from
+                 pictures bundled in the app, then a + when there are more. See
+                 BrowserSettings.iconRow. -->
             <LinearLayout
                 android:id="@+id/browserIcons"
                 android:layout_width="match_parent"
