@@ -265,9 +265,10 @@ The technical detail is in [provisioning.md](provisioning.md).
 
 ## Removing it later
 
-Open drawbridge, type your key, then **⋮ → Deactivate drawbridge restrictions**.
-It lives in the overflow menu rather than on the screen: it happens once in the
-life of a phone and does not belong next to the button used every time.
+Open drawbridge, type your key, then press **Deactivate drawbridge to
+uninstall** on the trial-mode card near the top. That makes drawbridge inert;
+uninstall it afterwards like any other app. A phone that has been made permanent
+has no such button, and the only way off it is a factory reset.
 
 Everything is lifted, hidden apps come back, and **nothing is erased**. It cannot
 be switched back on from the phone itself — that means the cable again, from

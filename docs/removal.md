@@ -26,7 +26,7 @@ permanent phone it is the only one.
 ## The sanctioned way
 
 Open **drawbridge**, type the key you were given when the phone was locked, then
-**Deactivate drawbridge**, the second button on the trial-mode card at the top.
+**Deactivate drawbridge to uninstall**, the second button on the trial-mode card.
 It sat in the overflow menu until 2026-09-10, on the reasoning that it happens
 once in the life of a phone — true of the action, and the wrong place for it once
 the mode had a name. Deactivating and *Make it permanent* are the two things you
