@@ -1,7 +1,7 @@
 {
-  "version": 111,
-  "issued_at": "2026-09-08T10:55:00Z",
-  "comment": "BETA. herald is arm64 only from here. armeabi-v7a and x86_64 were published for a year and never fetched by a phone: across every release their download counts are identical to each other and below arm64, which is bulk downloading rather than devices. That takes four of the six required_apps entries out and about 850 MB off every release. version_code stays 19 because the arm64 binary is the same browser, so no phone re-downloads 223 MB for nothing. drawbridge is unchanged at 0.2.22 build 47. 369 blocked packages.",
+  "version": 115,
+  "issued_at": "2026-09-11T11:30:00Z",
+  "comment": "BETA. Allows Vanadium, GrapheneOS's own browser, as dev's policy 114 already does: it keeps Chromium's secure DNS without adding a provider, has no extensions and no VPN, and is covered as Chrome is. Nothing else changes: drawbridge 0.2.22 build 47 and herald 0.1.19 at v0.2.23, as before. 369 blocked packages.",
   "dns": {
     "upstreams": [
       "94.140.14.15",
@@ -487,7 +487,7 @@
       "id": "default",
       "name": "Default policy",
       "subtitle": "Keeps out the toxic internet",
-      "description": "Keeps out algorithmic social media, adult sites, gambling, ads, dating apps, games, and AI companions. The only search engines available are Google, DuckDuckGo, Bing, and Kagi. The only browsers are herald (recommended), herald mono, Chrome, Firefox Focus, Vivaldi, Comet and Via.",
+      "description": "Keeps out algorithmic social media, adult sites, gambling, ads, dating apps, games, and AI companions. The only search engines available are Google, DuckDuckGo, Bing, and Kagi. The only browsers are herald (recommended), herald mono, Chrome, Firefox Focus, Vivaldi, Comet, Via and Vanadium.",
       "name_i18n": {
         "nl": "Standaardbeleid",
         "fr": "Politique par d\u00e9faut"
@@ -497,8 +497,8 @@
         "fr": "Tient l'internet toxique \u00e0 distance"
       },
       "description_i18n": {
-        "nl": "Houdt algoritmische sociale media, pornosites, gokken, advertenties, datingapps, games en AI-gezelschapsapps buiten. De enige beschikbare zoekmachines zijn Google, DuckDuckGo, Bing en Kagi. De enige browsers zijn herald (aanbevolen), herald mono, Chrome, Firefox Focus, Vivaldi, Comet en Via.",
-        "fr": "Tient \u00e0 distance les r\u00e9seaux sociaux algorithmiques, les sites pornographiques, les jeux d'argent, la publicit\u00e9, les applications de rencontre, les jeux et les compagnons IA. Les seuls moteurs de recherche disponibles sont Google, DuckDuckGo, Bing et Kagi. Les seuls navigateurs sont herald (recommand\u00e9), herald mono, Chrome, Firefox Focus, Vivaldi, Comet et Via."
+        "nl": "Houdt algoritmische sociale media, pornosites, gokken, advertenties, datingapps, games en AI-gezelschapsapps buiten. De enige beschikbare zoekmachines zijn Google, DuckDuckGo, Bing en Kagi. De enige browsers zijn herald (aanbevolen), herald mono, Chrome, Firefox Focus, Vivaldi, Comet, Via en Vanadium.",
+        "fr": "Tient \u00e0 distance les r\u00e9seaux sociaux algorithmiques, les sites pornographiques, les jeux d'argent, la publicit\u00e9, les applications de rencontre, les jeux et les compagnons IA. Les seuls moteurs de recherche disponibles sont Google, DuckDuckGo, Bing et Kagi. Les seuls navigateurs sont herald (recommand\u00e9), herald mono, Chrome, Firefox Focus, Vivaldi, Comet, Via et Vanadium."
       },
       "recommended_age": 14
     }
@@ -852,7 +852,8 @@
     "org.mozilla.focus",
     "com.vivaldi.browser",
     "ai.perplexity.comet",
-    "mark.via.gp"
+    "mark.via.gp",
+    "app.vanadium.browser"
   ],
   "app_ratings": {
     "store_region": "BE",
