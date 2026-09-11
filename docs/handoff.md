@@ -23,7 +23,7 @@ which is kept whole on purpose.
 |---|---|---|
 | drawbridge | **0.2.22, build 47** | **0.2.25, build 50** |
 | herald | **0.1.19** | **0.1.19** |
-| policy | **111** | **114** |
+| policy | **115** | **116** |
 | install page | <https://drawbridge-project.pages.dev/install/> | <https://dev.drawbridge-project.pages.dev/install/> |
 | phone | the owner's Nothing Phone (A059) | the Moto G15 |
 
@@ -40,7 +40,9 @@ had held main's 97 would accept a dev document again. It ran on from there:
 browser built on that branch, and 102 back on dev for drawbridge build 46. It
 has kept running: 103 on main, 104 to 107 on dev across herald 0.1.18, the block
 page's translations and permanent mode, and **108 on main**, which is the beta
-taking all of that at once.
+taking all of that at once. Then 109 and 111 on main, 110 and 112 to 114 on dev,
+**115 on main** for Vanadium, and **116 on dev**, a version bump and nothing
+else that put this channel back above the beta as 98 once did.
 
 **The beta's herald is pinned by name rather than through
 `/releases/latest/download/`, as of policy 96 — at `v0.2.23` since policy 111, at `v0.2.22` from policy 108,

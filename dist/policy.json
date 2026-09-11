@@ -1,7 +1,7 @@
 {
-  "version": 114,
-  "issued_at": "2026-09-11T10:40:00Z",
-  "comment": "DEV CHANNEL ONLY. Pins drawbridge 0.2.25 build 50, and allows Vanadium, GrapheneOS's own browser, after checking its patches: it keeps Chromium's secure DNS without adding a provider, has no extensions and no VPN, and is covered as Chrome is. Build 50 caps the browser card at four icons and a +, renames the deactivate button \"Deactivate drawbridge to uninstall\", and its info text says button rather than menu. herald is unchanged at 0.1.19, arm64 only, at v0.2.8-dev.11. 369 blocked packages.",
+  "version": 116,
+  "issued_at": "2026-09-11T11:35:00Z",
+  "comment": "DEV CHANNEL ONLY. A version bump and nothing else, as policy 98 was: the beta took 115 for Vanadium, and this puts dev back above it, so a phone that has held the beta's document accepts this channel's again. Content is 114's: drawbridge 0.2.25 build 50, Vanadium allowed, herald 0.1.19 arm64 at v0.2.8-dev.11. 369 blocked packages.",
   "dns": {
     "upstreams": [
       "94.140.14.15",
