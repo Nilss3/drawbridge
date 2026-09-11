@@ -1,7 +1,7 @@
 {
-  "version": 113,
-  "issued_at": "2026-09-10T13:20:00Z",
-  "comment": "DEV CHANNEL ONLY. Pins drawbridge 0.2.24 build 49. Deactivating moves out of the overflow menu onto the trial-mode card beside Make it permanent, and both disappear together once the phone is made permanent. Its warning is rewritten and corrects the app on a point the docs settled in August: drawbridge goes inert and can then be uninstalled like any other app, and a factory reset was never needed to reactivate. herald is unchanged at 0.1.19, arm64 only, at this channel's v0.2.8-dev.11. 369 blocked packages.",
+  "version": 114,
+  "issued_at": "2026-09-11T10:40:00Z",
+  "comment": "DEV CHANNEL ONLY. Pins drawbridge 0.2.25 build 50, and allows Vanadium, GrapheneOS's own browser, after checking its patches: it keeps Chromium's secure DNS without adding a provider, has no extensions and no VPN, and is covered as Chrome is. Build 50 caps the browser card at four icons and a +, renames the deactivate button \"Deactivate drawbridge to uninstall\", and its info text says button rather than menu. herald is unchanged at 0.1.19, arm64 only, at v0.2.8-dev.11. 369 blocked packages.",
   "dns": {
     "upstreams": [
       "94.140.14.15",
@@ -487,7 +487,7 @@
       "id": "default",
       "name": "Default policy",
       "subtitle": "Keeps out the toxic internet",
-      "description": "Keeps out algorithmic social media, adult sites, gambling, ads, dating apps, games, and AI companions. The only search engines available are Google, DuckDuckGo, Bing, and Kagi. The only browsers are herald (recommended), herald mono, Chrome, Firefox Focus, Vivaldi, Comet and Via.",
+      "description": "Keeps out algorithmic social media, adult sites, gambling, ads, dating apps, games, and AI companions. The only search engines available are Google, DuckDuckGo, Bing, and Kagi. The only browsers are herald (recommended), herald mono, Chrome, Firefox Focus, Vivaldi, Comet, Via and Vanadium.",
       "name_i18n": {
         "nl": "Standaardbeleid",
         "fr": "Politique par d\u00e9faut"
@@ -497,8 +497,8 @@
         "fr": "Tient l'internet toxique \u00e0 distance"
       },
       "description_i18n": {
-        "nl": "Houdt algoritmische sociale media, pornosites, gokken, advertenties, datingapps, games en AI-gezelschapsapps buiten. De enige beschikbare zoekmachines zijn Google, DuckDuckGo, Bing en Kagi. De enige browsers zijn herald (aanbevolen), herald mono, Chrome, Firefox Focus, Vivaldi, Comet en Via.",
-        "fr": "Tient \u00e0 distance les r\u00e9seaux sociaux algorithmiques, les sites pornographiques, les jeux d'argent, la publicit\u00e9, les applications de rencontre, les jeux et les compagnons IA. Les seuls moteurs de recherche disponibles sont Google, DuckDuckGo, Bing et Kagi. Les seuls navigateurs sont herald (recommand\u00e9), herald mono, Chrome, Firefox Focus, Vivaldi, Comet et Via."
+        "nl": "Houdt algoritmische sociale media, pornosites, gokken, advertenties, datingapps, games en AI-gezelschapsapps buiten. De enige beschikbare zoekmachines zijn Google, DuckDuckGo, Bing en Kagi. De enige browsers zijn herald (aanbevolen), herald mono, Chrome, Firefox Focus, Vivaldi, Comet, Via en Vanadium.",
+        "fr": "Tient \u00e0 distance les r\u00e9seaux sociaux algorithmiques, les sites pornographiques, les jeux d'argent, la publicit\u00e9, les applications de rencontre, les jeux et les compagnons IA. Les seuls moteurs de recherche disponibles sont Google, DuckDuckGo, Bing et Kagi. Les seuls navigateurs sont herald (recommand\u00e9), herald mono, Chrome, Firefox Focus, Vivaldi, Comet, Via et Vanadium."
       },
       "recommended_age": 14
     }
@@ -825,9 +825,9 @@
   },
   "app_update": {
     "package_name": "app.drawbridge.dpc",
-    "version_code": 49,
-    "url": "https://dev.drawbridge-project.pages.dev/assets/dpc-7e2926ebc970ce27.apk",
-    "sha256": "7e2926ebc970ce27770dbc579e3429afb09d0989eeacc21764ab675d096e605f"
+    "version_code": 50,
+    "url": "https://dev.drawbridge-project.pages.dev/assets/dpc-4102e65c7deca4d5.apk",
+    "sha256": "4102e65c7deca4d5ee17d909bd39a3dbe60b67aac8572173c27cf695cd80ef12"
   },
   "required_apps": [
     {
@@ -852,7 +852,8 @@
     "org.mozilla.focus",
     "com.vivaldi.browser",
     "ai.perplexity.comet",
-    "mark.via.gp"
+    "mark.via.gp",
+    "app.vanadium.browser"
   ],
   "app_ratings": {
     "store_region": "BE",

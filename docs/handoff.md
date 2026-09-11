@@ -21,9 +21,9 @@ which is kept whole on purpose.
 
 | | `main` (the beta) | `dev` |
 |---|---|---|
-| drawbridge | **0.2.22, build 47** | **0.2.24, build 49** |
+| drawbridge | **0.2.22, build 47** | **0.2.25, build 50** |
 | herald | **0.1.19** | **0.1.19** |
-| policy | **111** | **113** |
+| policy | **111** | **114** |
 | install page | <https://drawbridge-project.pages.dev/install/> | <https://dev.drawbridge-project.pages.dev/install/> |
 | phone | the owner's Nothing Phone (A059) | the Moto G15 |
 
@@ -1340,6 +1340,24 @@ What survives is the three questions below, which are not a task — they are wh
 to run *if somebody asks for a browser to be added*, and the third one is the one
 that would otherwise be discovered the hard way.
 
+**Vanadium went through them on 2026-09-11**, asked for by the household on
+GrapheneOS, and passed, checked against its patches rather than its reputation.
+`app.vanadium.browser` is Chromium with 312 patches on top. *Does it speak its
+own DNS?* It keeps Chromium's *Use secure DNS*, as Chrome does, and adds no DoH
+provider: the two patches that touch DNS, `0050` and `0205`, are build plumbing
+and a change to the hostname the DoH *probe* asks, pointing it at GrapheneOS's
+connectivity check. So it is covered exactly as Chrome is, by
+`block_encrypted_dns`. *What does an assistant fetch server-side?* It has none.
+*Does it register as a browser?* It is GrapheneOS's default, so `isBrowser` sees
+it. It has no extensions, which Chromium on Android does not support, and no
+built-in VPN.
+
+**Its WebView is a separate package**, `app.vanadium.webview`, which answers no
+`https://` intent and so is not a browser to the rule. That is worth knowing
+before anyone widens the rule: hiding a system WebView provider would break every
+app that renders a page. The household's report that everything works is
+consistent with it being left alone.
+
 
 **Both were cleared by the owner on 2026-08-19 and are now on both channels.**
 Neither has a VPN option and neither has a DNS setting, which is the thing that
@@ -1829,6 +1847,18 @@ Neither has been tested. Both are written down because they are asked often
 enough that guessing twice is worse than reasoning once.
 
 ### Would drawbridge work on GrapheneOS?
+
+**Answered from use on 2026-09-11: it does.** A household runs drawbridge on
+GrapheneOS and reports that everything works. That is one report from one phone
+rather than a measurement from this repo, so the predictions below stay as
+written until something here checks them. The one worth checking first is the
+largest: whether a `PackageInstaller` self-update really goes through with no
+Play Protect to refuse it, because on GrapheneOS that would close
+[next step 1](#1-get-drawbridge-able-to-update-itself-again) for those phones.
+The front page lists GrapheneOS among the phones that should work well, from the
+same day, and Vanadium, its own browser, was vetted and allowed — see item 12c.
+
+What follows is the prediction, written before anybody had tried it.
 
 **Most of it should, one part silently would not, and one problem disappears.**
 
