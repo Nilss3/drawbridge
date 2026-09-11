@@ -1235,7 +1235,6 @@ INSTALLER = {
         done_steps=[
             "Sign back in: a Google account if you want one, and WhatsApp and Signal if you removed them. Restore their backups from inside those apps.",
             "Set a screen lock.",
-            "<strong>Move your bookmarks into herald.</strong> It installed itself right after drawbridge, so it is already there: ⋮ → Bookmarks → ⋮ → Import. Do this <em>before</em> the next step, because locking removes the other browsers, and their bookmarks go with them.",
             "Open <strong>drawbridge</strong>, choose the language, read the policy, set the options.",
             "Tap <strong>Lock drawbridge</strong> and write the key down before leaving that screen.",
         ],
@@ -1267,7 +1266,6 @@ INSTALLER = {
         done_steps=[
             "Meld je weer aan: met een Google-account als je er een wil, en met WhatsApp en Signal als je die verwijderd hebt. Hun back-ups zet je terug vanuit die apps zelf.",
             "Stel een schermvergrendeling in.",
-            "<strong>Zet je bladwijzers over naar herald.</strong> Die installeerde zichzelf meteen na drawbridge en staat er dus al: ⋮ → Bladwijzers → ⋮ → Importeren. Doe dit <em>vóór</em> de volgende stap, want bij het vergrendelen verdwijnen de andere browsers, en hun bladwijzers gaan mee.",
             "Open <strong>drawbridge</strong>, kies de taal, lees het beleid, zet de opties.",
             "Tik op <strong>drawbridge vergrendelen</strong> en schrijf de sleutel op vóór je dat scherm verlaat.",
         ],
@@ -1299,7 +1297,6 @@ INSTALLER = {
         done_steps=[
             "Reconnectez-vous : avec un compte Google si vous en voulez un, et avec WhatsApp et Signal si vous les avez retirés. Leurs sauvegardes se restaurent depuis ces applications elles-mêmes.",
             "Définissez un verrouillage d'écran.",
-            "<strong>Transférez vos favoris vers herald.</strong> Il s'est installé juste après drawbridge : il est donc déjà là. ⋮ → Favoris → ⋮ → Importer. Faites-le <em>avant</em> l'étape suivante, car le verrouillage supprime les autres navigateurs, et leurs favoris partent avec eux.",
             "Ouvrez <strong>drawbridge</strong>, choisissez la langue, lisez la politique, réglez les options.",
             "Appuyez sur <strong>Verrouiller drawbridge</strong> et notez la clé avant de quitter cet écran.",
         ],
@@ -1664,11 +1661,7 @@ FAQ = {
             ("p", 'To protect your wellbeing and your device, drawbridge keeps out the following categories: porn, gambling, scams, algorithmic social media, AI companions, games, and dating. Some messenger apps are treated as social media: Facebook Messenger (always blocked), WhatsApp and Telegram (optional, and yours to switch off). Video streaming and YouTube can be switched off separately as well, see below. Note that as a rule every app without a PEGI rating of "all ages" is removed, though some tools are allowed (Strava, for instance). More information on <a href="/why-blocked/">this page</a>.'),
             ("p", "Every other website and app works normally: tools, office, weather, banking, public transport, school, work, and so on. Most messengers work too: Signal, Threema, Briar, Session. Private mobile communication is, after all, one of the main purposes of a smartphone."),
 
-            ("h2", "How does the drawbridge app work?"),
-            ("p", 'As soon as drawbridge is installed, the device is <strong>irrevocably protected</strong> against the categories above, and <strong>the apps that are never allowed are removed</strong>: social media, games, dating, most of what is rated PEGI 7 or higher, and every browser except the allowed ones. That already happens at installation, and it holds until you remove drawbridge (see below). On top of that you can apply further restrictions: switch off WhatsApp, Telegram, YouTube and/or video streaming, set a curfew, go fully offline, have no browser at all, or allow only a handful of apps. Those restrictions take effect only once you "lock" drawbridge. Unlocking needs a code, or you can set a timer. For as long as drawbridge is locked there is no way to change the settings.'),
-            ("p", "The drawbridge app is the control centre of drawbridge. It lets you allow certain apps and websites after all, restrict the internet even further, or turn the phone into something close to a dumbphone. These additional settings only take effect once you lock drawbridge."),
-
-            ("h3", "Trial mode and permanent mode"),
+            ("h2", "What are trial mode and permanent mode?"),
             ("p", 'Every phone starts in <strong>trial mode</strong> and stays there unless you change it. It is meant for testing drawbridge, or for using it for a while, and it keeps drawbridge easy to remove. A button at the top of the app, "Make it permanent", closes that door. It cannot be undone from the phone.'),
             ("ul", [
                 "<strong>Trial mode, unlocked:</strong> switch drawbridge off in the app menu, then uninstall it. A factory reset works too.",
@@ -1676,6 +1669,10 @@ FAQ = {
                 "<strong>Permanent mode, unlocked:</strong> only a factory reset removes drawbridge.",
                 "<strong>Permanent mode, locked:</strong> even a factory reset is unavailable. Unlock drawbridge first, with the code or the timer, and it becomes available again.",
             ]),
+
+            ("h2", "How does the drawbridge app work?"),
+            ("p", 'As soon as drawbridge is installed, the device is <strong>irrevocably protected</strong> against the categories above, and <strong>the apps that are never allowed are removed</strong>: social media, games, dating, most of what is rated PEGI 7 or higher, and every browser except the allowed ones. That already happens at installation, and it holds until you remove drawbridge (see below). On top of that you can apply further restrictions: switch off WhatsApp, Telegram, YouTube and/or video streaming, set a curfew, go fully offline, have no browser at all, or allow only a handful of apps. Those restrictions take effect only once you "lock" drawbridge. Unlocking needs a code, or you can set a timer. For as long as drawbridge is locked there is no way to change the settings.'),
+            ("p", "The drawbridge app is the control centre of drawbridge. It lets you allow certain apps and websites after all, restrict the internet even further, or turn the phone into something close to a dumbphone. These additional settings only take effect once you lock drawbridge."),
 
             ("h3", "Locking"),
             ("p", "The default policy cannot be switched off while drawbridge is installed. That is drawbridge's baseline protection, and removing drawbridge is the only way past it."),
@@ -1746,11 +1743,7 @@ FAQ = {
             ("p", 'Voor het beschermen van je welzijn en je toestel, houdt drawbridge de volgende categorieën tegen: porno, gokken, oplichterij, algoritmische social media, AI companions, games, en dating. Sommige messenger apps worden beschouwd als social media: Facebook Messenger (altijd geblokkeerd), WhatsApp en Telegram (optioneel uit te zetten). Videostreaming en YouTube kan men ook apart uitzetten, zie verder. Let op: over het algemeen worden alle apps verwijderd die geen PEGI rating "alle leeftijden" hebben, maar bepaalde tools hebben we toegestaan (zoals Strava). Meer informatie op <a href="/why-blocked/">deze pagina</a> (in het Engels).'),
             ("p", "Alle andere websites en apps werken gewoon: tools, office, weerbericht, banking, publiek transport, school, werk, etc. Ook werken de meeste messengers: Signal, Threema, Briar, Session. Private mobiele communicatie is namelijk een hoofddoel van een smartphone."),
 
-            ("h2", "Hoe werkt de drawbridge app?"),
-            ("p", "Van zodra drawbridge geïnstalleerd is, wordt het toestel <strong>onherroepelijk beschermd</strong> tegen bovenstaande categorieën, en <strong>worden de apps die nooit toegelaten zijn verwijderd</strong>: sociale media, games, dating, de meeste PEGI-7 of hoger, en alle browsers behalve de toegestane. Dat gebeurt reeds bij de installatie, en is geldig tot je drawbridge verwijdert (zie onder). Je kan daarbovenop verdere restricties toepassen: WhatsApp, Telegram, YouTube en/of videostreaming uitschakelen, een avondklok instellen, helemaal offline gaan, geen browser hebben, of slechts enkele apps toestaan. Deze restricties gaan pas in bij het 'vergrendelen' van drawbridge. Voor het ontgrendelen heb je een code nodig, of je kan een timer instellen. Zolang drawbridge vergrendeld is, is er geen manier om de instellingen te veranderen."),
-            ("p", "De drawbridge app is het controlecentrum van drawbridge en laat de gebruiker toe bepaalde apps en websites toch te gebruiken, het internet juist nog meer te beperken of de telefoon bijna helemaal een dumbphone te maken. Deze bijkomende instellingen gaan pas van kracht als men drawbridge vergrendelt."),
-
-            ("h3", "Proefmodus en definitieve modus"),
+            ("h2", "Wat zijn de proefmodus en de definitieve modus?"),
             ("p", 'Elke telefoon start in <strong>proefmodus</strong> en blijft daar tenzij je dat wijzigt. Die is bedoeld om drawbridge te testen, of om het een tijdje te gebruiken, en houdt drawbridge makkelijk verwijderbaar. Een knop bovenaan de app, "Definitief maken", sluit die deur. Dat kan niet ongedaan gemaakt worden vanaf de telefoon.'),
             ("ul", [
                 "<strong>Proefmodus, ontgrendeld:</strong> zet drawbridge uit via het menu van de app en verwijder het. Een factory reset kan ook.",
@@ -1758,6 +1751,10 @@ FAQ = {
                 "<strong>Definitieve modus, ontgrendeld:</strong> alleen een factory reset verwijdert drawbridge.",
                 "<strong>Definitieve modus, vergrendeld:</strong> zelfs een factory reset is niet beschikbaar. Ontgrendel drawbridge eerst, met de code of de timer, dan kan het weer.",
             ]),
+
+            ("h2", "Hoe werkt de drawbridge app?"),
+            ("p", "Van zodra drawbridge geïnstalleerd is, wordt het toestel <strong>onherroepelijk beschermd</strong> tegen bovenstaande categorieën, en <strong>worden de apps die nooit toegelaten zijn verwijderd</strong>: sociale media, games, dating, de meeste PEGI-7 of hoger, en alle browsers behalve de toegestane. Dat gebeurt reeds bij de installatie, en is geldig tot je drawbridge verwijdert (zie onder). Je kan daarbovenop verdere restricties toepassen: WhatsApp, Telegram, YouTube en/of videostreaming uitschakelen, een avondklok instellen, helemaal offline gaan, geen browser hebben, of slechts enkele apps toestaan. Deze restricties gaan pas in bij het 'vergrendelen' van drawbridge. Voor het ontgrendelen heb je een code nodig, of je kan een timer instellen. Zolang drawbridge vergrendeld is, is er geen manier om de instellingen te veranderen."),
+            ("p", "De drawbridge app is het controlecentrum van drawbridge en laat de gebruiker toe bepaalde apps en websites toch te gebruiken, het internet juist nog meer te beperken of de telefoon bijna helemaal een dumbphone te maken. Deze bijkomende instellingen gaan pas van kracht als men drawbridge vergrendelt."),
 
             ("h3", "Vergrendelen"),
             ("p", "De standaard policy kan niet uitgezet worden zolang drawbridge geïnstalleerd is. Dat is de basisbescherming van drawbridge, en drawbridge verwijderen is de enige weg eromheen."),
@@ -1828,11 +1825,7 @@ FAQ = {
             ("p", 'Pour protéger votre bien-être et votre appareil, drawbridge tient à l\'écart les catégories suivantes : pornographie, jeux d\'argent, arnaques, réseaux sociaux algorithmiques, compagnons IA, jeux, et rencontres. Certaines messageries sont considérées comme des réseaux sociaux : Facebook Messenger (toujours bloqué), WhatsApp et Telegram (optionnels, c\'est vous qui les désactivez). Le streaming vidéo et YouTube peuvent aussi être désactivés séparément, voir plus loin. Notez qu\'en règle générale toute application dépourvue de la classification PEGI « tous âges » est supprimée, même si certains outils restent autorisés (Strava, par exemple). Plus d\'informations sur <a href="/why-blocked/">cette page</a> (en anglais).'),
             ("p", "Tous les autres sites et applications fonctionnent normalement : outils, bureautique, météo, banque, transports en commun, école, travail, etc. La plupart des messageries fonctionnent aussi : Signal, Threema, Briar, Session. La communication mobile privée est en effet l'un des buts premiers d'un smartphone."),
 
-            ("h2", "Comment fonctionne l'application drawbridge ?"),
-            ("p", "Dès que drawbridge est installé, l'appareil est <strong>protégé de façon irrévocable</strong> contre les catégories ci-dessus, et <strong>les applications qui ne sont jamais autorisées sont supprimées</strong> : réseaux sociaux, jeux, rencontres, la plupart des contenus classés PEGI 7 ou plus, et tous les navigateurs sauf ceux qui sont autorisés. Cela se produit dès l'installation, et vaut jusqu'à ce que vous retiriez drawbridge (voir plus bas). Vous pouvez y ajouter d'autres restrictions : désactiver WhatsApp, Telegram, YouTube et/ou le streaming vidéo, instaurer un couvre-feu, passer entièrement hors ligne, n'avoir aucun navigateur, ou n'autoriser que quelques applications. Ces restrictions ne prennent effet qu'au moment où vous « verrouillez » drawbridge. Le déverrouillage demande un code, ou vous pouvez régler une minuterie. Tant que drawbridge est verrouillé, il n'y a aucun moyen de modifier les réglages."),
-            ("p", "L'application drawbridge est le centre de contrôle de drawbridge : elle permet d'autoriser malgré tout certaines applications et certains sites, de restreindre encore davantage l'internet, ou de transformer le téléphone en quasi-dumbphone. Ces réglages supplémentaires ne prennent effet qu'au moment où vous verrouillez drawbridge."),
-
-            ("h3", "Mode d\'essai et mode définitif"),
+            ("h2", "Que sont le mode d\'essai et le mode définitif ?"),
             ("p", 'Chaque téléphone démarre en <strong>mode d\'essai</strong> et y reste tant que vous n\'y changez rien. Il sert à tester drawbridge, ou à l\'utiliser un temps, et garde drawbridge facile à retirer. Un bouton en haut de l\'application, « Rendre définitif », ferme cette porte. Cela ne peut pas être annulé depuis le téléphone.'),
             ("ul", [
                 "<strong>Mode d\'essai, déverrouillé :</strong> désactivez drawbridge dans le menu de l\'application, puis désinstallez-le. Une réinitialisation d\'usine fonctionne aussi.",
@@ -1840,6 +1833,10 @@ FAQ = {
                 "<strong>Mode définitif, déverrouillé :</strong> seule une réinitialisation d\'usine retire drawbridge.",
                 "<strong>Mode définitif, verrouillé :</strong> même la réinitialisation d\'usine est indisponible. Déverrouillez drawbridge d\'abord, avec le code ou la minuterie, et elle redevient possible.",
             ]),
+
+            ("h2", "Comment fonctionne l'application drawbridge ?"),
+            ("p", "Dès que drawbridge est installé, l'appareil est <strong>protégé de façon irrévocable</strong> contre les catégories ci-dessus, et <strong>les applications qui ne sont jamais autorisées sont supprimées</strong> : réseaux sociaux, jeux, rencontres, la plupart des contenus classés PEGI 7 ou plus, et tous les navigateurs sauf ceux qui sont autorisés. Cela se produit dès l'installation, et vaut jusqu'à ce que vous retiriez drawbridge (voir plus bas). Vous pouvez y ajouter d'autres restrictions : désactiver WhatsApp, Telegram, YouTube et/ou le streaming vidéo, instaurer un couvre-feu, passer entièrement hors ligne, n'avoir aucun navigateur, ou n'autoriser que quelques applications. Ces restrictions ne prennent effet qu'au moment où vous « verrouillez » drawbridge. Le déverrouillage demande un code, ou vous pouvez régler une minuterie. Tant que drawbridge est verrouillé, il n'y a aucun moyen de modifier les réglages."),
+            ("p", "L'application drawbridge est le centre de contrôle de drawbridge : elle permet d'autoriser malgré tout certaines applications et certains sites, de restreindre encore davantage l'internet, ou de transformer le téléphone en quasi-dumbphone. Ces réglages supplémentaires ne prennent effet qu'au moment où vous verrouillez drawbridge."),
 
             ("h3", "Verrouiller"),
             ("p", "La politique par défaut ne peut pas être désactivée tant que drawbridge est installé. C'est la protection de base de drawbridge, et le retirer est la seule façon de la lever."),

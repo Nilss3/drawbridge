@@ -127,24 +127,7 @@ during the next step.
 
 ---
 
-## Step 5 — Move your bookmarks into herald
-
-**herald installs itself right after drawbridge**, on the same Wi-Fi, and it is
-there before you lock. Give it a few minutes on a fresh provision.
-
-Do this now, because locking is what removes the other browsers — and their
-bookmarks go with them.
-
-1. In the browser you are leaving, export bookmarks to an HTML file. In Chrome:
-   ⋮ → Bookmarks → Bookmark manager → ⋮ → Export bookmarks.
-2. Open **herald** → ⋮ → Bookmarks → ⋮ → Import, and pick that file.
-
-herald reads the same format Chrome and Firefox write. Anything it cannot make
-safe — `javascript:` entries, for instance — it drops rather than imports.
-
----
-
-## Step 6 — Set the phone up in the drawbridge app
+## Step 5 — Set the phone up in the drawbridge app
 
 Open the **drawbridge** app. Everything you decide is on that one screen.
 
@@ -160,7 +143,7 @@ Open the **drawbridge** app. Everything you decide is on that one screen.
 
 ---
 
-## Step 7 — Lock it, and write down the key
+## Step 6 — Lock it, and write down the key
 
 Tap **Lock drawbridge**. This is the one button that matters: it applies the
 policy, starts the content filter, and seals the screen. Allow the battery
