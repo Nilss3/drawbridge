@@ -686,7 +686,7 @@ is on it is genuinely on it.
 
 | | |
 |---|---|
-| **Open** | Nothing. The last item, 10b, was measured and fixed on 2026-09-08. |
+| **Open** | **14** — filtering tethered traffic, measured as unfiltered on 2026-09-12 |
 | **Closed as shipped** | 4, 6, 10 — built, and the entries had gone stale |
 | **Closed as answered** | 2 and 2a — FRP was tested and does not hold |
 | **Closed as won't do** | 5 (F-Droid) |
@@ -1253,6 +1253,56 @@ because anyone should generate it:
 Remember `site/` is generated: edit `site-src/` and `tools/build-site.py`, run
 `python3 tools/build-site.py`, and commit what it writes. Hand-edited HTML in
 `site/` is overwritten without warning.
+
+### 14. Filter tethered traffic, by pinning Private DNS to Mullvad
+
+**Measured by the owner on 2026-09-12: a device on the phone's hotspot is not
+filtered at all.** It gets the phone's connection raw.
+
+**Why drawbridge cannot fix this itself.** `DnsFilterService` is a `VpnService`,
+and a tunnel only ever sees packets belonging to app UIDs on the phone. Tethered
+packets are forwarded by the kernel between the hotspot interface and the
+upstream, and no API lets a third-party VPN be a tethering upstream. So the
+signed blocklist cannot be put in front of that traffic at all, and no amount of
+work inside this app changes that.
+
+**What can be done, and it is worth doing.** Tethered clients are handed the
+phone as their DNS server, and the phone's tethering proxy resolves through the
+system resolver — which is where Private DNS lives. A Device Owner can pin it:
+`setGlobalPrivateDnsModeSpecifiedHost`, the sibling of the
+`setGlobalPrivateDnsModeOpportunistic` call `normalisePrivateDns` already makes.
+Pin it at **`all.dns.mullvad.net`**, which this project already uses as its
+encrypted upstream, and a tethered device resolves through the same filtering
+resolver the phone does instead of through the carrier's.
+
+**What that buys and what it does not.** It buys Mullvad's own blocking — ads,
+trackers, malware, gambling, adult, social media. It does not buy the signed
+document's lists, the household's option switches, or the browser rule, because
+drawbridge never sees those queries. A tethered client that ignores the DNS it
+was handed, with a hardcoded `8.8.8.8` or DoH inside its browser, still walks
+past; on the phone that cannot happen, because the tunnel takes all of port 53
+whatever the destination. This narrows the hole rather than closing it, which is
+the honest way to describe it on the site as well.
+
+**Two things to measure before building any of it**, in this order:
+
+1. **Does the tethering proxy honour Private DNS at all?** Set it by hand,
+   tether, resolve a blocked name from the laptop. Note which DNS server the
+   client was handed: if it is the upstream's servers rather than the phone, the
+   whole chain is off and this item is dead.
+2. **Does the phone's own filtering survive it?** This is the one likely to
+   bite. DoT is port 853 and the tunnel routes only 53, so the phone's own
+   queries could stop passing through the local blocklist entirely. Check a
+   blocked site still shows the block page in herald.
+
+If 2 fails, the phone would trade a strong local filter for a weaker remote one,
+which is a bad trade and the reason not to build this on reasoning alone.
+
+**Two things in the code contradict it today**, both deliberate, both needing a
+decision rather than a patch: `normalisePrivateDns` moves *off* hostname mode
+before locking, precisely so a phone cannot be sealed pointing at a resolver
+nobody can change; and `block_encrypted_dns` blackholes known DoT endpoints, so
+the chosen resolver needs an exception carved for it.
 
 ### 12. ~~herald mono: take out always-on reader view~~ — done 2026-08-19
 
