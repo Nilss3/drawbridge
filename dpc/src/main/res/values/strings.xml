@@ -28,8 +28,9 @@
     <string name="permanence_trial_title">Drawbridge in trial mode</string>
     <string name="permanence_permanent_title">Drawbridge is permanent</string>
     <string name="permanence_action">Make it permanent</string>
+    <string name="permanence_remove_action">Deactivate drawbridge to uninstall</string>
     <string name="permanence_info_title">Trial and permanent mode</string>
-    <string name="permanence_info">Trial mode is for testing, trying out drawbridge, or generally for using drawbridge temporarily. While in trial mode, drawbridge can be uninstalled more easily.\n\nUnlocked\nTrial mode: drawbridge can be deactivated through the menu and then uninstalled.\nPermanent mode: drawbridge can only be removed through a factory reset.\n\nLocked\nTrial mode: drawbridge can be removed through a factory reset.\nPermanent mode: unlocking is required to factory reset. As a security measure, a 30-day unlock timer can be started when no other timer was set and you forgot the key.\n\nMaking drawbridge permanent cannot be undone from the phone.</string>
+    <string name="permanence_info">Trial mode is for testing, trying out drawbridge, or generally for using drawbridge temporarily. While in trial mode, drawbridge can be uninstalled more easily.\n\nUnlocked\nTrial mode: drawbridge can be deactivated with the button and then uninstalled.\nPermanent mode: drawbridge can only be removed through a factory reset.\n\nLocked\nTrial mode: drawbridge can be removed through a factory reset.\nPermanent mode: unlocking is required to factory reset. As a security measure, a 30-day unlock timer can be started when no other timer was set and you forgot the key.\n\nMaking drawbridge permanent cannot be undone from the phone.</string>
     <string name="permanence_confirm_title">Make drawbridge permanent?</string>
     <string name="permanence_confirm_message">This cannot be undone, it\'s really permanent. When unlocked, drawbridge can only be removed through factory reset. When drawbridge is locked, even factory reset is unavailable and drawbridge will need to be unlocked (through key or timer) for factory reset to become available again.</string>
     <string name="permanence_confirm_yes">Make it permanent</string>
@@ -118,7 +119,6 @@
     <string name="diagnostics_copy" translatable="false">Copy to clipboard</string>
     <string name="diagnostics_copied" translatable="false">Copied</string>
 
-    <string name="action_remove">Deactivate drawbridge restrictions</string>
     <string name="action_forgot_key">Forgot the code</string>
 
     <string name="policy_refreshed">Policy updated (version %1$d)</string>
@@ -245,12 +245,12 @@
     <string name="forgot_key_running">This phone already unlocks itself on %1$s, and that cannot be brought forward. Unlocking with the code before then ends it.</string>
 
     <!-- Removal -->
-    <string name="remove_title">Deactivate drawbridge restrictions</string>
-    <string name="remove_explanation">This lifts every restriction and stops the filter. Nothing is erased and no data is lost.\n\nThis is a one-way decision. If you want to reactivate the restrictions, this will require a fresh factory reset with a new drawbridge install!</string>
+    <string name="remove_title">Deactivate drawbridge</string>
+    <string name="remove_explanation">This disables drawbridge as device owner and makes it inert. You can then uninstall it cleanly like you would do any other app.\n\nHowever, you cannot reactivate it. If you want drawbridge back, you will need to reinstall after you push this button.</string>
     <string name="remove_action">Deactivate</string>
     <string name="remove_cancel">Cancel</string>
-    <string name="remove_confirm_title">Deactivate drawbridge restrictions?</string>
-    <string name="remove_confirm_message">The content filter, app blocking and all device restrictions will be switched off. Apps that were hidden become available again. No data is lost.\n\nThe record of how long this phone has been protected is cleared with it.\n\nThis cannot be undone from the phone. Switching the restrictions back on means setting the device up again from a factory reset.</string>
+    <string name="remove_confirm_title">Deactivate drawbridge?</string>
+    <string name="remove_confirm_message">The content filter, app blocking and all device restrictions will be switched off. Apps that were hidden become available again. No data is lost.\n\nThe record of how long this phone has been protected is cleared with it.\n\nThis cannot be undone from the phone.</string>
     <string name="remove_confirm_yes">Deactivate</string>
     <string name="remove_done">drawbridge restrictions deactivated.</string>
     <string name="remove_done_not_owner">Filter stopped and settings cleared.</string>

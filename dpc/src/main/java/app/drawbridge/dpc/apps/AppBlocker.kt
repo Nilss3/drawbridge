@@ -70,6 +70,7 @@ class AppBlocker(context: Context) {
     private val admin = DrawbridgeDeviceAdminReceiver.componentName(appContext)
     private val parentKey = ParentKey(appContext)
     private val installLock = InstallLockSettings(appContext)
+    private val disabledApps = DisabledApps(appContext)
     private val storeCatalogue = StoreCatalogue(appContext)
 
     /**
@@ -489,6 +490,91 @@ class AppBlocker(context: Context) {
      * enumeration on a code path that is about to enumerate them anyway, and it
      * means the set is never older than the lock.
      */
+    fun closeTheDisabledSet() {
+        val disabled = packageManager
+            // Without this flag a package the parent has switched off is not in
+            // the list at all, and the set would be recorded empty on exactly
+            // the phone this feature exists for.
+            .getInstalledApplications(PackageManager.MATCH_DISABLED_COMPONENTS)
+            .map { it.packageName }
+            .filter { userDisabled(it) }
+        disabledApps.take(disabled)
+        Log.i(TAG, "Disabled set: sealed with ${disabled.size} switched-off packages: $disabled")
+    }
+
+    /**
+     * Switched off by somebody using the phone, as opposed to by the system.
+     *
+     * `COMPONENT_ENABLED_STATE_DISABLED` is the platform's own doing — an OEM
+     * component, a split that was never wanted — and re-enabling it is not
+     * something a child does from Settings, so holding it would be drawbridge
+     * fighting the system over an app nobody asked about.
+     * `COMPONENT_ENABLED_STATE_DISABLED_USER` is the button in Settings, and it
+     * is the only state this feature is about.
+     */
+    private fun userDisabled(packageName: String): Boolean = runCatching {
+        packageManager.getApplicationEnabledSetting(packageName) ==
+            PackageManager.COMPONENT_ENABLED_STATE_DISABLED_USER
+    }.getOrDefault(false)
+
+    /**
+     * Puts back anything that was switched off at the lock and has been switched
+     * on since.
+     *
+     * **Hidden rather than disabled, because there is no third option.** No
+     * Device Owner API disables a package on the user's behalf, so the lever is
+     * [hideOrSuspend] — the same one every reversible removal here uses, with
+     * the same fallback when the platform refuses to hide. A hidden app is not
+     * in Settings' list at all, so this cannot be undone the way the disable it
+     * replaces could.
+     *
+     * Self-gated on the lock rather than trusting the caller, which is what lets
+     * [sweep] call this and [releaseDisabledHolds] unconditionally and in one
+     * order for both states.
+     */
+    fun holdDisabled() {
+        if (!parentKey.isLocked) return
+        if (!dpm.isDeviceOwnerApp(appContext.packageName)) return
+        for (packageName in disabledApps.atLastLock) {
+            // Both reads answer badly for a package this phone never had, and
+            // isHidden answers *true* for one. See [restore].
+            if (!isKnown(packageName)) continue
+            val withhold = DisabledApps.withholdNow(
+                inSet = true,
+                stillDisabled = userDisabled(packageName),
+                alreadyWithheld = isHidden(packageName) || isSuspended(packageName),
+            )
+            if (!withhold) continue
+            Log.i(TAG, "Holding $packageName: switched off before the lock, switched on since")
+            hideOrSuspend(packageName)
+        }
+    }
+
+    /**
+     * Gives those back when the phone is unlocked.
+     *
+     * They come back **enabled**, not switched off again, because nothing can
+     * switch an app off on the user's behalf. The parent sees the app in
+     * Settings and can disable it again before the next lock, and the next lock
+     * records it. See [DisabledApps.releaseNow] for why that is the honest trade.
+     */
+    fun releaseDisabledHolds() {
+        if (parentKey.isLocked) return
+        if (!dpm.isDeviceOwnerApp(appContext.packageName)) return
+        for (packageName in disabledApps.atLastLock) {
+            if (!isKnown(packageName)) continue
+            val release = DisabledApps.releaseNow(
+                inSet = true,
+                withheld = isHidden(packageName) || isSuspended(packageName),
+                // Hidden for a second reason as well, and that one still holds.
+                policyDisallows = disallows(packageName),
+            )
+            if (!release) continue
+            Log.i(TAG, "Releasing $packageName: the lock it was held for is over")
+            restore(packageName)
+        }
+    }
+
     fun closeTheInstalledSet() {
         // Plus whatever drawbridge is installing at this moment, which is not on
         // the phone yet and must not be treated as absent. herald is over 200 MB,
@@ -555,6 +641,13 @@ class AppBlocker(context: Context) {
             .associate { it.packageName to evaluate(it.packageName) }
             .filterValues { it != Action.NONE }
         restoreNowAllowed()
+        // **After the restore, and that order is load-bearing.**
+        // [restoreNowAllowed] un-hides whatever the *policy* now allows, and a
+        // package the parent switched off can be one of those — an exempt app,
+        // a browser the chooser admits. Held first, it would be handed straight
+        // back inside the same sweep. Held last, the policy has had its say and
+        // this adds the parent's on top of it.
+        holdDisabled()
         return actions
     }
 
@@ -658,6 +751,12 @@ class AppBlocker(context: Context) {
         if (!dpm.isDeviceOwnerApp(appContext.packageName)) return
         val policy = DrawbridgeApplication.policy(appContext).policy.value
         for (packageName in restorable(policy, allowedBrowsers(policy))) restore(packageName)
+        // Rides along here rather than being wired into every unlock path, for
+        // the reason the paragraph above gives: this method is the one that runs
+        // when something is *given back*, sweep or no sweep, and the
+        // configuration screen already calls it. It is self-gated on the lock,
+        // so calling it from a locked sweep does nothing.
+        releaseDisabledHolds()
     }
 
     /**

@@ -21,6 +21,7 @@ import app.drawbridge.dpc.admin.DeviceOwnerManager
 import app.drawbridge.dpc.admin.DrawbridgeDeviceAdminReceiver
 import app.drawbridge.dpc.admin.ProvisioningLog
 import app.drawbridge.dpc.apps.AppBlocker
+import app.drawbridge.dpc.apps.DisabledApps
 import app.drawbridge.dpc.apps.InstallLockSettings
 import app.drawbridge.dpc.apps.store.StoreCatalogue
 import app.drawbridge.dpc.curfew.DisconnectSettings
@@ -207,6 +208,11 @@ class DiagnosticsActivity : AppCompatActivity() {
             appendLine("store to scan:     ${AppBlocker(this@DiagnosticsActivity).packagesWantingStoreAnswer().size}")
 
             appendLine("install lock:      ${installLock.isEnabled}")
+            appendLine(
+                "held disabled:     " +
+                    DisabledApps(this@DiagnosticsActivity).atLastLock.size +
+                    " switched off at the lock",
+            )
             appendLine(
                 "installed set:     " +
                     (installLock.snapshot?.let { "${it.size} packages" } ?: "(never taken)"),

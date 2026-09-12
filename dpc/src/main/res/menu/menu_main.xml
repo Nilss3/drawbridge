@@ -1,13 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-    Removal is the only way off a managed device short of wiping it, so it has to
-    be reachable — but it happens once in the life of a phone, and it does not
-    belong beside the button that gets pressed every time. Overflow only.
+    **Removal used to be here, and moved onto the screen on 2026-09-10.** It was
+    in the overflow on the reasoning that it happens once in the life of a phone
+    and does not belong beside the button pressed every time — which is true, and
+    was the wrong conclusion once trial mode had a name. Deactivating is one of
+    exactly two things a parent can do about the mode their phone is in, the
+    other being *Make it permanent*, and burying one of a pair in a menu while
+    the other sits in a card is how somebody concludes it is not offered. Both
+    are on the trial-mode card now, and both vanish together when the phone is
+    made permanent.
 
-    "Check for policy updates" is here rather than on the screen for a milder
-    version of the same reason: the policy arrives by itself every three hours,
-    so the button is for the impatient and for testing, not for the ordinary
-    case. It is in the lock screen's menu too, where it matters more.
+    "Check for policy updates" stays here for a milder version of the original
+    reason: the policy arrives by itself every three hours, so the button is for
+    the impatient and for testing, not for the ordinary case. It is in the lock
+    screen's menu too, where it matters more.
 -->
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
@@ -20,10 +26,5 @@
     <item
         android:id="@+id/actionDiagnostics"
         android:title="@string/action_diagnostics"
-        app:showAsAction="never" />
-
-    <item
-        android:id="@+id/actionRemove"
-        android:title="@string/action_remove"
         app:showAsAction="never" />
 </menu>

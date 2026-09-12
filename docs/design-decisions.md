@@ -1390,7 +1390,7 @@ it is a taunt.
 
 It gives nothing away, for exactly the reason USB debugging is keyed there:
 unlocking costs the parent's key, and an unlocked drawbridge already offers
-complete removal from its own overflow menu. Whoever reaches this state can undo
+complete removal from its own trial-mode card. Whoever reaches this state can undo
 everything anyway.
 
 **The cost, said plainly.** Every other browser is removed because a browser with
@@ -1422,8 +1422,17 @@ available.
 
 Each choice shows the icons of the browsers it allows. That is not decoration
 standing in for a sentence — it *is* the sentence, and a better one: "all the
-allowed browsers" is a claim to take on trust, five icons somebody recognises is
-the same claim, checkable at a glance.
+allowed browsers" is a claim to take on trust, a handful of icons somebody
+recognises is the same claim, checkable at a glance.
+
+**Four and a +, since 2026-09-11.** Vanadium made the list eight and the row
+outgrew the card, so it draws herald, Chrome, Firefox Focus and Vivaldi, the four
+this build has pictures of, and a **+** for the rest. That gives up the
+*complete at a glance* half of the argument above and keeps the *recognisable*
+half; the policy's own description, one tap away on the policy card, still names
+every browser. The + appears only when something is behind it, so a choice
+allowing exactly four draws none. See `BrowserSettings.iconRow`, which also makes
+sure *herald mono only* still draws herald mono rather than an empty row.
 
 **They come from the policy's list, not from what happens to be installed**,
 which was the first version and was wrong. The row answers *what does this choice
@@ -1432,11 +1441,14 @@ not make Vivaldi any less allowed. Reading only installed apps made the same
 choice look different on two phones, and look *smaller* than it is on a phone
 whose browsers the choice above had just removed.
 
-So each icon resolves in descending order of how true it is: the installed app's
-own launcher icon, then a bundled copy, then a globe. The third rung matters
-because the map is keyed by package name while the allowed list is a signed
-document that changes without an app update — a browser added tomorrow gets the
-globe rather than leaving a hole in a row whose whole job is being complete.
+So each icon is a bundled copy of the product's mark, or a globe for a browser
+this build has no picture of. **Not the installed app's launcher icon**, which an
+earlier version of this paragraph described as the first rung and the code
+stopped using before 2026-09-11: themed icons and OEM restyling made the same
+choice look different on two phones, which is the one thing the row exists not
+to do. The globe matters because the map is keyed by package name while the
+allowed list is a signed document that changes without an app update, so a
+browser added tomorrow gets the globe rather than a hole in the row.
 
 **On the bundled third-party marks.** They identify the products they belong to,
 which is what any browser picker does, and it is a different act from the rating
@@ -1605,6 +1617,49 @@ It still requires Device Owner — these are silent `PackageInstaller` sessions 
 and an unrequested run still waits for an unmetered network, because 235 MiB per
 browser on somebody's mobile data is its own kind of surprise.
 
+## A disable the parent made is held by hiding, because nothing can re-disable
+
+**The hole, measured on 2026-09-08 before it was fixed:** a parent switches an
+app off in Settings, locks drawbridge, and anybody holding the phone can switch
+it straight back on. The Enable button is there on a locked phone and it works.
+Android is behaving correctly — `DISALLOW_APPS_CONTROL` is the only restriction
+that would stop it, and drawbridge does not set it because it stops the parent
+managing apps too and may take the Play Store's own update path with it, which
+is the thing [the install lock](#the-install-lock-is-a-closed-set-not-a-date-and-not-a-flag)
+is careful to keep.
+
+So the fix could not be a restriction, and it could not be a re-disable either:
+`setApplicationEnabledSetting` only reaches an app's own components, and no
+Device Owner API disables a package on the user's behalf. **What is left is
+hiding**, which is the lever every reversible removal here already uses, and
+which is *stronger* than the disable it replaces — a hidden app is not in
+Settings' list at all, so there is no button to press.
+
+`DisabledApps` records the switched-off set at every lock, like the install
+lock's snapshot and for the same reason: recorded at the lock, it is never older
+than the lock. It is not gated on that switch, because a parent who switches an
+app off and then seals the phone has said what they want and nothing on the
+screen tells them it depends on some other control.
+
+**The set is empty rather than null when it has never been taken, and that is
+the opposite of the install lock's snapshot.** That one has to distinguish
+*never taken* from *this phone carries nothing*, because an empty installed set
+is a rule that removes the whole device. This rule only withholds packages it
+names, so both mean *withhold nothing* and there is no third state to model.
+
+**What it gives up.** On unlock the app comes back *enabled*, not switched off
+again — nothing can switch it off. The parent sees it in Settings and can switch
+it off before the next lock, which re-records the set. That is a real loss of
+fidelity and it is the honest one: the alternative is an app left hidden through
+an unlock, which the parent cannot see, cannot manage, and has no way to find out
+about.
+
+**And what it must never do is release an app the policy still refuses.** A
+package can be hidden for two reasons at once — the parent switched it off *and*
+the document disallows it, which is WhatsApp with its option off. Giving it back
+because the lock ended would be drawbridge undoing its own policy on the
+parent's behalf, so the policy is consulted before every release.
+
 ## The install lock is a closed set, not a date and not a flag
 
 **Built 2026-08-16, and it is the answer to a problem the blocklist cannot
@@ -1754,7 +1809,7 @@ whatever is on the phone at that moment is what it keeps.
 
 **Asked for on 2026-09-04, and it names something that had been true and unnamed
 since the beginning.** Every phone this project has ever provisioned could be
-handed back through the overflow menu: unlock, *Deactivate drawbridge
+handed back from the configuration screen: unlock, *Deactivate drawbridge
 restrictions*, uninstall. That is the right default for software people are
 trying out — it is what made the beta possible to hand to anybody — and it is
 also, for a household that has finished trying it out, the whole lock reduced to
@@ -1959,7 +2014,7 @@ exactly as it was, which is precisely what a parent unlocking to change a settin
 already gets.
 
 It answers the same problem for one reason: **removal lives behind the lock.**
-`RemoveActivity` is in the unlocked screen's overflow menu, so a phone that
+`RemoveActivity` is on the unlocked screen's trial-mode card, so a phone that
 unlocks itself is a phone whose owner can then remove drawbridge, keep it and
 re-lock, or hand it on. The timer therefore did not need to implement a teardown
 of its own — the teardown was already written, and pointing a clock at the *lock*
@@ -2251,7 +2306,7 @@ then never be fixed at all. Every bug found after deployment would be permanent.
 
 **It costs nothing that was not already given away.** An unlocked drawbridge is a
 drawbridge whose configuration screen is open, and that screen offers complete
-removal in its overflow menu. Somebody holding the key can already undo
+removal on its trial-mode card. Somebody holding the key can already undo
 everything, with or without adb. The restriction only ever protected against
 somebody who does *not* have the key, and that person cannot unlock the phone in
 the first place.

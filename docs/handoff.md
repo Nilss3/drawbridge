@@ -21,9 +21,9 @@ which is kept whole on purpose.
 
 | | `main` (the beta) | `dev` |
 |---|---|---|
-| drawbridge | **0.2.22, build 47** | **0.2.25, build 50** |
+| drawbridge | **0.2.25, build 50** | **0.2.25, build 50** |
 | herald | **0.1.19** | **0.1.19** |
-| policy | **115** | **116** |
+| policy | **117** | **116** |
 | install page | <https://drawbridge-project.pages.dev/install/> | <https://dev.drawbridge-project.pages.dev/install/> |
 | phone | the owner's Nothing Phone (A059) | the Moto G15 |
 
@@ -40,7 +40,9 @@ had held main's 97 would accept a dev document again. It ran on from there:
 browser built on that branch, and 102 back on dev for drawbridge build 46. It
 has kept running: 103 on main, 104 to 107 on dev across herald 0.1.18, the block
 page's translations and permanent mode, and **108 on main**, which is the beta
-taking all of that at once.
+taking all of that at once. Then 109 and 111 on main, 110 and 112 to 114 on dev,
+**115 on main** for Vanadium, and **116 on dev**, a version bump and nothing
+else that put this channel back above the beta as 98 once did.
 
 **The beta's herald is pinned by name rather than through
 `/releases/latest/download/`, as of policy 96 — at `v0.2.23` since policy 111, at `v0.2.22` from policy 108,
@@ -684,7 +686,7 @@ is on it is genuinely on it.
 
 | | |
 |---|---|
-| **Open** | **10b** (apps disabled before the lock), measured and confirmed 2026-09-08 |
+| **Open** | **14** — filtering tethered traffic, measured as unfiltered on 2026-09-12 |
 | **Closed as shipped** | 4, 6, 10 — built, and the entries had gone stale |
 | **Closed as answered** | 2 and 2a — FRP was tested and does not hold |
 | **Closed as won't do** | 5 (F-Droid) |
@@ -1081,11 +1083,11 @@ Consequences to state before building it, not after:
   the parent installed to migrate data and no longer wants. Showing them the list
   before sealing it is probably not optional.
 
-### 10b. Apps disabled before the lock should stay disabled through it
+### 10b. ~~Apps disabled before the lock should stay disabled through it~~ — fixed 2026-09-08
 
-**Asked for on 2026-08-25 from use, and confirmed still open on 2026-09-08 —
-measured this time rather than reasoned.** On the API 36 emulator as a real
-Device Owner, with drawbridge build 47:
+**Asked for on 2026-08-25 from use, measured on 2026-09-08, and fixed the same
+day.** What was measured first, because a defect nobody has reproduced is not
+one worth fixing. On the API 36 emulator as a real Device Owner, with build 47:
 
 1. `pm disable-user com.google.android.deskclock`, which is what the Settings
    button does. Confirmed disabled.
@@ -1099,11 +1101,57 @@ The platform side agrees: `no_control_apps` appears nowhere in `dumpsys user`,
 because `DISALLOW_APPS_CONTROL` is referenced nowhere in this codebase. So
 Settings is behaving correctly and nothing has ever stood in its way.
 
-The flow this breaks is the one *No other apps* is for: a parent prunes the
+The flow this broke is the one *No other apps* is for: a parent prunes the
 phone, disables what they do not want, flicks the switch, and locks. What the
-switch guarantees is that no *new* app arrives. What it does not guarantee is
-that the ones already disabled stay that way, which is a hole in exactly the
+switch guaranteed was that no *new* app arrives. What it did not guarantee was
+that the ones already disabled stay that way, which was a hole in exactly the
 state the parent thought they were sealing.
+
+**What was built: [DisabledApps], a set recorded at the lock and enforced by
+hiding.** The same shape as the install lock's snapshot, and not gated on its
+switch, for the same reason that one is not — a parent who switches an app off
+and then seals the phone has said what they want, and nothing on the screen tells
+them it only holds if some other switch is on.
+
+What differs is what enforcement *means*. **drawbridge cannot re-disable an
+app**: `setApplicationEnabledSetting` is for an app's own components and no
+Device Owner API disables a package on the user's behalf. What it can do is
+`hideOrSuspend`, the lever every reversible removal here already uses, and a
+hidden app is not in Settings' list at all — so the child cannot undo it the way
+they undid the disable. The sequence is: switched off at the lock, switched back
+on by somebody, hidden by the next sweep.
+
+**Two orderings are load-bearing.** The hold runs *after* `restoreNowAllowed` in
+the sweep, because that un-hides what the policy now allows and a package the
+parent switched off can be one of those — held first, it would be handed straight
+back inside the same sweep. And the release has its own caller on the unlock
+paths rather than riding the fifteen-minute sweep, because a parent unlocks the
+phone *to manage apps* and one that stayed invisible for a quarter of an hour is
+one they would conclude was uninstalled.
+
+**What it gives up, and there is no way round it:** on unlock the app comes back
+*enabled*, not switched off again, because nothing can switch an app off on the
+user's behalf. The parent sees it in Settings and can switch it off before the
+next lock, which re-records it. The alternative was leaving an app hidden through
+an unlock, where the parent cannot see it, cannot manage it and has no way to
+find out why it is gone.
+
+**Watched working end to end** on the same emulator, same day, with the fix in:
+
+- switched off, locked, and the set records exactly that one package;
+- re-enabled from Settings, and the next sweep hid it: gone from the launcher's
+  package list, still on the disk, drawbridge still locked. Settings can no
+  longer even open its app-info page, so the Enable button that started all this
+  is unreachable;
+- survives a reboot in that state;
+- unlocked, and `Releasing com.google.android.deskclock: the lock it was held
+  for is over` — `hidden=false`, back in the list.
+
+**One methodology trap, and it cost half an hour.** `pm enable` followed
+immediately by `adb reboot` loses the change: package state is flushed
+asynchronously, so the boot reads the old value and the app comes back disabled.
+It reads exactly like the fix silently re-disabling things. Let the write settle
+before rebooting, or verify the state after the reboot before believing anything.
 
 Worth knowing before anyone starts: this is a different mechanism from the rest
 of the app blocker. Everything in [what is enforced](#what-is-enforced-and-when)
@@ -1206,6 +1254,56 @@ Remember `site/` is generated: edit `site-src/` and `tools/build-site.py`, run
 `python3 tools/build-site.py`, and commit what it writes. Hand-edited HTML in
 `site/` is overwritten without warning.
 
+### 14. Filter tethered traffic, by pinning Private DNS to Mullvad
+
+**Measured by the owner on 2026-09-12: a device on the phone's hotspot is not
+filtered at all.** It gets the phone's connection raw.
+
+**Why drawbridge cannot fix this itself.** `DnsFilterService` is a `VpnService`,
+and a tunnel only ever sees packets belonging to app UIDs on the phone. Tethered
+packets are forwarded by the kernel between the hotspot interface and the
+upstream, and no API lets a third-party VPN be a tethering upstream. So the
+signed blocklist cannot be put in front of that traffic at all, and no amount of
+work inside this app changes that.
+
+**What can be done, and it is worth doing.** Tethered clients are handed the
+phone as their DNS server, and the phone's tethering proxy resolves through the
+system resolver — which is where Private DNS lives. A Device Owner can pin it:
+`setGlobalPrivateDnsModeSpecifiedHost`, the sibling of the
+`setGlobalPrivateDnsModeOpportunistic` call `normalisePrivateDns` already makes.
+Pin it at **`all.dns.mullvad.net`**, which this project already uses as its
+encrypted upstream, and a tethered device resolves through the same filtering
+resolver the phone does instead of through the carrier's.
+
+**What that buys and what it does not.** It buys Mullvad's own blocking — ads,
+trackers, malware, gambling, adult, social media. It does not buy the signed
+document's lists, the household's option switches, or the browser rule, because
+drawbridge never sees those queries. A tethered client that ignores the DNS it
+was handed, with a hardcoded `8.8.8.8` or DoH inside its browser, still walks
+past; on the phone that cannot happen, because the tunnel takes all of port 53
+whatever the destination. This narrows the hole rather than closing it, which is
+the honest way to describe it on the site as well.
+
+**Two things to measure before building any of it**, in this order:
+
+1. **Does the tethering proxy honour Private DNS at all?** Set it by hand,
+   tether, resolve a blocked name from the laptop. Note which DNS server the
+   client was handed: if it is the upstream's servers rather than the phone, the
+   whole chain is off and this item is dead.
+2. **Does the phone's own filtering survive it?** This is the one likely to
+   bite. DoT is port 853 and the tunnel routes only 53, so the phone's own
+   queries could stop passing through the local blocklist entirely. Check a
+   blocked site still shows the block page in herald.
+
+If 2 fails, the phone would trade a strong local filter for a weaker remote one,
+which is a bad trade and the reason not to build this on reasoning alone.
+
+**Two things in the code contradict it today**, both deliberate, both needing a
+decision rather than a patch: `normalisePrivateDns` moves *off* hostname mode
+before locking, precisely so a phone cannot be sealed pointing at a resolver
+nobody can change; and `block_encrypted_dns` blackholes known DoT endpoints, so
+the chosen resolver needs an exception carved for it.
+
 ### 12. ~~herald mono: take out always-on reader view~~ — done 2026-08-19
 
 **Asked for 2026-08-17, from use; removed on 2026-08-19.** `Edition.autoReaderView`
@@ -1293,6 +1391,24 @@ paths ran with the enforcement behind them doing nothing.
 What survives is the three questions below, which are not a task — they are what
 to run *if somebody asks for a browser to be added*, and the third one is the one
 that would otherwise be discovered the hard way.
+
+**Vanadium went through them on 2026-09-11**, asked for by the household on
+GrapheneOS, and passed, checked against its patches rather than its reputation.
+`app.vanadium.browser` is Chromium with 312 patches on top. *Does it speak its
+own DNS?* It keeps Chromium's *Use secure DNS*, as Chrome does, and adds no DoH
+provider: the two patches that touch DNS, `0050` and `0205`, are build plumbing
+and a change to the hostname the DoH *probe* asks, pointing it at GrapheneOS's
+connectivity check. So it is covered exactly as Chrome is, by
+`block_encrypted_dns`. *What does an assistant fetch server-side?* It has none.
+*Does it register as a browser?* It is GrapheneOS's default, so `isBrowser` sees
+it. It has no extensions, which Chromium on Android does not support, and no
+built-in VPN.
+
+**Its WebView is a separate package**, `app.vanadium.webview`, which answers no
+`https://` intent and so is not a browser to the rule. That is worth knowing
+before anyone widens the rule: hiding a system WebView provider would break every
+app that renders a page. The household's report that everything works is
+consistent with it being left alone.
 
 
 **Both were cleared by the owner on 2026-08-19 and are now on both channels.**
@@ -1783,6 +1899,18 @@ Neither has been tested. Both are written down because they are asked often
 enough that guessing twice is worse than reasoning once.
 
 ### Would drawbridge work on GrapheneOS?
+
+**Answered from use on 2026-09-11: it does.** A household runs drawbridge on
+GrapheneOS and reports that everything works. That is one report from one phone
+rather than a measurement from this repo, so the predictions below stay as
+written until something here checks them. The one worth checking first is the
+largest: whether a `PackageInstaller` self-update really goes through with no
+Play Protect to refuse it, because on GrapheneOS that would close
+[next step 1](#1-get-drawbridge-able-to-update-itself-again) for those phones.
+The front page lists GrapheneOS among the phones that should work well, from the
+same day, and Vanadium, its own browser, was vetted and allowed — see item 12c.
+
+What follows is the prediction, written before anybody had tried it.
 
 **Most of it should, one part silently would not, and one problem disappears.**
 

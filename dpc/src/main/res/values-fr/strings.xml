@@ -12,8 +12,9 @@
     <string name="permanence_trial_title">Drawbridge en mode d\'essai</string>
     <string name="permanence_permanent_title">Drawbridge est définitif</string>
     <string name="permanence_action">Rendre définitif</string>
+    <string name="permanence_remove_action">Désactiver drawbridge pour le désinstaller</string>
     <string name="permanence_info_title">Mode d\'essai et mode définitif</string>
-    <string name="permanence_info">Le mode d\'essai sert à tester drawbridge, à l\'essayer, ou simplement à l\'utiliser de façon temporaire. En mode d\'essai, drawbridge se désinstalle plus facilement.\n\nDéverrouillé\nMode d\'essai : drawbridge peut être désactivé depuis le menu, puis désinstallé.\nMode définitif : drawbridge ne peut plus être retiré que par une réinitialisation d\'usine.\n\nVerrouillé\nMode d\'essai : drawbridge peut être retiré par une réinitialisation d\'usine.\nMode définitif : il faut déverrouiller pour pouvoir réinitialiser. Par sécurité, une minuterie de déverrouillage de 30 jours peut être lancée si aucune autre minuterie n\'était en cours et que vous avez oublié la clé.\n\nRendre drawbridge définitif ne peut pas être annulé depuis le téléphone.</string>
+    <string name="permanence_info">Le mode d\'essai sert à tester drawbridge, à l\'essayer, ou simplement à l\'utiliser de façon temporaire. En mode d\'essai, drawbridge se désinstalle plus facilement.\n\nDéverrouillé\nMode d\'essai : drawbridge peut être désactivé avec le bouton, puis désinstallé.\nMode définitif : drawbridge ne peut plus être retiré que par une réinitialisation d\'usine.\n\nVerrouillé\nMode d\'essai : drawbridge peut être retiré par une réinitialisation d\'usine.\nMode définitif : il faut déverrouiller pour pouvoir réinitialiser. Par sécurité, une minuterie de déverrouillage de 30 jours peut être lancée si aucune autre minuterie n\'était en cours et que vous avez oublié la clé.\n\nRendre drawbridge définitif ne peut pas être annulé depuis le téléphone.</string>
     <string name="permanence_confirm_title">Rendre drawbridge définitif ?</string>
     <string name="permanence_confirm_message">Cette action est irréversible, c\'est vraiment définitif. Déverrouillé, drawbridge ne peut plus être retiré que par une réinitialisation d\'usine. Lorsque drawbridge est verrouillé, même la réinitialisation d\'usine n\'est pas disponible : il faudra déverrouiller drawbridge (avec la clé ou la minuterie) pour que la réinitialisation d\'usine redevienne possible.</string>
     <string name="permanence_confirm_yes">Rendre définitif</string>
@@ -63,7 +64,6 @@
 
     <string name="action_lock">Verrouiller drawbridge</string>
     <string name="action_refresh">Rechercher des mises à jour de politique</string>
-    <string name="action_remove">Désactiver les restrictions drawbridge</string>
     <string name="action_forgot_key">Code oublié</string>
 
     <string name="policy_refreshed">Politique mise à jour (version %1$d)</string>
@@ -161,12 +161,12 @@
     <string name="forgot_key_running">Ce téléphone se déverrouille déjà de lui-même le %1$s, et cela ne peut pas être avancé. Déverrouiller avec le code avant cette date y met fin.</string>
 
     <!-- Retrait -->
-    <string name="remove_title">Désactiver les restrictions drawbridge</string>
-    <string name="remove_explanation">Ceci lève toutes les restrictions et arrête le filtre. Rien n\'est effacé et aucune donnée n\'est perdue.\n\nCette décision est sans retour. Pour réactiver les restrictions, il faudra une réinitialisation d\'usine complète et une nouvelle installation de drawbridge !</string>
+    <string name="remove_title">Désactiver drawbridge</string>
+    <string name="remove_explanation">Ceci désactive drawbridge en tant que gestionnaire de l\'appareil et le rend inerte. Vous pouvez ensuite le désinstaller proprement, comme n\'importe quelle autre application.\n\nEn revanche, vous ne pouvez pas le réactiver. Si vous voulez retrouver drawbridge, il faudra le réinstaller après avoir appuyé sur ce bouton.</string>
     <string name="remove_action">Désactiver</string>
     <string name="remove_cancel">Annuler</string>
-    <string name="remove_confirm_title">Désactiver les restrictions drawbridge ?</string>
-    <string name="remove_confirm_message">Le filtre de contenu, le blocage des applications et toutes les restrictions seront désactivés. Les applications masquées redeviennent disponibles. Aucune donnée n\'est perdue.\n\nLe relevé de la durée de protection de ce téléphone disparaît avec eux.\n\nCette action est irréversible depuis le téléphone. Réactiver les restrictions suppose de reconfigurer l\'appareil après une réinitialisation d\'usine.</string>
+    <string name="remove_confirm_title">Désactiver drawbridge ?</string>
+    <string name="remove_confirm_message">Le filtre de contenu, le blocage des applications et toutes les restrictions seront désactivés. Les applications masquées redeviennent disponibles. Aucune donnée n\'est perdue.\n\nLe relevé de la durée de protection de ce téléphone disparaît avec eux.\n\nCette action ne peut pas être annulée depuis le téléphone.</string>
     <string name="remove_confirm_yes">Désactiver</string>
     <string name="remove_done">Restrictions drawbridge désactivées.</string>
     <string name="remove_done_not_owner">Filtre arrêté et réglages effacés.</string>

@@ -1,7 +1,7 @@
 {
-  "version": 115,
-  "issued_at": "2026-09-11T11:30:00Z",
-  "comment": "BETA. Allows Vanadium, GrapheneOS's own browser, as dev's policy 114 already does: it keeps Chromium's secure DNS without adding a provider, has no extensions and no VPN, and is covered as Chrome is. Nothing else changes: drawbridge 0.2.22 build 47 and herald 0.1.19 at v0.2.23, as before. 369 blocked packages.",
+  "version": 117,
+  "issued_at": "2026-09-12T09:30:00Z",
+  "comment": "BETA. Pins drawbridge 0.2.25 build 50, the beta catching up with three dpc releases at once: apps switched off before the lock stay off, deactivating moved out of the overflow menu onto the trial-mode card with a warning that says what it really does, the card sits under the welcome, and the browser row is four icons and a +. herald is unchanged at 0.1.19 arm64 at v0.2.23, and Vanadium stays allowed. 369 blocked packages.",
   "dns": {
     "upstreams": [
       "94.140.14.15",
@@ -825,9 +825,9 @@
   },
   "app_update": {
     "package_name": "app.drawbridge.dpc",
-    "version_code": 47,
-    "url": "https://drawbridge-project.pages.dev/assets/dpc-ef9ee77e141d720f.apk",
-    "sha256": "ef9ee77e141d720f20c2d75316203268461c26df7d05cb861fb4249c66e32041"
+    "version_code": 50,
+    "url": "https://drawbridge-project.pages.dev/assets/dpc-9288b6796864b486.apk",
+    "sha256": "9288b6796864b48628dc41ad81102bbd461029212573a9e4e654f899fecd245e"
   },
   "required_apps": [
     {

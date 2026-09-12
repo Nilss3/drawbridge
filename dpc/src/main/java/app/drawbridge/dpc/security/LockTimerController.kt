@@ -5,6 +5,7 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.util.Log
+import app.drawbridge.dpc.DrawbridgeApplication
 import app.drawbridge.dpc.admin.DeviceOwnerManager
 import app.drawbridge.dpc.curfew.CurfewController
 
@@ -126,6 +127,10 @@ class LockTimerController(context: Context) {
         // reset comes back with it, which is the whole point of the timer being
         // the answer to a lost key there. See DeviceOwnerManager.restrictionsFor.
         owner.applyUserRestrictions()
+        // Same as the manual unlock: what was held only for the lock is given
+        // back at the moment the lock ends, not at the next sweep.
+        DrawbridgeApplication.releaseOnUnlock(appContext)
+
         // And the phone comes back online whatever the disconnect philosophy
         // says, because an unlocked drawbridge is a phone somebody is about to
         // work on. This also clears the clock pin if no curfew still needs it.

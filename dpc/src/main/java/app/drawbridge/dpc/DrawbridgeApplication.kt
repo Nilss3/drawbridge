@@ -193,6 +193,33 @@ class DrawbridgeApplication : Application() {
          * step only works because this line comes before the next one. See
          * [AppBlocker.closeTheInstalledSet].
          */
+        /**
+         * The other half of [sweepOnLock]: gives back what the lock was holding.
+         *
+         * Only the apps the parent had switched off and somebody switched back
+         * on — see [AppBlocker.releaseDisabledHolds], which is self-gated on the
+         * lock and does nothing if this is called in the wrong state.
+         *
+         * **It needs its own caller rather than riding the sweep**, and the
+         * fifteen minutes is why: a parent unlocks the phone *to manage apps*,
+         * and an app that stays invisible until the next periodic sweep is one
+         * they will conclude is uninstalled. This is the same reasoning that
+         * made `restoreNowAllowed` public — restoring is additive and does not
+         * wait.
+         *
+         * On the application scope rather than the caller's, because both
+         * callers finish immediately afterwards: [ui.LockActivity] closes itself
+         * and [security.LockTimerController] is a broadcast that is already
+         * returning.
+         */
+        fun releaseOnUnlock(context: Context) {
+            val appContext = context.applicationContext
+            lockScope.launch {
+                runCatching { AppBlocker(appContext).releaseDisabledHolds() }
+                    .onFailure { Log.e(TAG, "Could not release the disabled holds", it) }
+            }
+        }
+
         fun sweepOnLock(context: Context) {
             val appContext = context.applicationContext
 
@@ -219,6 +246,11 @@ class DrawbridgeApplication : Application() {
                 val blocker = AppBlocker(appContext)
                 runCatching { blocker.closeTheInstalledSet() }
                     .onFailure { Log.e(TAG, "Could not record the installed set", it) }
+                // Beside it, and before the sweep for the same reason: the sweep
+                // is what enforces the set, so one taken afterwards would be a
+                // sweep run against the previous lock's answer.
+                runCatching { blocker.closeTheDisabledSet() }
+                    .onFailure { Log.e(TAG, "Could not record the disabled set", it) }
                 runCatching { blocker.sweep() }
                     .onSuccess { actions ->
                         // Counted apart, because they used to be counted

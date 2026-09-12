@@ -85,6 +85,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var updateNotice: View
     private lateinit var permanenceTitle: TextView
     private lateinit var permanenceButton: Button
+    private lateinit var permanenceRemoveButton: Button
     private lateinit var disconnectContainer: LinearLayout
     private lateinit var curfewSchedule: LinearLayout
     private lateinit var curfewWeekdayButton: Button
@@ -142,6 +143,7 @@ class MainActivity : AppCompatActivity() {
         updateNotice = findViewById(R.id.updateNotice)
         permanenceTitle = findViewById(R.id.permanenceTitle)
         permanenceButton = findViewById(R.id.permanenceButton)
+        permanenceRemoveButton = findViewById(R.id.permanenceRemoveButton)
         disconnectContainer = findViewById(R.id.disconnectContainer)
         curfewSchedule = findViewById(R.id.curfewSchedule)
         curfewWeekdayButton = findViewById(R.id.curfewWeekdayButton)
@@ -164,6 +166,9 @@ class MainActivity : AppCompatActivity() {
         bindLanguages(findViewById(R.id.languageField))
 
         permanenceButton.setOnClickListener { confirmPermanence() }
+        permanenceRemoveButton.setOnClickListener {
+            startActivity(Intent(this, RemoveActivity::class.java))
+        }
         findViewById<View>(R.id.root).bindInfo(
             R.id.permanenceInfo,
             title = getString(R.string.permanence_info_title),
@@ -189,45 +194,24 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
-     * Removal lives in the overflow menu rather than on the screen.
+     * **Removal left this menu on 2026-09-10**, for the trial-mode card at the
+     * top of the screen. It was here because it is a once-in-the-life-of-the-
+     * phone action that does not deserve a button beside the one pressed every
+     * time — true of the action, and the wrong place for it once the mode had a
+     * name. Deactivating and making permanent are the two things a parent can do
+     * about the mode their phone is in, and putting one in a card while the
+     * other hid in a menu made the pair unreadable.
      *
-     * It is the only way off a managed device that does not involve wiping it,
-     * so it has to exist — but it is a once-in-the-life-of-the-phone action and
-     * does not deserve a button next to the one used every time.
+     * What is left here arrives by itself and is for the impatient.
      */
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_main, menu)
         return true
     }
 
-    /**
-     * **Permanent mode is this line.** Everything else the mode does is one
-     * conditional restriction that only bites on a locked phone; what a parent
-     * actually chose when they pressed the button is that this item stops
-     * existing.
-     *
-     * Hidden here rather than removed from `menu_main.xml`, because the menu is
-     * inflated once and the mode can change while the screen is open —
-     * [confirmPermanence] calls `invalidateOptionsMenu` for exactly this.
-     *
-     * The activity behind it refuses as well, in [RemoveActivity.onCreate]. Two
-     * checks for one rule is usually a smell; here the rule is *the phone cannot
-     * be handed back without a wipe*, and a hidden menu item is a statement
-     * about a menu.
-     */
-    override fun onPrepareOptionsMenu(menu: Menu): Boolean {
-        menu.findItem(R.id.actionRemove)?.isVisible = !permanence.isPermanent
-        return super.onPrepareOptionsMenu(menu)
-    }
-
     override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
         R.id.actionRefresh -> {
             refreshPolicy()
-            true
-        }
-
-        R.id.actionRemove -> {
-            startActivity(Intent(this, RemoveActivity::class.java))
             true
         }
 
@@ -334,7 +318,20 @@ class MainActivity : AppCompatActivity() {
         permanenceTitle.setText(
             if (permanent) R.string.permanence_permanent_title else R.string.permanence_trial_title,
         )
-        permanenceButton.visibility = if (permanent) View.GONE else View.VISIBLE
+        // **Permanent mode is these two lines.** Everything else the mode does
+        // is one conditional restriction that only bites on a locked phone; what
+        // a parent actually chose when they pressed the button is that both of
+        // these stop existing — the offer to make it permanent, because it
+        // already is, and the offer to deactivate, because that is the door
+        // permanence closes.
+        //
+        // [RemoveActivity] refuses as well, in its own onCreate. Two checks for
+        // one rule is usually a smell; here the rule is *the phone cannot be
+        // handed back without a wipe*, and a button that is not drawn is a
+        // statement about a screen rather than about the rule.
+        val offer = if (permanent) View.GONE else View.VISIBLE
+        permanenceButton.visibility = offer
+        permanenceRemoveButton.visibility = offer
     }
 
     /**
@@ -372,7 +369,6 @@ class MainActivity : AppCompatActivity() {
     private fun makePermanent() {
         permanence.makePermanent()
         deviceOwner.reapplyIfProtected()
-        invalidateOptionsMenu()
         renderPermanence()
     }
 
@@ -521,8 +517,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
-     * One icon per browser the *policy* allows under this choice, or the
-     * prohibition sign when it allows none.
+     * The first few browsers the *policy* allows under this choice and a **+**
+     * for the rest, or the prohibition sign when it allows none.
+     *
+     * **Capped since 2026-09-11**, when the allowed list reached eight and the
+     * row outgrew the card. Which four, and why those, is
+     * [BrowserSettings.iconRow]; the **+** only ever means "there are more",
+     * never decoration, so a choice allowing exactly four draws no **+**.
      *
      * **Every allowed browser, not merely the installed ones**, which is the
      * distinction that matters and the one this got wrong first. The row answers
@@ -546,7 +547,13 @@ class MainActivity : AppCompatActivity() {
             )
             return
         }
-        packages.sorted().forEach { row.addView(browserIcon(iconOf(it))) }
+        val icons = BrowserSettings.iconRow(packages)
+        icons.shown.forEach { row.addView(browserIcon(iconOf(it))) }
+        if (icons.more) {
+            row.addView(
+                browserIcon(ContextCompat.getDrawable(this@MainActivity, R.drawable.ic_more_browsers)),
+            )
+        }
     }
 
     /**

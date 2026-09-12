@@ -12,8 +12,9 @@
     <string name="permanence_trial_title">Drawbridge in proefmodus</string>
     <string name="permanence_permanent_title">Drawbridge is definitief</string>
     <string name="permanence_action">Definitief maken</string>
+    <string name="permanence_remove_action">Drawbridge uitschakelen om te verwijderen</string>
     <string name="permanence_info_title">Proefmodus en definitieve modus</string>
-    <string name="permanence_info">De proefmodus is om drawbridge te testen, uit te proberen of gewoon tijdelijk te gebruiken. In de proefmodus is drawbridge makkelijker te verwijderen.\n\nOntgrendeld\nProefmodus: drawbridge kan via het menu worden uitgeschakeld en daarna verwijderd.\nDefinitieve modus: drawbridge kan alleen nog weg met een fabrieksreset.\n\nVergrendeld\nProefmodus: drawbridge kan weg met een fabrieksreset.\nDefinitieve modus: ontgrendelen is nodig om te kunnen resetten. Als veiligheidsmaatregel kan een ontgrendeltimer van 30 dagen worden gestart wanneer er geen andere timer liep en je de sleutel vergeten bent.\n\nDrawbridge definitief maken kan niet ongedaan worden gemaakt vanaf de telefoon.</string>
+    <string name="permanence_info">De proefmodus is om drawbridge te testen, uit te proberen of gewoon tijdelijk te gebruiken. In de proefmodus is drawbridge makkelijker te verwijderen.\n\nOntgrendeld\nProefmodus: drawbridge kan met de knop worden uitgeschakeld en daarna verwijderd.\nDefinitieve modus: drawbridge kan alleen nog weg met een fabrieksreset.\n\nVergrendeld\nProefmodus: drawbridge kan weg met een fabrieksreset.\nDefinitieve modus: ontgrendelen is nodig om te kunnen resetten. Als veiligheidsmaatregel kan een ontgrendeltimer van 30 dagen worden gestart wanneer er geen andere timer liep en je de sleutel vergeten bent.\n\nDrawbridge definitief maken kan niet ongedaan worden gemaakt vanaf de telefoon.</string>
     <string name="permanence_confirm_title">Drawbridge definitief maken?</string>
     <string name="permanence_confirm_message">Dit kan niet ongedaan worden gemaakt, het is echt definitief. Ontgrendeld kan drawbridge alleen nog weg met een fabrieksreset. Wanneer drawbridge vergrendeld is, is zelfs de fabrieksreset niet beschikbaar en moet drawbridge eerst ontgrendeld worden (met de sleutel of de timer) voordat de fabrieksreset weer beschikbaar wordt.</string>
     <string name="permanence_confirm_yes">Definitief maken</string>
@@ -63,7 +64,6 @@
 
     <string name="action_lock">drawbridge vergrendelen</string>
     <string name="action_refresh">Controleren op beleidsupdates</string>
-    <string name="action_remove">drawbridge-beperkingen uitschakelen</string>
     <string name="action_forgot_key">Code vergeten</string>
 
     <string name="policy_refreshed">Beleid bijgewerkt (versie %1$d)</string>
@@ -161,12 +161,12 @@
     <string name="forgot_key_running">Deze telefoon ontgrendelt zichzelf al op %1$s, en dat kan niet vervroegd worden. Ontgrendelen met de code voor die tijd stopt het.</string>
 
     <!-- Verwijderen -->
-    <string name="remove_title">drawbridge-beperkingen uitschakelen</string>
-    <string name="remove_explanation">Dit heft elke beperking op en stopt de filter. Er wordt niets gewist en er gaan geen gegevens verloren.\n\nDit is een beslissing zonder weg terug. Wil je de beperkingen opnieuw activeren, dan is daarvoor een volledige fabrieksreset met een nieuwe drawbridge-installatie nodig!</string>
+    <string name="remove_title">Drawbridge uitschakelen</string>
+    <string name="remove_explanation">Dit schakelt drawbridge uit als apparaatbeheerder en maakt het inert. Daarna kan je het netjes verwijderen zoals elke andere app.\n\nJe kan het echter niet opnieuw activeren. Wil je drawbridge terug, dan moet je het opnieuw installeren nadat je op deze knop hebt gedrukt.</string>
     <string name="remove_action">Uitschakelen</string>
     <string name="remove_cancel">Annuleren</string>
-    <string name="remove_confirm_title">drawbridge-beperkingen uitschakelen?</string>
-    <string name="remove_confirm_message">De inhoudsfilter, de app-blokkering en alle beperkingen worden uitgeschakeld. Verborgen apps worden weer beschikbaar. Er gaan geen gegevens verloren.\n\nHet register van hoelang deze telefoon beschermd is, verdwijnt mee.\n\nDit kan niet ongedaan gemaakt worden vanaf de telefoon. De beperkingen weer inschakelen betekent het toestel opnieuw instellen na een fabrieksreset.</string>
+    <string name="remove_confirm_title">Drawbridge uitschakelen?</string>
+    <string name="remove_confirm_message">De inhoudsfilter, de app-blokkering en alle beperkingen worden uitgeschakeld. Verborgen apps worden weer beschikbaar. Er gaan geen gegevens verloren.\n\nHet register van hoelang deze telefoon beschermd is, verdwijnt mee.\n\nDit kan niet ongedaan gemaakt worden vanaf de telefoon.</string>
     <string name="remove_confirm_yes">Uitschakelen</string>
     <string name="remove_done">drawbridge-beperkingen uitgeschakeld.</string>
     <string name="remove_done_not_owner">Filter gestopt en instellingen gewist.</string>
