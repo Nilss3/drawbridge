@@ -697,7 +697,7 @@ is on it is genuinely on it.
 
 | | |
 |---|---|
-| **Open** | **14** — filtering tethered traffic, measured as unfiltered on 2026-09-12 |
+| **Open** | **14** — filtering tethered traffic, measured as unfiltered on 2026-09-12; **16** — an excluded package that arrives after the tunnel did is not excluded |
 | **Closed as fixed** | **15** — WhatsApp calls, policy 118, confirmed on the beta phone 2026-09-20 |
 | **Closed as shipped** | 4, 6, 10 — built, and the entries had gone stale |
 | **Closed as answered** | 2 and 2a — FRP was tested and does not hold |
@@ -1316,6 +1316,69 @@ before locking, precisely so a phone cannot be sealed pointing at a resolver
 nobody can change; and `block_encrypted_dns` blackholes known DoT endpoints, so
 the chosen resolver needs an exception carved for it.
 
+### 16. An excluded package that arrives after the tunnel did is not excluded
+
+**Found by the owner asking the right question on 2026-09-20, immediately after
+15 closed: what happens to the exclusion when the WhatsApp switch moves?** The
+answer is worse than the question assumed, and it is not about the switch.
+
+**`excluded_packages` is read once, when the tunnel is established, and never
+again.** `VpnService.Builder.addDisallowedApplication` throws for a package that
+is not installed *for this user*, and `excludePackagesTheTunnelBreaks` catches
+that and logs `Not installed, nothing to exclude` — correct, and it was written
+for a list most phones will not have all of. What nothing does is revisit the
+decision. The tunnel is rebuilt on exactly two events: the service starting, and
+the policy document's `dns` block changing (`watchForDnsPolicyChanges`, which
+maps to `.dns` and is `distinctUntilChanged`). **A package appearing is neither.**
+
+**So the fix that just shipped does not reach a phone where WhatsApp arrives
+later, which is most new phones.** Provisioning starts the filter before the
+parent has installed anything; the parent then installs WhatsApp in the pre-lock
+window; the tunnel that came up without it stays up. Calls fail exactly as issue
+1 describes, and the phone is running the policy that is supposed to have fixed
+it. **The beta phone does not show this** because WhatsApp was already installed
+when policy 118 landed — the `dns` block changed, the tunnel rebuilt, the
+exclusion took. That is the one ordering that works, and it is the one that was
+tested.
+
+**The switch is the same bug, in the direction nobody would look.** Switching
+*WhatsApp off* is safe: the app is hidden, a hidden app cannot run, and a stale
+exclusion left in the live tunnel is inert. Switching it back *on* is not:
+`MainActivity.applyOption` writes the selection, notifies herald, unhides the
+package and sweeps — and touches no tunnel. `PolicyManager.applyPolicy` rebuilds
+the `ContentFilter`, which is the domain matcher, not the VPN. `Policy.withOptions`
+cannot alter `dns` at all — it only widens `exempt_packages`, `allowed_domains`
+and `allowed_packages` — so an option can never pass `distinctUntilChanged` even
+in principle. The parent switches WhatsApp on, it comes back with its chats, and
+its calls are broken until something restarts the service.
+
+**What makes it nasty is the recovery.** A reboot fixes it, so it heals itself
+between one report and the next, and anyone testing after a reboot sees nothing
+wrong. It is the shape of bug this project has already met twice — a decision
+made once against a state that later changed, with nothing re-reading it. See
+`PackageWatcher.sweepOnNewPolicy`, which exists for exactly that on the removal
+side.
+
+#### The fix, unbuilt
+
+Re-establish the tunnel when a package named in `excludedPackages` is installed
+or removed. `PackageWatcher` already holds a runtime-registered
+`ACTION_PACKAGE_ADDED` receiver inside the filter service, which is the right
+place and the right process; hiding and unhiding a package send
+`PACKAGE_REMOVED` and `PACKAGE_ADDED` too, so the switch case comes free if that
+holds — **and it should be checked rather than assumed**, which is this project's
+whole record on Android's broadcasts.
+
+Do not rely on the broadcast alone. `excludePackagesTheTunnelBreaks` should
+record which packages it actually excluded, and the fifteen-minute sweep should
+compare that against what is installed now and rebuild on a difference. Two
+mechanisms because neither is dependable, which is the reasoning already written
+at the top of `PackageWatcher`.
+
+**It needs a dpc build**, so it is a release rather than a policy, and until it
+ships the workaround is a reboot after installing WhatsApp. Worth saying in the
+install instructions if this sits unbuilt for long.
+
 ### 15. ~~WhatsApp calls fail~~ — fixed by policy 118, confirmed 2026-09-20
 
 **Reported by a user ([issue 1](https://github.com/Nilss3/drawbridge/issues/1))
@@ -1378,19 +1441,25 @@ number above 118 when it catches up.
 polled 118 and WhatsApp calls work. That answers *was it drawbridge at all* —
 yes — and nothing beyond it.
 
-**Offline mode does not open — and this is the one thing here still unmeasured.**
-An excluded app is outside the *tunnel*, which is a routing decision, not outside
+**Offline mode does not open, and this one is measured.** Tested on the beta
+phone on 2026-09-20: in offline mode WhatsApp is dead, calls included. An
+excluded app is outside the *tunnel*, which is a routing decision, not outside
 the *lockdown*, which is a netd rule over every UID on the device with
 `setAlwaysOnVpnPackage`'s package allowlist as its only documented exit — and
 this project passes that allowlist empty, including for drawbridge itself. Under
 lockdown an excluded app has no route through the VPN and no leave to go round
 it, which is why no VPN client offers split tunnelling and *block connections
-without VPN* at the same time. **Mechanism rather than observation, and one
-minute to settle:** put the phone in offline mode, try a WhatsApp call, and if it
-connects this entry is wrong and the offline mode has a hole in it that matters
-far more than the calls ever did. **Do that before the next tester asks about
-curfews**, because the failure is silent: a phone that leaks WhatsApp during an
-offline hour looks exactly like one that does not.
+without VPN* at the same time.
+
+**It is worth having asked rather than reasoned.** Had it gone the other way,
+every name on `excluded_packages` would have been a hole in every curfew, and the
+failure would have been silent — a phone leaking WhatsApp during an offline hour
+looks exactly like one that does not. The MMS claim in
+[design-decisions](design-decisions.md) is the remaining lockdown belief that has
+never been put to a handset.
+
+[Issue 1](https://github.com/Nilss3/drawbridge/issues/1) was answered and closed
+by the owner on 2026-09-20.
 
 #### What was measured on 2026-09-19, so it need not be redone
 
