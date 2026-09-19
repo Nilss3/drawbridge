@@ -606,6 +606,79 @@ reads that to decide whether a required app needs fetching. Without
 the allowed set would have downloaded it again to replace the copy already on the
 disk, which is the bug this whole change exists to stop.
 
+## A product with no account still has to be able to say something
+
+**Added 2026-09-20, and the WhatsApp calling bug is what argued for it.** Every
+phone in the field had a broken feature, the fix went out in a signed document
+inside a day, and there was no way whatever to tell anybody either fact. The
+reporter found out because they had opened a GitHub issue; nobody else did.
+
+drawbridge asks for no email address, has no account, and reports nothing home.
+That is the design and it is not up for revision — the cost of it is this, and
+the cheapest honest way to pay it is a field on the document every phone already
+fetches every three hours.
+
+**The first version was a card, and the card was not enough.** It drew on the
+configuration and lock screens, which is exactly the set of screens somebody who
+has set the phone up and locked it never opens again: the product's promise is
+that they should not have to. A channel only readable by people already looking
+is not a channel. So the card became the third of three surfaces rather than the
+only one.
+
+**A notification is the delivery.** Once per notice, at the poll that first sees
+the id — `NoticeInbox.record` returns an entry only on first sight, which is what
+stops a message that sits in the document for a week ringing three times a day
+for seven days. Ordinary importance: it makes a sound, it does not take over the
+screen, because nothing sent here is an emergency and a channel that behaves like
+one gets muted.
+
+**A screen is the archive.** A notification is swiped away and a card is
+dismissed; neither is somewhere to go *back* to, and a message worth sending to
+every phone in the field is worth being readable the day after by the parent who
+was driving when the shade lit up. ⋮ → *Messages from drawbridge*, on the lock
+screen as well as the configuration screen, for the same reason *Check for
+policy updates* is in both: a locked phone is the state a managed device lives
+in, and a screen reachable only behind the key would cost a parent their key to
+read a message.
+
+**The card and the archive answer different questions**, which is why both
+survived. The card reads the *live document* — withdraw the notice and the card
+goes — and the archive reads the phone's own record, so nothing published is
+silently un-published from the parent's side. Dismissing means *read*: the card
+goes, the entry stays.
+
+**Time order is the phone's clock, not the document's.** There is deliberately
+no date field to get wrong or to disagree across a fleet; what is recorded is
+when *this* phone first saw the message. A phone that was off for a week shows
+the notice dated the day it came back, which is correct — that is when it
+arrived.
+
+**And there is no severity, no icon and no colour.** Each is a lever for making a
+message look more urgent than it is. A channel meant to be used a handful of
+times in a product's life stays worth reading only if there is nothing to turn
+up, and the discipline has to be built in rather than remembered: the policy has
+no field to set, so there is nothing to argue about later.
+
+## An update the parent has to press a button for is one they are owed a reason for
+
+**The same day, and the same complaint.** Play Protect means drawbridge cannot
+install its own updates, so every version that has ever reached a phone in the
+field did so because somebody read a screen and chose to act on it. What that
+screen told them was that a larger integer existed: *This phone runs 0.2.25
+(build 50). Build 51 is available.* That is not a reason, and asking somebody to
+pause their phone's malware protection on the strength of it is a poor bargain.
+
+`app_update.version_name` and `app_update.notes` fix the two halves. The dotted
+version is the number written everywhere else about this project and reads as a
+distance travelled; the notes say what changed, in a parent's words rather than
+this repository's. Both are optional and both fall back, because every document
+written before them has neither — a policy with no `version_name` still produces
+the old sentence, and one with no notes shows no heading over nothing.
+
+The notes are drawn **above** the Play Protect paragraph and the buttons, not
+below the pictured walk. They are an input to the decision those buttons ask for.
+Under the screenshots they would be a changelog somebody scrolls past afterwards.
+
 ## The filter has a door in it, and Android Auto was what it was for
 
 `dns.excluded_packages` leaves named apps outside the tunnel. Every name in it

@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    A message from the project, on the two screens a parent actually opens.
+
+    Included rather than duplicated. The configuration screen and the lock screen
+    are different enough that most things on them are written twice, but this one
+    must not be: a notice worth sending is worth being the same words in both
+    places, and a card that drifted between them would be a message that read
+    differently depending on whether the phone happened to be locked.
+
+    **Shaped like the trial-mode card above it on purpose.** That card is the
+    other thing on this screen that states something rather than asking it, and
+    a parent who has learned to read one should not have to learn a second
+    vocabulary. Same stroke, same elevation, same margins.
+
+    **No icon, no colour, no severity.** The policy has no field to set them —
+    see PolicyNotice — and this is the other half of that decision: there is
+    nothing here to turn up. One shape, used almost never, is the only thing
+    that keeps it worth reading when it does appear.
+
+    Starts gone. Everything about it is decided at runtime from the document.
+-->
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/noticeCard"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="24dp"
+    android:layout_marginBottom="20dp"
+    android:visibility="gone"
+    app:cardElevation="0dp"
+    app:strokeWidth="1dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingStart="16dp"
+        android:paddingTop="12dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="6dp">
+
+        <TextView
+            android:id="@+id/noticeTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="4dp"
+            android:textAppearance="?attr/textAppearanceTitleSmall" />
+
+        <TextView
+            android:id="@+id/noticeBody"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="?attr/textAppearanceBodyMedium" />
+
+        <!--
+            Dismiss on the left, read-more on its right, and both flush with the
+            title rather than pushed to the far edge.
+
+            Side by side because unlike the trial-mode card's pair these are not
+            the same kind of decision — one closes the card, one leaves the
+            screen — and because two short labels fit where that card's two long
+            ones did not. Measured against the French strings, which are the
+            widest of the three.
+
+            Dismiss first because it is the one that is always there: the link
+            is drawn only when the document carries a url *and* something on the
+            phone can open it, so a row that put it first would have the buttons
+            shift sideways between one notice and the next.
+        -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="-4dp"
+            android:layout_marginTop="4dp"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/noticeDismiss"
+                style="?attr/materialButtonOutlinedStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/notice_dismiss" />
+
+            <Button
+                android:id="@+id/noticeLink"
+                style="?attr/borderlessButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:text="@string/notice_read_more"
+                android:visibility="gone" />
+        </LinearLayout>
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

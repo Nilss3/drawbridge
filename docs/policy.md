@@ -36,6 +36,12 @@ hold, which is what makes replaying an old, permissive policy fail.
   "blocked_packages": ["com.instagram.android"],
   "allowed_browser_package": "app.drawbridge.herald",
   "exempt_packages": [],
+  "notice": {
+    "id": "2026-09-calls",
+    "title": "WhatsApp calls are working again",
+    "body": "Update drawbridge to get the fix.",
+    "url": "https://drawbridge-project.pages.dev/"
+  },
   "browser": {
     "default_search_engine": "duckduckgo",
     "blocked_url_patterns": ["reddit\\.com/r/(gonewild|nsfw)"]
@@ -52,6 +58,9 @@ hold, which is what makes replaying an old, permissive policy fail.
 | `blocked_domains` | Extra domains on top of the lists. Suffix matching: `example.com` covers `www.example.com`. |
 | `allowed_domains` | Wins over everything else, in the DNS filter and in herald alike. Use it to carve an exception out of a bulk list — and see the note below, because it is also what keeps the filter able to update itself. |
 | `blocked_packages` | Apps drawbridge removes on sight. |
+| `notice` | **A message to whoever is holding the phone.** Absent is the resting state. See below — it is the only channel this project has, and the rules for using it matter more than the fields. |
+| `app_update.version_name` | The dotted version, e.g. `0.2.26`. The update screen says *Version 0.2.26 is available* instead of *Build 51 is available*. |
+| `app_update.notes` | What changed, in a parent's words. Shown under *What changed* on the update screen, above the button they have to press. `notes_i18n` translates it. |
 | `allowed_browser_package` | The browser tapped links are handed to, and the first one installed. Always a member of the allowed set. |
 | `allowed_browser_packages` | Every browser allowed to exist. Anything else that registers a browser intent filter is removed or hidden. **Must agree with `required_apps`** — a browser named in one and not the other is installed and removed on a loop. Empty means "just `allowed_browser_package`". |
 | `exempt_packages` | Escape valve for a device-specific app that would otherwise be caught. |
@@ -118,6 +127,70 @@ added or reviewed:
 8. **Verify on a phone if there is one to hand.** Install the app, open it, and
    see whether content loads. That is the only step that catches what this
    checklist was written for, and it is the step that found it.
+
+### The notice: the only way this project can say anything
+
+`notice` puts one message on the phones in the field. It is absent from every
+document by default and should be absent from almost all of them.
+
+```jsonc
+"notice": {
+  "id": "2026-09-calls",
+  "title": "WhatsApp calls are working again",
+  "body": "Calls failed because WhatsApp will not place one while a VPN is present. The filter now leaves WhatsApp outside it.",
+  "title_i18n": { "nl": "WhatsApp-oproepen werken weer" },
+  "body_i18n":  { "nl": "Oproepen mislukten omdat WhatsApp niet belt zolang er een VPN actief is." },
+  "url": "https://drawbridge-project.pages.dev/"
+}
+```
+
+**Why it exists.** drawbridge asks for no email address, has no account and
+reports nothing home. That is the design and it is not being revisited — but the
+cost is real, and it was paid in full over the WhatsApp calling bug: every phone
+in the field had a broken feature, the fix went out in a signed document within
+a day, and there was no way whatever to tell anybody either fact. The document
+every phone already fetches every three hours is the narrowest thing that closes
+that gap.
+
+**What reaches the parent, in the order it reaches them.**
+
+1. **A notification**, once, at the poll that first sees the id. This is the
+   part that matters: a phone that has been set up and locked is *meant* to be
+   left alone, so a message that waits for somebody to open drawbridge reaches
+   nobody. Ordinary importance — it makes a sound, it does not take over the
+   screen.
+2. **A card** on the configuration and lock screens, dismissible, for as long as
+   the document carries the notice. Removing the field removes the card.
+3. **The messages screen**, at ⋮ → *Messages from drawbridge* on both screens,
+   listing every notice this phone has ever received, newest first, with the
+   date it arrived. Dismissing removes the card and leaves this entry, because
+   dismissing means *read*, not *destroy*.
+
+**The rules, which matter more than the fields.**
+
+1. **Almost never.** A card that is usually there is a card nobody reads, and
+   the one time it matters will be the time it is ignored. The bar is something
+   a parent has to *know* and cannot find out any other way: a fix they must act
+   on, a setting that changed under them, a fault being worked on that explains
+   what their phone is doing.
+2. **Never release chatter.** That is `app_update.notes`, which appears on the
+   update screen next to the button it is about.
+3. **Never marketing.** This is a notification on a device somebody's child
+   depends on. Treat the channel as something that can be spent once.
+4. **Change `id` when the words change enough that somebody who dismissed the
+   old one should see the new one**; keep it for a typo. A new id rings again.
+   Dates make good ids — they sort, and they say when.
+5. **Nothing here changes what the phone does**, and there is deliberately no
+   field that could. Every behaviour already has a field elsewhere in this
+   document where it can be reviewed as policy rather than read as a message.
+
+**There is no severity, no icon and no colour**, and that is the other half of
+rule 1: each would be a lever for making a message look more urgent than it is,
+and the only way to keep the channel worth reading is to have nothing to turn up.
+
+**It is as trusted as the rest of the document and no more.** The envelope is
+signed by this project's key and the version counter only goes up, so a notice
+cannot be forged by the network and cannot be replayed once withdrawn.
 
 ### An app outside the tunnel is an app outside the filter
 

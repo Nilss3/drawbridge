@@ -215,6 +215,11 @@ class MainActivity : AppCompatActivity() {
             true
         }
 
+        R.id.actionNotices -> {
+            startActivity(Intent(this, NoticesActivity::class.java))
+            true
+        }
+
         R.id.actionDiagnostics -> {
             startActivity(Intent(this, DiagnosticsActivity::class.java))
             true
@@ -292,6 +297,13 @@ class MainActivity : AppCompatActivity() {
                 } else {
                     View.GONE
                 }
+
+            // After the policy has loaded, for the same reason the update
+            // notice is re-checked above: a notice named by a document still
+            // being read off disk would be missed on the first render after a
+            // cold start, and this screen is not re-rendered again until the
+            // parent leaves it and comes back.
+            NoticeCard.render(this@MainActivity, policy.policy.value.notice)
 
             renderDisconnect()
             renderBrowsers()
@@ -1212,6 +1224,18 @@ class MainActivity : AppCompatActivity() {
             // else that has drifted onto the phone — and the toast says where
             // this particular change lands.
             if (enabled) restoreNewlyAllowed()
+
+            // **And the tunnel, if this switch governs something excluded from
+            // it.** An option that unhides a package on `dns.excluded_packages`
+            // — WhatsApp is the one — leaves that package inside a tunnel built
+            // when it was hidden, and its calls broken, until something
+            // re-establishes. Nothing else here would: `applyPolicy` rebuilds
+            // the `ContentFilter`, which is the domain matcher, and
+            // `Policy.withOptions` cannot touch the `dns` block at all, so the
+            // watcher that rebuilds on a `dns` change can never see this. That
+            // was item 16, in the direction a parent watches happen.
+            DnsFilterService.reconcileNow(this@MainActivity)
+
             Log.i(TAG, "Option ${option.id} set to $enabled; ${sweep()} packages removed")
             if (!enabled) toast(blocked(option))
             renderOptions()

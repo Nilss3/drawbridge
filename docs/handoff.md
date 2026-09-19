@@ -21,7 +21,7 @@ which is kept whole on purpose.
 
 | | `main` (the beta) | `dev` |
 |---|---|---|
-| drawbridge | **0.2.22, build 47** | **0.2.25, build 50** |
+| drawbridge | **0.2.25, build 50** | **0.2.26, build 51 — built, not released** |
 | herald | **0.1.19** | **0.1.19** |
 | policy | **118** | **119** |
 | install page | <https://drawbridge-project.pages.dev/install/> | <https://dev.drawbridge-project.pages.dev/install/> |
@@ -340,6 +340,24 @@ the key can always unlock and put a build on the phone. See
 
 Each of these looks like a bug and is not, or bites silently:
 
+- **`VpnService.Builder.addDisallowedApplication` does not throw for a package
+  that is not installed**, whatever its documentation says. Its `verifyApp`
+  calls the raw `IPackageManager.getApplicationInfo`, which *returns null* for a
+  missing package where the framework wrapper the documentation describes would
+  have thrown — and the return value is discarded. So the call accepts any
+  string at all. Measured on the API 36 emulator on 2026-09-20, where a phone
+  with no WhatsApp on it logged `Outside the tunnel, and so unfiltered:
+  com.whatsapp`. That line had been untrue, and printed, since
+  `excluded_packages` shipped; the `Not installed, nothing to exclude` branch
+  beside it was dead code that had never once run. **Nothing was broken by it** —
+  the platform resolves the names to UIDs when it builds the tunnel's ranges,
+  and an absent package has no UID to leave out — but it made the log say the
+  opposite of the truth, and it very nearly shipped a worse bug on top: the
+  item 16 reconciler compares *what the tunnel excluded* against *what is
+  installed now*, and a builder that silently accepts everything makes those two
+  sets permanently different, which is a tunnel rebuilt every fifteen minutes
+  forever. `DnsFilterService.installedForUser` is now the single predicate both
+  sides ask.
 - **Re-pinning `required_apps` means three fields, not two.** `url`, `sha256`
   *and* `version_code`. On 2026-08-25 the first two were updated for
   v0.2.8-dev.6 and the third was left at 14, so policy 89 shipped correct
@@ -698,8 +716,8 @@ is on it is genuinely on it.
 
 | | |
 |---|---|
-| **Open** | **14** — filtering tethered traffic; **16** — an excluded package that arrives after the tunnel did is not excluded |
-| **Closed as fixed** | **15** — WhatsApp calls, policy 118 on the beta and 119 here, confirmed 2026-09-20 |
+| **Open** | **14** — filtering tethered traffic |
+| **Closed as fixed** | **15** — WhatsApp calls, policy 118 on the beta and 119 here, confirmed 2026-09-20; **16** — the stale exclusion list, built in 0.2.26 build 51, unreleased |
 | **Closed as shipped** | 4, 6, 10 — built, and the entries had gone stale |
 | **Closed as answered** | 2 and 2a — FRP was tested and does not hold |
 | **Closed as won't do** | 5 (F-Droid) |
@@ -1317,11 +1335,17 @@ before locking, precisely so a phone cannot be sealed pointing at a resolver
 nobody can change; and `block_encrypted_dns` blackholes known DoT endpoints, so
 the chosen resolver needs an exception carved for it.
 
-### 16. An excluded package that arrives after the tunnel did is not excluded
+### 16. ~~An excluded package that arrives after the tunnel did is not excluded~~ — built 2026-09-20, unreleased
 
 **Found by the owner asking the right question on 2026-09-20, immediately after
 15 closed: what happens to the exclusion when the WhatsApp switch moves?** The
 answer is worse than the question assumed, and it is not about the switch.
+
+**Fixed in drawbridge 0.2.26 build 51, and verified on the API 36 emulator**:
+uninstalling a package the document excludes logged
+`Excludable packages changed (android.intent.action.PACKAGE_REMOVED …):
+[com.google.android.projection.gearhead] -> []` and re-established the tunnel.
+**Built, not released** — see the release note at the end of this entry.
 
 **`excluded_packages` is read once, when the tunnel is established, and never
 again.** `VpnService.Builder.addDisallowedApplication` throws for a package that
@@ -1380,6 +1404,34 @@ at the top of `PackageWatcher`.
 **It needs a dpc build**, so it is a release rather than a policy, and until it
 ships the workaround is a reboot after installing WhatsApp. Worth saying in the
 install instructions if this sits unbuilt for long.
+
+#### What was built, 2026-09-20
+
+Three mechanisms, which is what `PackageWatcher`'s own header argues for and
+what item 16 is the cost of having none of:
+
+1. **A receiver in `DnsFilterService`** for `PACKAGE_ADDED`, `PACKAGE_REMOVED`
+   and `PACKAGE_CHANGED`, filtered to the names the document excludes.
+   Runtime-registered, because `PACKAGE_ADDED` has been an implicit broadcast
+   since Android 8.
+2. **A fifteen-minute reconcile**, matching the sweep interval next door. It
+   needs no broadcast to be right, which matters because hiding and unhiding —
+   the option-switch case — are reported inconsistently across versions.
+3. **An explicit poke from `MainActivity.applyOption`**, because that is the one
+   a parent watches happen and would report as broken if it took a quarter of
+   an hour.
+
+`reconcileExclusions` re-establishes only when the set actually changed. That
+restraint is load bearing: re-establishing drops DNS for the moment it takes, so
+every app on the phone sees one failed lookup, and a reconciler that fired on a
+timer for its own sake would be a worse bug than the one it fixes.
+
+**And it nearly was one.** The first version recorded "excluded" as *the calls
+that did not throw*, which turns out to be all of them — see the
+`addDisallowedApplication` entry in [Traps](#traps-that-cost-time-here). That
+made the two sets permanently unequal and would have rebuilt the tunnel every
+fifteen minutes on every phone, forever. It was caught by running it on an
+emulator rather than by reading it, which is the argument for running it.
 
 ### 15. ~~WhatsApp calls fail~~ — fixed by policy 118 on the beta, carried here as 119
 

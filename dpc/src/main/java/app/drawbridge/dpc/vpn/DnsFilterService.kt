@@ -4,8 +4,10 @@ import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.net.VpnService
 import android.os.Build
 import android.os.ParcelFileDescriptor
@@ -14,6 +16,8 @@ import androidx.core.app.NotificationCompat
 import app.drawbridge.dpc.DrawbridgeApplication
 import app.drawbridge.dpc.R
 import app.drawbridge.dpc.apps.PackageWatcher
+import app.drawbridge.dpc.policy.NoticeInbox
+import app.drawbridge.dpc.policy.NoticeNotifier
 import app.drawbridge.dpc.ui.MainActivity
 import app.drawbridge.dpc.update.UpdateWorker
 import app.drawbridge.dpc.vpn.dns.DnsFilter
@@ -30,6 +34,7 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import java.io.FileInputStream
@@ -85,6 +90,15 @@ class DnsFilterService : VpnService() {
     /** The `dns` block the current tunnel was built from, to detect changes. */
     private var activeDns: DnsPolicy? = null
 
+    /**
+     * The packages the live tunnel actually managed to exclude — which is the
+     * policy's list minus whatever was not installed at `establish()` time.
+     *
+     * Kept so [reconcileExclusions] can tell a stale tunnel from a current one
+     * without re-establishing to find out.
+     */
+    private var excludedFromTunnel: Set<String> = emptySet()
+
     /** Outlives individual tunnels; cancelled only when the service is destroyed. */
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 
@@ -99,6 +113,14 @@ class DnsFilterService : VpnService() {
             stopFilter()
             stopSelf()
             return START_NOT_STICKY
+        }
+
+        // A settings change that could have unhidden or hidden an excluded app.
+        // The filter is already running in this case, so this is a check rather
+        // than a start; [reconcileExclusions] does nothing when nothing moved.
+        if (intent?.action == ACTION_RECONCILE && running) {
+            reconcileExclusions("asked to")
+            return START_STICKY
         }
 
         startForeground(NOTIFICATION_ID, buildNotification())
@@ -134,6 +156,10 @@ class DnsFilterService : VpnService() {
         // also where package watching and opportunistic policy refresh live.
         packageWatcher = PackageWatcher(this).also { it.start() }
         PolicyWorker.refreshNow(this)
+
+        registerPackageChangeReceiver()
+        watchForExcludedPackageDrift()
+        watchForNotices()
 
         // Also retry any missing required app. The install normally happens once,
         // at provisioning — but if the device had no network then, waiting a full
@@ -174,6 +200,77 @@ class DnsFilterService : VpnService() {
         }
     }
 
+    /**
+     * Files a notice the document has started carrying, and raises the one
+     * notification it gets.
+     *
+     * **Here because this is the process that is always alive.** The same
+     * reasoning that put `PackageWatcher` and the opportunistic policy refresh
+     * in this service: a notice arrives on a poll, polls happen in the
+     * background, and nothing else in drawbridge is running to notice. Doing it
+     * from a screen would mean the message reached only the people who were
+     * already looking, which is the thing the notification exists to fix.
+     *
+     * [NoticeInbox.record] is what makes this once-per-notice: it returns an
+     * entry only the first time an id is seen, so the refresh three hours later
+     * — carrying the same document — files nothing and rings nothing.
+     *
+     * Without `drop(1)`, deliberately, unlike [watchForDnsPolicyChanges]. That
+     * one drops the replayed value because the tunnel was *just built* from it;
+     * here the replayed value is the document this phone is already running, and
+     * it may carry a notice that arrived while the service was dead — a poll
+     * that landed and a reboot before anybody looked. Filing is idempotent, so
+     * the cost of reading it again is nothing and the cost of skipping it is a
+     * message silently lost.
+     */
+    private fun watchForNotices() {
+        val inbox = NoticeInbox(this)
+        serviceScope.launch {
+            policy.policy
+                .map { it.notice }
+                .distinctUntilChanged()
+                .collect { notice ->
+                    val filed = inbox.record(notice) ?: return@collect
+                    NoticeNotifier.notify(this@DnsFilterService, filed)
+                }
+        }
+    }
+
+    private fun registerPackageChangeReceiver() {
+        val filter = IntentFilter().apply {
+            addAction(Intent.ACTION_PACKAGE_ADDED)
+            addAction(Intent.ACTION_PACKAGE_REMOVED)
+            addAction(Intent.ACTION_PACKAGE_CHANGED)
+            addDataScheme("package")
+        }
+        runCatching { registerReceiver(packageChanges, filter) }
+            .onFailure { Log.e(TAG, "Could not watch for package changes", it) }
+    }
+
+    /**
+     * The backstop under the broadcasts: asks, on a slow timer, whether the live
+     * tunnel still excludes what the policy says it should.
+     *
+     * **Fifteen minutes, matching `PackageWatcher`'s sweep**, and for the same
+     * reason — it is the interval already chosen for "something changed on this
+     * phone and nothing told us". A poll answering *no change* costs three
+     * package lookups, so the cadence is set by how long a phone may stay wrong
+     * rather than by what the check costs.
+     *
+     * It exists because the broadcasts cannot be trusted to cover hiding and
+     * unhiding, which is exactly the case an option switch produces. The switch
+     * also pokes [reconcileNow] directly, so this is the third line rather than
+     * the first.
+     */
+    private fun watchForExcludedPackageDrift() {
+        serviceScope.launch {
+            while (running) {
+                delay(EXCLUSION_RECHECK_MILLIS)
+                reconcileExclusions("periodic check")
+            }
+        }
+    }
+
     private fun openTunnel(): Boolean {
         val descriptor = establishTunnel() ?: run {
             Log.e(TAG, "Could not establish the VPN tunnel")
@@ -209,6 +306,8 @@ class DnsFilterService : VpnService() {
 
     private fun stopFilter() {
         closeTunnel()
+
+        runCatching { unregisterReceiver(packageChanges) }
 
         packageWatcher?.stop()
         packageWatcher = null
@@ -339,14 +438,30 @@ class DnsFilterService : VpnService() {
      * A missing package is the ordinary case, not an error: the list is written
      * once for every phone, and most phones will not have all of it.
      *
-     * **But the decision is made once and never revisited, which is a bug.** A
-     * package installed, hidden or unhidden after this ran keeps whatever answer
-     * it got here until the tunnel is next established — service start, or a
-     * change to the policy's `dns` block. An option switch cannot do it:
-     * `Policy.withOptions` never touches `dns`, so it cannot pass the
-     * `distinctUntilChanged` in [watchForDnsPolicyChanges] even in principle.
-     * The visible symptom is a phone that installs WhatsApp after provisioning
-     * and still cannot call. See the handoff, item 16.
+     * **Presence is checked here rather than left to the builder, because the
+     * builder does not check it.** `addDisallowedApplication` is documented to
+     * throw `NameNotFoundException` for a package that is not installed, and it
+     * does not: its `verifyApp` calls the raw `IPackageManager`, which *returns
+     * null* for a missing package where the framework wrapper would have thrown,
+     * and the return value is dropped on the floor. So the call accepts any
+     * string at all. Measured on the API 36 emulator on 2026-09-20, where a
+     * phone with no WhatsApp logged `Outside the tunnel, and so unfiltered:
+     * com.whatsapp` — which had been untrue, and printed, since this list
+     * shipped. The `onFailure` branch below was dead code.
+     *
+     * Nothing was *broken* by that, because the platform resolves the names to
+     * UIDs when it builds the tunnel's ranges and an absent package has no UID
+     * to subtract. What it broke is knowing: the log said the opposite of the
+     * truth, and [reconcileExclusions] needs the truth.
+     *
+     * **The answer is recorded in [excludedFromTunnel], because it goes stale.**
+     * This runs once per tunnel, and a package installed, hidden or unhidden
+     * afterwards would otherwise keep whatever answer it got here until the
+     * tunnel was next established — service start, or a change to the policy's
+     * `dns` block, neither of which a package arriving is. That was item 16: a
+     * phone that installed WhatsApp after provisioning could not call, on a
+     * policy that named WhatsApp, and a reboot fixed it. See
+     * [reconcileExclusions] for what watches it now.
      *
      * **This does not exempt anything from the offline mode or a curfew.** Those
      * are the always-on VPN's lockdown flag, a netd rule over every UID on the
@@ -362,10 +477,99 @@ class DnsFilterService : VpnService() {
      * measurement into a lie.
      */
     private fun excludePackagesTheTunnelBreaks(builder: Builder, packages: List<String>) {
-        for (excluded in packages) {
-            runCatching { builder.addDisallowedApplication(excluded) }
-                .onSuccess { Log.i(TAG, "Outside the tunnel, and so unfiltered: $excluded") }
-                .onFailure { Log.i(TAG, "Not installed, nothing to exclude: $excluded") }
+        val excluded = mutableSetOf<String>()
+        for (candidate in packages) {
+            // **The same predicate [reconcileExclusions] uses, and that is the
+            // whole point.** If these two ever disagree about what "excluded"
+            // means, the reconciler sees a difference that re-establishing
+            // cannot remove and rebuilds the tunnel on every check forever —
+            // a dropped lookup for every app on the phone, every fifteen
+            // minutes. One function, asked from both places.
+            if (!installedForUser(candidate)) {
+                Log.i(TAG, "Not installed, nothing to exclude: $candidate")
+                continue
+            }
+            runCatching { builder.addDisallowedApplication(candidate) }
+                .onSuccess {
+                    excluded += candidate
+                    Log.i(TAG, "Outside the tunnel, and so unfiltered: $candidate")
+                }
+                .onFailure { Log.w(TAG, "Could not exclude $candidate", it) }
+        }
+        excludedFromTunnel = excluded
+    }
+
+    /**
+     * Rebuilds the tunnel when the set of excludable packages has moved under
+     * it.
+     *
+     * **The fix for item 16.** `addDisallowedApplication` throws for a package
+     * that is not installed *for this user*, and a hidden package is not: hiding
+     * clears the installed flag, which is the same mechanism
+     * `AppInstaller.versionCodeOf` needs `MATCH_UNINSTALLED_PACKAGES` to see
+     * past. So the exclusion list is really a list of *present* packages,
+     * computed at `establish()` and true only for as long as that stays true.
+     *
+     * Cheap enough to call often: a package-manager lookup per name on a list
+     * that is two or three long, and a set comparison. It establishes nothing
+     * unless the answer actually changed, which matters because re-establishing
+     * drops DNS for the moment it takes — every app on the phone would see one
+     * failed lookup, so this must never fire on a timer for its own sake.
+     */
+    private fun reconcileExclusions(reason: String) {
+        if (!running) return
+        val wanted = policy.policy.value.dns.excludedPackages.filter { installedForUser(it) }.toSet()
+        if (wanted == excludedFromTunnel) return
+
+        Log.i(TAG, "Excludable packages changed ($reason): $excludedFromTunnel -> $wanted")
+        closeTunnel()
+        if (!openTunnel()) {
+            Log.e(TAG, "Could not re-establish the tunnel after $reason; stopping")
+            stopSelf()
+        }
+    }
+
+    /**
+     * Whether [packageName] is present for this user, which is the question
+     * `addDisallowedApplication` is documented to ask and does not.
+     *
+     * Deliberately *without* `MATCH_UNINSTALLED_PACKAGES`, which is the flag
+     * `AppInstaller.versionCodeOf` needs and this must not have. A hidden
+     * package has to read as **absent** here, because that is what it is to the
+     * tunnel: hiding clears the installed flag, the platform resolves an
+     * exclusion to a UID when it builds the tunnel's ranges, and a package with
+     * no installed flag yields no UID to leave out. Using the flag would make
+     * this claim an exclusion that does not exist.
+     */
+    private fun installedForUser(packageName: String): Boolean =
+        runCatching { packageManager.getApplicationInfo(packageName, 0) }.isSuccess
+
+    /**
+     * Watches for a package on the exclusion list arriving or leaving.
+     *
+     * **Three mechanisms, because none of them is dependable alone** — the same
+     * reasoning [PackageWatcher] is built on, and item 16 is what happens
+     * without any of them.
+     *
+     *  1. This receiver, for installs and uninstalls. Runtime-registered because
+     *     `ACTION_PACKAGE_ADDED` has been an implicit broadcast since Android 8
+     *     and a manifest entry for it silently never runs.
+     *  2. `ACTION_PACKAGE_CHANGED`, which is what *hiding* is reported as on
+     *     some versions — and unhiding is reported as `ADDED` on others. This
+     *     project's record with Android's broadcasts is why neither is trusted
+     *     to be the one that fires.
+     *  3. [reconcileExclusions] from a periodic pass, below, which needs no
+     *     broadcast to be right and is the backstop for all of it.
+     *
+     * Plus an explicit poke from the settings screen when an option switch
+     * moves, which is the case a parent watches happen and would notice not
+     * working. See [reconcileNow].
+     */
+    private val packageChanges = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            val changed = intent.data?.schemeSpecificPart ?: return
+            if (changed !in policy.policy.value.dns.excludedPackages) return
+            reconcileExclusions("${intent.action} $changed")
         }
     }
 
@@ -563,6 +767,27 @@ class DnsFilterService : VpnService() {
         private const val TAG = "DnsFilterService"
 
         const val ACTION_STOP = "app.drawbridge.dpc.STOP_FILTER"
+
+        private const val ACTION_RECONCILE = "app.drawbridge.dpc.RECONCILE_EXCLUSIONS"
+
+        /** See [watchForExcludedPackageDrift]. */
+        private const val EXCLUSION_RECHECK_MILLIS = 15 * 60 * 1000L
+
+        /**
+         * Asks the running filter to re-check its exclusions now.
+         *
+         * For the caller that *knows* a package may have just been hidden or
+         * unhidden — the option switch — because that is the one a parent
+         * watches happen and would report as broken if it took a quarter of an
+         * hour. A no-op when the filter is not running: there is no stale tunnel
+         * to correct, and the next `establish()` reads the list fresh.
+         */
+        fun reconcileNow(context: Context) {
+            if (!isRunning) return
+            val intent = Intent(context, DnsFilterService::class.java).setAction(ACTION_RECONCILE)
+            runCatching { context.startService(intent) }
+                .onFailure { Log.w(TAG, "Could not ask the filter to re-check exclusions", it) }
+        }
 
         private const val CHANNEL_ID = "drawbridge-filter"
         private const val NOTIFICATION_ID = 1

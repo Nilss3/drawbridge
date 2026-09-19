@@ -81,6 +81,8 @@
     <string name="update_notice">Une version plus récente de drawbridge est disponible.</string>
     <string name="update_action">Mettre à jour</string>
     <string name="update_available_detail">Ce téléphone exécute %1$s (build %2$d). Le build %3$d est disponible.</string>
+    <string name="update_available_named">Ce téléphone exécute %1$s. La version %2$s est disponible.</string>
+    <string name="update_notes_heading">Ce qui a changé</string>
     <string name="update_none">Ce téléphone exécute %1$s, la version la plus récente que la politique désigne.</string>
     <string name="update_why_blocked">Pour mettre à jour drawbridge, vous devez suspendre Play Protect, le cas échéant. Le Play Protect de Google n\'autorise pas l\'installation de device policy controllers (comme drawbridge) qui ne passent pas par des partenaires entreprise. Cliquez pour ouvrir les paramètres de Play Protect et suspendez-le avant d\'appuyer sur le bouton de mise à jour. Voir les captures d\'écran pour plus de détails.</string>
     <string name="update_shot_1">Dans Play Protect, touchez la roue dentée en haut.</string>
@@ -195,4 +197,12 @@
     <string name="lock_current_offline">Internet : toujours hors ligne</string>
     <string name="lock_current_online">Internet : toujours autorisé</string>
     <string name="lock_current_curfew">Hors ligne %1$s–%2$s en semaine, %3$s–%4$s le week-end</string>
+    <string name="notice_dismiss">Compris</string>
+    <string name="notice_read_more">En savoir plus</string>
+    <string name="action_notices">Messages de drawbridge</string>
+    <string name="notices_title">Messages</string>
+    <string name="notices_explanation">Tout ce que le projet drawbridge a envoyé à ce téléphone, du plus récent au plus ancien. Rien ici ne modifie un réglage.</string>
+    <string name="notices_empty">Aucun message pour l\'instant. C\'est ici qu\'ils apparaîtront si le projet doit un jour vous dire quelque chose.</string>
+    <string name="notice_channel_name">Messages de drawbridge</string>
+    <string name="notice_channel_description">Messages rares du projet drawbridge au sujet de ce téléphone. Pas de publicité.</string>
 </resources>

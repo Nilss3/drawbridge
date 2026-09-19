@@ -114,6 +114,20 @@
             parent with no confirmation that anything happened, and no way back
             to the text that told them what they had done.
         -->
+        <!--
+            Above the trial-mode card, which is the one place it can go.
+
+            Below it, the notice would sit among the controls, reading as a
+            comment on whichever one it happened to land next to. Above the
+            *welcome*, it would stand where the app introduces itself, which is
+            the mistake the trial-mode card already made once and was moved for.
+            Here it is the first thing after the app has said what it is, and
+            still above everything the parent chooses — which is right for
+            something that is almost never there, and is worth reading when it
+            is.
+        -->
+        <include layout="@layout/item_notice" />
+
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/permanenceNotice"
             android:layout_width="match_parent"

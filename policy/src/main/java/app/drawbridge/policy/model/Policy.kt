@@ -137,6 +137,29 @@ data class Policy(
      */
     @SerialName("app_ratings")
     val appRatings: AppRatings? = null,
+
+    /**
+     * One thing this project needs to say to the people running the phones, or
+     * null, which is the resting state and should stay that way.
+     *
+     * **This is the only channel there is.** drawbridge asks for no email
+     * address, has no account, and reports nothing home — which is the whole
+     * design and is not being revisited. The cost of that is real: when
+     * something has to be said to everyone with a phone in the field, there was
+     * until now no way to say it. A field on the document they already fetch
+     * every three hours is the narrowest thing that closes the gap.
+     *
+     * **It is as trusted as the rest of the document and no more.** The envelope
+     * is signed by this project's key and the version counter only goes up, so a
+     * notice cannot be forged by the network and cannot be replayed once
+     * withdrawn. What it must never become is a channel for anything but words:
+     * there is deliberately no field here that changes what the phone *does*,
+     * because every such field already exists elsewhere in this document where
+     * it can be reviewed as policy rather than read as a message.
+     *
+     * See [PolicyNotice] for the rules the text itself has to keep to.
+     */
+    val notice: PolicyNotice? = null,
 ) {
     /**
      * Every browser this policy permits, with [allowedBrowserPackage] always a
@@ -663,4 +686,118 @@ data class AppUpdate(
      * per-ABI splits GeckoView forces on herald. Null means "any device".
      */
     val abi: String? = null,
-)
+
+    /**
+     * The human version this build is called, e.g. `0.2.26`, or null on a
+     * document that does not say.
+     *
+     * The screen has always had a version *code* to show — an integer that goes
+     * up by one — and has shown it, because it was the only honest thing it
+     * had. It answers nothing a parent asked: *build 51* does not say whether
+     * the thing they are about to install is a fortnight or a year newer than
+     * what is running, and the number they see everywhere else about this
+     * project is the dotted one.
+     */
+    @SerialName("version_name")
+    val versionName: String? = null,
+
+    /**
+     * What changed, in the words of whoever cut the release.
+     *
+     * **An update the parent has to press a button for is an update they are
+     * entitled to a reason for.** drawbridge cannot install its own updates —
+     * Play Protect refuses, see `UpdateActivity` — so every version that ever
+     * reaches a phone in the field does so because somebody read a screen and
+     * chose to act on it, having been told only that a higher number exists.
+     * That is a bad bargain, and it is the reason this field exists.
+     *
+     * Plain text, no markup: it goes into a `TextView`. A short paragraph or a
+     * few lines, written for a parent rather than for this repository — the
+     * commit log is where the other audience is served.
+     *
+     * Null means the screen says nothing extra, which is what every document
+     * written before this field did.
+     */
+    val notes: String? = null,
+
+    /** See [Profile.nameByLanguage]. */
+    @SerialName("notes_i18n")
+    val notesByLanguage: Map<String, String> = emptyMap(),
+) {
+    /** The dotted version if the document carries one, else `build <code>`. */
+    fun displayVersion(): String = versionName ?: "build $versionCode"
+
+    /** The release notes for [language], or null when the document has none. */
+    fun displayNotes(language: String): String? =
+        notes?.let { pick(it, notesByLanguage, language) }?.takeIf { it.isNotBlank() }
+}
+
+/**
+ * A message from this project to whoever is holding the phone.
+ *
+ * **Rare by construction, and it has to stay rare.** A card that is usually
+ * there is a card nobody reads, and the one time it matters it will be the one
+ * time it is ignored. The bar is: something a parent has to *know* and cannot
+ * find out any other way — a fix they have to take action for, a setting that
+ * has changed under them, a problem being worked on that explains what their
+ * phone is doing. Not release chatter, which belongs in [AppUpdate.notes]; not
+ * anything about the web, which belongs in the blocklists; and not marketing,
+ * which belongs nowhere near a device somebody's child depends on.
+ *
+ * **[id] is what makes dismissal mean anything.** The card is dismissible, and
+ * the dismissal is remembered against this string, so re-sending the same notice
+ * does not nag and sending a *different* one gets through. Change it whenever
+ * the words change enough that somebody who dismissed the old one should see the
+ * new one; keep it when fixing a typo. Dates make good ids — `2026-09-calls` —
+ * because they sort and they say when.
+ *
+ * **There is no severity, no icon and no colour, on purpose.** Every one of
+ * those is a lever for making a message look more urgent than it is, and the
+ * only honest way to keep the channel trustworthy is to have nothing to turn up.
+ * One card, one shape, used almost never.
+ */
+@Serializable
+data class PolicyNotice(
+    /** Stable identity for dismissal. See the class note. */
+    val id: String,
+
+    /** One line. It is the only part somebody skimming will read. */
+    val title: String,
+
+    /** A short paragraph. Plain text; it goes into a `TextView`. */
+    val body: String,
+
+    /** See [Profile.nameByLanguage]. */
+    @SerialName("title_i18n")
+    val titleByLanguage: Map<String, String> = emptyMap(),
+
+    /** See [Profile.nameByLanguage]. */
+    @SerialName("body_i18n")
+    val bodyByLanguage: Map<String, String> = emptyMap(),
+
+    /**
+     * Somewhere to read more, or null.
+     *
+     * Opened with `ACTION_VIEW`, so on a managed phone it lands in herald and is
+     * filtered like anything else — which also means a link to a host the
+     * blocklists refuse shows a block page. Keep it on this project's own site,
+     * and expect it to be unreachable during a curfew: the button is only drawn
+     * when something on the phone can open it, and offline mode leaves the page
+     * failing to load like any other.
+     */
+    val url: String? = null,
+) {
+    fun displayTitle(language: String): String = pick(title, titleByLanguage, language)
+
+    fun displayBody(language: String): String = pick(body, bodyByLanguage, language)
+
+    /**
+     * Whether this notice is worth drawing at all.
+     *
+     * A document with a blank title or body is a mistake rather than a message,
+     * and drawing an empty card would be worse than drawing nothing. Separated
+     * out so the rule is one place and testable without a device.
+     */
+    fun isDrawable(): Boolean =
+        id.isNotBlank() && title.isNotBlank() && body.isNotBlank()
+}

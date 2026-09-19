@@ -113,6 +113,17 @@
             android:label="@string/update_title" />
 
         <!--
+            The notice archive. Not exported, like everything else here: it is
+            reached from the overflow menu on both screens and from the
+            notification's own PendingIntent, which carries the app's identity
+            rather than needing the activity to be open to the world.
+        -->
+        <activity
+            android:name=".ui.NoticesActivity"
+            android:exported="false"
+            android:label="@string/notices_title" />
+
+        <!--
             Below API 33 AppCompat stores the per-app locale itself, but only if
             this metadata says so. Without it the language picker works until the
             process dies and then silently forgets.
