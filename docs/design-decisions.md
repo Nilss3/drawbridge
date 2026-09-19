@@ -653,6 +653,23 @@ A refused name would fail the same way on both networks and would not stop the
 phone ringing; an app that checks `ConnectivityManager` for a VPN and takes its
 calling feature away does exactly this. It is error 21 again with better manners.
 
+**The door fixed it: the beta phone took policy 118 on 2026-09-20 and calls
+work.** That settles that drawbridge was the cause, and it is where the fix
+stops being interesting — because **it does not tell the two hypotheses apart,
+and it is worth being explicit about why.** An excluded app is outside the VPN
+entirely, so it does not merely stop seeing a tunnel: its lookups go to the
+underlying network's resolver instead of to the one this tunnel hands out, which
+takes it out of reach of the blocklists *and* of `all.dns.mullvad.net` at the
+same stroke. Both explanations therefore predict exactly what was observed.
+
+**The 5G asymmetry remains the only evidence that chooses**, and it is
+circumstantial: a refused name cannot explain a phone that will not *ring*. That
+is enough to act on and not enough to call measured. The experiment that would
+discriminate is still unrun and is written down in the handoff — put WhatsApp
+back in the tunnel, move the upstream to `family.dns.mullvad.net`, release the
+Meta hosts a call needs — and it is only worth running if somebody wants the
+narrower fix back.
+
 **What is given up is smaller than Android Auto's, for once.** The `whatsapp`
 option already releases `whatsapp.com`, `whatsapp.net` and `wa.me` when it is on
 and hides the app when it is off, so the lookups leaving the filter are lookups

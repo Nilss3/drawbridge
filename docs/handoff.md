@@ -697,7 +697,8 @@ is on it is genuinely on it.
 
 | | |
 |---|---|
-| **Open** | **14** — filtering tethered traffic, measured as unfiltered on 2026-09-12; **15** — WhatsApp calls, fixed on the beta as policy 118 and unconfirmed on a phone |
+| **Open** | **14** — filtering tethered traffic, measured as unfiltered on 2026-09-12 |
+| **Closed as fixed** | **15** — WhatsApp calls, policy 118, confirmed on the beta phone 2026-09-20 |
 | **Closed as shipped** | 4, 6, 10 — built, and the entries had gone stale |
 | **Closed as answered** | 2 and 2a — FRP was tested and does not hold |
 | **Closed as won't do** | 5 (F-Droid) |
@@ -1315,13 +1316,30 @@ before locking, precisely so a phone cannot be sealed pointing at a resolver
 nobody can change; and `block_encrypted_dns` blackholes known DoT endpoints, so
 the chosen resolver needs an exception carved for it.
 
-### 15. WhatsApp calls fail — excluded from the tunnel in policy 118, untested on a phone
+### 15. ~~WhatsApp calls fail~~ — fixed by policy 118, confirmed 2026-09-20
 
 **Reported by a user ([issue 1](https://github.com/Nilss3/drawbridge/issues/1))
 and reproduced by the owner on the beta phone, build 50, on 2026-09-19.** Chats
 work. Placing a call fails with WhatsApp saying, roughly, *the Wi-Fi network does
 not support calls* — which is WhatsApp reporting that it could not establish the
 **media path**, not that a lookup failed.
+
+**Fixed on 2026-09-20 by taking WhatsApp out of the tunnel.** The beta phone
+polled policy 118 and calls work. Kept in full below rather than deleted, because
+two things in it are load bearing — the Mullvad tier table, which is the only
+written record of what the upstream refuses and is needed by anything that ever
+moves off `all`, and the reasoning below, which is weaker than a closed item
+usually implies.
+
+**Closed as fixed, not as explained, and the distinction is real.** Excluding the
+app does not merely hide the VPN from it: an excluded app is outside the tunnel
+altogether, so its lookups go to the underlying network's resolver rather than to
+the one this tunnel hands out — out of reach of the blocklists *and* of
+`all.dns.mullvad.net` at once. Both hypotheses predict calls coming back, so the
+fix working discriminates nothing. **What chooses is the 5G asymmetry alone** —
+a refused name cannot explain a phone that will not *ring* — and that is
+circumstantial. Anyone who later wants the narrower fix should run the experiment
+at the bottom of this entry rather than treat the cause as settled.
 
 **What drawbridge can and cannot do here.** `establishTunnel` routes only the
 fake resolver addresses and the blackholed DoH addresses into the tunnel, so the
@@ -1356,22 +1374,23 @@ the beta phone is the one the failure was watched on and a phone that never
 showed the bug cannot show it fixed. `dev` is still on 116 published and needs a
 number above 118 when it catches up.
 
-**This is still the decisive test as well as the fix, and it has not been run.**
-Poll the Nothing Phone with ⋮ → *Check for policy updates*, confirm Diagnostics
-shows 118 and lists the three excluded packages, then call. Calls work and it was
-drawbridge and this is the end of it; calls still fail and it never was, this
-entry reopens, and the DNS hypothesis below comes back.
+**The test was run on the Nothing Phone on 2026-09-20, and it passed.** The phone
+polled 118 and WhatsApp calls work. That answers *was it drawbridge at all* —
+yes — and nothing beyond it.
 
-**Offline mode does not open.** An excluded app is outside the *tunnel*, which is
-a routing decision, not outside the *lockdown*, which is a netd rule over every
-UID on the device with `setAlwaysOnVpnPackage`'s package allowlist as its only
-documented exit — and this project passes that allowlist empty, including for
-drawbridge itself. Under lockdown an excluded app has no route through the VPN
-and no leave to go round it, which is why no VPN client offers split tunnelling
-and *block connections without VPN* at the same time. **Mechanism rather than
-observation, and one minute to settle:** put the phone in offline mode, try a
-WhatsApp call, and if it connects this entry is wrong and the offline mode has a
-hole in it that matters far more than the calls do.
+**Offline mode does not open — and this is the one thing here still unmeasured.**
+An excluded app is outside the *tunnel*, which is a routing decision, not outside
+the *lockdown*, which is a netd rule over every UID on the device with
+`setAlwaysOnVpnPackage`'s package allowlist as its only documented exit — and
+this project passes that allowlist empty, including for drawbridge itself. Under
+lockdown an excluded app has no route through the VPN and no leave to go round
+it, which is why no VPN client offers split tunnelling and *block connections
+without VPN* at the same time. **Mechanism rather than observation, and one
+minute to settle:** put the phone in offline mode, try a WhatsApp call, and if it
+connects this entry is wrong and the offline mode has a hole in it that matters
+far more than the calls ever did. **Do that before the next tester asks about
+curfews**, because the failure is silent: a phone that leaks WhatsApp during an
+offline hour looks exactly like one that does not.
 
 #### What was measured on 2026-09-19, so it need not be redone
 

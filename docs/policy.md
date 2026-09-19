@@ -149,17 +149,18 @@ is the plain Wi-Fi or mobile one, so the phone answers "no VPN" when Android
 Auto asks. The app itself is a projection surface: the apps it shows keep their
 own network and stay filtered.
 
-**WhatsApp is the second entry, from policy 118 on the beta**, and it is the same
-error wearing different words. Chats and chat images work; a call rings and then
-fails, with WhatsApp saying the network does not support calls. That sentence is
-about the *media path*, not about a lookup — and the media never enters the
-tunnel in the first place, since only the fake resolver addresses are routed
-there. What settled it is the second network: on 5G a call cannot be placed or
-received **at all**, which is not something a per-network Wi-Fi quirk explains
-and is exactly the Android Auto shape, an app declining to run behind a VPN.
-`com.whatsapp.w4b` is WhatsApp Business, the same app under a second id, already
-named by the same option; it would hit the same wall and would otherwise need
-its own policy round-trip.
+**WhatsApp is the second entry, from policy 118 on the beta**, and it was the
+same error wearing different words. Chats and chat images worked; a call rang and
+then failed, with WhatsApp saying the network does not support calls. That
+sentence is about the *media path*, not about a lookup — and the media never
+enters the tunnel in the first place, since only the fake resolver addresses are
+routed there. What settled it is the second network: on 5G a call could not be
+placed or received **at all**, which is not something a per-network Wi-Fi quirk
+explains and is exactly the Android Auto shape, an app declining to run behind a
+VPN. **Excluding the app fixed it, confirmed on the beta phone on 2026-09-20**,
+so the diagnosis is measured rather than argued. `com.whatsapp.w4b` is WhatsApp
+Business, the same app under a second id, already named by the same option; it
+would hit the same wall and would otherwise need its own policy round-trip.
 
 The cost is WhatsApp's own lookups going unchecked, and it is small: the
 `whatsapp` option already releases `whatsapp.com`, `whatsapp.net` and `wa.me`
