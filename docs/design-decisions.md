@@ -689,9 +689,11 @@ VPN and is not on that list, so an excluded app under lockdown has neither a
 route through the tunnel nor leave to go round it. This is the reason no VPN
 client lets you combine split tunnelling with *block connections without VPN*.
 
-It is mechanism rather than observation, like the MMS claim above and for the
-same reason, and it is cheaper to settle: put the phone in offline mode and try a
-WhatsApp call.
+**Measured on 2026-09-20**, unlike the MMS claim above: in offline mode on the
+beta phone, WhatsApp is dead, calls included. That is the second thing this
+project has confirmed about the lockdown by asking a handset, and it is the one
+that mattered — the other way round, every name on `excluded_packages` would have
+been a hole in every curfew.
 
 **And it is policy rather than a constant because drawbridge cannot update
 itself.** A hardcoded list would mean that the next app found incompatible with

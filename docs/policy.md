@@ -175,10 +175,16 @@ is `setAlwaysOnVpnPackage`'s package allowlist — which this project passes emp
 An excluded app is outside the tunnel, not outside the lockdown: with lockdown on
 it has no route through the VPN and no permission to go round it, so it has no
 network at all. That is why split tunnelling and *block connections without VPN*
-are mutually exclusive in every VPN client that offers both. **Mechanism rather
-than observation, and one minute to settle:** put the phone in offline mode and
-try a WhatsApp call. If it connects, this paragraph is wrong and the offline mode
-has a hole in it that matters far more than the calls do.
+are mutually exclusive in every VPN client that offers both. **Measured on the
+beta phone on 2026-09-20**, not merely reasoned: in offline mode WhatsApp is
+dead, calls included.
+
+**But an excluded app only stays excluded while the tunnel that excluded it is
+up.** The list is read at `establish()`, a package that is absent or hidden then
+is silently skipped, and nothing rebuilds the tunnel when one later appears. A
+phone where WhatsApp is installed *after* the filter started is therefore not
+covered by its own policy until something restarts the service. See the handoff,
+item 16.
 
 **This is policy rather than a constant on purpose.** drawbridge cannot update
 itself on a locked phone, so an app that turns out to be incompatible with an

@@ -339,6 +339,15 @@ class DnsFilterService : VpnService() {
      * A missing package is the ordinary case, not an error: the list is written
      * once for every phone, and most phones will not have all of it.
      *
+     * **But the decision is made once and never revisited, which is a bug.** A
+     * package installed, hidden or unhidden after this ran keeps whatever answer
+     * it got here until the tunnel is next established — service start, or a
+     * change to the policy's `dns` block. An option switch cannot do it:
+     * `Policy.withOptions` never touches `dns`, so it cannot pass the
+     * `distinctUntilChanged` in [watchForDnsPolicyChanges] even in principle.
+     * The visible symptom is a phone that installs WhatsApp after provisioning
+     * and still cannot call. See the handoff, item 16.
+     *
      * **This does not exempt anything from the offline mode or a curfew.** Those
      * are the always-on VPN's lockdown flag, a netd rule over every UID on the
      * device whose only documented exit is the package allowlist passed to
@@ -348,8 +357,9 @@ class DnsFilterService : VpnService() {
      * is not outside the lockdown: with lockdown on, a disallowed app has no
      * route through the VPN and no leave to go round it, which is why no VPN
      * client offers split tunnelling and *block connections without VPN*
-     * together. Anyone adding a lockdown allowlist here should know they are
-     * turning this comment into a lie.
+     * together. **Measured on a handset on 2026-09-20**, not merely reasoned.
+     * Anyone adding a lockdown allowlist here should know they are turning that
+     * measurement into a lie.
      */
     private fun excludePackagesTheTunnelBreaks(builder: Builder, packages: List<String>) {
         for (excluded in packages) {
