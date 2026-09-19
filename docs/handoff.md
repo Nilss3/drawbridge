@@ -23,7 +23,7 @@ which is kept whole on purpose.
 |---|---|---|
 | drawbridge | **0.2.25, build 50** | **0.2.25, build 50** |
 | herald | **0.1.19** | **0.1.19** |
-| policy | **117** | **116** |
+| policy | **118** | **116** |
 | install page | <https://drawbridge-project.pages.dev/install/> | <https://dev.drawbridge-project.pages.dev/install/> |
 | phone | the owner's Nothing Phone (A059) | the Moto G15 |
 
@@ -42,7 +42,18 @@ has kept running: 103 on main, 104 to 107 on dev across herald 0.1.18, the block
 page's translations and permanent mode, and **108 on main**, which is the beta
 taking all of that at once. Then 109 and 111 on main, 110 and 112 to 114 on dev,
 **115 on main** for Vanadium, and **116 on dev**, a version bump and nothing
-else that put this channel back above the beta as 98 once did.
+else that put this channel back above the beta as 98 once did. Then **117 on
+main**, the beta catching up with three dpc releases at once, and **118 on
+main**, which takes WhatsApp out of the tunnel.
+
+**117 was very nearly taken twice, and that is the counter's failure mode.** The
+WhatsApp fix was first written on `dev` against a handoff table that still said
+main was on 115, so it numbered itself 117 — the number main had already used
+five days earlier. Nothing was published, so nothing broke, but a dev document
+numbered 117 would have been refused forever by any phone that had held main's,
+and the symptom is a policy that reports success and changes nothing. **Read
+`dist/policy.json` on the other branch, not this table**, before choosing a
+number: the table is written by hand and goes stale exactly when it matters.
 
 **The beta's herald is pinned by name rather than through
 `/releases/latest/download/`, as of policy 96 — at `v0.2.23` since policy 111, at `v0.2.22` from policy 108,
@@ -686,7 +697,7 @@ is on it is genuinely on it.
 
 | | |
 |---|---|
-| **Open** | **14** — filtering tethered traffic, measured as unfiltered on 2026-09-12 |
+| **Open** | **14** — filtering tethered traffic, measured as unfiltered on 2026-09-12; **15** — WhatsApp calls, fixed on the beta as policy 118 and unconfirmed on a phone |
 | **Closed as shipped** | 4, 6, 10 — built, and the entries had gone stale |
 | **Closed as answered** | 2 and 2a — FRP was tested and does not hold |
 | **Closed as won't do** | 5 (F-Droid) |
@@ -1303,6 +1314,146 @@ decision rather than a patch: `normalisePrivateDns` moves *off* hostname mode
 before locking, precisely so a phone cannot be sealed pointing at a resolver
 nobody can change; and `block_encrypted_dns` blackholes known DoT endpoints, so
 the chosen resolver needs an exception carved for it.
+
+### 15. WhatsApp calls fail — excluded from the tunnel in policy 118, untested on a phone
+
+**Reported by a user ([issue 1](https://github.com/Nilss3/drawbridge/issues/1))
+and reproduced by the owner on the beta phone, build 50, on 2026-09-19.** Chats
+work. Placing a call fails with WhatsApp saying, roughly, *the Wi-Fi network does
+not support calls* — which is WhatsApp reporting that it could not establish the
+**media path**, not that a lookup failed.
+
+**What drawbridge can and cannot do here.** `establishTunnel` routes only the
+fake resolver addresses and the blackholed DoH addresses into the tunnel, so the
+call's own UDP media never enters it and drawbridge cannot block it. If
+drawbridge is the cause it is in one of exactly two ways: it refused a *name*, or
+the app declined to call because a VPN is present.
+
+#### The second network answered it
+
+**On 5G with Wi-Fi off, WhatsApp will not call at all, and cannot receive calls
+either.** Not stuck at *connecting* and then dropping, as on Wi-Fi — absent.
+
+**It is the VPN's presence, not a refused name.** A blocked name fails
+identically on every transport and does not stop a phone *ringing*; losing the
+feature outright on one network and having it half-work on another is an app
+reading the network's state and deciding against itself. That is the Android Auto
+shape — *"error 21, are you using a VPN?"* — which this project has already
+measured once, and it is the shape the error text fitted from the start, blaming
+the network rather than the connection.
+
+**So `com.whatsapp` and `com.whatsapp.w4b` are out of the tunnel, in policy 118.**
+`com.google.android.projection.gearhead` is repeated beside them because setting
+`excluded_packages` replaces its default rather than adding to it, and dropping
+it would take Android Auto's exclusion away — a live invariant of the document
+now rather than a note in a test list. The reasoning for the door, and the four
+rules that govern it, are in
+[policy](policy.md#an-app-outside-the-tunnel-is-an-app-outside-the-filter) and
+[design-decisions](design-decisions.md#the-filter-has-a-door-in-it-and-android-auto-was-what-it-was-for).
+
+**It went to the beta first, deliberately and against the usual order**, because
+the beta phone is the one the failure was watched on and a phone that never
+showed the bug cannot show it fixed. `dev` is still on 116 published and needs a
+number above 118 when it catches up.
+
+**This is still the decisive test as well as the fix, and it has not been run.**
+Poll the Nothing Phone with ⋮ → *Check for policy updates*, confirm Diagnostics
+shows 118 and lists the three excluded packages, then call. Calls work and it was
+drawbridge and this is the end of it; calls still fail and it never was, this
+entry reopens, and the DNS hypothesis below comes back.
+
+**Offline mode does not open.** An excluded app is outside the *tunnel*, which is
+a routing decision, not outside the *lockdown*, which is a netd rule over every
+UID on the device with `setAlwaysOnVpnPackage`'s package allowlist as its only
+documented exit — and this project passes that allowlist empty, including for
+drawbridge itself. Under lockdown an excluded app has no route through the VPN
+and no leave to go round it, which is why no VPN client offers split tunnelling
+and *block connections without VPN* at the same time. **Mechanism rather than
+observation, and one minute to settle:** put the phone in offline mode, try a
+WhatsApp call, and if it connects this entry is wrong and the offline mode has a
+hole in it that matters far more than the calls do.
+
+#### What was measured on 2026-09-19, so it need not be redone
+
+From the workstation, querying the resolvers directly. Note Mullvad serves DoH
+over HTTP/2 only: Python's `urllib` fails with `BadStatusLine`, so the probes
+went through `curl --http2` with a hand-built DNS query.
+
+- **Every `whatsapp.com`, `whatsapp.net` and `wa.me` name is released** by the
+  `whatsapp` option and passes the upstream. `dit.whatsapp.net`, WhatsApp's
+  telemetry host, is refused by both upstreams; `crashlogs.whatsapp.net` is on
+  the oisd list but the option releases it.
+- **Meta's shared names are refused twice over**: `facebook.com`,
+  `graph.facebook.com`, `edge-mqtt.facebook.com`, `fbcdn.net`,
+  `static.xx.fbcdn.net`, `scontent.xx.fbcdn.net`, `fbsbx.com`,
+  `lookaside.fbsbx.com`, `meta.com`. Once by this project's own `social.txt`,
+  which the `whatsapp` option does not release, and once by the upstream
+  `all.dns.mullvad.net`. **An allowlist entry cannot override the second**: a
+  switch only stops *drawbridge* refusing a name, and Mullvad still answers
+  NXDOMAIN.
+- **The Mullvad tiers**, measured against a social, an adult, a gambling and an
+  ad domain: `dns` blocks nothing, `adblock` and `base` block ads, `extended`
+  blocks ads and social, `family` blocks ads, adult and gambling but **not
+  social**, `all` blocks everything. So **`family` is `all` minus social media**.
+- **The upstream only overrides drawbridge on Meta.** YouTube, Telegram, Netflix
+  and Disney+ all pass `all`, so the other switches are unaffected.
+- `all` has been the upstream since the first commit, 42462f7 on 2026-07-28. It
+  predates the option switches and was never weighed against them.
+
+#### What was falsified, and it was the leading theory
+
+`blocklist-notes.md` records WhatsApp using `whatsapp-chatd-edge-*.facebook.com`
+and `whatsapp-cdn-*.fbcdn.net`, "the same CDN chat images come from". That made a
+clean story: the Meta edge is blocked twice, so calls fail while chats work.
+**The owner checked, and chat images work fine on the beta phone.** So either
+chat media comes from `whatsapp.net` after all, or those hosts are reached
+without a lookup drawbridge sees. Re-read that note before trusting it again.
+
+#### What the exclusion costs, and it is less than it looks
+
+**The rule on that list is that it must never hold a browser or anything
+rendering arbitrary web content** — and the owner checked on 2026-09-19 that
+**WhatsApp has no in-app browser**: links open in the chosen browser, which stays
+filtered. What is given up is WhatsApp's own lookups, which is little, because
+the option already releases its domains when it is on and hides the app when it
+is off, and Channels was never DNS-separable anyway. So the names now leaving the
+filter are names the filter was passing.
+
+`com.whatsapp.w4b` is WhatsApp Business: the same app under a second id, already
+named by the `whatsapp` option's `exempt_packages`, and it would hit the same
+wall on a phone that has it. Rule 3 — *the narrowest package that fixes it* — is
+about not reaching for `com.google.android.gms`; a second id of the same app is
+not that kind of widening.
+
+#### If the test fails, the DNS hypothesis comes back, and the fix is awkward
+
+**A call-only name is refused.** Weakened by the images result and by the 5G
+result, not dead. If exclusion does not fix the calls, this is what is left, and
+it costs more than the door did.
+
+`DomainSet.matches` is suffix matching on label boundaries, so
+`whatsapp-cdn-*.fbcdn.net` cannot be expressed. Either enumerate exact hosts,
+which churn, or release `fbcdn.net` wholesale, which also opens Facebook's and
+Instagram's media CDN — their main domains stay blocked, so neither app works,
+but it is a real widening. **And either way the upstream has to move from `all`
+to `family`**, or Mullvad refuses the names whatever the document says. Before
+that move, check `social.txt` covers everything Mullvad's social list does, or
+switching will open something.
+
+The test that tells the two apart is still available and is only worth running if
+the exclusion works and somebody wants the narrower fix: put WhatsApp back in the
+tunnel, move the upstream to `family.dns.mullvad.net`, and release the Meta hosts
+a call needs. Calls work, it was DNS after all; calls fail, it was the VPN's
+presence and the door is the right fix.
+
+#### The thing that would have answered this in a minute
+
+**drawbridge never logs the names it refuses.** `DnsFilterService` builds the
+blocked reply silently, so there is no way, on a phone or over a cable, to see
+what a failing app asked for. A ring buffer of the last few dozen blocked names
+in Diagnostics would have settled this at once, and would settle the next one:
+Android Auto, TikTok Lite, AntennaPod and this are all the same question. Not
+built, and worth building before the next report.
 
 ### 12. ~~herald mono: take out always-on reader view~~ — done 2026-08-19
 

@@ -1,7 +1,7 @@
 {
-  "version": 117,
-  "issued_at": "2026-09-12T09:30:00Z",
-  "comment": "BETA. Pins drawbridge 0.2.25 build 50, the beta catching up with three dpc releases at once: apps switched off before the lock stay off, deactivating moved out of the overflow menu onto the trial-mode card with a warning that says what it really does, the card sits under the welcome, and the browser row is four icons and a +. herald is unchanged at 0.1.19 arm64 at v0.2.23, and Vanadium stays allowed. 369 blocked packages.",
+  "version": 118,
+  "issued_at": "2026-09-19T22:55:00Z",
+  "comment": "BETA. WhatsApp leaves the tunnel: calls failed on Wi-Fi and failed harder on 5G, where they could not be placed or received at all, which is the shape of an app declining to run behind a VPN rather than of a refused name. excluded_packages now names com.whatsapp and com.whatsapp.w4b beside Android Auto, and naming the field at all means Android Auto has to be repeated or it would be dropped. Offline mode is unaffected: an excluded app is outside the tunnel, not outside the lockdown. Everything else is 117's: drawbridge 0.2.25 build 50, herald 0.1.19 arm64 at v0.2.23, Vanadium allowed. 369 blocked packages.",
   "dns": {
     "upstreams": [
       "94.140.14.15",
@@ -11,7 +11,12 @@
     "strip_https_records": true,
     "block_encrypted_dns": true,
     "blocked_response_ttl_seconds": 60,
-    "encrypted_upstream": "tls://all.dns.mullvad.net"
+    "encrypted_upstream": "tls://all.dns.mullvad.net",
+    "excluded_packages": [
+      "com.google.android.projection.gearhead",
+      "com.whatsapp",
+      "com.whatsapp.w4b"
+    ]
   },
   "blocklists": [
     {
