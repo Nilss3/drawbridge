@@ -338,6 +338,18 @@ class DnsFilterService : VpnService() {
      *
      * A missing package is the ordinary case, not an error: the list is written
      * once for every phone, and most phones will not have all of it.
+     *
+     * **This does not exempt anything from the offline mode or a curfew.** Those
+     * are the always-on VPN's lockdown flag, a netd rule over every UID on the
+     * device whose only documented exit is the package allowlist passed to
+     * `setAlwaysOnVpnPackage` — which
+     * [app.drawbridge.dpc.admin.DeviceOwnerManager.setNetworkLockdown] leaves
+     * empty, deliberately, including for drawbridge itself. Outside the tunnel
+     * is not outside the lockdown: with lockdown on, a disallowed app has no
+     * route through the VPN and no leave to go round it, which is why no VPN
+     * client offers split tunnelling and *block connections without VPN*
+     * together. Anyone adding a lockdown allowlist here should know they are
+     * turning this comment into a lie.
      */
     private fun excludePackagesTheTunnelBreaks(builder: Builder, packages: List<String>) {
         for (excluded in packages) {

@@ -606,7 +606,7 @@ reads that to decide whether a required app needs fetching. Without
 the allowed set would have downloaded it again to replace the copy already on the
 disk, which is the bug this whole change exists to stop.
 
-## The filter has a door in it, and Android Auto is what it is for
+## The filter has a door in it, and Android Auto was what it was for
 
 `dns.excluded_packages` leaves named apps outside the tunnel. Every name in it
 is unfiltered — the app resolves through the system resolver and nothing checks
@@ -637,6 +637,61 @@ with their own network, and they stay filtered. It renders no arbitrary web
 content, so nothing a child can steer goes through the door. That reasoning does
 not survive being applied to a second app casually, which is why `docs/policy.md`
 carries four rules for adding one and why "never a browser" is the first.
+
+**The second app came anyway, and it took the same four rules to let it in.**
+WhatsApp calls fail while chats and chat images work — reported by a user, then
+reproduced by the owner on the beta phone. The error blames the network for not
+supporting calls, which is WhatsApp saying the *media path* never came up, and
+the media path is not something this filter can touch: only the fake resolver
+addresses are routed into the tunnel, so a call's UDP goes straight out as it
+always did. Two explanations survived that: a call-only name being refused, or
+the app declining to call behind a VPN.
+
+**The second network is what chose between them.** On 5G, with Wi-Fi off, a call
+cannot be placed *or received at all* — not stuck at "connecting", simply absent.
+A refused name would fail the same way on both networks and would not stop the
+phone ringing; an app that checks `ConnectivityManager` for a VPN and takes its
+calling feature away does exactly this. It is error 21 again with better manners.
+
+**The door fixed it: the beta phone took policy 118 on 2026-09-20 and calls
+work.** That settles that drawbridge was the cause, and it is where the fix
+stops being interesting — because **it does not tell the two hypotheses apart,
+and it is worth being explicit about why.** An excluded app is outside the VPN
+entirely, so it does not merely stop seeing a tunnel: its lookups go to the
+underlying network's resolver instead of to the one this tunnel hands out, which
+takes it out of reach of the blocklists *and* of `all.dns.mullvad.net` at the
+same stroke. Both explanations therefore predict exactly what was observed.
+
+**The 5G asymmetry remains the only evidence that chooses**, and it is
+circumstantial: a refused name cannot explain a phone that will not *ring*. That
+is enough to act on and not enough to call measured. The experiment that would
+discriminate is still unrun and is written down in the handoff — put WhatsApp
+back in the tunnel, move the upstream to `family.dns.mullvad.net`, release the
+Meta hosts a call needs — and it is only worth running if somebody wants the
+narrower fix back.
+
+**What is given up is smaller than Android Auto's, for once.** The `whatsapp`
+option already releases `whatsapp.com`, `whatsapp.net` and `wa.me` when it is on
+and hides the app when it is off, so the lookups leaving the filter are lookups
+the filter was passing anyway. Rule 1 holds because the owner checked on
+2026-09-19 that **WhatsApp has no in-app browser**: a link opens the chosen
+browser, which is still behind the tunnel. Channels was never separable by DNS
+and is not made worse by this.
+
+**And the door does not open during a curfew.** That was the one thing worth
+being careful about, because "excluded from the filter" and "excluded from the
+offline mode" would be the same field if Android worked the way it looks like it
+works. It does not. The offline mode is `setAlwaysOnVpnPackage`'s lockdown flag,
+which blocks every UID on the device at netd unless it is in that call's own
+package allowlist — and this project passes that allowlist empty, on purpose,
+including for itself. `addDisallowedApplication` is a routing decision inside the
+VPN and is not on that list, so an excluded app under lockdown has neither a
+route through the tunnel nor leave to go round it. This is the reason no VPN
+client lets you combine split tunnelling with *block connections without VPN*.
+
+It is mechanism rather than observation, like the MMS claim above and for the
+same reason, and it is cheaper to settle: put the phone in offline mode and try a
+WhatsApp call.
 
 **And it is policy rather than a constant because drawbridge cannot update
 itself.** A hardcoded list would mean that the next app found incompatible with

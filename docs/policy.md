@@ -22,7 +22,11 @@ hold, which is what makes replaying an old, permissive policy fail.
     "enforce_safe_search": true,
     "strip_https_records": true,
     "block_encrypted_dns": true,
-    "excluded_packages": ["com.google.android.projection.gearhead"]
+    "excluded_packages": [
+      "com.google.android.projection.gearhead",
+      "com.whatsapp",
+      "com.whatsapp.w4b"
+    ]
   },
   "blocklists": [
     { "id": "adult", "url": "https://...", "format": "hosts", "category": "adult" }
@@ -43,7 +47,7 @@ hold, which is what makes replaying an old, permissive policy fail.
 |---|---|
 | `dns.encrypted_upstream` | Where queries actually go, over DNS-over-TLS. Encrypts the hop, so the local network cannot read the lookups or forge answers. Mullvad's `all` profile also blocks adult, gambling, social, ads and trackers at their end. |
 | `dns.upstreams` | Plain-DNS fallback. Bootstraps the encrypted upstream's hostname and takes over if it is unreachable — keep it a *filtering* resolver so the failure mode is a narrower filter, not an open one. |
-| `dns.excluded_packages` | Apps left outside the tunnel, **and therefore outside the filter**. For apps an always-on VPN stops working; see below before adding one. Defaults to Android Auto. |
+| `dns.excluded_packages` | Apps left outside the tunnel, **and therefore outside the filter**. For apps an always-on VPN stops working; see below before adding one. Defaults to Android Auto alone, so **a document that sets the field has to repeat it** or the default is dropped. |
 | `blocklists` | Domain lists downloaded and compiled on device. `format` is `hosts` or `domains`; Adblock-style `\|\|domain^` lines are tolerated in either. |
 | `blocked_domains` | Extra domains on top of the lists. Suffix matching: `example.com` covers `www.example.com`. |
 | `allowed_domains` | Wins over everything else, in the DNS filter and in herald alike. Use it to carve an exception out of a bulk list — and see the note below, because it is also what keeps the filter able to update itself. |
@@ -144,6 +148,37 @@ calls split tunnelling, and it works because a disallowed app's default network
 is the plain Wi-Fi or mobile one, so the phone answers "no VPN" when Android
 Auto asks. The app itself is a projection surface: the apps it shows keep their
 own network and stay filtered.
+
+**WhatsApp is the second entry, from policy 118 on the beta**, and it was the
+same error wearing different words. Chats and chat images worked; a call rang and
+then failed, with WhatsApp saying the network does not support calls. That
+sentence is about the *media path*, not about a lookup — and the media never
+enters the tunnel in the first place, since only the fake resolver addresses are
+routed there. What settled it is the second network: on 5G a call could not be
+placed or received **at all**, which is not something a per-network Wi-Fi quirk
+explains and is exactly the Android Auto shape, an app declining to run behind a
+VPN. **Excluding the app fixed it, confirmed on the beta phone on 2026-09-20**,
+so the diagnosis is measured rather than argued. `com.whatsapp.w4b` is WhatsApp
+Business, the same app under a second id, already named by the same option; it
+would hit the same wall and would otherwise need its own policy round-trip.
+
+The cost is WhatsApp's own lookups going unchecked, and it is small: the
+`whatsapp` option already releases `whatsapp.com`, `whatsapp.net` and `wa.me`
+when it is on, and hides the app when it is off. Rule 1 survives because **the
+app has no in-app browser** — links open in the chosen browser, which stays
+filtered.
+
+**Nothing here weakens the offline mode or a curfew.** Those are the always-on
+VPN's *lockdown* flag, which is a netd rule about every UID on the device rather
+than a routing decision inside the tunnel, and the only documented way out of it
+is `setAlwaysOnVpnPackage`'s package allowlist — which this project passes empty.
+An excluded app is outside the tunnel, not outside the lockdown: with lockdown on
+it has no route through the VPN and no permission to go round it, so it has no
+network at all. That is why split tunnelling and *block connections without VPN*
+are mutually exclusive in every VPN client that offers both. **Mechanism rather
+than observation, and one minute to settle:** put the phone in offline mode and
+try a WhatsApp call. If it connects, this paragraph is wrong and the offline mode
+has a hole in it that matters far more than the calls do.
 
 **This is policy rather than a constant on purpose.** drawbridge cannot update
 itself on a locked phone, so an app that turns out to be incompatible with an

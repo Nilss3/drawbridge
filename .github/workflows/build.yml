@@ -17,7 +17,12 @@ jobs:
           distribution: temurin
           java-version: '21'
 
-      - uses: android-actions/setup-android@v3
+      # v3 defaults `packages` to "tools platform-tools", and Google removed the
+      # obsolete `tools` package from the SDK repository in September 2026, so
+      # every run since has died in setup with "Failed to find package 'tools'"
+      # before reaching a line of this project's code. v4.0.2 exists for exactly
+      # this and drops `tools` from the default. Nothing here asked for it.
+      - uses: android-actions/setup-android@v4
 
       - name: Verify the published policy is signed by a trusted key
         run: python3 tools/policytool.py verify

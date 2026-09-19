@@ -1,7 +1,7 @@
 {
-  "version": 116,
-  "issued_at": "2026-09-11T11:35:00Z",
-  "comment": "DEV CHANNEL ONLY. A version bump and nothing else, as policy 98 was: the beta took 115 for Vanadium, and this puts dev back above it, so a phone that has held the beta's document accepts this channel's again. Content is 114's: drawbridge 0.2.25 build 50, Vanadium allowed, herald 0.1.19 arm64 at v0.2.8-dev.11. 369 blocked packages.",
+  "version": 119,
+  "issued_at": "2026-09-20T09:30:00Z",
+  "comment": "DEV CHANNEL ONLY. Catches up with the beta's 118: WhatsApp leaves the tunnel, because calls failed on Wi-Fi and failed harder on 5G, where they could not be placed or received at all, and excluding the app fixed them on the beta phone. excluded_packages names com.whatsapp and com.whatsapp.w4b beside Android Auto, and naming the field at all means Android Auto has to be repeated or it would be dropped. Offline mode is unaffected: an excluded app is outside the tunnel, not outside the lockdown. 119 rather than 118 because the two channels share one counter and the beta holds 118. Everything else is 116's: drawbridge 0.2.25 build 50, Vanadium allowed, herald 0.1.19 arm64 at v0.2.8-dev.11. 369 blocked packages.",
   "dns": {
     "upstreams": [
       "94.140.14.15",
@@ -11,7 +11,12 @@
     "strip_https_records": true,
     "block_encrypted_dns": true,
     "blocked_response_ttl_seconds": 60,
-    "encrypted_upstream": "tls://all.dns.mullvad.net"
+    "encrypted_upstream": "tls://all.dns.mullvad.net",
+    "excluded_packages": [
+      "com.google.android.projection.gearhead",
+      "com.whatsapp",
+      "com.whatsapp.w4b"
+    ]
   },
   "blocklists": [
     {
