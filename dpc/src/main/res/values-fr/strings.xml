@@ -197,7 +197,6 @@
     <string name="lock_current_offline">Internet : toujours hors ligne</string>
     <string name="lock_current_online">Internet : toujours autorisé</string>
     <string name="lock_current_curfew">Hors ligne %1$s–%2$s en semaine, %3$s–%4$s le week-end</string>
-    <string name="notice_dismiss">Compris</string>
     <string name="notice_read_more">En savoir plus</string>
     <string name="action_notices">Messages de drawbridge</string>
     <string name="notices_title">Messages</string>

@@ -3,7 +3,6 @@ package app.drawbridge.dpc.policy
 import androidx.test.core.app.ApplicationProvider
 import app.drawbridge.policy.model.PolicyNotice
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
@@ -16,12 +15,14 @@ import org.robolectric.annotation.Config
 /**
  * The record of what this project has said to this phone.
  *
- * Two behaviours carry the feature and both are easy to get subtly wrong. A
- * notice must ring **once** — anything else turns a channel used a handful of
- * times into one that fires on every three-hourly poll and is muted within a
- * week. And dismissing must mean *read*, not *destroy*: the card goes, the
- * archive entry stays, or the screen reached from the overflow menu would be
- * empty for exactly the people who had been paying attention.
+ * One behaviour carries the feature and it is easy to get subtly wrong: a notice
+ * must ring **once**. Anything else turns a channel used a handful of times in a
+ * product's life into one that fires on every three-hourly poll and is muted
+ * within a week — and a muted channel is worse than none, because it looks like
+ * one that works.
+ *
+ * The rest is the archive holding what it was given, in the order it was given
+ * it, and surviving a store it cannot read.
  */
 @RunWith(RobolectricTestRunner::class)
 @Config(application = android.app.Application::class)
@@ -104,68 +105,14 @@ class NoticeInboxTest {
         assertTrue(filed.receivedAt <= System.currentTimeMillis())
     }
 
-    // --- Dismissal -------------------------------------------------------------
-
-    @Test
-    fun `a notice nobody has dismissed is shown on the card`() {
-        assertTrue(inbox.shouldShow(first))
-    }
-
-    @Test
-    fun `a dismissed notice stays dismissed`() {
-        inbox.dismiss(first)
-        assertFalse(inbox.shouldShow(first))
-    }
-
-    /**
-     * The half that a single stored id would get wrong. Dismissed has to mean
-     * dismissed even after a later message has been and gone.
-     */
-    @Test
-    fun `dismissing one notice does not swallow the next, and does not undo itself`() {
-        inbox.dismiss(first)
-        assertTrue(inbox.shouldShow(second))
-
-        inbox.dismiss(second)
-        assertFalse(inbox.shouldShow(first))
-        assertFalse(inbox.shouldShow(second))
-    }
-
-    /**
-     * Dismissing is *I have read this*. The archive is the whole point of the
-     * screen behind the overflow menu, so the entry must survive.
-     */
-    @Test
-    fun `a dismissed notice is still in the archive`() {
-        inbox.record(first)
-        inbox.dismiss(first)
-
-        val held = inbox.all()
-        assertEquals(1, held.size)
-        assertTrue(held.single().dismissed)
-    }
-
-    /** Dismissing something never filed still has to leave a readable archive. */
-    @Test
-    fun `dismissing an unfiled notice files it first`() {
-        inbox.dismiss(first)
-        assertEquals(1, inbox.all().size)
-        assertTrue(inbox.all().single().dismissed)
-    }
-
-    @Test
-    fun `a document with no notice shows no card`() {
-        assertFalse(inbox.shouldShow(null))
-    }
-
     // --- Removal ---------------------------------------------------------------
 
     @Test
-    fun `clearing empties the archive and brings a dismissed notice back`() {
-        inbox.dismiss(first)
+    fun `clearing empties the archive, and a cleared notice rings again`() {
+        inbox.record(first)
         inbox.clear()
         assertTrue(inbox.all().isEmpty())
-        assertTrue(inbox.shouldShow(first))
+        assertNotNull(inbox.record(first))
     }
 
     /**
@@ -179,6 +126,28 @@ class NoticeInboxTest {
             .edit().putString("received", "not json at all").commit()
 
         assertTrue(inbox.all().isEmpty())
-        assertTrue(inbox.shouldShow(first))
+        assertNotNull(inbox.record(first))
+    }
+
+    /**
+     * An archive written by build 51's debug APK carries a `dismissed` flag this
+     * build no longer has. A phone updating past it must read its own history
+     * rather than throw it away, which is what `ignoreUnknownKeys` is for.
+     */
+    @Test
+    fun `an archive from the build that had dismissal still reads`() {
+        val context = ApplicationProvider.getApplicationContext<android.content.Context>()
+        context.getSharedPreferences("drawbridge_notice", android.content.Context.MODE_PRIVATE)
+            .edit()
+            .putString(
+                "received",
+                """[{"notice":{"id":"2026-09-calls","title":"t","body":"b"},""" +
+                    """"received_at":1000,"dismissed":true}]""",
+            )
+            .commit()
+
+        val held = inbox.all()
+        assertEquals(1, held.size)
+        assertEquals("2026-09-calls", held.single().notice.id)
     }
 }

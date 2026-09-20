@@ -125,7 +125,6 @@ class LockActivity : AppCompatActivity() {
             showRunningTimer()
             showCurrentSettings()
             showUpdateNotice()
-            showPolicyNotice()
         }
 
         if (revealing) {
@@ -273,21 +272,6 @@ class LockActivity : AppCompatActivity() {
      * policy and pinned by checksum, so the button installs the build the parent
      * already consented to or nothing at all.
      */
-    /**
-     * Draws the policy's notice, if the document carries one the parent has not
-     * already dismissed.
-     *
-     * Called from the same pass as everything else on this screen. The policy is
-     * read from memory rather than awaited: this screen is reached by picking a
-     * locked phone up, which is long after `Application.onCreate` kicked the
-     * load off, and a notice missed on a cold start reappears the next time the
-     * screen is opened. See [MainActivity.render], which does await it, because
-     * it is also the screen reached straight after provisioning.
-     */
-    private fun showPolicyNotice() {
-        NoticeCard.render(this, DrawbridgeApplication.policy(this).policy.value.notice)
-    }
-
     private fun showUpdateNotice() {
         val notice = findViewById<View>(R.id.updateNotice)
         notice.visibility =
@@ -691,9 +675,6 @@ class LockActivity : AppCompatActivity() {
             }
             Toast.makeText(this@LockActivity, message, Toast.LENGTH_LONG).show()
             showUpdateNotice()
-            // A refresh is the one moment a notice can arrive while somebody is
-            // looking at the screen, so it is redrawn here as well as on entry.
-            showPolicyNotice()
         }
     }
 

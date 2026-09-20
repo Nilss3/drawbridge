@@ -112,10 +112,10 @@ class RemoveActivity : AppCompatActivity() {
         // forecloses — and cleared here so the list of device-local state that
         // goes on the way out stays complete. See [Permanence.clear].
         permanence.clear()
-        // Every message this project sent this phone, and which of them were
-        // read. Worth nothing without the document that carried them, and a
-        // reinstalled drawbridge should show what the policy says now rather
-        // than silently swallow it as already seen.
+        // Every message this project sent this phone. Worth nothing without the
+        // document that carried them, and a reinstalled drawbridge should file
+        // and ring whatever the policy says now rather than silently swallow it
+        // as already seen.
         NoticeInbox(this).clear()
 
         val message = when {

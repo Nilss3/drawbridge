@@ -17,8 +17,8 @@ import app.drawbridge.dpc.policy.NoticeInbox
 /**
  * Everything this project has ever said to this phone, newest first.
  *
- * **The archive half of the notice channel.** A notification is seen once and
- * swiped away; a card is dismissed and gone. Neither is somewhere to go *back*
+ * **The archive half of the notice channel, and the only half that keeps.** A
+ * notification is seen once and swiped away; it is not somewhere to go *back*
  * to, and a message worth sending to every phone in the field is worth being
  * readable the day after it arrived — by the parent who was driving when the
  * shade lit up, or whose phone was off that week, or who simply wants to check
@@ -84,9 +84,15 @@ class NoticesActivity : AppCompatActivity() {
 
     /**
      * The message's own link, drawn only when something on this phone can open
-     * it — a managed phone may have had every browser removed, and *no browser*
-     * is a supported state rather than a broken one. See [NoticeCard], which
-     * makes the same check for the same reason.
+     * it.
+     *
+     * A managed phone may have had every browser removed, and *no browser* is a
+     * supported state here rather than a broken one, so an unguarded button
+     * would turn a message into an `ActivityNotFoundException`. A url that
+     * resolves is still not a url that loads: it goes through the filter like
+     * anything else, so a host the blocklists refuse shows a block page and
+     * during a curfew the page simply fails. Both are the phone working, and
+     * neither is worth a second check here.
      */
     private fun bindLink(button: Button, url: String?) {
         val intent = url?.takeIf { it.isNotBlank() }

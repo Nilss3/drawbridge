@@ -298,13 +298,6 @@ class MainActivity : AppCompatActivity() {
                     View.GONE
                 }
 
-            // After the policy has loaded, for the same reason the update
-            // notice is re-checked above: a notice named by a document still
-            // being read off disk would be missed on the first render after a
-            // cold start, and this screen is not re-rendered again until the
-            // parent leaves it and comes back.
-            NoticeCard.render(this@MainActivity, policy.policy.value.notice)
-
             renderDisconnect()
             renderBrowsers()
             renderInstallLock()

@@ -13,12 +13,13 @@ import app.drawbridge.dpc.ui.NoticesActivity
 /**
  * Puts a notice in the phone's notification shade.
  *
- * **Because the alternative reaches nobody.** A card on drawbridge's own screens
- * is only seen by somebody who opens drawbridge, and the whole shape of this
- * product is that they should not have to: a phone that has been set up and
- * locked is meant to be left alone, so the configuration screen may go unopened
- * for months and the lock screen only when somebody is unlocking. A channel that
- * can only be read by people who were already looking is not a channel.
+ * **Because anything inside the app reaches nobody.** The first version of this
+ * feature drew a card on drawbridge's own screens, which is only seen by
+ * somebody who opens drawbridge — and the whole shape of this product is that
+ * they should not have to. A phone that has been set up and locked is meant to
+ * be left alone, so the configuration screen may go unopened for months and the
+ * lock screen only when somebody is unlocking. A channel that can only be read
+ * by people who were already looking is not a channel, and the card is gone.
  *
  * **Raised once per notice, at the poll that first sees it**, and never again —
  * see [NoticeInbox.record], which is what decides. A notification re-posted on
@@ -36,9 +37,9 @@ object NoticeNotifier {
         val manager = context.getSystemService(NotificationManager::class.java) ?: return
         ensureChannel(context, manager)
 
-        // The app's own language, like the card and the screen: this text sits
-        // beside drawbridge's other words, and the shade is no reason to change
-        // which language the parent reads.
+        // The app's own language, like the notices screen: this text sits beside
+        // drawbridge's other words, and the shade is no reason to change which
+        // language the parent reads.
         val language = app.drawbridge.dpc.ui.Languages.current()
 
         val open = PendingIntent.getActivity(
@@ -65,9 +66,10 @@ object NoticeNotifier {
 
         // **A missing POST_NOTIFICATIONS grant throws nothing and shows
         // nothing.** From API 33 the post is silently dropped if the runtime
-        // permission was refused, so this is logged rather than assumed: the
-        // screen and the card are still there, and Diagnostics is where somebody
-        // would look for why the shade stayed empty.
+        // permission was refused, so this is logged rather than assumed. The
+        // message is not lost when that happens — it is filed, and the notices
+        // screen lists it — but nobody is told it arrived, which is the whole
+        // point, so the log line is the only trace anybody could follow.
         runCatching { manager.notify(NOTIFICATION_ID, notification) }
             .onSuccess { Log.i(TAG, "Raised a notification for notice ${entry.notice.id}") }
             .onFailure { Log.w(TAG, "Could not raise a notification", it) }

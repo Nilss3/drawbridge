@@ -152,24 +152,34 @@ a day, and there was no way whatever to tell anybody either fact. The document
 every phone already fetches every three hours is the narrowest thing that closes
 that gap.
 
-**What reaches the parent, in the order it reaches them.**
+**What reaches the parent. Two things, and no more.**
 
 1. **A notification**, once, at the poll that first sees the id. This is the
    part that matters: a phone that has been set up and locked is *meant* to be
    left alone, so a message that waits for somebody to open drawbridge reaches
    nobody. Ordinary importance — it makes a sound, it does not take over the
    screen.
-2. **A card** on the configuration and lock screens, dismissible, for as long as
-   the document carries the notice. Removing the field removes the card.
-3. **The messages screen**, at ⋮ → *Messages from drawbridge* on both screens,
-   listing every notice this phone has ever received, newest first, with the
-   date it arrived. Dismissing removes the card and leaves this entry, because
-   dismissing means *read*, not *destroy*.
+2. **The messages screen**, at ⋮ → *Messages from drawbridge* on both the
+   configuration and the lock screens, listing every notice this phone has ever
+   received, newest first, with the date it arrived. The notification is the
+   alert; this is the record, and it is where the notification leads.
+
+**A dismissible card on drawbridge's own screens was built first and then
+removed.** It was a third thing to maintain and a third place to keep in step,
+and it earned none of that: the notification already reaches somebody who is not
+looking, and the screen already holds what they read afterwards. There is no
+read/unread state anywhere as a result — the shade tracks the notification, and
+the archive simply lists everything.
+
+**A message cannot be un-sent.** Removing `notice` from the next document stops
+new phones ever seeing it, but every phone that already polled has it filed and
+keeps it. Write accordingly.
 
 **The rules, which matter more than the fields.**
 
-1. **Almost never.** A card that is usually there is a card nobody reads, and
-   the one time it matters will be the time it is ignored. The bar is something
+1. **Almost never.** A notification that arrives often is one that gets muted,
+   and a muted channel is worse than no channel because it looks like one that
+   works. The bar is something
    a parent has to *know* and cannot find out any other way: a fix they must act
    on, a setting that changed under them, a fault being worked on that explains
    what their phone is doing.
@@ -184,9 +194,9 @@ that gap.
    field that could. Every behaviour already has a field elsewhere in this
    document where it can be reviewed as policy rather than read as a message.
 
-**There is no severity, no icon and no colour**, and that is the other half of
-rule 1: each would be a lever for making a message look more urgent than it is,
-and the only way to keep the channel worth reading is to have nothing to turn up.
+**There is no severity and no colour**, and that is the other half of rule 1:
+each would be a lever for making a message look more urgent than it is, and the
+only way to keep the channel worth reading is to have nothing to turn up.
 
 **It is as trusted as the rest of the document and no more.** The envelope is
 signed by this project's key and the version counter only goes up, so a notice

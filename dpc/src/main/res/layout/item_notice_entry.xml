@@ -2,11 +2,10 @@
 <!--
     One message on the notices screen.
 
-    Deliberately *not* item_notice.xml. That card is an interruption on a screen
-    about something else and carries the two buttons that go with being
-    interrupted — dismiss, and read more. This is an archive entry: nothing to
-    dismiss, because being here is what dismissing leads to, and a date instead,
-    because the only question an old message raises is when it arrived.
+    An archive entry rather than an alert: no dismiss button, because there is
+    nothing here to dismiss — the notification was the interruption and the shade
+    has already dealt with it — and a date instead, because the only question an
+    old message raises is when it arrived.
 
     The date is the phone's own record of first sight rather than anything the
     document said. See NoticeInbox.

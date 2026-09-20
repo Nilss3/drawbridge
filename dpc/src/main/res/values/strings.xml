@@ -293,7 +293,6 @@
          this feature needs from the app's own resources — there is deliberately
          no heading, no severity label and no icon to translate.
     -->
-    <string name="notice_dismiss">Got it</string>
     <string name="notice_read_more">Read more</string>
     <!--
          The notices screen and the notification that leads to it. The message

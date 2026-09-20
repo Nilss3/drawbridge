@@ -197,7 +197,6 @@
     <string name="lock_current_offline">Internet: altijd offline</string>
     <string name="lock_current_online">Internet: altijd toegestaan</string>
     <string name="lock_current_curfew">Offline %1$s–%2$s op weekdagen, %3$s–%4$s in het weekend</string>
-    <string name="notice_dismiss">Begrepen</string>
     <string name="notice_read_more">Meer lezen</string>
     <string name="action_notices">Berichten van drawbridge</string>
     <string name="notices_title">Berichten</string>

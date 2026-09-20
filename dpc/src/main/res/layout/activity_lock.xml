@@ -128,30 +128,6 @@
                 android:textAppearance="?attr/textAppearanceHeadlineSmall" />
 
             <!--
-                A message from the project, if there is one, above the dates.
-
-                This screen is where a managed phone spends its life, so it is
-                the one place a notice reliably reaches somebody — the
-                configuration screen is behind the key and may not be opened for
-                months. Above the dates because it is rare and they are not:
-                anything below them would be read after the two lines that are
-                the ordinary reason to pick the phone up, which is where a
-                message gets skipped.
-
-                The margins are overridden to nothing because this container
-                already pads 24dp; the card carries its own for the
-                configuration screen, which does not. Overriding a layout_*
-                attribute on an include needs width and height restated, which
-                is why they are here.
-            -->
-            <include
-                layout="@layout/item_notice"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="0dp"
-                android:layout_marginBottom="16dp" />
-
-            <!--
                 The two dates a caregiver checks, above the field rather than
                 below it: they are the reason to pick the phone up, and the key
                 is only what you do about them.

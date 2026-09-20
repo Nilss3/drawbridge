@@ -19,11 +19,13 @@ import kotlinx.serialization.json.Json
  * dismissed a notification on the bus, would have no way back to the words. The
  * document is the *delivery*; this is the record.
  *
- * **The card and this file answer different questions**, which is why both
- * exist. `NoticeCard` asks *is there something the project is saying right now*
- * and reads the live document, so withdrawing a notice removes the card. The
- * notices screen asks *what has this project ever said to me* and reads this, so
- * nothing published is ever silently un-published from the parent's side.
+ * **There is no read/unread state, and there was until the card went.** An
+ * earlier version drew a dismissible card on drawbridge's own screens, so the
+ * inbox had to remember which messages had been dismissed. With the card gone
+ * the only surfaces are the notification — which the shade lets somebody swipe
+ * away, and which Android already tracks for us — and this archive, which lists
+ * everything. Nothing is left that a `dismissed` flag could hide, and a flag
+ * with nothing to hide is a field that rots.
  *
  * **Time order is the phone's own clock, not the document's.** There is
  * deliberately no date field on [PolicyNotice] to get wrong or to disagree
@@ -44,7 +46,6 @@ class NoticeInbox(context: Context) {
         /** Epoch millis when this phone first saw it. See the class note. */
         @SerialName("received_at")
         val receivedAt: Long,
-        val dismissed: Boolean = false,
     )
 
     /**
@@ -82,32 +83,6 @@ class NoticeInbox(context: Context) {
             .sortedByDescending { it.receivedAt }
     }
 
-    /**
-     * Whether [notice] should be drawn on a screen's card.
-     *
-     * Takes the *live document's* notice rather than reading the history, so a
-     * withdrawn notice stops being shown. Null is the resting state of the
-     * field and the common answer here.
-     */
-    fun shouldShow(notice: PolicyNotice?): Boolean {
-        if (notice == null || !notice.isDrawable()) return false
-        return all().none { it.notice.id == notice.id && it.dismissed }
-    }
-
-    /**
-     * Records that the parent has dismissed [notice].
-     *
-     * Marks the entry rather than deleting it: dismissing is *I have read this*,
-     * not *destroy it*, and the notices screen goes on listing it. A notice that
-     * was dismissed before it was ever filed — possible only if the history was
-     * cleared underneath it — is filed now, so the dismissal has something to
-     * attach to.
-     */
-    fun dismiss(notice: PolicyNotice) {
-        record(notice)
-        write(all().map { if (it.notice.id == notice.id) it.copy(dismissed = true) else it })
-    }
-
     /** Part of the sanctioned removal flow, like every other device-local store. */
     fun clear() = prefs.edit().clear().apply()
 
@@ -129,6 +104,12 @@ class NoticeInbox(context: Context) {
          */
         const val MAX_KEPT = 50
 
+        /**
+         * `ignoreUnknownKeys` earns its place here rather than being habit: an
+         * archive written by a build that had the dismissal flag still carries
+         * `dismissed`, and a phone updating to a build without it must read its
+         * own history rather than throw it away.
+         */
         val json = Json { ignoreUnknownKeys = true }
     }
 }
