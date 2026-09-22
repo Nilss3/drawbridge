@@ -69,19 +69,12 @@
   }
   .hero h1 {
     margin: 0 0 1.25rem;
-    font-size: clamp(2rem, 5.5vw, 3rem);
+    font-size: clamp(1.75rem, 4.75vw, 2.5rem);
     line-height: 1.1;
     letter-spacing: -0.025em;
     font-weight: 700;
   }
-  .hero p.lede {
-    margin: 0 0 2rem;
-    font-size: clamp(1.0625rem, 2.4vw, 1.1875rem);
-    color: var(--muted);
-    max-width: 56ch;
-    margin-bottom: 0;
-  }
-  .actions { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 2.75rem; }
+  .actions { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 1.5rem; }
   .btn {
     display: inline-block;
     padding: 0.7rem 1.25rem;
@@ -124,12 +117,9 @@
 
   .statement {
     margin: 2.5rem 0 0;
-    padding-left: 1.125rem;
-    border-left: 3px solid var(--accent);
-    font-size: 1.0625rem;
     max-width: 52ch;
   }
-  .statement p { margin: 0; }
+  .statement p { margin: 0; font-weight: 650; }
 
   /* ---------- work ---------- */
   .work { border-top: 1px solid var(--line); padding: 1.5rem 0; }
@@ -190,6 +180,10 @@
       <div class="work">
         <h3>Consulting</h3>
         <p>Most of the time I work in enterprise data projects: data platforms, data architectures, and digital or business transformations of any kind.</p>
+        <div class="actions">
+          <a class="btn btn-primary" href="mailto:ontheway@fastmail.com">E-mail me</a>
+          <a class="btn btn-ghost" href="https://www.linkedin.com/in/nilssteyaert/">CV and project list on LinkedIn</a>
+        </div>
       </div>
 
       <div class="work">
@@ -203,11 +197,6 @@
         <h3>Photography</h3>
         <p>Fine art and event photography, as a side gig and sometimes related to consulting. Event work has no public portfolio — ask.</p>
         <p><a href="https://www.flickr.com/photos/188078852@N03/">Fine art portfolio on Flickr</a></p>
-      </div>
-
-      <div class="actions">
-        <a class="btn btn-primary" href="mailto:ontheway@fastmail.com">E-mail me</a>
-        <a class="btn btn-ghost" href="https://www.linkedin.com/in/nilssteyaert/">CV and project list on LinkedIn</a>
       </div>
     </div>
   </section>
