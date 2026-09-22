@@ -39,8 +39,7 @@
 
   *, *::before, *::after { box-sizing: border-box; }
 
-  html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
-  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  html { -webkit-text-size-adjust: 100%; }
 
   body {
     margin: 0;
@@ -58,25 +57,8 @@
   a { color: inherit; }
   a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
 
-  /* ---------- header ---------- */
-  header.site {
-    border-bottom: 1px solid var(--line);
-    background: var(--bg);
-    background: color-mix(in srgb, var(--bg) 85%, transparent);
-    backdrop-filter: blur(8px);
-    position: sticky; top: 0; z-index: 10;
-  }
-  header.site .wrap {
-    display: flex; align-items: center; justify-content: space-between;
-    gap: 1rem; min-height: 4rem; flex-wrap: wrap;
-  }
-  .brand { font-weight: 650; letter-spacing: -0.01em; text-decoration: none; }
-  nav.site { display: flex; gap: 1.25rem; flex-wrap: wrap; }
-  nav.site a { color: var(--muted); text-decoration: none; font-size: 0.9375rem; }
-  nav.site a:hover { color: var(--text); }
-
   /* ---------- hero ---------- */
-  .hero { padding: 4.5rem 0 1rem; }
+  .hero { padding: 4.5rem 0 3.25rem; }
   .eyebrow {
     margin: 0 0 1rem;
     font-size: 0.8125rem;
@@ -91,15 +73,15 @@
     line-height: 1.1;
     letter-spacing: -0.025em;
     font-weight: 700;
-    max-width: 20ch;
   }
   .hero p.lede {
     margin: 0 0 2rem;
     font-size: clamp(1.0625rem, 2.4vw, 1.1875rem);
     color: var(--muted);
     max-width: 56ch;
+    margin-bottom: 0;
   }
-  .actions { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+  .actions { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 2.75rem; }
   .btn {
     display: inline-block;
     padding: 0.7rem 1.25rem;
@@ -150,22 +132,12 @@
   .statement p { margin: 0; }
 
   /* ---------- work ---------- */
-  .cards { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr)); }
-  .card {
-    background: var(--surface);
-    border: 1px solid var(--line);
-    border-radius: var(--radius);
-    padding: 1.5rem;
-    display: flex;
-    flex-direction: column;
-  }
-  .card h3 { margin: 0 0 0.6rem; font-size: 1.0625rem; font-weight: 650; letter-spacing: -0.01em; }
-  .card p { margin: 0 0 0.85rem; color: var(--muted); font-size: 0.9688rem; }
-  .card ul { margin: 0 0 0.85rem; padding-left: 1.1rem; color: var(--muted); font-size: 0.9688rem; }
-  .card li { margin-bottom: 0.4rem; }
-  .card li:last-child { margin-bottom: 0; }
-  .card .links { margin-top: auto; display: flex; flex-direction: column; gap: 0.3rem; font-size: 0.9062rem; }
-  .card .links a { color: var(--accent); text-underline-offset: 3px; }
+  .work { border-top: 1px solid var(--line); padding: 1.5rem 0; }
+  .work:first-of-type { border-top: 0; padding-top: 0; }
+  .work h3 { margin: 0 0 0.5rem; font-size: 1.25rem; font-weight: 650; letter-spacing: -0.015em; }
+  .work p { margin: 0 0 0.6rem; color: var(--muted); max-width: 62ch; }
+  .work p:last-child { margin-bottom: 0; }
+  .work a { color: var(--accent); text-underline-offset: 3px; }
 
   /* ---------- contact ---------- */
   dl.details { display: grid; gap: 1.5rem 2.5rem; grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr)); margin: 0; }
@@ -190,27 +162,12 @@
 
 <body>
 
-<header class="site">
-  <div class="wrap">
-    <a class="brand" href="#top">On the Way</a>
-    <nav class="site">
-      <a href="#advice">Advice</a>
-      <a href="#work">Work</a>
-      <a href="#contact">Contact</a>
-    </nav>
-  </div>
-</header>
-
-<main id="top">
+<main>
 
   <div class="hero wrap">
     <p class="eyebrow">On the Way BV by Nils Steyaert</p>
     <h1>On the Way BV // <br> Business Consulting // <br> Business process and data management</h1>
     <p class="lede">A Belgian business consulting firm with a human-centric and technology-simple approach</p>
-    <div class="actions">
-      <a class="btn btn-primary" href="mailto:ontheway@fastmail.com">E-mail me</a>
-      <a class="btn btn-ghost" href="https://www.linkedin.com/in/nilssteyaert/">CV and project list on LinkedIn</a>
-    </div>
   </div>
 
   <section id="advice">
@@ -230,35 +187,28 @@
   <section id="work">
     <div class="wrap">
       <h2 class="label">Work</h2>
-      <div class="cards">
 
-        <div class="card">
-          <h3>Consulting</h3>
-          <p>Most of the time I work in enterprise data projects: data platforms, data architectures, and digital or business transformations of any kind.</p>
-          <div class="links">
-            <a href="https://www.linkedin.com/in/nilssteyaert/">Up-to-date CV and project list on LinkedIn</a>
-          </div>
-        </div>
+      <div class="work">
+        <h3>Consulting</h3>
+        <p>Most of the time I work in enterprise data projects: data platforms, data architectures, and digital or business transformations of any kind.</p>
+      </div>
 
-        <div class="card">
-          <h3>Software</h3>
-          <ul>
-            <li><strong>drawbridge</strong> — a way to turn any Android phone into a digital-minimalist device.</li>
-            <li><strong>herald</strong> — an Android browser that blocks harmful content by default, for use alongside app blockers that have no web filter.</li>
-          </ul>
-          <div class="links">
-            <a href="https://drawbridge-project.pages.dev/">drawbridge-project.pages.dev</a>
-          </div>
-        </div>
+      <div class="work">
+        <h3>Software</h3>
+        <p><strong>drawbridge</strong> — a way to turn any Android phone into a digital-minimalist device.</p>
+        <p><strong>herald</strong> — an Android browser that blocks harmful content by default, for use alongside app blockers that have no web filter.</p>
+        <p><a href="https://drawbridge-project.pages.dev/">drawbridge-project.pages.dev</a></p>
+      </div>
 
-        <div class="card">
-          <h3>Photography</h3>
-          <p>Fine art and event photography, as a side gig and sometimes related to consulting. Event work has no public portfolio — ask.</p>
-          <div class="links">
-            <a href="https://www.flickr.com/photos/188078852@N03/">Fine art portfolio on Flickr</a>
-          </div>
-        </div>
+      <div class="work">
+        <h3>Photography</h3>
+        <p>Fine art and event photography, as a side gig and sometimes related to consulting. Event work has no public portfolio — ask.</p>
+        <p><a href="https://www.flickr.com/photos/188078852@N03/">Fine art portfolio on Flickr</a></p>
+      </div>
 
+      <div class="actions">
+        <a class="btn btn-primary" href="mailto:ontheway@fastmail.com">E-mail me</a>
+        <a class="btn btn-ghost" href="https://www.linkedin.com/in/nilssteyaert/">CV and project list on LinkedIn</a>
       </div>
     </div>
   </section>
