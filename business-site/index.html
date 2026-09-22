@@ -4,20 +4,15 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<!-- ===================================================================
-     FILL THESE IN. Every placeholder below is written as [[ LIKE THIS ]].
-     Search the file for "[[" and you will find all of them, nowhere else.
-     =================================================================== -->
+<title>On the Way — business process and data consulting</title>
+<meta name="description" content="On the Way BV is a Belgian consulting firm specialised in business process and data management. Human-centric, technology-simple: pragmatism over complexity.">
 
-<title>[[ BUSINESS NAME ]] — [[ WHAT YOU DO, 3-5 WORDS ]]</title>
-<meta name="description" content="[[ ONE SENTENCE, ~150 CHARACTERS, SHOWN IN GOOGLE RESULTS ]]">
-
-<meta property="og:title" content="[[ BUSINESS NAME ]]">
-<meta property="og:description" content="[[ ONE SENTENCE, ~150 CHARACTERS ]]">
+<meta property="og:title" content="On the Way — business process and data consulting">
+<meta property="og:description" content="A Belgian consulting firm specialised in business process and data management. Human-centric, technology-simple: pragmatism over complexity.">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://[[ YOUR-DOMAIN ]]/">
+<meta property="og:locale" content="en">
 
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#9679;</text></svg>">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='16' fill='%231f5f4b'/><path d='M8 16h13m-5-5 5 5-5 5' fill='none' stroke='%23fff' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/></svg>">
 
 <style>
   :root {
@@ -62,11 +57,7 @@
   .wrap { width: 100%; max-width: var(--measure); margin-inline: auto; padding-inline: 1.25rem; }
 
   a { color: inherit; }
-  a:focus-visible, button:focus-visible {
-    outline: 2px solid var(--accent);
-    outline-offset: 3px;
-    border-radius: 4px;
-  }
+  a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
 
   /* ---------- header ---------- */
   header.site {
@@ -80,26 +71,34 @@
     display: flex; align-items: center; justify-content: space-between;
     gap: 1rem; min-height: 4rem; flex-wrap: wrap;
   }
-  .brand { font-weight: 650; letter-spacing: -0.01em; text-decoration: none; font-size: 1.0625rem; }
+  .brand { font-weight: 650; letter-spacing: -0.01em; text-decoration: none; }
   nav.site { display: flex; gap: 1.25rem; flex-wrap: wrap; }
   nav.site a { color: var(--muted); text-decoration: none; font-size: 0.9375rem; }
   nav.site a:hover { color: var(--text); }
 
   /* ---------- hero ---------- */
-  .hero { padding: 4.5rem 0 3.5rem; }
-  .hero h1 {
+  .hero { padding: 4.5rem 0 1rem; }
+  .eyebrow {
     margin: 0 0 1rem;
-    font-size: clamp(2rem, 6vw, 3.25rem);
+    font-size: 0.8125rem;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    color: var(--muted);
+    font-weight: 600;
+  }
+  .hero h1 {
+    margin: 0 0 1.25rem;
+    font-size: clamp(2rem, 5.5vw, 3rem);
     line-height: 1.1;
     letter-spacing: -0.025em;
     font-weight: 700;
-    max-width: 18ch;
+    max-width: 20ch;
   }
   .hero p.lede {
     margin: 0 0 2rem;
-    font-size: clamp(1.0625rem, 2.4vw, 1.25rem);
+    font-size: clamp(1.0625rem, 2.4vw, 1.1875rem);
     color: var(--muted);
-    max-width: 58ch;
+    max-width: 56ch;
   }
   .actions { display: flex; gap: 0.75rem; flex-wrap: wrap; }
   .btn {
@@ -117,8 +116,8 @@
   .btn-ghost:hover { border-color: var(--muted); }
 
   /* ---------- sections ---------- */
-  section { padding: 3rem 0; border-top: 1px solid var(--line); }
-  section h2 {
+  section { padding: 3.25rem 0; border-top: 1px solid var(--line); }
+  h2.label {
     margin: 0 0 1.75rem;
     font-size: 0.8125rem;
     text-transform: uppercase;
@@ -127,26 +126,56 @@
     color: var(--muted);
   }
 
-  .cards { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); }
+  /* ---------- the three lines ---------- */
+  ul.advice { list-style: none; margin: 0; padding: 0; }
+  ul.advice li {
+    border-top: 1px solid var(--line);
+    padding: 1.15rem 0;
+    font-size: clamp(1.125rem, 3vw, 1.5rem);
+    line-height: 1.35;
+    letter-spacing: -0.015em;
+    color: var(--muted);
+  }
+  ul.advice li:first-child { border-top: 0; padding-top: 0; }
+  ul.advice li:last-child { padding-bottom: 0; }
+  ul.advice strong { color: var(--text); font-weight: 650; }
+  ul.advice .qualifier { font-size: 0.75em; }
+
+  .statement {
+    margin: 2.5rem 0 0;
+    padding-left: 1.125rem;
+    border-left: 3px solid var(--accent);
+    font-size: 1.0625rem;
+    max-width: 52ch;
+  }
+  .statement p { margin: 0; }
+
+  /* ---------- work ---------- */
+  .cards { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr)); }
   .card {
     background: var(--surface);
     border: 1px solid var(--line);
     border-radius: var(--radius);
     padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
   }
-  .card h3 { margin: 0 0 0.5rem; font-size: 1.0625rem; font-weight: 650; letter-spacing: -0.01em; }
-  .card p { margin: 0; color: var(--muted); font-size: 0.9688rem; }
-
-  .prose p { max-width: 62ch; margin: 0 0 1rem; }
-  .prose p:last-child { margin-bottom: 0; }
+  .card h3 { margin: 0 0 0.6rem; font-size: 1.0625rem; font-weight: 650; letter-spacing: -0.01em; }
+  .card p { margin: 0 0 0.85rem; color: var(--muted); font-size: 0.9688rem; }
+  .card ul { margin: 0 0 0.85rem; padding-left: 1.1rem; color: var(--muted); font-size: 0.9688rem; }
+  .card li { margin-bottom: 0.4rem; }
+  .card li:last-child { margin-bottom: 0; }
+  .card .links { margin-top: auto; display: flex; flex-direction: column; gap: 0.3rem; font-size: 0.9062rem; }
+  .card .links a { color: var(--accent); text-underline-offset: 3px; }
 
   /* ---------- contact ---------- */
-  dl.contact { display: grid; gap: 1.25rem 2.5rem; grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); margin: 0; }
-  dl.contact > div { min-width: 0; }
-  dl.contact dt { font-size: 0.8125rem; color: var(--muted); margin-bottom: 0.25rem; }
-  dl.contact dd { margin: 0; font-size: 1.0625rem; overflow-wrap: anywhere; }
-  dl.contact a { text-decoration-color: var(--line); text-underline-offset: 3px; }
-  dl.contact a:hover { text-decoration-color: currentColor; }
+  dl.details { display: grid; gap: 1.5rem 2.5rem; grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr)); margin: 0; }
+  dl.details > div { min-width: 0; }
+  dl.details dt { font-size: 0.8125rem; color: var(--muted); margin-bottom: 0.3rem; }
+  dl.details dd { margin: 0; overflow-wrap: anywhere; }
+  dl.details a { text-decoration-color: var(--line); text-underline-offset: 3px; }
+  dl.details a:hover { text-decoration-color: currentColor; }
+  address { font-style: normal; }
 
   /* ---------- footer ---------- */
   footer.site {
@@ -156,6 +185,7 @@
     font-size: 0.875rem;
   }
   footer.site p { margin: 0 0 0.35rem; }
+  footer.site a { text-underline-offset: 3px; }
 </style>
 </head>
 
@@ -163,11 +193,11 @@
 
 <header class="site">
   <div class="wrap">
-    <a class="brand" href="#top">[[ BUSINESS NAME ]]</a>
+    <a class="brand" href="#top">On the Way</a>
     <nav class="site">
-      <a href="#services">[[ SERVICES / WHAT WE DO ]]</a>
-      <a href="#about">[[ ABOUT ]]</a>
-      <a href="#contact">[[ CONTACT ]]</a>
+      <a href="#advice">Advice</a>
+      <a href="#work">Work</a>
+      <a href="#contact">Contact</a>
     </nav>
   </div>
 </header>
@@ -175,61 +205,84 @@
 <main id="top">
 
   <div class="hero wrap">
-    <h1>[[ HEADLINE — ONE LINE ON WHAT YOU DO FOR PEOPLE ]]</h1>
-    <p class="lede">[[ TWO OR THREE SENTENCES: WHO YOU SERVE, WHAT YOU OFFER, WHAT MAKES IT WORTH CALLING YOU. ]]</p>
+    <p class="eyebrow">On the Way BV · Nils Steyaert</p>
+    <h1>Business process and data management</h1>
+    <p class="lede">A Belgian business consulting firm. The approach is human-centric and technology-simple: pragmatism over complexity.</p>
     <div class="actions">
-      <a class="btn btn-primary" href="mailto:[[ EMAIL ]]">[[ EMAIL US / GET IN TOUCH ]]</a>
-      <a class="btn btn-ghost" href="tel:[[ PHONE, DIGITS ONLY, e.g. +32470123456 ]]">[[ PHONE, AS WRITTEN ]]</a>
+      <a class="btn btn-primary" href="mailto:ontheway@fastmail.com">Get in touch</a>
+      <a class="btn btn-ghost" href="https://www.linkedin.com/in/nilssteyaert/">CV and project list</a>
     </div>
   </div>
 
-  <section id="services">
+  <section id="advice">
     <div class="wrap">
-      <h2>[[ SERVICES / WHAT WE DO ]]</h2>
-      <div class="cards">
-        <div class="card">
-          <h3>[[ SERVICE 1 ]]</h3>
-          <p>[[ ONE OR TWO SENTENCES ABOUT SERVICE 1. ]]</p>
-        </div>
-        <div class="card">
-          <h3>[[ SERVICE 2 ]]</h3>
-          <p>[[ ONE OR TWO SENTENCES ABOUT SERVICE 2. ]]</p>
-        </div>
-        <div class="card">
-          <h3>[[ SERVICE 3 ]]</h3>
-          <p>[[ ONE OR TWO SENTENCES ABOUT SERVICE 3. ]]</p>
-        </div>
+      <h2 class="label">Advice on</h2>
+      <ul class="advice">
+        <li>humans and their <strong>data</strong></li>
+        <li>humans and their <strong>tools</strong><span class="qualifier">, including AI and LLMs</span></li>
+        <li>humans and their <strong>workflows</strong><span class="qualifier">, agile or not, with or without computers</span></li>
+      </ul>
+      <div class="statement">
+        <p>The approach is human-centric and technology-simple. Pragmatism over complexity.</p>
       </div>
     </div>
   </section>
 
-  <section id="about">
-    <div class="wrap prose">
-      <h2>[[ ABOUT ]]</h2>
-      <p>[[ A SHORT PARAGRAPH: WHO YOU ARE, HOW LONG YOU HAVE BEEN DOING THIS, WHERE YOU WORK. ]]</p>
-      <p>[[ OPTIONAL SECOND PARAGRAPH — DELETE THIS LINE IF ONE IS ENOUGH. ]]</p>
+  <section id="work">
+    <div class="wrap">
+      <h2 class="label">Work</h2>
+      <div class="cards">
+
+        <div class="card">
+          <h3>Consulting</h3>
+          <p>Most of the time I work in enterprise data projects: data platforms, data architectures, and digital or business transformations of any kind.</p>
+          <div class="links">
+            <a href="https://www.linkedin.com/in/nilssteyaert/">Up-to-date CV and project list on LinkedIn</a>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Software</h3>
+          <ul>
+            <li><strong>drawbridge</strong> — a way to turn any Android phone into a digital-minimalist device.</li>
+            <li><strong>herald</strong> — an Android browser that blocks harmful content by default, for use alongside app blockers that have no web filter.</li>
+          </ul>
+          <div class="links">
+            <a href="https://drawbridge-project.pages.dev/">drawbridge-project.pages.dev</a>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Photography</h3>
+          <p>Fine art and event photography, as a side gig and sometimes related to consulting. Event work has no public portfolio — ask.</p>
+          <div class="links">
+            <a href="https://www.flickr.com/photos/188078852@N03/">Fine art portfolio on Flickr</a>
+          </div>
+        </div>
+
+      </div>
     </div>
   </section>
 
   <section id="contact">
     <div class="wrap">
-      <h2>[[ CONTACT ]]</h2>
-      <dl class="contact">
+      <h2 class="label">Contact and business details</h2>
+      <dl class="details">
         <div>
-          <dt>[[ EMAIL LABEL ]]</dt>
-          <dd><a href="mailto:[[ EMAIL ]]">[[ EMAIL ]]</a></dd>
+          <dt>Email</dt>
+          <dd><a href="mailto:ontheway@fastmail.com">ontheway@fastmail.com</a></dd>
         </div>
         <div>
-          <dt>[[ PHONE LABEL ]]</dt>
-          <dd><a href="tel:[[ PHONE, DIGITS ONLY ]]">[[ PHONE, AS WRITTEN ]]</a></dd>
+          <dt>Address</dt>
+          <dd><address>On the Way BV<br>Kasteelstraat 37<br>1560 Hoeilaart<br>Belgium</address></dd>
         </div>
         <div>
-          <dt>[[ ADDRESS LABEL ]]</dt>
-          <dd>[[ STREET AND NUMBER ]]<br>[[ POSTCODE AND TOWN ]]</dd>
+          <dt>VAT</dt>
+          <dd>BE 0651.912.452</dd>
         </div>
         <div>
-          <dt>[[ HOURS LABEL ]]</dt>
-          <dd>[[ OPENING HOURS — OR DELETE THIS WHOLE BLOCK ]]</dd>
+          <dt>DUNS</dt>
+          <dd>37-113-2472</dd>
         </div>
       </dl>
     </div>
@@ -239,10 +292,34 @@
 
 <footer class="site">
   <div class="wrap">
-    <p>&copy; <span id="year">2026</span> [[ LEGAL COMPANY NAME ]]</p>
-    <p>[[ COMPANY / VAT NUMBER — e.g. BTW BE 0123.456.789 ]]</p>
+    <p>&copy; <span id="year">2026</span> On the Way BV — Kasteelstraat 37, 1560 Hoeilaart, Belgium — VAT BE 0651.912.452</p>
+    <p><a href="https://kbopub.economie.fgov.be/kbopub/zoeknummerform.html?lang=en&amp;nummer=0651912452&amp;actionLu=Zoek">Registration in the Belgian Crossroads Bank for Enterprises</a></p>
   </div>
 </footer>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ProfessionalService",
+  "name": "On the Way BV",
+  "founder": { "@type": "Person", "name": "Nils Steyaert" },
+  "description": "Belgian business consulting firm specialised in business process and data management.",
+  "email": "ontheway@fastmail.com",
+  "vatID": "BE0651912452",
+  "duns": "371132472",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "Kasteelstraat 37",
+    "postalCode": "1560",
+    "addressLocality": "Hoeilaart",
+    "addressCountry": "BE"
+  },
+  "sameAs": [
+    "https://www.linkedin.com/in/nilssteyaert/",
+    "https://www.flickr.com/photos/188078852@N03/"
+  ]
+}
+</script>
 
 <script>
   document.getElementById('year').textContent = new Date().getFullYear();

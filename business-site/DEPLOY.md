@@ -40,16 +40,28 @@ registrar; certificates still take care of themselves, within the hour.
 
 ## Editing
 
-Edit `index.html` directly. Everything meant to be changed is written as
-`[[ A PLACEHOLDER IN DOUBLE BRACKETS ]]`; `grep -n '\[\[' index.html` lists
-every one that is still unfilled, which is the check to run before uploading.
+Edit `index.html` directly — it is the whole site, content and styling in one
+file. Three things live in more than one place and have to be changed in all of
+them, so they are worth knowing about:
 
-To see it before it is public:
+- **The email address** appears three times: the "Get in touch" button, the
+  contact list, and the JSON-LD block at the bottom.
+- **The VAT number and address** appear in the contact list, the footer, and
+  the JSON-LD block.
+- **The description** appears in `<meta name="description">`, the `og:description`
+  and the JSON-LD block.
+
+The JSON-LD block is the machine-readable copy of the business details, which is
+what search engines read to show the company rather than just the page. It is
+easy to forget, being invisible on the page, and wrong structured data is worse
+than none — so change it whenever the visible details change.
+
+To see the result before it is public:
 
 ```bash
 python3 -m http.server 8811 --directory business-site
 ```
 
-then <http://localhost:8811>. Opening `index.html` as a `file://` URL works
-too here — there are no absolute paths in it — but the local server is closer
-to what Cloudflare will serve.
+then <http://localhost:8811>. Opening `index.html` as a `file://` URL works too
+— there are no absolute paths in it — but the local server is closer to what
+Cloudflare will serve.
