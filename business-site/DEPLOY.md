@@ -4,6 +4,10 @@ One HTML file, no build step, no dependencies, no external requests — the
 fonts are the ones already on the visitor's device and the favicon is inline.
 Whatever is in this folder is the whole website.
 
+**The site is at <https://ontheway-consulting.pages.dev>.** Written down because
+it is not derivable from anything in this folder, and a neighbouring name is
+somebody else's project — check the `<title>` before believing a URL is ours.
+
 ## Deploying it (Direct Upload — no Git involved)
 
 **The upload box takes a folder or a `.zip`, never a single file.** Dropping
