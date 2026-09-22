@@ -44,8 +44,8 @@ Edit `index.html` directly — it is the whole site, content and styling in one
 file. Three things live in more than one place and have to be changed in all of
 them, so they are worth knowing about:
 
-- **The email address** appears three times: the "Get in touch" button, the
-  contact list, and the JSON-LD block at the bottom.
+- **The email address** appears twice: the "Get in touch" button and the
+  contact list. It is deliberately *not* in the JSON-LD block — see below.
 - **The VAT number and address** appear in the contact list, the footer, and
   the JSON-LD block.
 - **The description** appears in `<meta name="description">`, the `og:description`
@@ -55,6 +55,12 @@ The JSON-LD block is the machine-readable copy of the business details, which is
 what search engines read to show the company rather than just the page. It is
 easy to forget, being invisible on the page, and wrong structured data is worse
 than none — so change it whenever the visible details change.
+
+It carries no email address on purpose. Cloudflare's Scrape Shield can obfuscate
+addresses in the visible HTML at the edge, but it treats JSON as opt-out, so an
+address left in this block would be the one plaintext copy every harvester gets
+for free. The name, address and VAT number still identify the company to a
+search engine without it.
 
 To see the result before it is public:
 
