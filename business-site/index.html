@@ -55,13 +55,13 @@
     -webkit-font-smoothing: antialiased;
   }
 
-  .wrap { width: 100%; max-width: var(--measure); margin-inline: auto; padding-inline: 1.25rem; }
+  .wrap { width: 100%; max-width: var(--measure); margin-inline: auto; padding-inline: clamp(1.25rem, 4vw, 2.5rem); }
 
   a { color: inherit; }
   a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
 
   /* ---------- hero ---------- */
-  .hero { padding: 4.5rem 0 3.25rem; }
+  .hero { padding-block: 4.5rem 3.25rem; }
   .eyebrow {
     margin: 0 0 1rem;
     font-size: 0.8125rem;
@@ -72,7 +72,8 @@
   }
   .hero h1 {
     margin: 0 0 1.25rem;
-    font-size: clamp(1.75rem, 4.75vw, 2.5rem);
+    font-size: clamp(1.5rem, 4.75vw, 2.5rem);
+    overflow-wrap: break-word;
     line-height: 1.1;
     letter-spacing: -0.025em;
     font-weight: 700;
@@ -164,7 +165,7 @@
 
   <section id="advice">
     <div class="wrap">
-      <h2 class="label">I provide consulting on</h2>
+      <h2 class="label">We provide consulting on</h2>
       <ul class="advice">
         <li>humans and their <strong>data</strong></li>
         <li>humans and their <strong>tools</strong><span class="qualifier">, including AI and LLMs</span></li>
@@ -182,9 +183,9 @@
 
       <div class="work">
         <h3>Consulting</h3>
-        <p>Most of the time I work in enterprise data projects: data platforms, data architectures, and digital or business transformations of any kind.</p>
+        <p>Most of the time we work in enterprise data projects: data platforms, data architectures, and digital or business transformations of any kind.</p>
         <div class="actions">
-          <a class="btn btn-primary" href="mailto:ontheway@fastmail.com">E-mail me</a>
+          <a class="btn btn-primary" href="mailto:ontheway@fastmail.com">E-mail us</a>
           <a class="btn btn-ghost" href="https://www.linkedin.com/in/nilssteyaert/">CV and project list on LinkedIn</a>
         </div>
       </div>
