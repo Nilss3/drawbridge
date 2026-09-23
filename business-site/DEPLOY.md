@@ -65,10 +65,39 @@ does not change at all.
 
 ## A real domain
 
-Pages project → **Custom domains** → **Set up a domain**. If the domain's DNS
-is already on Cloudflare, this is two clicks and the certificate is automatic.
-If it is registered elsewhere, Cloudflare gives you a CNAME to add at the
-registrar; certificates still take care of themselves, within the hour.
+The site answers on **<https://ontheway-consulting.com>**, bought through
+Cloudflare Registrar, so the zone already sits in the same Cloudflare account
+as the Pages project. That is the easy case: nothing at a registrar elsewhere
+has to be touched.
+
+**Each hostname is its own custom domain.** Adding `www` does not add the apex.
+If only `www` answers, the apex was never added:
+
+Pages project → **Custom domains** → **Set up a domain** → type
+`ontheway-consulting.com` with no `www` → Cloudflare writes the DNS record
+itself. Do not hand-write an A record to an IP address: Pages has no fixed
+address, and CNAME flattening is what makes an apex CNAME legal in the first
+place (a plain CNAME at a zone apex is forbidden by the DNS spec, since the
+apex already carries SOA and NS records).
+
+If it refuses, a record already occupies `@` — usually a placeholder the
+registrar put there. Delete it in **DNS → Records** and add the domain again.
+
+### One canonical hostname
+
+Both hostnames serving the same page is a duplicate-content problem, so the
+apex is canonical here and `www` redirects to it. That choice is written into
+three lines of `index.html` — `<link rel="canonical">`, `og:url`, and `url` in
+the JSON-LD — and they have to agree with the redirect below. Prefer `www`?
+Flip all four together or the page argues with itself.
+
+The redirect: **Rules → Redirect Rules → Create rule**, which has a
+*Redirect from WWW to Root* template. A 301, preserving path and query, so
+`www.ontheway-consulting.com/anything` lands on
+`ontheway-consulting.com/anything`.
+
+This cannot be done from the `_redirects` file: Pages matches paths, not
+hostnames, and both hostnames arrive at the same project.
 
 ## Editing
 
