@@ -1,7 +1,7 @@
 {
-  "version": 122,
-  "issued_at": "2026-09-28T16:00:00Z",
-  "comment": "DEV CHANNEL ONLY. Withdraws the test notice and changes nothing else. It was '2026-09-28-notifications', sent to prove the messages channel works end to end, and it did. Withdrawing stops it reaching a phone that has not polled yet; a phone that already holds it keeps it on the messages screen, because a message cannot be un-sent. drawbridge stays at 0.2.27 build 52, herald at 0.1.19 arm64 at v0.2.8-dev.11. 369 blocked packages.",
+  "version": 123,
+  "issued_at": "2026-09-28T20:00:00Z",
+  "comment": "DEV CHANNEL ONLY. drawbridge 0.2.28 build 53. Messages only raise a notification when the document marks them urgent, which is off by default \u2014 build 52 rang for every message, including a test one. Two mechanisms are added for a future option and used by none today: a record of which options a device has been offered, so an option added later falls back to its default instead of arriving switched off, and conditional, a block older builds ignore entirely. And the welcome picture is now Van Gogh\u2019s The Langlois Bridge at Arles rather than an illustration that read as AI-generated. herald unchanged at 0.1.19 arm64 at v0.2.8-dev.11. 369 blocked packages.",
   "dns": {
     "upstreams": [
       "94.140.14.15",
@@ -830,14 +830,14 @@
   },
   "app_update": {
     "package_name": "app.drawbridge.dpc",
-    "version_code": 52,
-    "url": "https://dev.drawbridge-project.pages.dev/assets/dpc-98fd8b934fba573b.apk",
-    "sha256": "98fd8b934fba573b11a4bf232dcbe87786c37c34cfff0600d10efc1a52d0d0dc",
-    "version_name": "0.2.27",
-    "notes": "Messages from drawbridge can now actually reach you. The previous version could store them but was never allowed to show a notification, so they arrived silently.\n\nEverything in 0.2.26 is still here: WhatsApp calls keep working when WhatsApp is installed after drawbridge or switched off and on again, and this screen tells you what changed.",
+    "version_code": 53,
+    "url": "https://dev.drawbridge-project.pages.dev/assets/dpc-ecd39f6bf819cd28.apk",
+    "sha256": "ecd39f6bf819cd2866b00ce791d6216efeae0e4eef8e65955ec29f91560ed6e3",
+    "version_name": "0.2.28",
+    "notes": "Messages from drawbridge no longer make a sound unless they are urgent. They still appear under Messages from drawbridge in the \u22ee menu.\n\nThe welcome picture is now a painting: Vincent van Gogh\u2019s The Langlois Bridge at Arles, from 1888.\n\nGroundwork so that a future setting can be added without switching anything off that you already had. Nothing changes on this phone today.",
     "notes_i18n": {
-      "nl": "Berichten van drawbridge kunnen je nu echt bereiken. De vorige versie kon ze wel bewaren, maar mocht nooit een melding tonen, dus kwamen ze stil binnen.\n\nAlles uit 0.2.26 blijft: WhatsApp-oproepen blijven werken wanneer WhatsApp na drawbridge is ge\u00efnstalleerd of uit en weer aan is gezet, en dit scherm zegt wat er veranderd is.",
-      "fr": "Les messages de drawbridge peuvent enfin vous parvenir. La version pr\u00e9c\u00e9dente pouvait les conserver mais n\u2019avait jamais le droit d\u2019afficher une notification : ils arrivaient en silence.\n\nTout ce qui \u00e9tait dans 0.2.26 demeure : les appels WhatsApp continuent de fonctionner lorsque WhatsApp est install\u00e9 apr\u00e8s drawbridge ou d\u00e9sactiv\u00e9 puis r\u00e9activ\u00e9, et cet \u00e9cran indique ce qui a chang\u00e9."
+      "nl": "Berichten van drawbridge maken geen geluid meer tenzij ze dringend zijn. Ze blijven staan onder Berichten van drawbridge in het \u22ee-menu.\n\nDe welkomstafbeelding is nu een schilderij: De brug van Langlois te Arles van Vincent van Gogh, uit 1888.\n\nVoorbereidend werk zodat een toekomstige instelling kan worden toegevoegd zonder iets uit te zetten dat je al had. Er verandert vandaag niets op deze telefoon.",
+      "fr": "Les messages de drawbridge ne font plus de bruit sauf s\u2019ils sont urgents. Ils restent sous Messages de drawbridge dans le menu \u22ee.\n\nL\u2019image d\u2019accueil est d\u00e9sormais un tableau : Le Pont de Langlois \u00e0 Arles de Vincent van Gogh, de 1888.\n\nTravaux pr\u00e9paratoires pour qu\u2019un futur r\u00e9glage puisse \u00eatre ajout\u00e9 sans d\u00e9sactiver ce que vous aviez d\u00e9j\u00e0. Rien ne change sur ce t\u00e9l\u00e9phone aujourd\u2019hui."
     }
   },
   "required_apps": [
