@@ -200,7 +200,7 @@
     <string name="notice_read_more">Meer lezen</string>
     <string name="action_notices">Berichten van drawbridge</string>
     <string name="notices_title">Berichten</string>
-    <string name="notices_explanation">Alles wat het drawbridge-project naar deze telefoon heeft gestuurd, nieuwste eerst. Niets hier verandert een instelling.</string>
+    <string name="notices_explanation">Belangrijke berichten van drawbridge over updates of wijzigingen</string>
     <string name="notices_empty">Nog geen berichten. Hier verschijnen ze als het project je ooit iets moet laten weten.</string>
     <string name="notice_channel_name">Berichten van drawbridge</string>
     <string name="notice_channel_description">Zeldzame berichten van het drawbridge-project over deze telefoon. Geen reclame.</string>

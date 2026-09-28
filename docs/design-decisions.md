@@ -633,6 +633,26 @@ notification reached people who were not looking and the screen held what they
 read afterwards. **Deleting it took a stored field with it**, which is the tell
 that it was carrying weight rather than pulling it.
 
+**And a notification nobody is allowed to post is not a delivery either.**
+From API 33 a declared `POST_NOTIFICATIONS` grants nothing: the post is dropped
+silently, with no exception to catch and nothing in the log. drawbridge never
+asks for it — there is no onboarding screen to ask from, and a permission dialog
+in the middle of a cable provisioning is a prompt nobody is looking at — so build
+51 shipped a channel that filed its messages correctly and rang on no phone at
+all. It was caught by the owner's dev handset rather than by the emulator, which
+had been installed with `adb install -g` and therefore had every permission.
+
+The fix is the Device Owner granting the permission to itself, which is the
+enterprise mechanism for exactly this and needs no prompt. It runs from
+`DnsFilterService.startFilter`, so it lands on every service start — a fresh
+provisioning and an update alike — rather than at a moment somebody has to reach.
+**It deliberately does not override a parent who mutes the channel afterwards**:
+`setPermissionGrantState` moves the permission, not the notification settings, so
+*Messages from drawbridge* can still be switched off in Settings and the messages
+still accumulate on the notices screen. Diagnostics prints whether a notification
+raised now would be seen, because that was the part that failed in perfect
+silence.
+
 **A notification is the delivery.** Once per notice, at the poll that first sees
 the id — `NoticeInbox.record` returns an entry only on first sight, which is what
 stops a message that sits in the document for a week ringing three times a day

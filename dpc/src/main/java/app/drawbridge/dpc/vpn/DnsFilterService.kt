@@ -15,6 +15,7 @@ import android.util.Log
 import androidx.core.app.NotificationCompat
 import app.drawbridge.dpc.DrawbridgeApplication
 import app.drawbridge.dpc.R
+import app.drawbridge.dpc.admin.DeviceOwnerManager
 import app.drawbridge.dpc.apps.PackageWatcher
 import app.drawbridge.dpc.policy.NoticeInbox
 import app.drawbridge.dpc.policy.NoticeNotifier
@@ -156,6 +157,13 @@ class DnsFilterService : VpnService() {
         // also where package watching and opportunistic policy refresh live.
         packageWatcher = PackageWatcher(this).also { it.start() }
         PolicyWorker.refreshNow(this)
+
+        // **Before the notice watcher, and on every start.** A declared
+        // POST_NOTIFICATIONS grants nothing from API 33, and drawbridge has no
+        // screen to ask from — so without this the notice channel files its
+        // messages and rings for nobody, which is what build 51 did. Cheap,
+        // idempotent, and a no-op on a phone that is not device owner yet.
+        DeviceOwnerManager(this).allowOwnNotifications()
 
         registerPackageChangeReceiver()
         watchForExcludedPackageDrift()

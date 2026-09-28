@@ -171,6 +171,12 @@ looking, and the screen already holds what they read afterwards. There is no
 read/unread state anywhere as a result — the shade tracks the notification, and
 the archive simply lists everything.
 
+**Check `notifications:` in Diagnostics before concluding a message did not
+arrive.** The permission is granted by the Device Owner on every filter start, so
+it should read `true` — but a parent can still mute the channel in Settings, and
+a muted channel files the message without ringing. `messages held:` beside it
+says how many this phone has ever received.
+
 **A message cannot be un-sent.** Removing `notice` from the next document stops
 new phones ever seeing it, but every phone that already polled has it filed and
 keeps it. Write accordingly.

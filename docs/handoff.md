@@ -21,9 +21,9 @@ which is kept whole on purpose.
 
 | | `main` (the beta) | `dev` |
 |---|---|---|
-| drawbridge | **0.2.25, build 50** | **0.2.26, build 51** |
+| drawbridge | **0.2.25, build 50** | **0.2.27, build 52** |
 | herald | **0.1.19** | **0.1.19** |
-| policy | **118** | **120** |
+| policy | **118** | **121** |
 | install page | <https://drawbridge-project.pages.dev/install/> | <https://dev.drawbridge-project.pages.dev/install/> |
 | phone | the owner's Nothing Phone (A059) | the Moto G15 |
 
@@ -45,7 +45,8 @@ taking all of that at once. Then 109 and 111 on main, 110 and 112 to 114 on dev,
 else that put this channel back above the beta as 98 once did. Then **117 on
 main**, the beta catching up with three dpc releases at once, **118 on main** for
 the WhatsApp fix, **119 on dev**, which is this channel taking that fix and
-clearing the beta again, and **120 on dev** for drawbridge 0.2.26 build 51.
+clearing the beta again, **120 on dev** for drawbridge 0.2.26 build 51, and **121 on dev** for 0.2.27
+build 52, which is 51's notice channel made able to notify anybody.
 
 **117 was very nearly taken twice, and that is the counter's failure mode.** The
 WhatsApp fix was first written on this branch against a version table that still
@@ -340,6 +341,19 @@ the key can always unlock and put a build on the phone. See
 
 Each of these looks like a bug and is not, or bites silently:
 
+- **`adb install -g` grants every runtime permission, and no real install uses
+  it.** This invalidated a device test and shipped a feature that worked on
+  nobody's phone. The notice channel was watched working on an emulator — the
+  notification appeared, was tapped, opened the screen — and build 51 went to
+  dev with `POST_NOTIFICATIONS` never requested and never granted. On a phone
+  provisioned the real way, `tools/provision-adb.sh` runs `adb install -r`, the
+  permission is `granted=false`, and `NotificationManager.notify` **drops the
+  post with no exception and no log**. Messages were filed correctly and rang
+  for nobody; the owner found it on the dev phone. Measured on 2026-09-28 on a
+  wiped emulator: `granted=false` after a plain install, `granted=true,
+  flags=[POLICY_FIXED]` once build 52's device-owner grant runs. **Install
+  without `-g` when testing anything that touches a permission**, and prefer
+  `provision-adb.sh`'s own command over a convenient one.
 - **`policytool.py verify --check-urls` cannot see a missing file on the Pages
   site**, which is precisely where `app_update` points on both channels.
   Cloudflare Pages answers an unknown path with **HTTP 200 and the site's HTML**

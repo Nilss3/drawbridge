@@ -200,7 +200,7 @@
     <string name="notice_read_more">En savoir plus</string>
     <string name="action_notices">Messages de drawbridge</string>
     <string name="notices_title">Messages</string>
-    <string name="notices_explanation">Tout ce que le projet drawbridge a envoyé à ce téléphone, du plus récent au plus ancien. Rien ici ne modifie un réglage.</string>
+    <string name="notices_explanation">Messages importants de drawbridge concernant les mises à jour ou les changements</string>
     <string name="notices_empty">Aucun message pour l\'instant. C\'est ici qu\'ils apparaîtront si le projet doit un jour vous dire quelque chose.</string>
     <string name="notice_channel_name">Messages de drawbridge</string>
     <string name="notice_channel_description">Messages rares du projet drawbridge au sujet de ce téléphone. Pas de publicité.</string>

@@ -300,7 +300,7 @@
     -->
     <string name="action_notices">Messages from drawbridge</string>
     <string name="notices_title">Messages</string>
-    <string name="notices_explanation">Everything the drawbridge project has sent to this phone, newest first. Nothing here changes any setting.</string>
+    <string name="notices_explanation">Important messages from drawbridge about updates or changes</string>
     <string name="notices_empty">No messages yet. This is where they will appear if the project ever needs to tell you something.</string>
     <string name="notice_channel_name">Messages from drawbridge</string>
     <string name="notice_channel_description">Rare messages from the drawbridge project about this phone. Not advertising.</string>
