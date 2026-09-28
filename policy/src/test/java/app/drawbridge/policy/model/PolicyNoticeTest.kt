@@ -115,9 +115,8 @@ class PolicyNoticeTest {
 
     @Test
     fun `urgent parses from the document`() {
-        val parsed = json.decodeFromString<Policy>(
+        assertTrue(json.decodeFromString<Policy>(
             """{"version":1,"notice":{"id":"a","title":"t","body":"b","urgent":true}}""",
-        ).notice!!
-        assertTrue(parsed.urgent)
+        ).notice!!.urgent)
     }
 }

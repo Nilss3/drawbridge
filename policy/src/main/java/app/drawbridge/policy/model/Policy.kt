@@ -160,32 +160,6 @@ data class Policy(
      * See [PolicyNotice] for the rules the text itself has to keep to.
      */
     val notice: PolicyNotice? = null,
-
-    /**
-     * Policy fragments that only apply to builds new enough to understand what
-     * they are for.
-     *
-     * **A build that predates this field ignores the whole key**, because both
-     * parsers set `ignoreUnknownKeys` — and that is the entire mechanism. It is
-     * the only way this document can tighten anything without tightening it on
-     * phones that have no way to act on it.
-     *
-     * The case it was built for: a new *option* that releases something the base
-     * policy blocks. Adding the block and the switch in one document reaches
-     * three kinds of phone, and only one of them is fine. A build with the
-     * switch blocks the names and offers the parent a way back. A build without
-     * it blocks the names and offers nothing — on a locked phone, a tool taken
-     * away until somebody spends the key. Putting the block in here means the
-     * second phone never sees it: nothing changes for somebody who does not
-     * update, which is the promise a filter on a child's phone has to keep.
-     *
-     * **It can only ever add**, like an option and for the same reason: a
-     * fragment that could *remove* a block would be a way to quietly widen the
-     * filter for whoever has the newest build, which is the wrong direction for
-     * a thing that cannot be reviewed on the device.
-     */
-    @SerialName("conditional")
-    val conditional: List<ConditionalPolicy> = emptyList(),
 ) {
     /**
      * Every browser this policy permits, with [allowedBrowserPackage] always a
@@ -231,59 +205,15 @@ data class Policy(
     /**
      * Which options are on, given what the device has stored.
      *
-     * `null` [stored] means nobody has chosen yet, so the policy's own defaults
-     * apply. A stored id the policy no longer offers is dropped, which is what
-     * stops a relaxation outliving the option that justified it.
-     *
-     * **[seen] is what lets an option be added without taking something away.**
-     * Without it, a document that introduces an option hands it to every phone
-     * switched *off*: [stored] is the complete enabled set, so a brand-new id
-     * and an id the parent refused are both simply absent, and the defaults are
-     * never consulted again after the first switch is touched. An option that
-     * releases something the base policy blocks would therefore arrive as a
-     * confiscation — on a locked phone, one that costs the key to undo.
-     *
-     * So an id that has never been offered falls back to [PolicyOption.defaultEnabled],
-     * and an id that has been offered keeps whatever the parent decided about it.
-     *
-     * **A null [seen] keeps the old behaviour exactly**, and that is not
-     * laziness. It is the state of every device that predates the field, and the
-     * only other reading available — "absent from seen means new" — would treat
-     * every option the parent had ever switched off as new and switch it back
-     * on, handing back apps that were deliberately removed. A device in that
-     * state is given its seen set on the next policy it applies, from a document
-     * that does not yet contain the new option; that ordering is the whole
-     * reason a build ships one release ahead of the option it enables.
+     * `null` means nobody has chosen yet, so the policy's own defaults apply.
+     * A stored id the policy no longer offers is dropped, which is what stops a
+     * relaxation outliving the option that justified it.
      */
-    fun enabledOptionIds(stored: List<String>?, seen: List<String>? = null): Set<String> {
+    fun enabledOptionIds(stored: List<String>?): Set<String> {
         val known = options.map { it.id }.toSet()
-        val chosen = stored?.filterTo(mutableSetOf()) { it in known }
-            ?: return options.filter { it.defaultEnabled }.mapTo(mutableSetOf()) { it.id }
-
-        val offered = seen?.toSet() ?: return chosen
-        options.filter { it.defaultEnabled && it.id !in offered }.mapTo(chosen) { it.id }
-        return chosen
+        return stored?.filterTo(mutableSetOf()) { it in known }
+            ?: options.filter { it.defaultEnabled }.mapTo(mutableSetOf()) { it.id }
     }
-
-    /**
-     * This policy with every [conditional] fragment that [versionCode] satisfies
-     * merged in.
-     *
-     * Applied before profiles and options, so a fragment's names are ordinary
-     * blocked names by the time an option gets the chance to release them —
-     * which is what makes the pair work at all.
-     */
-    fun withConditionals(versionCode: Int): Policy {
-        val matching = conditional.filter { versionCode >= it.minVersionCode }
-        if (matching.isEmpty()) return this
-        return copy(
-            blockedDomains = (blockedDomains + matching.flatMap { it.blockedDomains }).distinct(),
-            blockedPackages = (blockedPackages + matching.flatMap { it.blockedPackages }).distinct(),
-        )
-    }
-
-    /** Every option id this document offers, for [enabledOptionIds]'s `seen` set. */
-    fun offeredOptionIds(): Set<String> = options.mapTo(mutableSetOf()) { it.id }
 
     /**
      * This policy with [enabledIds] applied on top.
@@ -309,20 +239,9 @@ data class Policy(
         )
     }
 
-    /**
-     * The policy as it actually applies on a device: the fragments this build
-     * understands, then the profile, then the options.
-     *
-     * The order is the meaning. A conditional fragment blocks, a profile
-     * replaces, an option releases — so a fragment merged after the options had
-     * run would block names the parent had just been promised.
-     */
-    fun effective(
-        selectedProfileId: String?,
-        enabledOptionIds: Set<String>,
-        versionCode: Int = Int.MAX_VALUE,
-    ): Policy =
-        withConditionals(versionCode).withProfile(selectedProfileId).withOptions(enabledOptionIds)
+    /** The policy as it actually applies on a device: profile first, then options. */
+    fun effective(selectedProfileId: String?, enabledOptionIds: Set<String>): Policy =
+        withProfile(selectedProfileId).withOptions(enabledOptionIds)
 }
 
 /**
@@ -554,30 +473,6 @@ data class Profile(
  */
 internal fun pick(base: String, variants: Map<String, String>, language: String): String =
     variants[language]?.takeIf { it.isNotBlank() } ?: base
-
-/**
- * A piece of policy that only applies from [minVersionCode] onwards.
- *
- * See [Policy.conditional] for why this exists. Keep them short-lived: a
- * fragment is a statement that some phones are running a build too old to be
- * told something, and once they are not, it belongs in the base policy where it
- * can be read at a glance.
- */
-@Serializable
-data class ConditionalPolicy(
-    /** The lowest drawbridge `versionCode` this fragment is meant for. */
-    @SerialName("min_version_code")
-    val minVersionCode: Int,
-
-    /** Why the fragment exists, for whoever reads the document next. */
-    val comment: String = "",
-
-    @SerialName("blocked_domains")
-    val blockedDomains: List<String> = emptyList(),
-
-    @SerialName("blocked_packages")
-    val blockedPackages: List<String> = emptyList(),
-)
 
 @Serializable
 data class DnsPolicy(

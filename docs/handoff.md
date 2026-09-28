@@ -746,7 +746,7 @@ is on it is genuinely on it.
 | **Closed as fixed** | **15** — WhatsApp calls, policy 118 on the beta and 119 here, confirmed 2026-09-20; **16** — the stale exclusion list, built in 0.2.26 build 51, unreleased |
 | **Closed as shipped** | 4, 6, 10 — built, and the entries had gone stale |
 | **Closed as answered** | 2 and 2a — FRP was tested and does not hold |
-| **Closed as won't do** | 5 (F-Droid) |
+| **Closed as won't do** | 5 (F-Droid); **17** — a toggle for general-purpose chatbots |
 | **Closed as not ours to fix** | 1 — Play Protect, on Google-certified phones |
 | **Closed as done enough** | 12b, 12c, 12g — the app is in public beta |
 
@@ -1360,6 +1360,85 @@ decision rather than a patch: `normalisePrivateDns` moves *off* hostname mode
 before locking, precisely so a phone cannot be sealed pointing at a resolver
 nobody can change; and `block_encrypted_dns` blackholes known DoT endpoints, so
 the chosen resolver needs an exception carved for it.
+
+### 17. ~~A toggle for general-purpose chatbots~~ — won't do, 2026-09-28
+
+**Asked for, designed, measured, and cancelled by the owner the same day.** The
+measurements are kept because they are the expensive part and the conclusion
+rests entirely on them.
+
+**The ask:** make ChatGPT, Claude, Gemini, DeepSeek, Copilot, Perplexity,
+Mistral, Qwen and Kimi toggleable at 16+, default on, with Grok staying blocked.
+
+**Why it was dropped, in the owner's words:** blocking the big assistants pushes
+people to shady alternatives. The large ones will eventually take countermeasures
+against giving harmful advice; the small ones will not. **The biggest win is
+already banked — AI companions are blocked, and they are the most harmful.**
+
+#### What was measured, so it need not be measured again
+
+- **The content rating is useless for this category.** `app-ratings.py search
+  "ai chatbot"` returned 23 candidates: **13 come back `keep` at PEGI 3**,
+  including Poe, which is a full multi-model frontend, and Meta AI. Only 9 are
+  parental-guidance. AI companions were easy because they self-select into PEGI
+  18; general assistants do not.
+- **`applicationCategory` is useless too.** PRODUCTIVITY for **19 of 21**
+  chatbots — and also for every notes app, keyboard, calendar and file manager.
+  Blocking that category would gut the phone.
+- **Content descriptors do not discriminate.** Poe reports *Users Interact*,
+  which is what Duolingo reports; two chatbots report nothing at all; ChatGPT
+  reports *Parental Guidance Recommended*, which is what WhatsApp and Spotify
+  report.
+- **No open-source blocklist exists.** HaGeZi has 50 lists and none is AI.
+  blocklistproject has no `ai.txt`. UT1 has no AI category. The one thing named
+  *AI blocklist* — `laylavish/uBlockOrigin-HUGE-AI-Blocklist` — is 3,643
+  **cosmetic** uBlock rules that hide AI-*generated* content from DuckDuckGo and
+  Bing result pages. Wrong target and not DNS-blockable.
+- **The Play Store's "AI playground" tag is real but unreachable.** It shows on
+  the *phone's* Play app — the owner's screenshot of Perplexity shows it beside
+  Productivity and Widgets — and appears **zero times** in the web listing HTML,
+  under a desktop or a mobile user agent, for three different apps. It comes from
+  the Play client's own API. Reading it would mean reverse-engineered protobuf
+  and auth tokens, which would fail silently and permissively: the worst
+  direction for this project, and the thing `app-ratings.py`'s docstring forbids
+  when it says never a bare text search.
+- **The shelf behind the tag *is* reachable, and is a good harvesting corpus.**
+  Any app's listing carries `collection/cluster?gsr=…` links; following
+  Perplexity's returned Claude, ChatGPT, Gemini, DeepSeek, Poe and Meta AI plus
+  four the keyword search missed — Genspark, Genie, Merlin, Replit — of which
+  four are `keep` at PEGI 3. Noisy (Canva, GitHub and Xmind came along), so it is
+  a candidate feed for a human, not an answer. **Worth remembering if this is
+  ever reopened.**
+
+#### What the answer is instead, and it is already built
+
+The install lock. `InstallLockSettings` was written on 2026-08-16 after policy 59
+added twenty-two AI companion apps by hand, and its reasoning transfers to this
+category unchanged: *a curated blocklist is a filter for a phone whose app store
+is wide open… a signed document updated by hand will always trail them. The fix
+is upstream of the list.* Companions at least self-select into PEGI 18; general
+assistants hide inside PRODUCTIVITY with a PEGI 3 badge, so the list would trail
+further and faster.
+
+#### What was built for it and then reverted
+
+Two mechanisms, in commit `dbcc8bf` and reverted the same day. They are in git
+history rather than deleted, because both would be needed again by **any** future
+option, not only this one.
+
+1. **A seen-option set.** `default_enabled` is consulted only while the device
+   has stored no selection at all, which stops being true the first time a parent
+   touches any switch. After that a brand-new option id is absent from the stored
+   list for exactly the same reason a refused one is — so **an option added to
+   the document arrives off**, and since every option here *releases* something,
+   that is a tool taken away. On a locked phone, until somebody spends the key.
+2. **`conditional`: version-gated policy fragments.** A block that older builds
+   ignore entirely, so a phone that never updates is never tightened by a
+   document it has no switch to answer.
+
+**Read those two before adding any option to this policy**, because the first is
+a live latent bug: the next option anybody adds will arrive switched off on every
+phone whose parent has ever touched a switch.
 
 ### 16. ~~An excluded package that arrives after the tunnel did is not excluded~~ — built 2026-09-20, unreleased
 

@@ -67,7 +67,7 @@ class PolicyManager private constructor(
     val options: List<PolicyOption> get() = baseline.options
 
     /** Which of [options] are switched on right now. */
-    val enabledOptionIds: Set<String> get() = resolvedOptionIds()
+    val enabledOptionIds: Set<String> get() = baseline.enabledOptionIds(selection().second)
 
     private val _filterChanges = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
 
@@ -212,19 +212,9 @@ class PolicyManager private constructor(
 
             refreshMutex.withLock {
                 val state = store.readState()
-                val current = resolvedOptionIds()
+                val current = baseline.enabledOptionIds(state.optionIds)
                 val next = if (enabled) current + optionId else current - optionId
-                // The seen set moves with the decision: an id the parent has
-                // just switched is an id they have been offered, and writing it
-                // here means the next refresh cannot read the switch-off as a
-                // fresh arrival and undo it.
-                store.writeState(
-                    state.copy(
-                        optionIds = next.toList(),
-                        seenOptionIds = (state.seenOptionIds.orEmpty() + baseline.offeredOptionIds())
-                            .distinct(),
-                    ),
-                )
+                store.writeState(state.copy(optionIds = next.toList()))
                 applyPolicy(baseline)
             }
             true
@@ -276,60 +266,10 @@ class PolicyManager private constructor(
         return state.profileId to state.optionIds
     }
 
-    /**
-     * The enabled option set, from whichever source owns the decision.
-     *
-     * **The seen-set fallback applies only to a device that owns its own
-     * selection.** When a [config.selectionSource] answers — herald reading
-     * drawbridge's provider — the list it hands over is already *resolved* by
-     * the app that owns the switches, and filling defaults into it again would
-     * be the browser second-guessing the DPC. That is the divergence
-     * `SelectionProvider` exists to prevent: an option the parent had switched
-     * off would come back on in the browser and nowhere else.
-     */
-    private fun resolvedOptionIds(): Set<String> {
-        config.selectionSource?.read()?.let { return baseline.enabledOptionIds(it.optionIds) }
-        val state = store.readState()
-        return baseline.enabledOptionIds(state.optionIds, state.seenOptionIds)
-    }
-
-    /**
-     * The build a conditional fragment should be judged against.
-     *
-     * drawbridge's own, when drawbridge is asking. The *owner's*, published
-     * through the selection, when herald is — because a fragment gated on
-     * drawbridge 53 means nothing measured against herald's numbering, and the
-     * two apps disagreeing about what is blocked is the failure `SelectionSource`
-     * exists to prevent.
-     */
-    private fun conditionalVersionCode(): Int =
-        config.selectionSource?.read()?.ownerVersionCode ?: config.ownVersionCode
-
-    /**
-     * Records that this document's options have now been offered to the device.
-     *
-     * Written after the selection has been resolved against the *previous* seen
-     * set, never before: doing it first would mark an option as offered in the
-     * same breath as deciding what it should default to, which is the one
-     * ordering that makes the whole mechanism a no-op.
-     *
-     * Skipped when a [config.selectionSource] owns the selection, because then
-     * this store is not the one the answer comes from.
-     */
-    private fun rememberOfferedOptions(published: Policy) {
-        if (config.selectionSource != null) return
-        val state = store.readState()
-        val offered = state.seenOptionIds.orEmpty().toSet() + published.offeredOptionIds()
-        if (offered.size == state.seenOptionIds?.size) return
-        store.writeState(state.copy(seenOptionIds = offered.toList()))
-    }
-
     private fun applyPolicy(published: Policy) {
         baseline = published
-        val (profileId, _) = selection()
-        val enabled = resolvedOptionIds()
-        rememberOfferedOptions(published)
-        val policy = published.effective(profileId, enabled, conditionalVersionCode())
+        val (profileId, optionIds) = selection()
+        val policy = published.effective(profileId, published.enabledOptionIds(optionIds))
         val compiled = store.openBlocklist()
         val next = ContentFilter.create(
             compiledBlocklist = compiled,

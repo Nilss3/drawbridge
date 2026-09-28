@@ -152,12 +152,12 @@ a day, and there was no way whatever to tell anybody either fact. The document
 every phone already fetches every three hours is the narrowest thing that closes
 that gap.
 
-**What reaches the parent.**
+**What reaches the parent. Two things, and no more.**
 
-1. **The messages screen**, always, at ⋮ → *Messages from drawbridge* on both the
-   configuration and the lock screens, listing every notice this phone has ever
-   received, newest first, with the date it arrived. This is where an ordinary
-   message goes and waits to be found.
+1. **The messages screen**, always, at ⋮ → *Messages from drawbridge* on both
+   the configuration and the lock screens, listing every notice this phone has
+   ever received, newest first, with the date it arrived. This is where an
+   ordinary message goes and waits to be found.
 2. **A notification, only if the notice sets `"urgent": true`.** Once, at the
    poll that first sees the id. It is opt-in and the default is off, because a
    shade entry for every thing this project has to say is how a channel meant to
@@ -170,7 +170,9 @@ meaningful only while there is nothing finer to reach for.
 
 **drawbridge also shows a permanent "Content filter active" notification.** That
 is the always-on VPN's foreground-service entry, which Android requires and will
-not let anybody dismiss. It is not part of this channel and predates it.
+not let anybody dismiss. It is not part of this channel and predates it. It only
+became *visible* when build 52 granted `POST_NOTIFICATIONS`: before that, Android
+kept foreground-service notices out of the drawer entirely.
 
 **A dismissible card on drawbridge's own screens was built first and then
 removed.** It was a third thing to maintain and a third place to keep in step,
@@ -215,66 +217,6 @@ only way to keep the channel worth reading is to have nothing to turn up.
 **It is as trusted as the rest of the document and no more.** The envelope is
 signed by this project's key and the version counter only goes up, so a notice
 cannot be forged by the network and cannot be replayed once withdrawn.
-
-### A block that only reaches builds that can act on it
-
-`conditional` carries policy fragments gated on a drawbridge `versionCode`.
-Builds older than the gate ignore the whole key, because both parsers set
-`ignoreUnknownKeys` — and that is the entire mechanism.
-
-```jsonc
-"conditional": [
-  {
-    "min_version_code": 53,
-    "comment": "Paired with the chatbots option, which build 53 is the first to offer.",
-    "blocked_domains": ["chatgpt.com"],
-    "blocked_packages": ["com.openai.chatgpt"]
-  }
-]
-```
-
-**It exists for one shape of change: a new option that releases something the
-base policy blocks.** Ship the block and the switch in one document and it
-reaches three kinds of phone, only one of which is fine. A build with the switch
-blocks the names and offers a way back. A build without it blocks the names and
-offers nothing — on a locked phone, a tool taken away until somebody spends the
-key. The fragment means the second phone never sees the block at all: **nothing
-changes for somebody who does not update.**
-
-**A fragment can only add.** There is no field here that removes a block, for the
-same reason an option cannot: a way to quietly widen the filter for whoever has
-the newest build is the wrong direction for something nobody can review on the
-device.
-
-**Keep them short-lived.** A fragment is a statement that some phones are running
-a build too old to be told something. Once they are not, fold it into the base
-policy where it can be read at a glance.
-
-**And it is only half the problem.** The other half is that an option arriving on
-a phone that has *already* stored a selection reads as switched off, whatever its
-`default_enabled` says — see below.
-
-### Adding an option without taking something away
-
-**`default_enabled` is consulted only while the device has stored no selection at
-all**, which stops being true the first time a parent touches any switch. After
-that the stored list is the complete enabled set, and a brand-new option id is
-absent from it for exactly the same reason a refused one is. So an option added
-to the document arrives **off** on most phones in the field, and since every
-option in this project *releases* something, that is a tool taken away.
-
-Devices from build 53 on also record which option ids they have been **offered**,
-so an id that has never been seen falls back to the document's default and an id
-that has been seen keeps whatever the parent decided. A device that predates that
-record keeps the old behaviour exactly: reading "absent" as "new" there would
-switch every refused option back on and hand back apps that were deliberately
-removed.
-
-**The consequence for release order, and it is not optional.** A device gets its
-seen set from the first document it applies on the new build — so that document
-must not already contain the new option, or the option is marked seen before
-anyone has been offered it. **Ship the build in one policy and the option in the
-next.**
 
 ### An app outside the tunnel is an app outside the filter
 

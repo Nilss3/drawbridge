@@ -37,22 +37,5 @@ fun interface SelectionSource {
     data class Selection(
         val profileId: String?,
         val optionIds: List<String>?,
-
-        /**
-         * The `versionCode` of the app that owns this selection — drawbridge.
-         *
-         * **A version-gated policy fragment has to be judged by drawbridge's
-         * build, not by the build of whatever app is reading the document.**
-         * herald has its own numbering entirely, so a fragment written for
-         * drawbridge 53 would be read by herald 19 as *not yet*, or by a herald
-         * numbered past it as *already* — and either way the browser and the DNS
-         * layer would disagree about what is blocked. That disagreement is the
-         * exact failure this whole interface was built to stop.
-         *
-         * Zero when the owning app is too old to publish it, which reads as *no
-         * fragment applies*: a browser that cannot tell blocks nothing extra and
-         * leaves the DNS layer, which can tell, to do it.
-         */
-        val ownerVersionCode: Int = 0,
     )
 }
