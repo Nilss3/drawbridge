@@ -21,9 +21,9 @@ which is kept whole on purpose.
 
 | | `main` (the beta) | `dev` |
 |---|---|---|
-| drawbridge | **0.2.25, build 50** | **0.2.26, build 51 — built, not released** |
+| drawbridge | **0.2.25, build 50** | **0.2.26, build 51** |
 | herald | **0.1.19** | **0.1.19** |
-| policy | **118** | **119** |
+| policy | **118** | **120** |
 | install page | <https://drawbridge-project.pages.dev/install/> | <https://dev.drawbridge-project.pages.dev/install/> |
 | phone | the owner's Nothing Phone (A059) | the Moto G15 |
 
@@ -44,8 +44,8 @@ taking all of that at once. Then 109 and 111 on main, 110 and 112 to 114 on dev,
 **115 on main** for Vanadium, and **116 on dev**, a version bump and nothing
 else that put this channel back above the beta as 98 once did. Then **117 on
 main**, the beta catching up with three dpc releases at once, **118 on main** for
-the WhatsApp fix, and **119 on dev**, which is this channel taking that fix and
-clearing the beta again.
+the WhatsApp fix, **119 on dev**, which is this channel taking that fix and
+clearing the beta again, and **120 on dev** for drawbridge 0.2.26 build 51.
 
 **117 was very nearly taken twice, and that is the counter's failure mode.** The
 WhatsApp fix was first written on this branch against a version table that still
@@ -340,6 +340,18 @@ the key can always unlock and put a build on the phone. See
 
 Each of these looks like a bug and is not, or bites silently:
 
+- **`policytool.py verify --check-urls` cannot see a missing file on the Pages
+  site**, which is precisely where `app_update` points on both channels.
+  Cloudflare Pages answers an unknown path with **HTTP 200 and the site's HTML**
+  rather than a 404 — measured on 2026-09-28, where
+  `/assets/dpc-7d366ad2a6e9bd2a.apk` returned `200 text/html` 24591 bytes
+  *before* the file had been pushed, and an APK from the other channel returned
+  the same. So the check that exists to catch a mistyped or not-yet-deployed
+  `app_update` URL passes on both, and the phone is the thing that finds out: it
+  downloads the HTML, the checksum does not match, and the update fails. **The
+  URL check is only meaningful for the GitHub-hosted `required_apps`**, which do
+  return a real 404. Worth fixing in the tool — a content type, a length, or the
+  first two bytes being `PK` would all catch it — and worth knowing until then.
 - **`VpnService.Builder.addDisallowedApplication` does not throw for a package
   that is not installed**, whatever its documentation says. Its `verifyApp`
   calls the raw `IPackageManager.getApplicationInfo`, which *returns null* for a
@@ -1345,7 +1357,9 @@ answer is worse than the question assumed, and it is not about the switch.
 uninstalling a package the document excludes logged
 `Excludable packages changed (android.intent.action.PACKAGE_REMOVED …):
 [com.google.android.projection.gearhead] -> []` and re-established the tunnel.
-**Built, not released** — see the release note at the end of this entry.
+**Released to dev as policy 120 on 2026-09-28**, and untested on a handset:
+the emulator is where the reconciler was watched working, and the Moto has not
+yet been given the build.
 
 **`excluded_packages` is read once, when the tunnel is established, and never
 again.** `VpnService.Builder.addDisallowedApplication` throws for a package that

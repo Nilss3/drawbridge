@@ -1,7 +1,7 @@
 {
-  "version": 119,
-  "issued_at": "2026-09-20T09:30:00Z",
-  "comment": "DEV CHANNEL ONLY. Catches up with the beta's 118: WhatsApp leaves the tunnel, because calls failed on Wi-Fi and failed harder on 5G, where they could not be placed or received at all, and excluding the app fixed them on the beta phone. excluded_packages names com.whatsapp and com.whatsapp.w4b beside Android Auto, and naming the field at all means Android Auto has to be repeated or it would be dropped. Offline mode is unaffected: an excluded app is outside the tunnel, not outside the lockdown. 119 rather than 118 because the two channels share one counter and the beta holds 118. Everything else is 116's: drawbridge 0.2.25 build 50, Vanadium allowed, herald 0.1.19 arm64 at v0.2.8-dev.11. 369 blocked packages.",
+  "version": 120,
+  "issued_at": "2026-09-28T10:00:00Z",
+  "comment": "DEV CHANNEL ONLY. drawbridge 0.2.26 build 51. Fixes the stale exclusion list: a package named by excluded_packages that is installed, hidden or unhidden after the tunnel came up is now excluded without waiting for a reboot, which is what stopped policy 119 reaching a phone where WhatsApp arrives after provisioning. Adds the notice channel \u2014 this document can now carry one message to the people holding the phones, raised once as a notification and kept on a screen at the overflow menu \u2014 and release notes on the update screen, which had only ever shown a build number. app_update gains version_name and notes; both are optional and older builds ignore them. herald unchanged at 0.1.19 arm64 at v0.2.8-dev.11. 369 blocked packages.",
   "dns": {
     "upstreams": [
       "94.140.14.15",
@@ -830,9 +830,15 @@
   },
   "app_update": {
     "package_name": "app.drawbridge.dpc",
-    "version_code": 50,
-    "url": "https://dev.drawbridge-project.pages.dev/assets/dpc-4102e65c7deca4d5.apk",
-    "sha256": "4102e65c7deca4d5ee17d909bd39a3dbe60b67aac8572173c27cf695cd80ef12"
+    "version_code": 51,
+    "url": "https://dev.drawbridge-project.pages.dev/assets/dpc-7d366ad2a6e9bd2a.apk",
+    "sha256": "7d366ad2a6e9bd2a2b173c93d919b1851c60d85cc097d2b4db65d176d1222146",
+    "version_name": "0.2.26",
+    "notes": "WhatsApp calls keep working even when WhatsApp is installed after drawbridge, or switched off and on again. Before this, the phone had to be restarted first.\n\ndrawbridge can now tell you something when it has to. Messages appear as a notification and are kept under Messages from drawbridge in the \u22ee menu. They are meant to be rare.\n\nThis screen now says which version it is offering you, and what changed.",
+    "notes_i18n": {
+      "nl": "WhatsApp-oproepen blijven werken, ook als WhatsApp na drawbridge is ge\u00efnstalleerd of uit en weer aan is gezet. Daarvoor moest de telefoon eerst opnieuw opstarten.\n\ndrawbridge kan je nu iets laten weten als dat nodig is. Berichten verschijnen als melding en blijven staan onder Berichten van drawbridge in het \u22ee-menu. Ze zijn bedoeld om zeldzaam te zijn.\n\nDit scherm zegt nu welke versie het aanbiedt, en wat er veranderd is.",
+      "fr": "Les appels WhatsApp continuent de fonctionner, m\u00eame si WhatsApp est install\u00e9 apr\u00e8s drawbridge, ou d\u00e9sactiv\u00e9 puis r\u00e9activ\u00e9. Auparavant, il fallait d\u2019abord red\u00e9marrer le t\u00e9l\u00e9phone.\n\ndrawbridge peut maintenant vous dire quelque chose lorsque c\u2019est n\u00e9cessaire. Les messages apparaissent en notification et restent sous Messages de drawbridge dans le menu \u22ee. Ils sont cens\u00e9s \u00eatre rares.\n\nCet \u00e9cran indique d\u00e9sormais quelle version il propose, et ce qui a chang\u00e9."
+    }
   },
   "required_apps": [
     {
@@ -925,5 +931,18 @@
       "us.mitene",
       "us.zoom.videomeetings"
     ]
+  },
+  "notice": {
+    "id": "2026-09-28-dev-test",
+    "title": "This is a test message on the dev channel",
+    "body": "If you can read this, the notice channel works: it arrived as a notification, and it is kept here under Messages from drawbridge. Nothing on this phone changed because of it. This message exists only to be tested and will be withdrawn.",
+    "title_i18n": {
+      "nl": "Dit is een testbericht op het dev-kanaal",
+      "fr": "Ceci est un message de test sur le canal dev"
+    },
+    "body_i18n": {
+      "nl": "Als je dit leest, werkt het berichtenkanaal: het kwam binnen als melding en blijft hier staan onder Berichten van drawbridge. Er is niets aan deze telefoon veranderd. Dit bericht bestaat alleen om getest te worden en wordt weer ingetrokken.",
+      "fr": "Si vous lisez ceci, le canal de messages fonctionne : il est arriv\u00e9 en notification et reste ici sous Messages de drawbridge. Rien n\u2019a chang\u00e9 sur ce t\u00e9l\u00e9phone. Ce message n\u2019existe que pour \u00eatre test\u00e9 et sera retir\u00e9."
+    }
   }
 }
