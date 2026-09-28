@@ -46,6 +46,13 @@ class DrawbridgeSelection(context: Context) : SelectionSource {
                     // which is a choice; a missing column is "no answer", which
                     // is not. Only the second may fall back to the defaults.
                     optionIds = optionIds?.split(SEPARATOR)?.filter { it.isNotBlank() },
+                    // Absent on a drawbridge too old to publish it, which reads
+                    // as 0 and applies no version-gated fragment. The browser
+                    // then blocks nothing extra and leaves the DNS layer, which
+                    // knows its own build, to do it — the safe direction when
+                    // the two cannot agree.
+                    ownerVersionCode = cursor.columnOrNull(COLUMN_OWNER_VERSION_CODE)
+                        ?.toIntOrNull() ?: 0,
                 )
             }
         }
@@ -129,6 +136,9 @@ class DrawbridgeSelection(context: Context) : SelectionSource {
         const val AUTHORITY = "app.drawbridge.dpc.selection"
         const val COLUMN_PROFILE_ID = "profile_id"
         const val COLUMN_OPTION_IDS = "option_ids"
+
+        /** drawbridge's own versionCode; see [SelectionSource.Selection.ownerVersionCode]. */
+        const val COLUMN_OWNER_VERSION_CODE = "owner_version_code"
         const val COLUMN_DISCONNECT_MODE = "disconnect_mode"
         const val COLUMN_OFFLINE_NOW = "offline_now"
         const val COLUMN_OFFLINE_UNTIL = "offline_until"

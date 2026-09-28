@@ -1,7 +1,7 @@
 {
-  "version": 121,
-  "issued_at": "2026-09-28T12:00:00Z",
-  "comment": "DEV CHANNEL ONLY. drawbridge 0.2.27 build 52. Fixes the notice channel, which build 51 shipped unable to notify anybody: from API 33 a declared POST_NOTIFICATIONS grants nothing, drawbridge never asked for it, and a real install (adb install -r, no -g) left it denied \u2014 so messages were filed and rang on no phone. The device owner now grants it to itself on every filter start, which covers a fresh provisioning and an update alike, and Diagnostics prints whether a notification raised now would be seen. The notice below carries a new id so a phone that already holds the previous one rings for this. herald unchanged at 0.1.19 arm64 at v0.2.8-dev.11. 369 blocked packages.",
+  "version": 122,
+  "issued_at": "2026-09-28T16:00:00Z",
+  "comment": "DEV CHANNEL ONLY. Withdraws the test notice and changes nothing else. It was '2026-09-28-notifications', sent to prove the messages channel works end to end, and it did. Withdrawing stops it reaching a phone that has not polled yet; a phone that already holds it keeps it on the messages screen, because a message cannot be un-sent. drawbridge stays at 0.2.27 build 52, herald at 0.1.19 arm64 at v0.2.8-dev.11. 369 blocked packages.",
   "dns": {
     "upstreams": [
       "94.140.14.15",
@@ -931,18 +931,5 @@
       "us.mitene",
       "us.zoom.videomeetings"
     ]
-  },
-  "notice": {
-    "id": "2026-09-28-notifications",
-    "title": "This message arrived as a notification",
-    "body": "If you saw a notification for this, the messages channel works end to end. The previous version could only store messages, never announce them. Nothing on this phone changed because of this message, and it will be withdrawn.",
-    "title_i18n": {
-      "nl": "Dit bericht kwam binnen als melding",
-      "fr": "Ce message est arriv\u00e9 en notification"
-    },
-    "body_i18n": {
-      "nl": "Als je hiervoor een melding zag, werkt het berichtenkanaal van begin tot eind. De vorige versie kon berichten alleen bewaren, nooit aankondigen. Er is niets aan deze telefoon veranderd door dit bericht, en het wordt weer ingetrokken.",
-      "fr": "Si vous avez vu une notification pour ceci, le canal de messages fonctionne de bout en bout. La version pr\u00e9c\u00e9dente pouvait seulement conserver les messages, jamais les annoncer. Rien n\u2019a chang\u00e9 sur ce t\u00e9l\u00e9phone, et ce message sera retir\u00e9."
-    }
   }
 }

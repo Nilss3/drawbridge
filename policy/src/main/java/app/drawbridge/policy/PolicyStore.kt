@@ -231,6 +231,29 @@ class PolicyStore(context: Context, private val config: PolicyConfig) {
          * had just cleared.
          */
         val optionIds: List<String>? = null,
+
+        /**
+         * Every option id this device has ever been *offered*, which is not the
+         * same as every one it has switched on.
+         *
+         * **It exists because [optionIds] cannot tell a new option from a
+         * refused one.** That list is the complete enabled set, so an option the
+         * document has just introduced and an option the parent deliberately
+         * switched off look identical — both are simply absent. Resolving on
+         * that alone means every option added from now on arrives *off*,
+         * whatever its `default_enabled` says, on every phone whose parent has
+         * ever touched a switch. On a locked phone that is a tool taken away
+         * with no way to give it back short of the key.
+         *
+         * With this, an id that has never been seen falls back to the document's
+         * default and an id that has been seen keeps whatever the parent decided.
+         *
+         * Null on a device that predates this field. That case must keep the old
+         * behaviour exactly — see [app.drawbridge.policy.model.Policy.enabledOptionIds] —
+         * because the alternative is reading "absent" as "new" and handing back
+         * an app the parent had removed.
+         */
+        val seenOptionIds: List<String>? = null,
     )
 
     companion object {

@@ -23,7 +23,7 @@ which is kept whole on purpose.
 |---|---|---|
 | drawbridge | **0.2.25, build 50** | **0.2.27, build 52** |
 | herald | **0.1.19** | **0.1.19** |
-| policy | **118** | **121** |
+| policy | **118** | **122** |
 | install page | <https://drawbridge-project.pages.dev/install/> | <https://dev.drawbridge-project.pages.dev/install/> |
 | phone | the owner's Nothing Phone (A059) | the Moto G15 |
 
@@ -1420,25 +1420,30 @@ is upstream of the list.* Companions at least self-select into PEGI 18; general
 assistants hide inside PRODUCTIVITY with a PEGI 3 badge, so the list would trail
 further and faster.
 
-#### What was built for it and then reverted
+#### The two mechanisms it needed are kept, and the toggle is not
 
-Two mechanisms, in commit `dbcc8bf` and reverted the same day. They are in git
-history rather than deleted, because both would be needed again by **any** future
-option, not only this one.
+Built for this option, reverted with it on 2026-09-28, and **put back the same
+day on the owner's call** — so that the next option, whenever there is one, does
+not have to rediscover either. Neither is chatbot-specific and neither is used by
+any option today.
 
-1. **A seen-option set.** `default_enabled` is consulted only while the device
-   has stored no selection at all, which stops being true the first time a parent
-   touches any switch. After that a brand-new option id is absent from the stored
-   list for exactly the same reason a refused one is — so **an option added to
-   the document arrives off**, and since every option here *releases* something,
-   that is a tool taken away. On a locked phone, until somebody spends the key.
-2. **`conditional`: version-gated policy fragments.** A block that older builds
-   ignore entirely, so a phone that never updates is never tightened by a
-   document it has no switch to answer.
+1. **A seen-option set**, `PolicyStore.StoredState.seenOptionIds`. It fixes a
+   live latent bug rather than enabling a feature: `default_enabled` is consulted
+   only while the device has stored no selection at all, which stops being true
+   the first time a parent touches any switch. After that a brand-new option id
+   is absent from the stored list for exactly the same reason a refused one is —
+   so **an option added to the document arrives off**, and since every option
+   here *releases* something, that is a tool taken away. On a locked phone, until
+   somebody spends the key.
+2. **`conditional`: version-gated policy fragments.** A block older builds ignore
+   entirely, so a phone that never updates is never tightened by a document it
+   has no switch to answer.
 
-**Read those two before adding any option to this policy**, because the first is
-a live latent bug: the next option anybody adds will arrive switched off on every
-phone whose parent has ever touched a switch.
+**The release-order rule they imply is the part most likely to be forgotten.** A
+device takes its seen set from the first document it applies on the new build, so
+that document must not already contain the new option — or the option is marked
+offered before anyone was offered it. **Ship the build in one policy and the
+option in the next.**
 
 ### 16. ~~An excluded package that arrives after the tunnel did is not excluded~~ — built 2026-09-20, unreleased
 
