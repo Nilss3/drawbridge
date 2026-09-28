@@ -21,6 +21,22 @@ data class PolicyConfig(
     /** Refuse downloads larger than this, so a hostile URL cannot fill the disk. */
     val maxDownloadBytes: Long = 64L * 1024 * 1024,
 
+    /**
+     * This app's own `versionCode`, for [app.drawbridge.policy.model.Policy.conditional].
+     *
+     * Only meaningful in the app that *owns* the selection — drawbridge. An app
+     * reading somebody else's selection takes the owner's build from
+     * [SelectionSource.Selection.ownerVersionCode] instead, because a fragment
+     * gated on drawbridge 53 means nothing measured against herald's numbering.
+     *
+     * Zero, the default, means no conditional fragment ever applies. That is the
+     * right resting state for a standalone browser and for any caller that has
+     * not thought about it: a fragment only ever *adds* a block, so ignoring one
+     * filters less rather than more, and less is what a device with no drawbridge
+     * on it is entitled to.
+     */
+    val ownVersionCode: Int = 0,
+
     val connectTimeoutMillis: Int = 15_000,
     val readTimeoutMillis: Int = 60_000,
 

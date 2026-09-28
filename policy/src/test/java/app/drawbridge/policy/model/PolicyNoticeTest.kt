@@ -99,4 +99,25 @@ class PolicyNoticeTest {
     fun `a notice without a url is the ordinary case`() {
         assertNull(notice.url)
     }
+
+    /**
+     * The default that keeps the channel worth reading. A message is filed and
+     * waits to be found; interrupting somebody is the exception and has to be
+     * asked for in the document.
+     */
+    @Test
+    fun `a notice is not urgent unless it says so`() {
+        assertFalse(notice.urgent)
+        assertFalse(json.decodeFromString<Policy>(
+            """{"version":1,"notice":{"id":"a","title":"t","body":"b"}}""",
+        ).notice!!.urgent)
+    }
+
+    @Test
+    fun `urgent parses from the document`() {
+        val parsed = json.decodeFromString<Policy>(
+            """{"version":1,"notice":{"id":"a","title":"t","body":"b","urgent":true}}""",
+        ).notice!!
+        assertTrue(parsed.urgent)
+    }
 }

@@ -239,7 +239,15 @@ class DnsFilterService : VpnService() {
                 .distinctUntilChanged()
                 .collect { notice ->
                     val filed = inbox.record(notice) ?: return@collect
-                    NoticeNotifier.notify(this@DnsFilterService, filed)
+                    // **Filed always, announced rarely.** Every message lands on
+                    // the messages screen; only one the document marks urgent
+                    // interrupts anybody. See [PolicyNotice.urgent] — the
+                    // channel is worth reading only if it is almost never used.
+                    if (filed.notice.urgent) {
+                        NoticeNotifier.notify(this@DnsFilterService, filed)
+                    } else {
+                        Log.i(TAG, "Notice ${filed.notice.id} filed without a notification")
+                    }
                 }
         }
     }

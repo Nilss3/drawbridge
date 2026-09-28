@@ -80,6 +80,7 @@ class SelectionProvider : ContentProvider() {
                 COLUMN_DISCONNECT_MODE,
                 COLUMN_OFFLINE_NOW,
                 COLUMN_OFFLINE_UNTIL,
+                COLUMN_OWNER_VERSION_CODE,
             ),
         )
         // arrayOf<Any?> rather than arrayOf: the row mixes strings, an int and a
@@ -92,6 +93,7 @@ class SelectionProvider : ContentProvider() {
                 disconnect.mode.name,
                 if (offlineNow) 1 else 0,
                 until?.atZone(ZoneId.systemDefault())?.toInstant()?.toEpochMilli(),
+                app.drawbridge.dpc.BuildConfig.VERSION_CODE,
             ),
         )
         return cursor
@@ -131,6 +133,18 @@ class SelectionProvider : ContentProvider() {
          * good.
          */
         const val COLUMN_OFFLINE_UNTIL = "offline_until"
+
+        /**
+         * drawbridge's own `versionCode`, so the browser can judge a
+         * version-gated policy fragment by the build the gate is about.
+         *
+         * A fragment written for drawbridge 53 means nothing measured against
+         * herald's numbering, which is its own sequence entirely. A browser
+         * talking to a drawbridge too old to publish this column reads 0 and
+         * applies no fragment — it blocks nothing extra and leaves the DNS
+         * layer, which knows its own build, to do it.
+         */
+        const val COLUMN_OWNER_VERSION_CODE = "owner_version_code"
 
         /** Option ids arrive as one string; no id contains a comma. */
         const val SEPARATOR = ","

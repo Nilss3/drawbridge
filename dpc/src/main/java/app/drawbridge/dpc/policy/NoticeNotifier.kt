@@ -21,6 +21,11 @@ import app.drawbridge.dpc.ui.NoticesActivity
  * lock screen only when somebody is unlocking. A channel that can only be read
  * by people who were already looking is not a channel, and the card is gone.
  *
+ * **Only for a notice the document marks urgent.** The caller decides; see
+ * [app.drawbridge.policy.model.PolicyNotice.urgent]. An ordinary message is
+ * filed and waits on the messages screen, because a shade entry for everything
+ * this project has to say is how the channel gets muted.
+ *
  * **Raised once per notice, at the poll that first sees it**, and never again —
  * see [NoticeInbox.record], which is what decides. A notification re-posted on
  * every refresh would be the same message three times a day, which is how a
