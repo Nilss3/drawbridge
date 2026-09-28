@@ -54,29 +54,28 @@ NAV = {
     "fr": {"home": "Accueil", "faq": "Q&A", "install": "Installer", "github": "GitHub"},
 }
 
+# The licence and the builder in one sentence.
+#
+# They were two lines for about an hour and read as two separate facts; they are
+# one. Open source says what somebody may do with it, the builder says who stands
+# behind it, and a parent installing a device policy controller on their child's
+# phone is asking both at once. It is also the reference the developer
+# registration points at.
+#
+# Deliberately a statement of fact and nothing more. Not endorsed, recommended or
+# certified by anyone -- see the handoff on keeping external claims to what is
+# actually true.
 FOOTER = {
-    "en": "Drawbridge is free and open source (MIT).",
-    "nl": "Drawbridge is gratis en open source (MIT).",
-    "fr": "Drawbridge est gratuit et open source (MIT).",
-}
-FOOTER_SOURCE = {"en": "Source on GitHub", "nl": "Broncode op GitHub", "fr": "Code source sur GitHub"}
-
-# Who builds it, under the licence line.
-#
-# Open source says what somebody may do with it; this says who stands behind it,
-# and the two are different questions a parent installing a device policy
-# controller on their child's phone is entitled to ask. It is also the reference
-# the Play developer registration needs to point at.
-#
-# Deliberately a statement of fact and nothing more. It does not say endorsed,
-# recommended or certified by anyone -- see the handoff on keeping external
-# claims to what is actually true.
-FOOTER_BUILDER = {
-    "en": 'Drawbridge is built by <a href="{url}">On the Way consulting</a>.',
-    "nl": 'Drawbridge wordt gebouwd door <a href="{url}">On the Way consulting</a>.',
-    "fr": 'Drawbridge est d\u00e9velopp\u00e9 par <a href="{url}">On the Way consulting</a>.',
+    "en": 'Drawbridge is free and open source software (MIT) built by '
+          '<a href="{url}">On the Way consulting</a>.',
+    "nl": 'Drawbridge is gratis en opensourcesoftware (MIT), gebouwd door '
+          '<a href="{url}">On the Way consulting</a>.',
+    "fr": 'Drawbridge est un logiciel libre et open source (MIT), '
+          'développé par <a href="{url}">On the Way consulting</a>.',
 }
 BUILDER_URL = "https://www.ontheway-consulting.com"
+FOOTER_SOURCE = {"en": "Source on GitHub", "nl": "Broncode op GitHub", "fr": "Code source sur GitHub"}
+
 
 
 def channel_banner() -> str:
@@ -166,10 +165,7 @@ def render_page(
 
 <footer class="site-footer">
   <div class="wrap">
-    <div class="footer-main">
-      <span>{FOOTER[lang]}</span>
-      <span>{FOOTER_BUILDER[lang].format(url=BUILDER_URL)}</span>
-    </div>
+    <span>{FOOTER[lang].format(url=BUILDER_URL)}</span>
     <span><a href="https://github.com/Nilss3/drawbridge">{FOOTER_SOURCE[lang]}</a></span>
   </div>
 </footer>
