@@ -43,7 +43,7 @@
 
     <string name="welcome_title">Welcome to drawbridge</string>
     <string name="welcome_subtitle">Let\'s draw the bridge on the toxic addictive internet and keep our peace of mind.</string>
-    <string name="welcome_scene_description">A raised drawbridge at sunset, between an autumn park where somebody is reading on a bench and a rocky shore where cartoon monsters are waiting.</string>
+    <string name="welcome_scene_description">Vincent van Gogh\'s painting The Langlois Bridge at Arles, 1888: a raised wooden drawbridge over a canal, with a towpath running alongside it.</string>
 
     <!--
         The signed document calls these "profiles" — variants of one policy — but
