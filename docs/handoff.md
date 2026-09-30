@@ -23,7 +23,7 @@ which is kept whole on purpose.
 |---|---|---|
 | drawbridge | **0.2.25, build 50** | **0.2.28, build 53** |
 | herald | **0.1.19** | **0.1.19** |
-| policy | **118** | **123** |
+| policy | **118** | **124** |
 | install page | <https://drawbridge-project.pages.dev/install/> | <https://dev.drawbridge-project.pages.dev/install/> |
 | phone | the owner's Nothing Phone (A059) | the Moto G15 |
 

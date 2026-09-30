@@ -1,7 +1,7 @@
 {
-  "version": 123,
-  "issued_at": "2026-09-28T20:00:00Z",
-  "comment": "DEV CHANNEL ONLY. drawbridge 0.2.28 build 53. Messages only raise a notification when the document marks them urgent, which is off by default \u2014 build 52 rang for every message, including a test one. Two mechanisms are added for a future option and used by none today: a record of which options a device has been offered, so an option added later falls back to its default instead of arriving switched off, and conditional, a block older builds ignore entirely. And the welcome picture is now Van Gogh\u2019s The Langlois Bridge at Arles rather than an illustration that read as AI-generated. herald unchanged at 0.1.19 arm64 at v0.2.8-dev.11. 369 blocked packages.",
+  "version": 124,
+  "issued_at": "2026-09-30T09:00:00Z",
+  "comment": "DEV CHANNEL ONLY. Carries one message and changes nothing else: the end-to-end check of the notice channel, from a signed document to a notification to the messages screen. It is marked urgent, which is what makes build 53 announce it rather than file it quietly -- the point of the test is that it arrives unprompted. drawbridge stays at 0.2.28 build 53, herald at 0.1.19 arm64 at v0.2.8-dev.11. 369 blocked packages.",
   "dns": {
     "upstreams": [
       "94.140.14.15",
@@ -931,5 +931,19 @@
       "us.mitene",
       "us.zoom.videomeetings"
     ]
+  },
+  "notice": {
+    "id": "2026-09-30-go-live",
+    "title": "We can go live now",
+    "body": "This message travelled from a signed policy document to your phone on its own, and it is the last thing the messages channel had left to prove. Nothing on this phone changed because of it.",
+    "title_i18n": {
+      "nl": "We kunnen nu live gaan",
+      "fr": "Nous pouvons passer en production"
+    },
+    "body_i18n": {
+      "nl": "Dit bericht is vanzelf van een ondertekend beleidsdocument naar je telefoon gekomen, en dat was het laatste wat het berichtenkanaal nog moest bewijzen. Er is niets aan deze telefoon veranderd.",
+      "fr": "Ce message est parvenu seul d\u2019un document de politique sign\u00e9 jusqu\u2019\u00e0 votre t\u00e9l\u00e9phone, et c\u2019\u00e9tait la derni\u00e8re chose que le canal de messages avait \u00e0 prouver. Rien n\u2019a chang\u00e9 sur ce t\u00e9l\u00e9phone."
+    },
+    "urgent": true
   }
 }
