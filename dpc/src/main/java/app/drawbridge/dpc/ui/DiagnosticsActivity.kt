@@ -133,6 +133,20 @@ class DiagnosticsActivity : AppCompatActivity() {
             // out of date. Nothing else on the device reports that, which is
             // exactly why it belongs here.
             appendLine("battery exempt:    ${isIgnoringBatteryOptimisations()}")
+            // **Whether a message from the project would actually be seen.** The
+            // notice channel is the only way this project can say anything to a
+            // phone in the field, and its failure is perfectly silent: a denied
+            // POST_NOTIFICATIONS drops the post with no exception and no log, so
+            // the message is filed on the notices screen and rings for nobody.
+            // Build 51 shipped exactly that. Two things collapse into this line —
+            // the runtime permission, which the device owner grants itself, and
+            // the person having switched notifications off, which is theirs and
+            // which nothing here overrides.
+            appendLine("notifications:     ${DeviceOwnerManager(this@DiagnosticsActivity).notificationsAllowed()}")
+            appendLine(
+                "messages held:     " +
+                    app.drawbridge.dpc.policy.NoticeInbox(this@DiagnosticsActivity).all().size,
+            )
             appendLine("policy version:    ${policy.version}")
             // Why the version is what it is, which the version alone never says.
             // On 2026-08-12 a phone sat on policy 36 after 37 was published and

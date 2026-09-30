@@ -43,7 +43,7 @@
 
     <string name="welcome_title">Welcome to drawbridge</string>
     <string name="welcome_subtitle">Let\'s draw the bridge on the toxic addictive internet and keep our peace of mind.</string>
-    <string name="welcome_scene_description">A raised drawbridge at sunset, between an autumn park where somebody is reading on a bench and a rocky shore where cartoon monsters are waiting.</string>
+    <string name="welcome_scene_description">Vincent van Gogh\'s painting The Langlois Bridge at Arles, 1888: a raised wooden drawbridge over a canal, with a towpath running alongside it.</string>
 
     <!--
         The signed document calls these "profiles" — variants of one policy — but
@@ -136,6 +136,13 @@
     <string name="update_notice">A newer version of drawbridge is available.</string>
     <string name="update_action">Update</string>
     <string name="update_available_detail">This phone runs %1$s (build %2$d). Build %3$d is available.</string>
+    <!--
+         Used instead of update_available_detail as soon as the document names a
+         version_name for the update. Two dotted versions read as a distance
+         travelled; two build numbers read as a number going up.
+    -->
+    <string name="update_available_named">This phone runs %1$s. Version %2$s is available.</string>
+    <string name="update_notes_heading">What changed</string>
     <string name="update_none">This phone runs %1$s, which is the newest version the policy names.</string>
     <string name="update_why_blocked">To update drawbridge you need to pause Play Protect, if applicable. Google\'s Play Protect does not allow the install of device policy controllers (like drawbridge) which are not through enterprise partners. Click to open the Play Protect settings and pause it before pushing the button to update. See screenshots for more details.</string>
     <!--
@@ -280,4 +287,21 @@
     <string name="lock_current_offline">Internet: always offline</string>
     <string name="lock_current_online">Internet: always allowed</string>
     <string name="lock_current_curfew">Offline %1$s–%2$s on weekdays, %3$s–%4$s at weekends</string>
+    <!--
+         The policy's notice. The words in the card come from the signed
+         document; these two are the furniture around them, and they are all
+         this feature needs from the app's own resources — there is deliberately
+         no heading, no severity label and no icon to translate.
+    -->
+    <string name="notice_read_more">Read more</string>
+    <!--
+         The notices screen and the notification that leads to it. The message
+         itself comes from the signed document; these are the furniture.
+    -->
+    <string name="action_notices">Messages from drawbridge</string>
+    <string name="notices_title">Messages</string>
+    <string name="notices_explanation">Important messages from drawbridge about updates or changes</string>
+    <string name="notices_empty">No messages yet. This is where they will appear if the project ever needs to tell you something.</string>
+    <string name="notice_channel_name">Messages from drawbridge</string>
+    <string name="notice_channel_description">Rare messages from the drawbridge project about this phone. Not advertising.</string>
 </resources>

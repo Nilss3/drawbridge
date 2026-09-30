@@ -100,27 +100,38 @@ done
 # drawbridge's hero is decoded by the platform rather than embedded in a string,
 # so it can afford to be sharper.
 #
-# It comes from a third master, `scene-dusk.webp`, and not from either of the
-# two above. drawbridge's screen shows one picture whatever the theme is — there
-# is no `-night` qualifier and no query to pick with — so the night scene sat
-# dark and heavy on a light-themed screen, which is what most of them are. Dusk
-# is warm enough for a light background and dark enough for a dark one, so one
-# resource covers both and the question stops needing an answer.
+# **It is a painting, and that is the point.** Until 2026-09-28 this was a
+# commissioned illustration — the reader on his bench, the monsters across the
+# water — and it drew the one comment nobody wants about a product built on
+# trust: that it looked AI-generated. So it is now Vincent van Gogh's *The
+# Langlois Bridge at Arles* of 1888, which is a real drawbridge, raised, painted
+# by a man who died in 1890. Public domain on both sides of the Atlantic, and a
+# faithful photograph of a flat public-domain work acquires no copyright of its
+# own — Bridgeman v. Corel in the US, Article 14 of the 2019 DSM Directive in the
+# EU, which exists for exactly this. The scan is the Google Art Project's, from
+# Wikimedia Commons.
 #
-# The hero shows it **whole**: the view is wrap_content with adjustViewBounds and
-# fitCenter, not a fixed band with centerCrop. The picture is composed as one —
-# the reader on his bench at the left and the monsters at the right are the point
-# of it — and a letterbox crop takes the spire tips off the top and the feet off
-# the bottom.
+# **`hero-langlois.webp` rather than `scene-dusk.webp`.** The old master is left
+# in `art/` and no longer feeds anything: its siblings `scene-day` and
+# `scene-night` still make herald's block page, and deleting one of a set that
+# was drawn together would make the remaining two harder to understand.
 #
-# The master was square until 2026-08-19 and is now 16:9, which is the whole
-# reason for the change: shown whole, a square picture ate the top of a phone
-# screen and pushed the thing the screen is actually for — the policy, the
-# options and the button — below the fold. Same picture, same "shown whole"
-# rule, about half the height.
-echo "welcome scene (dusk)"
+# **The crop is the whole width of the canvas, anchored to the top**, which is
+# the one 16:9 window that keeps the raised arms of the bridge. The painting is
+# 4968x4000, so a third of its height has to go; taken off the top instead, the
+# bridge is decapitated and the picture stops being about a drawbridge at all.
+# What is lost is the lower towpath and, with it, the signature — which is why
+# the website carries a visible credit and both apps name the painter in the
+# image's description.
+#
+# The hero still shows it **whole**: wrap_content with adjustViewBounds and
+# fitCenter, not a fixed band with centerCrop. And it is still 16:9 for the
+# reason it became 16:9 on 2026-08-19 — shown whole, a taller picture eats the
+# top of a phone screen and pushes the policy, the options and the button below
+# the fold.
+echo "welcome scene (langlois)"
 mkdir -p "$repo/dpc/src/main/res/drawable-nodpi"
-magick "$art/scene-dusk.webp" -resize 1400x \
+magick "$art/hero-langlois.webp" -resize 1400x \
   -strip -quality 88 -define webp:method=6 \
   "$repo/dpc/src/main/res/drawable-nodpi/welcome_scene.webp"
 
@@ -132,12 +143,20 @@ magick "$art/scene-dusk.webp" -resize 1400x \
 # the app's.
 #
 # One image, both colour schemes. The page used to swap in the night scene under
-# a prefers-color-scheme query; dusk removes the need, and the title now sits
-# *on* the picture, where a second version would have meant a second set of text
-# colours to keep legible.
-echo "website hero (dusk)"
+# a prefers-color-scheme query; a single warm picture removes the need, and the
+# title sits *on* it, where a second version would have meant a second set of
+# text colours to keep legible. The painting is pale enough for either scheme,
+# which is the same property the dusk scene had and the reason it can stay
+# unthemed.
+#
+# **The title moved to the left with the picture.** It used to sit in the
+# top-right sky; in this one the top right is the bridge's far arm and the roofs
+# of Arles, and the clear sky is on the left above the poplars. The rule in the
+# stylesheet is unchanged — the text is keyed to the sky it lies on — it is just
+# the other sky.
+echo "website hero (langlois)"
 mkdir -p "$repo/site/assets/img"
-magick "$art/scene-dusk.webp" -resize 1600x \
+magick "$art/hero-langlois.webp" -resize 1600x \
   -strip -quality 86 -define webp:method=6 \
   "$repo/site/assets/img/hero.webp"
 rm -f "$repo/site/assets/img/hero-night.webp"

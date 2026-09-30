@@ -1,7 +1,7 @@
 {
-  "version": 118,
-  "issued_at": "2026-09-19T22:55:00Z",
-  "comment": "BETA. WhatsApp leaves the tunnel: calls failed on Wi-Fi and failed harder on 5G, where they could not be placed or received at all, which is the shape of an app declining to run behind a VPN rather than of a refused name. excluded_packages now names com.whatsapp and com.whatsapp.w4b beside Android Auto, and naming the field at all means Android Auto has to be repeated or it would be dropped. Offline mode is unaffected: an excluded app is outside the tunnel, not outside the lockdown. Everything else is 117's: drawbridge 0.2.25 build 50, herald 0.1.19 arm64 at v0.2.23, Vanadium allowed. 369 blocked packages.",
+  "version": 125,
+  "issued_at": "2026-09-30T11:00:00Z",
+  "comment": "BETA. Pins drawbridge 0.2.28 build 53, the beta catching up with three dpc releases at once. WhatsApp keeps working when it is installed after drawbridge or switched off and on again, instead of needing a restart. drawbridge can now show a message when it has to -- rare, and only with a notification when the document says urgent -- kept under Messages from drawbridge in the overflow menu. The update screen says which version it offers and what changed. The welcome picture is Van Gogh's The Langlois Bridge at Arles rather than an illustration that read as AI-generated. herald is unchanged at 0.1.19 arm64 at v0.2.23, and Vanadium stays allowed. 369 blocked packages.",
   "dns": {
     "upstreams": [
       "94.140.14.15",
@@ -830,9 +830,15 @@
   },
   "app_update": {
     "package_name": "app.drawbridge.dpc",
-    "version_code": 50,
-    "url": "https://drawbridge-project.pages.dev/assets/dpc-9288b6796864b486.apk",
-    "sha256": "9288b6796864b48628dc41ad81102bbd461029212573a9e4e654f899fecd245e"
+    "version_code": 53,
+    "url": "https://drawbridge-project.pages.dev/assets/dpc-afded98a326a6386.apk",
+    "sha256": "afded98a326a63869be34bd02a309ba0b0e78197a02546cf3f0baf5cdac8ab64",
+    "version_name": "0.2.28",
+    "notes": "WhatsApp calls keep working even when WhatsApp is installed after drawbridge, or switched off and on again. Before this the phone had to be restarted first.\n\ndrawbridge can now tell you something when it needs to. Messages are kept under Messages from drawbridge in the \u22ee menu, and only make a sound when they are urgent. They are meant to be rare.\n\nThis screen now says which version it is offering you, and what changed.\n\nThe welcome picture is a painting: Vincent van Gogh\u2019s The Langlois Bridge at Arles, from 1888.",
+    "notes_i18n": {
+      "nl": "WhatsApp-oproepen blijven werken, ook als WhatsApp na drawbridge is ge\u00efnstalleerd of uit en weer aan is gezet. Daarvoor moest de telefoon eerst opnieuw opstarten.\n\ndrawbridge kan je nu iets laten weten als dat nodig is. Berichten staan onder Berichten van drawbridge in het \u22ee-menu en maken alleen geluid als ze dringend zijn. Ze zijn bedoeld om zeldzaam te zijn.\n\nDit scherm zegt nu welke versie het aanbiedt, en wat er veranderd is.\n\nDe welkomstafbeelding is een schilderij: De brug van Langlois te Arles van Vincent van Gogh, uit 1888.",
+      "fr": "Les appels WhatsApp continuent de fonctionner, m\u00eame si WhatsApp est install\u00e9 apr\u00e8s drawbridge ou d\u00e9sactiv\u00e9 puis r\u00e9activ\u00e9. Auparavant, il fallait d\u2019abord red\u00e9marrer le t\u00e9l\u00e9phone.\n\ndrawbridge peut maintenant vous dire quelque chose lorsque c\u2019est n\u00e9cessaire. Les messages restent sous Messages de drawbridge dans le menu \u22ee et ne sonnent que s\u2019ils sont urgents. Ils sont cens\u00e9s \u00eatre rares.\n\nCet \u00e9cran indique d\u00e9sormais quelle version il propose, et ce qui a chang\u00e9.\n\nL\u2019image d\u2019accueil est un tableau : Le Pont de Langlois \u00e0 Arles de Vincent van Gogh, de 1888."
+    }
   },
   "required_apps": [
     {

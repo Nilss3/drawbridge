@@ -569,6 +569,11 @@ class LockActivity : AppCompatActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
+        R.id.actionNotices -> {
+            startActivity(Intent(this, NoticesActivity::class.java))
+            true
+        }
+
         R.id.actionDiagnostics -> {
             startActivity(Intent(this, DiagnosticsActivity::class.java))
             true

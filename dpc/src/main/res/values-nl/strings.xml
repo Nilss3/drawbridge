@@ -23,7 +23,7 @@
 
     <string name="welcome_title">Welkom bij drawbridge</string>
     <string name="welcome_subtitle">Laten we de brug ophalen voor het toxische, verslavende internet en onze gemoedsrust bewaren.</string>
-    <string name="welcome_scene_description">Een opgehaalde ophaalbrug bij zonsondergang, tussen een herfstpark waar iemand op een bank zit te lezen en een rotsige oever waar tekenfilmmonsters staan te wachten.</string>
+    <string name="welcome_scene_description">Het schilderij De brug van Langlois te Arles van Vincent van Gogh, 1888: een opgehaalde houten ophaalbrug over een kanaal, met een jaagpad ernaast.</string>
 
     <string name="policy_heading">Beleid</string>
     <string name="policy_none_available">Dit beleidsdocument biedt niets om uit te kiezen.</string>
@@ -81,6 +81,8 @@
     <string name="update_notice">Er is een nieuwere versie van drawbridge beschikbaar.</string>
     <string name="update_action">Bijwerken</string>
     <string name="update_available_detail">Deze telefoon draait %1$s (build %2$d). Build %3$d is beschikbaar.</string>
+    <string name="update_available_named">Deze telefoon draait %1$s. Versie %2$s is beschikbaar.</string>
+    <string name="update_notes_heading">Wat er veranderd is</string>
     <string name="update_none">Deze telefoon draait %1$s, de nieuwste versie die het beleid noemt.</string>
     <string name="update_why_blocked">Om drawbridge bij te werken moet je Play Protect pauzeren, als dat van toepassing is. Google\'s Play Protect laat de installatie van device policy controllers (zoals drawbridge) niet toe als die niet via enterprise-partners verloopt. Klik om de instellingen van Play Protect te openen en pauzeer het, voor je op de updateknop drukt. Zie de schermafbeeldingen voor meer details.</string>
     <string name="update_shot_1">Tik in Play Protect op het tandwiel in de bovenhoek.</string>
@@ -195,4 +197,11 @@
     <string name="lock_current_offline">Internet: altijd offline</string>
     <string name="lock_current_online">Internet: altijd toegestaan</string>
     <string name="lock_current_curfew">Offline %1$s–%2$s op weekdagen, %3$s–%4$s in het weekend</string>
+    <string name="notice_read_more">Meer lezen</string>
+    <string name="action_notices">Berichten van drawbridge</string>
+    <string name="notices_title">Berichten</string>
+    <string name="notices_explanation">Belangrijke berichten van drawbridge over updates of wijzigingen</string>
+    <string name="notices_empty">Nog geen berichten. Hier verschijnen ze als het project je ooit iets moet laten weten.</string>
+    <string name="notice_channel_name">Berichten van drawbridge</string>
+    <string name="notice_channel_description">Zeldzame berichten van het drawbridge-project over deze telefoon. Geen reclame.</string>
 </resources>

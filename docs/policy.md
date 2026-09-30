@@ -36,6 +36,12 @@ hold, which is what makes replaying an old, permissive policy fail.
   "blocked_packages": ["com.instagram.android"],
   "allowed_browser_package": "app.drawbridge.herald",
   "exempt_packages": [],
+  "notice": {
+    "id": "2026-09-calls",
+    "title": "WhatsApp calls are working again",
+    "body": "Update drawbridge to get the fix.",
+    "url": "https://drawbridge-project.pages.dev/"
+  },
   "browser": {
     "default_search_engine": "duckduckgo",
     "blocked_url_patterns": ["reddit\\.com/r/(gonewild|nsfw)"]
@@ -52,6 +58,9 @@ hold, which is what makes replaying an old, permissive policy fail.
 | `blocked_domains` | Extra domains on top of the lists. Suffix matching: `example.com` covers `www.example.com`. |
 | `allowed_domains` | Wins over everything else, in the DNS filter and in herald alike. Use it to carve an exception out of a bulk list — and see the note below, because it is also what keeps the filter able to update itself. |
 | `blocked_packages` | Apps drawbridge removes on sight. |
+| `notice` | **A message to whoever is holding the phone.** Absent is the resting state. See below — it is the only channel this project has, and the rules for using it matter more than the fields. |
+| `app_update.version_name` | The dotted version, e.g. `0.2.26`. The update screen says *Version 0.2.26 is available* instead of *Build 51 is available*. |
+| `app_update.notes` | What changed, in a parent's words. Shown under *What changed* on the update screen, above the button they have to press. `notes_i18n` translates it. |
 | `allowed_browser_package` | The browser tapped links are handed to, and the first one installed. Always a member of the allowed set. |
 | `allowed_browser_packages` | Every browser allowed to exist. Anything else that registers a browser intent filter is removed or hidden. **Must agree with `required_apps`** — a browser named in one and not the other is installed and removed on a loop. Empty means "just `allowed_browser_package`". |
 | `exempt_packages` | Escape valve for a device-specific app that would otherwise be caught. |
@@ -118,6 +127,156 @@ added or reviewed:
 8. **Verify on a phone if there is one to hand.** Install the app, open it, and
    see whether content loads. That is the only step that catches what this
    checklist was written for, and it is the step that found it.
+
+### The notice: the only way this project can say anything
+
+`notice` puts one message on the phones in the field. It is absent from every
+document by default and should be absent from almost all of them.
+
+```jsonc
+"notice": {
+  "id": "2026-09-calls",
+  "title": "WhatsApp calls are working again",
+  "body": "Calls failed because WhatsApp will not place one while a VPN is present. The filter now leaves WhatsApp outside it.",
+  "title_i18n": { "nl": "WhatsApp-oproepen werken weer" },
+  "body_i18n":  { "nl": "Oproepen mislukten omdat WhatsApp niet belt zolang er een VPN actief is." },
+  "url": "https://drawbridge-project.pages.dev/"
+}
+```
+
+**Why it exists.** drawbridge asks for no email address, has no account and
+reports nothing home. That is the design and it is not being revisited — but the
+cost is real, and it was paid in full over the WhatsApp calling bug: every phone
+in the field had a broken feature, the fix went out in a signed document within
+a day, and there was no way whatever to tell anybody either fact. The document
+every phone already fetches every three hours is the narrowest thing that closes
+that gap.
+
+**What reaches the parent.**
+
+1. **The messages screen**, always, at ⋮ → *Messages from drawbridge* on both the
+   configuration and the lock screens, listing every notice this phone has ever
+   received, newest first, with the date it arrived. This is where an ordinary
+   message goes and waits to be found.
+2. **A notification, only if the notice sets `"urgent": true`.** Once, at the
+   poll that first sees the id. It is opt-in and the default is off, because a
+   shade entry for every thing this project has to say is how a channel meant to
+   be used a handful of times gets muted — and a muted channel is worse than
+   none, since it looks like one that works. Reserve it for something a parent
+   has to *act* on, or that explains what their phone is doing wrong.
+
+There is one boolean and no levels, deliberately: an interruption stays
+meaningful only while there is nothing finer to reach for.
+
+**drawbridge also shows a permanent "Content filter active" notification.** That
+is the always-on VPN's foreground-service entry, which Android requires and will
+not let anybody dismiss. It is not part of this channel and predates it. It only
+became *visible* when build 52 granted `POST_NOTIFICATIONS`: before that, Android
+kept foreground-service notices out of the drawer entirely.
+
+**A dismissible card on drawbridge's own screens was built first and then
+removed.** It was a third thing to maintain and a third place to keep in step,
+and it earned none of that: the notification already reaches somebody who is not
+looking, and the screen already holds what they read afterwards. There is no
+read/unread state anywhere as a result — the shade tracks the notification, and
+the archive simply lists everything.
+
+**Check `notifications:` in Diagnostics before concluding a message did not
+arrive.** The permission is granted by the Device Owner on every filter start, so
+it should read `true` — but a parent can still mute the channel in Settings, and
+a muted channel files the message without ringing. `messages held:` beside it
+says how many this phone has ever received.
+
+**A message cannot be un-sent.** Removing `notice` from the next document stops
+new phones ever seeing it, but every phone that already polled has it filed and
+keeps it. Write accordingly.
+
+**The rules, which matter more than the fields.**
+
+1. **Almost never.** A notification that arrives often is one that gets muted,
+   and a muted channel is worse than no channel because it looks like one that
+   works. The bar is something
+   a parent has to *know* and cannot find out any other way: a fix they must act
+   on, a setting that changed under them, a fault being worked on that explains
+   what their phone is doing.
+2. **Never release chatter.** That is `app_update.notes`, which appears on the
+   update screen next to the button it is about.
+3. **Never marketing.** This is a notification on a device somebody's child
+   depends on. Treat the channel as something that can be spent once.
+4. **Change `id` when the words change enough that somebody who dismissed the
+   old one should see the new one**; keep it for a typo. A new id rings again.
+   Dates make good ids — they sort, and they say when.
+5. **Nothing here changes what the phone does**, and there is deliberately no
+   field that could. Every behaviour already has a field elsewhere in this
+   document where it can be reviewed as policy rather than read as a message.
+
+**There is no severity and no colour**, and that is the other half of rule 1:
+each would be a lever for making a message look more urgent than it is, and the
+only way to keep the channel worth reading is to have nothing to turn up.
+
+**It is as trusted as the rest of the document and no more.** The envelope is
+signed by this project's key and the version counter only goes up, so a notice
+cannot be forged by the network and cannot be replayed once withdrawn.
+
+### A block that only reaches builds that can act on it
+
+`conditional` carries policy fragments gated on a drawbridge `versionCode`.
+Builds older than the gate ignore the whole key, because both parsers set
+`ignoreUnknownKeys` — and that is the entire mechanism.
+
+```jsonc
+"conditional": [
+  {
+    "min_version_code": 53,
+    "comment": "Paired with the chatbots option, which build 53 is the first to offer.",
+    "blocked_domains": ["chatgpt.com"],
+    "blocked_packages": ["com.openai.chatgpt"]
+  }
+]
+```
+
+**It exists for one shape of change: a new option that releases something the
+base policy blocks.** Ship the block and the switch in one document and it
+reaches three kinds of phone, only one of which is fine. A build with the switch
+blocks the names and offers a way back. A build without it blocks the names and
+offers nothing — on a locked phone, a tool taken away until somebody spends the
+key. The fragment means the second phone never sees the block at all: **nothing
+changes for somebody who does not update.**
+
+**A fragment can only add.** There is no field here that removes a block, for the
+same reason an option cannot: a way to quietly widen the filter for whoever has
+the newest build is the wrong direction for something nobody can review on the
+device.
+
+**Keep them short-lived.** A fragment is a statement that some phones are running
+a build too old to be told something. Once they are not, fold it into the base
+policy where it can be read at a glance.
+
+**And it is only half the problem.** The other half is that an option arriving on
+a phone that has *already* stored a selection reads as switched off, whatever its
+`default_enabled` says — see below.
+
+### Adding an option without taking something away
+
+**`default_enabled` is consulted only while the device has stored no selection at
+all**, which stops being true the first time a parent touches any switch. After
+that the stored list is the complete enabled set, and a brand-new option id is
+absent from it for exactly the same reason a refused one is. So an option added
+to the document arrives **off** on most phones in the field, and since every
+option in this project *releases* something, that is a tool taken away.
+
+Devices from build 53 on also record which option ids they have been **offered**,
+so an id that has never been seen falls back to the document's default and an id
+that has been seen keeps whatever the parent decided. A device that predates that
+record keeps the old behaviour exactly: reading "absent" as "new" there would
+switch every refused option back on and hand back apps that were deliberately
+removed.
+
+**The consequence for release order, and it is not optional.** A device gets its
+seen set from the first document it applies on the new build — so that document
+must not already contain the new option, or the option is marked seen before
+anyone has been offered it. **Ship the build in one policy and the option in the
+next.**
 
 ### An app outside the tunnel is an app outside the filter
 

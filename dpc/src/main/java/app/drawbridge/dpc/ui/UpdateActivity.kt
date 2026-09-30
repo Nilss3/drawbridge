@@ -13,6 +13,7 @@ import app.drawbridge.dpc.BuildConfig
 import app.drawbridge.dpc.R
 import app.drawbridge.dpc.update.AppInstaller
 import app.drawbridge.dpc.update.InstallOutcome
+import app.drawbridge.policy.model.AppUpdate
 import kotlinx.coroutines.launch
 
 /**
@@ -44,6 +45,8 @@ class UpdateActivity : AppCompatActivity() {
     private lateinit var versions: TextView
     private lateinit var status: TextView
     private lateinit var installButton: Button
+    private lateinit var notesHeading: TextView
+    private lateinit var notes: TextView
 
     /**
      * The install answers through a broadcast rather than a return value, so the
@@ -60,6 +63,8 @@ class UpdateActivity : AppCompatActivity() {
         versions = findViewById(R.id.updateVersions)
         status = findViewById(R.id.updateStatus)
         installButton = findViewById(R.id.updateInstallButton)
+        notesHeading = findViewById(R.id.updateNotesHeading)
+        notes = findViewById(R.id.updateNotes)
 
         findViewById<Button>(R.id.playProtectButton).setOnClickListener { openPlayProtect() }
         installButton.setOnClickListener { install() }
@@ -82,7 +87,15 @@ class UpdateActivity : AppCompatActivity() {
             versions.text = getString(R.string.update_none, BuildConfig.VERSION_NAME)
             installButton.isEnabled = false
         } else {
-            versions.text = getString(
+            // **The dotted version when the document names one.** A pair of
+            // build numbers answers nothing a parent asked: *build 51* does not
+            // say whether this is a fortnight or a year of work, and the number
+            // written everywhere else about this project is the dotted one. A
+            // document that predates `version_name` still has only the integer,
+            // so both sentences stay.
+            versions.text = available.versionName?.takeIf { it.isNotBlank() }?.let { named ->
+                getString(R.string.update_available_named, BuildConfig.VERSION_NAME, named)
+            } ?: getString(
                 R.string.update_available_detail,
                 BuildConfig.VERSION_NAME,
                 BuildConfig.VERSION_CODE,
@@ -90,7 +103,31 @@ class UpdateActivity : AppCompatActivity() {
             )
             installButton.isEnabled = true
         }
+        showNotes(available)
         showOutcome()
+    }
+
+    /**
+     * What the release says about itself, when it says anything.
+     *
+     * **An update somebody has to press a button for is one they are owed a
+     * reason for.** Play Protect means drawbridge cannot install its own
+     * updates, so every version that reaches a phone does so because a parent
+     * read this screen and chose to act — and until now the only thing it told
+     * them was that a larger number existed. That is a poor bargain to offer
+     * somebody, and it is the reason this is drawn above the two buttons rather
+     * than below the Play Protect walk: it is an input to the decision, not a
+     * footnote to it.
+     *
+     * Heading and body go together, so a document with no notes shows neither
+     * rather than a heading over nothing.
+     */
+    private fun showNotes(available: AppUpdate?) {
+        val text = available?.displayNotes(Languages.current())
+        val visibility = if (text.isNullOrBlank()) View.GONE else View.VISIBLE
+        notes.text = text.orEmpty()
+        notes.visibility = visibility
+        notesHeading.visibility = visibility
     }
 
     private fun showOutcome() {

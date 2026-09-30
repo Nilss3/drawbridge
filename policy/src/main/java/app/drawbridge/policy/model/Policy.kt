@@ -137,6 +137,55 @@ data class Policy(
      */
     @SerialName("app_ratings")
     val appRatings: AppRatings? = null,
+
+    /**
+     * One thing this project needs to say to the people running the phones, or
+     * null, which is the resting state and should stay that way.
+     *
+     * **This is the only channel there is.** drawbridge asks for no email
+     * address, has no account, and reports nothing home — which is the whole
+     * design and is not being revisited. The cost of that is real: when
+     * something has to be said to everyone with a phone in the field, there was
+     * until now no way to say it. A field on the document they already fetch
+     * every three hours is the narrowest thing that closes the gap.
+     *
+     * **It is as trusted as the rest of the document and no more.** The envelope
+     * is signed by this project's key and the version counter only goes up, so a
+     * notice cannot be forged by the network and cannot be replayed once
+     * withdrawn. What it must never become is a channel for anything but words:
+     * there is deliberately no field here that changes what the phone *does*,
+     * because every such field already exists elsewhere in this document where
+     * it can be reviewed as policy rather than read as a message.
+     *
+     * See [PolicyNotice] for the rules the text itself has to keep to.
+     */
+    val notice: PolicyNotice? = null,
+
+    /**
+     * Policy fragments that only apply to builds new enough to understand what
+     * they are for.
+     *
+     * **A build that predates this field ignores the whole key**, because both
+     * parsers set `ignoreUnknownKeys` — and that is the entire mechanism. It is
+     * the only way this document can tighten anything without tightening it on
+     * phones that have no way to act on it.
+     *
+     * The case it was built for: a new *option* that releases something the base
+     * policy blocks. Adding the block and the switch in one document reaches
+     * three kinds of phone, and only one of them is fine. A build with the
+     * switch blocks the names and offers the parent a way back. A build without
+     * it blocks the names and offers nothing — on a locked phone, a tool taken
+     * away until somebody spends the key. Putting the block in here means the
+     * second phone never sees it: nothing changes for somebody who does not
+     * update, which is the promise a filter on a child's phone has to keep.
+     *
+     * **It can only ever add**, like an option and for the same reason: a
+     * fragment that could *remove* a block would be a way to quietly widen the
+     * filter for whoever has the newest build, which is the wrong direction for
+     * a thing that cannot be reviewed on the device.
+     */
+    @SerialName("conditional")
+    val conditional: List<ConditionalPolicy> = emptyList(),
 ) {
     /**
      * Every browser this policy permits, with [allowedBrowserPackage] always a
@@ -182,15 +231,59 @@ data class Policy(
     /**
      * Which options are on, given what the device has stored.
      *
-     * `null` means nobody has chosen yet, so the policy's own defaults apply.
-     * A stored id the policy no longer offers is dropped, which is what stops a
-     * relaxation outliving the option that justified it.
+     * `null` [stored] means nobody has chosen yet, so the policy's own defaults
+     * apply. A stored id the policy no longer offers is dropped, which is what
+     * stops a relaxation outliving the option that justified it.
+     *
+     * **[seen] is what lets an option be added without taking something away.**
+     * Without it, a document that introduces an option hands it to every phone
+     * switched *off*: [stored] is the complete enabled set, so a brand-new id
+     * and an id the parent refused are both simply absent, and the defaults are
+     * never consulted again after the first switch is touched. An option that
+     * releases something the base policy blocks would therefore arrive as a
+     * confiscation — on a locked phone, one that costs the key to undo.
+     *
+     * So an id that has never been offered falls back to [PolicyOption.defaultEnabled],
+     * and an id that has been offered keeps whatever the parent decided about it.
+     *
+     * **A null [seen] keeps the old behaviour exactly**, and that is not
+     * laziness. It is the state of every device that predates the field, and the
+     * only other reading available — "absent from seen means new" — would treat
+     * every option the parent had ever switched off as new and switch it back
+     * on, handing back apps that were deliberately removed. A device in that
+     * state is given its seen set on the next policy it applies, from a document
+     * that does not yet contain the new option; that ordering is the whole
+     * reason a build ships one release ahead of the option it enables.
      */
-    fun enabledOptionIds(stored: List<String>?): Set<String> {
+    fun enabledOptionIds(stored: List<String>?, seen: List<String>? = null): Set<String> {
         val known = options.map { it.id }.toSet()
-        return stored?.filterTo(mutableSetOf()) { it in known }
-            ?: options.filter { it.defaultEnabled }.mapTo(mutableSetOf()) { it.id }
+        val chosen = stored?.filterTo(mutableSetOf()) { it in known }
+            ?: return options.filter { it.defaultEnabled }.mapTo(mutableSetOf()) { it.id }
+
+        val offered = seen?.toSet() ?: return chosen
+        options.filter { it.defaultEnabled && it.id !in offered }.mapTo(chosen) { it.id }
+        return chosen
     }
+
+    /**
+     * This policy with every [conditional] fragment that [versionCode] satisfies
+     * merged in.
+     *
+     * Applied before profiles and options, so a fragment's names are ordinary
+     * blocked names by the time an option gets the chance to release them —
+     * which is what makes the pair work at all.
+     */
+    fun withConditionals(versionCode: Int): Policy {
+        val matching = conditional.filter { versionCode >= it.minVersionCode }
+        if (matching.isEmpty()) return this
+        return copy(
+            blockedDomains = (blockedDomains + matching.flatMap { it.blockedDomains }).distinct(),
+            blockedPackages = (blockedPackages + matching.flatMap { it.blockedPackages }).distinct(),
+        )
+    }
+
+    /** Every option id this document offers, for [enabledOptionIds]'s `seen` set. */
+    fun offeredOptionIds(): Set<String> = options.mapTo(mutableSetOf()) { it.id }
 
     /**
      * This policy with [enabledIds] applied on top.
@@ -216,9 +309,20 @@ data class Policy(
         )
     }
 
-    /** The policy as it actually applies on a device: profile first, then options. */
-    fun effective(selectedProfileId: String?, enabledOptionIds: Set<String>): Policy =
-        withProfile(selectedProfileId).withOptions(enabledOptionIds)
+    /**
+     * The policy as it actually applies on a device: the fragments this build
+     * understands, then the profile, then the options.
+     *
+     * The order is the meaning. A conditional fragment blocks, a profile
+     * replaces, an option releases — so a fragment merged after the options had
+     * run would block names the parent had just been promised.
+     */
+    fun effective(
+        selectedProfileId: String?,
+        enabledOptionIds: Set<String>,
+        versionCode: Int = Int.MAX_VALUE,
+    ): Policy =
+        withConditionals(versionCode).withProfile(selectedProfileId).withOptions(enabledOptionIds)
 }
 
 /**
@@ -451,6 +555,30 @@ data class Profile(
 internal fun pick(base: String, variants: Map<String, String>, language: String): String =
     variants[language]?.takeIf { it.isNotBlank() } ?: base
 
+/**
+ * A piece of policy that only applies from [minVersionCode] onwards.
+ *
+ * See [Policy.conditional] for why this exists. Keep them short-lived: a
+ * fragment is a statement that some phones are running a build too old to be
+ * told something, and once they are not, it belongs in the base policy where it
+ * can be read at a glance.
+ */
+@Serializable
+data class ConditionalPolicy(
+    /** The lowest drawbridge `versionCode` this fragment is meant for. */
+    @SerialName("min_version_code")
+    val minVersionCode: Int,
+
+    /** Why the fragment exists, for whoever reads the document next. */
+    val comment: String = "",
+
+    @SerialName("blocked_domains")
+    val blockedDomains: List<String> = emptyList(),
+
+    @SerialName("blocked_packages")
+    val blockedPackages: List<String> = emptyList(),
+)
+
 @Serializable
 data class DnsPolicy(
     /**
@@ -663,4 +791,140 @@ data class AppUpdate(
      * per-ABI splits GeckoView forces on herald. Null means "any device".
      */
     val abi: String? = null,
-)
+
+    /**
+     * The human version this build is called, e.g. `0.2.26`, or null on a
+     * document that does not say.
+     *
+     * The screen has always had a version *code* to show — an integer that goes
+     * up by one — and has shown it, because it was the only honest thing it
+     * had. It answers nothing a parent asked: *build 51* does not say whether
+     * the thing they are about to install is a fortnight or a year newer than
+     * what is running, and the number they see everywhere else about this
+     * project is the dotted one.
+     */
+    @SerialName("version_name")
+    val versionName: String? = null,
+
+    /**
+     * What changed, in the words of whoever cut the release.
+     *
+     * **An update the parent has to press a button for is an update they are
+     * entitled to a reason for.** drawbridge cannot install its own updates —
+     * Play Protect refuses, see `UpdateActivity` — so every version that ever
+     * reaches a phone in the field does so because somebody read a screen and
+     * chose to act on it, having been told only that a higher number exists.
+     * That is a bad bargain, and it is the reason this field exists.
+     *
+     * Plain text, no markup: it goes into a `TextView`. A short paragraph or a
+     * few lines, written for a parent rather than for this repository — the
+     * commit log is where the other audience is served.
+     *
+     * Null means the screen says nothing extra, which is what every document
+     * written before this field did.
+     */
+    val notes: String? = null,
+
+    /** See [Profile.nameByLanguage]. */
+    @SerialName("notes_i18n")
+    val notesByLanguage: Map<String, String> = emptyMap(),
+) {
+    /** The dotted version if the document carries one, else `build <code>`. */
+    fun displayVersion(): String = versionName ?: "build $versionCode"
+
+    /** The release notes for [language], or null when the document has none. */
+    fun displayNotes(language: String): String? =
+        notes?.let { pick(it, notesByLanguage, language) }?.takeIf { it.isNotBlank() }
+}
+
+/**
+ * A message from this project to whoever is holding the phone.
+ *
+ * **Rare by construction, and it has to stay rare.** A card that is usually
+ * there is a card nobody reads, and the one time it matters it will be the one
+ * time it is ignored. The bar is: something a parent has to *know* and cannot
+ * find out any other way — a fix they have to take action for, a setting that
+ * has changed under them, a problem being worked on that explains what their
+ * phone is doing. Not release chatter, which belongs in [AppUpdate.notes]; not
+ * anything about the web, which belongs in the blocklists; and not marketing,
+ * which belongs nowhere near a device somebody's child depends on.
+ *
+ * **[id] is what makes dismissal mean anything.** The card is dismissible, and
+ * the dismissal is remembered against this string, so re-sending the same notice
+ * does not nag and sending a *different* one gets through. Change it whenever
+ * the words change enough that somebody who dismissed the old one should see the
+ * new one; keep it when fixing a typo. Dates make good ids — `2026-09-calls` —
+ * because they sort and they say when.
+ *
+ * **There is no severity, no icon and no colour, on purpose.** Every one of
+ * those is a lever for making a message look more urgent than it is, and the
+ * only honest way to keep the channel trustworthy is to have nothing to turn up.
+ * One card, one shape, used almost never.
+ */
+@Serializable
+data class PolicyNotice(
+    /** Stable identity for dismissal. See the class note. */
+    val id: String,
+
+    /** One line. It is the only part somebody skimming will read. */
+    val title: String,
+
+    /** A short paragraph. Plain text; it goes into a `TextView`. */
+    val body: String,
+
+    /** See [Profile.nameByLanguage]. */
+    @SerialName("title_i18n")
+    val titleByLanguage: Map<String, String> = emptyMap(),
+
+    /** See [Profile.nameByLanguage]. */
+    @SerialName("body_i18n")
+    val bodyByLanguage: Map<String, String> = emptyMap(),
+
+    /**
+     * Somewhere to read more, or null.
+     *
+     * Opened with `ACTION_VIEW`, so on a managed phone it lands in herald and is
+     * filtered like anything else — which also means a link to a host the
+     * blocklists refuse shows a block page. Keep it on this project's own site,
+     * and expect it to be unreachable during a curfew: the button is only drawn
+     * when something on the phone can open it, and offline mode leaves the page
+     * failing to load like any other.
+     */
+    val url: String? = null,
+
+    /**
+     * Whether this message is worth interrupting somebody for.
+     *
+     * **False by default, and the default is the whole point.** The first
+     * version of this channel raised a notification for every notice, and the
+     * owner's verdict on seeing one for a test message was the right one:
+     * notifications are for urgent messages. A shade entry for every thing the
+     * project has to say is how a channel meant to be used a handful of times in
+     * a product's life gets muted — and a muted channel is worse than none,
+     * because it looks like one that works.
+     *
+     * So the ordinary message is filed silently and waits on the messages
+     * screen, where somebody opening drawbridge will find it. Only a message
+     * that has to reach a parent who is *not* looking sets this: something they
+     * have to act on, or that explains what their phone is doing wrong.
+     *
+     * The bar is deliberately hard to reach from inside this document — there is
+     * one boolean, no levels, nothing to escalate — because the only way to keep
+     * an interruption meaningful is to have nothing finer to reach for.
+     */
+    val urgent: Boolean = false,
+) {
+    fun displayTitle(language: String): String = pick(title, titleByLanguage, language)
+
+    fun displayBody(language: String): String = pick(body, bodyByLanguage, language)
+
+    /**
+     * Whether this notice is worth drawing at all.
+     *
+     * A document with a blank title or body is a mistake rather than a message,
+     * and drawing an empty card would be worse than drawing nothing. Separated
+     * out so the rule is one place and testable without a device.
+     */
+    fun isDrawable(): Boolean =
+        id.isNotBlank() && title.isNotBlank() && body.isNotBlank()
+}

@@ -54,12 +54,28 @@ NAV = {
     "fr": {"home": "Accueil", "faq": "Q&A", "install": "Installer", "github": "GitHub"},
 }
 
+# The licence and the builder in one sentence.
+#
+# They were two lines for about an hour and read as two separate facts; they are
+# one. Open source says what somebody may do with it, the builder says who stands
+# behind it, and a parent installing a device policy controller on their child's
+# phone is asking both at once. It is also the reference the developer
+# registration points at.
+#
+# Deliberately a statement of fact and nothing more. Not endorsed, recommended or
+# certified by anyone -- see the handoff on keeping external claims to what is
+# actually true.
 FOOTER = {
-    "en": "Drawbridge is free and open source (MIT).",
-    "nl": "Drawbridge is gratis en open source (MIT).",
-    "fr": "Drawbridge est gratuit et open source (MIT).",
+    "en": 'Drawbridge is free and open source software (MIT) built by '
+          '<a href="{url}">On the Way consulting</a>.',
+    "nl": 'Drawbridge is gratis en opensourcesoftware (MIT), gebouwd door '
+          '<a href="{url}">On the Way consulting</a>.',
+    "fr": 'Drawbridge est un logiciel libre et open source (MIT), '
+          'développé par <a href="{url}">On the Way consulting</a>.',
 }
+BUILDER_URL = "https://www.ontheway-consulting.com"
 FOOTER_SOURCE = {"en": "Source on GitHub", "nl": "Broncode op GitHub", "fr": "Code source sur GitHub"}
+
 
 
 def channel_banner() -> str:
@@ -149,7 +165,7 @@ def render_page(
 
 <footer class="site-footer">
   <div class="wrap">
-    <span>{FOOTER[lang]}</span>
+    <span>{FOOTER[lang].format(url=BUILDER_URL)}</span>
     <span><a href="https://github.com/Nilss3/drawbridge">{FOOTER_SOURCE[lang]}</a></span>
   </div>
 </footer>
@@ -178,7 +194,8 @@ HOME = {
         states='<p>Drawbridge has an unlocked and a locked state. Unlocked, it already stops social media, games, adult content, gambling and AI companions in general, but it still allows WhatsApp, Telegram, YouTube and video streaming apps like Netflix. Genuinely private messengers such as Signal are always allowed. In the unlocked state you can also remove drawbridge with a factory reset.</p>\n          <p>By locking drawbridge you can impose more protections:</p>\n          <ul>\n            <li>Block WhatsApp, Telegram, video streaming and/or YouTube.</li>\n            <li>Have an internet curfew.</li>\n            <li>Have a completely offline phone. GPS keeps working, so navigation and even location sharing still work offline.</li>\n            <li>Remove all browsers.</li>\n            <li>Have only some apps, the ones you really need, and stop further app installs.</li>\n          </ul>\n          <p>A locked drawbridge requires a difficult key and/or a timer to unlock. You may set no timer and &quot;forget&quot; the key on purpose, in which case you have those restrictions forever.</p>',
         hero_title="Drawbridge Project",
         hero_tagline="Keeps the bad internet on the other side",
-        hero_art_alt="A raised drawbridge at sunset, between an autumn park where somebody is reading on a bench and a rocky shore where cartoon monsters are waiting.",
+        hero_art_alt="Vincent van Gogh's painting The Langlois Bridge at Arles, 1888: a raised wooden drawbridge over a canal, with a towpath running alongside it.",
+        hero_credit="Vincent van Gogh, <em>The Langlois Bridge at Arles</em>, 1888. Public domain.",
         h1="Welcome to the drawbridge project",
         lede="Drawbridge protects you and your Android device from harmful content, so you can keep your focus and sanity.",
         p1='Make your phone a drawbridge phone: a phone clear of social media and other harmful time-wasters. A drawbridge phone can be used for yourself, and/or for your teenager, as a free, better and low-maintenance alternative to parental controls. The protection is based on the best practices of digital minimalism and supported by neuroscience and parents\' organisations. Drawbridge is free, open source, no frills, watertight, and respects your privacy. No account is needed, and none of your data is ever uploaded.',
@@ -240,7 +257,8 @@ HOME = {
         states='<p>Drawbridge heeft een ontgrendelde en een vergrendelde toestand. Ontgrendeld houdt het social media, games, pornografie, gokken en AI companions al tegen, maar het laat WhatsApp, Telegram, YouTube en videostreamingapps zoals Netflix nog toe. Echt private berichtenapps zoals Signal zijn altijd toegelaten. In de ontgrendelde toestand kan je drawbridge ook verwijderen met een factory reset.</p>\n          <p>Door drawbridge te vergrendelen kan je meer bescherming opleggen:</p>\n          <ul>\n            <li>WhatsApp, Telegram, videostreaming en/of YouTube blokkeren.</li>\n            <li>Een internetcurfew instellen.</li>\n            <li>Een volledig offline telefoon. Gps blijft werken, dus navigatie en zelfs je locatie delen lukken offline.</li>\n            <li>Alle browsers verwijderen.</li>\n            <li>Enkel bepaalde apps houden, die je echt nodig hebt, en verdere installaties tegenhouden.</li>\n          </ul>\n          <p>Een vergrendelde drawbridge vraagt een moeilijke sleutel en/of een timer om te ontgrendelen. Je kan ook geen timer zetten en de sleutel bewust &quot;vergeten&quot;: dan hou je die beperkingen voorgoed.</p>',
         hero_title="Drawbridge Project",
         hero_tagline="Houdt het slechte internet aan de overkant",
-        hero_art_alt="Een opgehaalde ophaalbrug bij zonsondergang, tussen een herfstpark waar iemand op een bank zit te lezen en een rotsige oever waar tekenfilmmonsters staan te wachten.",
+        hero_art_alt="Het schilderij De brug van Langlois te Arles van Vincent van Gogh, 1888: een opgehaalde houten ophaalbrug over een kanaal, met een jaagpad ernaast.",
+        hero_credit="Vincent van Gogh, <em>De brug van Langlois te Arles</em>, 1888. Publiek domein.",
         h1="Welkom bij het drawbridge-project",
         lede="Drawbridge beschermt jou en je Android-toestel tegen schadelijke inhoud, zodat je je focus en gemoedsrust behoudt.",
         p1='Maak van je telefoon een drawbridge-telefoon: een telefoon vrij van social media en andere schadelijke tijdverspillers. Een drawbridge-telefoon kan gebruikt worden voor jezelf, en/of voor je tiener, als een gratis, betere en onderhoudsarme alternatief voor parental controls. De bescherming is gebaseerd op de beste praktijken van digitaal minimalisme en wordt ondersteund door neurowetenschap en ouderverenigingen. Drawbridge is gratis, open source, zonder franjes, waterdicht, en respecteert je privacy. Er is geen account nodig, en er wordt nooit data geüpload.',
@@ -302,7 +320,8 @@ HOME = {
         states="<p>Drawbridge a un état déverrouillé et un état verrouillé. Déverrouillé, il bloque déjà les réseaux sociaux, les jeux, les contenus pour adultes, les jeux d'argent et les compagnons IA en général, mais il autorise encore WhatsApp, Telegram, YouTube et les applications de streaming vidéo comme Netflix. Les messageries vraiment privées comme Signal sont toujours autorisées. À l'état déverrouillé, vous pouvez aussi retirer drawbridge par une réinitialisation d'usine.</p>\n          <p>En verrouillant drawbridge, vous pouvez imposer davantage de protections :</p>\n          <ul>\n            <li>Bloquer WhatsApp, Telegram, le streaming vidéo et/ou YouTube.</li>\n            <li>Instaurer un couvre-feu internet.</li>\n            <li>Un téléphone entièrement hors ligne. Le GPS continue de fonctionner, donc la navigation et même le partage de position marchent hors ligne.</li>\n            <li>Supprimer tous les navigateurs.</li>\n            <li>Ne garder que certaines applications, celles dont vous avez vraiment besoin, et empêcher toute nouvelle installation.</li>\n          </ul>\n          <p>Un drawbridge verrouillé demande une clé difficile et/ou une minuterie pour être déverrouillé. Vous pouvez ne mettre aucune minuterie et « oublier » la clé volontairement : vous gardez alors ces restrictions pour toujours.</p>",
         hero_title="Drawbridge Project",
         hero_tagline="Garde le mauvais internet de l'autre côté",
-        hero_art_alt="Un pont-levis relevé au coucher du soleil, entre un parc d'automne où quelqu'un lit sur un banc et une rive rocheuse où attendent des monstres de dessin animé.",
+        hero_art_alt="Le tableau Le Pont de Langlois à Arles de Vincent van Gogh, 1888 : un pont-levis en bois relevé au-dessus d'un canal, longé par un chemin de halage.",
+        hero_credit="Vincent van Gogh, <em>Le Pont de Langlois à Arles</em>, 1888. Domaine public.",
         h1="Bienvenue sur le projet drawbridge",
         lede="Drawbridge protège votre appareil Android des contenus nuisibles, pour préserver votre concentration et votre équilibre.",
         p1='Faites de votre téléphone un téléphone drawbridge : un téléphone débarrassé des réseaux sociaux et autres pertes de temps nuisibles. Un téléphone drawbridge peut être utilisé pour vous-même, et/ou pour votre adolescent, comme alternative gratuite, meilleure et peu contraignante aux contrôles parentaux. La protection s\'appuie sur les meilleures pratiques du minimalisme numérique et est soutenue par les neurosciences et des associations de parents. Drawbridge est gratuit, open source, sans fioritures, étanche, et respecte votre vie privée. Aucun compte n\'est nécessaire, et aucune de vos données n\'est jamais transmise.',
@@ -853,6 +872,21 @@ def render_home(lang: str) -> str:
           <p>{c['hero_tagline']}</p>
         </div>
       </div>
+      <!--
+        The credit is the point of the picture, not decoration on it.
+
+        The illustration this replaced drew the one comment a product built on
+        trust cannot afford — that it looked AI-generated — so the answer is a
+        painting old enough to be beyond doubt, and a line that says whose it is.
+        The crop that keeps the bridge's raised arms is the crop that loses the
+        signature at the bottom left, which makes this line the only place the
+        painter's name appears.
+
+        Outside .hero-art rather than over it: every other scrap of text on that
+        picture had to be argued into a patch of sky, and a credit competing with
+        the title for the same sky would be a third thing to keep legible.
+      -->
+      <p class="hero-credit">{c['hero_credit']}</p>
       <p class="lede">{c['lede']}</p>
       <p class="voices-lead">{c['use_cases_lead']}</p>
       <ul class="voices">

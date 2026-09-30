@@ -21,9 +21,9 @@ which is kept whole on purpose.
 
 | | `main` (the beta) | `dev` |
 |---|---|---|
-| drawbridge | **0.2.25, build 50** | **0.2.25, build 50** |
+| drawbridge | **0.2.28, build 53** | **0.2.28, build 53** |
 | herald | **0.1.19** | **0.1.19** |
-| policy | **118** | **116** |
+| policy | **125** | **124** |
 | install page | <https://drawbridge-project.pages.dev/install/> | <https://dev.drawbridge-project.pages.dev/install/> |
 | phone | the owner's Nothing Phone (A059) | the Moto G15 |
 
@@ -43,15 +43,17 @@ page's translations and permanent mode, and **108 on main**, which is the beta
 taking all of that at once. Then 109 and 111 on main, 110 and 112 to 114 on dev,
 **115 on main** for Vanadium, and **116 on dev**, a version bump and nothing
 else that put this channel back above the beta as 98 once did. Then **117 on
-main**, the beta catching up with three dpc releases at once, and **118 on
-main**, which takes WhatsApp out of the tunnel.
+main**, the beta catching up with three dpc releases at once, **118 on main** for
+the WhatsApp fix, **119 on dev**, which is this channel taking that fix and
+clearing the beta again, **120 on dev** for drawbridge 0.2.26 build 51, and **121 on dev** for 0.2.27
+build 52, which is 51's notice channel made able to notify anybody.
 
 **117 was very nearly taken twice, and that is the counter's failure mode.** The
-WhatsApp fix was first written on `dev` against a handoff table that still said
-main was on 115, so it numbered itself 117 — the number main had already used
-five days earlier. Nothing was published, so nothing broke, but a dev document
-numbered 117 would have been refused forever by any phone that had held main's,
-and the symptom is a policy that reports success and changes nothing. **Read
+WhatsApp fix was first written on this branch against a version table that still
+said main was on 115 — it had been on 117 for five days — so it numbered itself
+117. Nothing was published, so nothing broke, but a dev document numbered 117
+would have been refused forever by any phone that had held main's, and the
+symptom is a policy that reports success and changes nothing. **Read
 `dist/policy.json` on the other branch, not this table**, before choosing a
 number: the table is written by hand and goes stale exactly when it matters.
 
@@ -339,6 +341,49 @@ the key can always unlock and put a build on the phone. See
 
 Each of these looks like a bug and is not, or bites silently:
 
+- **`adb install -g` grants every runtime permission, and no real install uses
+  it.** This invalidated a device test and shipped a feature that worked on
+  nobody's phone. The notice channel was watched working on an emulator — the
+  notification appeared, was tapped, opened the screen — and build 51 went to
+  dev with `POST_NOTIFICATIONS` never requested and never granted. On a phone
+  provisioned the real way, `tools/provision-adb.sh` runs `adb install -r`, the
+  permission is `granted=false`, and `NotificationManager.notify` **drops the
+  post with no exception and no log**. Messages were filed correctly and rang
+  for nobody; the owner found it on the dev phone. Measured on 2026-09-28 on a
+  wiped emulator: `granted=false` after a plain install, `granted=true,
+  flags=[POLICY_FIXED]` once build 52's device-owner grant runs. **Install
+  without `-g` when testing anything that touches a permission**, and prefer
+  `provision-adb.sh`'s own command over a convenient one.
+- **`policytool.py verify --check-urls` cannot see a missing file on the Pages
+  site**, which is precisely where `app_update` points on both channels.
+  Cloudflare Pages answers an unknown path with **HTTP 200 and the site's HTML**
+  rather than a 404 — measured on 2026-09-28, where
+  `/assets/dpc-7d366ad2a6e9bd2a.apk` returned `200 text/html` 24591 bytes
+  *before* the file had been pushed, and an APK from the other channel returned
+  the same. So the check that exists to catch a mistyped or not-yet-deployed
+  `app_update` URL passes on both, and the phone is the thing that finds out: it
+  downloads the HTML, the checksum does not match, and the update fails. **The
+  URL check is only meaningful for the GitHub-hosted `required_apps`**, which do
+  return a real 404. Worth fixing in the tool — a content type, a length, or the
+  first two bytes being `PK` would all catch it — and worth knowing until then.
+- **`VpnService.Builder.addDisallowedApplication` does not throw for a package
+  that is not installed**, whatever its documentation says. Its `verifyApp`
+  calls the raw `IPackageManager.getApplicationInfo`, which *returns null* for a
+  missing package where the framework wrapper the documentation describes would
+  have thrown — and the return value is discarded. So the call accepts any
+  string at all. Measured on the API 36 emulator on 2026-09-20, where a phone
+  with no WhatsApp on it logged `Outside the tunnel, and so unfiltered:
+  com.whatsapp`. That line had been untrue, and printed, since
+  `excluded_packages` shipped; the `Not installed, nothing to exclude` branch
+  beside it was dead code that had never once run. **Nothing was broken by it** —
+  the platform resolves the names to UIDs when it builds the tunnel's ranges,
+  and an absent package has no UID to leave out — but it made the log say the
+  opposite of the truth, and it very nearly shipped a worse bug on top: the
+  item 16 reconciler compares *what the tunnel excluded* against *what is
+  installed now*, and a builder that silently accepts everything makes those two
+  sets permanently different, which is a tunnel rebuilt every fifteen minutes
+  forever. `DnsFilterService.installedForUser` is now the single predicate both
+  sides ask.
 - **Re-pinning `required_apps` means three fields, not two.** `url`, `sha256`
   *and* `version_code`. On 2026-08-25 the first two were updated for
   v0.2.8-dev.6 and the third was left at 14, so policy 89 shipped correct
@@ -697,11 +742,11 @@ is on it is genuinely on it.
 
 | | |
 |---|---|
-| **Open** | **14** — filtering tethered traffic, measured as unfiltered on 2026-09-12; **16** — an excluded package that arrives after the tunnel did is not excluded |
-| **Closed as fixed** | **15** — WhatsApp calls, policy 118, confirmed on the beta phone 2026-09-20 |
+| **Open** | **14** — filtering tethered traffic |
+| **Closed as fixed** | **15** — WhatsApp calls, policy 118 on the beta and 119 here, confirmed 2026-09-20; **16** — the stale exclusion list, built in 0.2.26 build 51, unreleased |
 | **Closed as shipped** | 4, 6, 10 — built, and the entries had gone stale |
 | **Closed as answered** | 2 and 2a — FRP was tested and does not hold |
-| **Closed as won't do** | 5 (F-Droid) |
+| **Closed as won't do** | 5 (F-Droid); **17** — a toggle for general-purpose chatbots |
 | **Closed as not ours to fix** | 1 — Play Protect, on Google-certified phones |
 | **Closed as done enough** | 12b, 12c, 12g — the app is in public beta |
 
@@ -1316,11 +1361,103 @@ before locking, precisely so a phone cannot be sealed pointing at a resolver
 nobody can change; and `block_encrypted_dns` blackholes known DoT endpoints, so
 the chosen resolver needs an exception carved for it.
 
-### 16. An excluded package that arrives after the tunnel did is not excluded
+### 17. ~~A toggle for general-purpose chatbots~~ — won't do, 2026-09-28
+
+**Asked for, designed, measured, and cancelled by the owner the same day.** The
+measurements are kept because they are the expensive part and the conclusion
+rests entirely on them.
+
+**The ask:** make ChatGPT, Claude, Gemini, DeepSeek, Copilot, Perplexity,
+Mistral, Qwen and Kimi toggleable at 16+, default on, with Grok staying blocked.
+
+**Why it was dropped, in the owner's words:** blocking the big assistants pushes
+people to shady alternatives. The large ones will eventually take countermeasures
+against giving harmful advice; the small ones will not. **The biggest win is
+already banked — AI companions are blocked, and they are the most harmful.**
+
+#### What was measured, so it need not be measured again
+
+- **The content rating is useless for this category.** `app-ratings.py search
+  "ai chatbot"` returned 23 candidates: **13 come back `keep` at PEGI 3**,
+  including Poe, which is a full multi-model frontend, and Meta AI. Only 9 are
+  parental-guidance. AI companions were easy because they self-select into PEGI
+  18; general assistants do not.
+- **`applicationCategory` is useless too.** PRODUCTIVITY for **19 of 21**
+  chatbots — and also for every notes app, keyboard, calendar and file manager.
+  Blocking that category would gut the phone.
+- **Content descriptors do not discriminate.** Poe reports *Users Interact*,
+  which is what Duolingo reports; two chatbots report nothing at all; ChatGPT
+  reports *Parental Guidance Recommended*, which is what WhatsApp and Spotify
+  report.
+- **No open-source blocklist exists.** HaGeZi has 50 lists and none is AI.
+  blocklistproject has no `ai.txt`. UT1 has no AI category. The one thing named
+  *AI blocklist* — `laylavish/uBlockOrigin-HUGE-AI-Blocklist` — is 3,643
+  **cosmetic** uBlock rules that hide AI-*generated* content from DuckDuckGo and
+  Bing result pages. Wrong target and not DNS-blockable.
+- **The Play Store's "AI playground" tag is real but unreachable.** It shows on
+  the *phone's* Play app — the owner's screenshot of Perplexity shows it beside
+  Productivity and Widgets — and appears **zero times** in the web listing HTML,
+  under a desktop or a mobile user agent, for three different apps. It comes from
+  the Play client's own API. Reading it would mean reverse-engineered protobuf
+  and auth tokens, which would fail silently and permissively: the worst
+  direction for this project, and the thing `app-ratings.py`'s docstring forbids
+  when it says never a bare text search.
+- **The shelf behind the tag *is* reachable, and is a good harvesting corpus.**
+  Any app's listing carries `collection/cluster?gsr=…` links; following
+  Perplexity's returned Claude, ChatGPT, Gemini, DeepSeek, Poe and Meta AI plus
+  four the keyword search missed — Genspark, Genie, Merlin, Replit — of which
+  four are `keep` at PEGI 3. Noisy (Canva, GitHub and Xmind came along), so it is
+  a candidate feed for a human, not an answer. **Worth remembering if this is
+  ever reopened.**
+
+#### What the answer is instead, and it is already built
+
+The install lock. `InstallLockSettings` was written on 2026-08-16 after policy 59
+added twenty-two AI companion apps by hand, and its reasoning transfers to this
+category unchanged: *a curated blocklist is a filter for a phone whose app store
+is wide open… a signed document updated by hand will always trail them. The fix
+is upstream of the list.* Companions at least self-select into PEGI 18; general
+assistants hide inside PRODUCTIVITY with a PEGI 3 badge, so the list would trail
+further and faster.
+
+#### The two mechanisms it needed are kept, and the toggle is not
+
+Built for this option, reverted with it on 2026-09-28, and **put back the same
+day on the owner's call** — so that the next option, whenever there is one, does
+not have to rediscover either. Neither is chatbot-specific and neither is used by
+any option today.
+
+1. **A seen-option set**, `PolicyStore.StoredState.seenOptionIds`. It fixes a
+   live latent bug rather than enabling a feature: `default_enabled` is consulted
+   only while the device has stored no selection at all, which stops being true
+   the first time a parent touches any switch. After that a brand-new option id
+   is absent from the stored list for exactly the same reason a refused one is —
+   so **an option added to the document arrives off**, and since every option
+   here *releases* something, that is a tool taken away. On a locked phone, until
+   somebody spends the key.
+2. **`conditional`: version-gated policy fragments.** A block older builds ignore
+   entirely, so a phone that never updates is never tightened by a document it
+   has no switch to answer.
+
+**The release-order rule they imply is the part most likely to be forgotten.** A
+device takes its seen set from the first document it applies on the new build, so
+that document must not already contain the new option — or the option is marked
+offered before anyone was offered it. **Ship the build in one policy and the
+option in the next.**
+
+### 16. ~~An excluded package that arrives after the tunnel did is not excluded~~ — built 2026-09-20, unreleased
 
 **Found by the owner asking the right question on 2026-09-20, immediately after
 15 closed: what happens to the exclusion when the WhatsApp switch moves?** The
 answer is worse than the question assumed, and it is not about the switch.
+
+**Fixed in drawbridge 0.2.26 build 51, and verified on the API 36 emulator**:
+uninstalling a package the document excludes logged
+`Excludable packages changed (android.intent.action.PACKAGE_REMOVED …):
+[com.google.android.projection.gearhead] -> []` and re-established the tunnel.
+**Released to dev as policy 120 on 2026-09-28**, and untested on a handset:
+the emulator is where the reconciler was watched working, and the Moto has not
+yet been given the build.
 
 **`excluded_packages` is read once, when the tunnel is established, and never
 again.** `VpnService.Builder.addDisallowedApplication` throws for a package that
@@ -1331,15 +1468,16 @@ decision. The tunnel is rebuilt on exactly two events: the service starting, and
 the policy document's `dns` block changing (`watchForDnsPolicyChanges`, which
 maps to `.dns` and is `distinctUntilChanged`). **A package appearing is neither.**
 
-**So the fix that just shipped does not reach a phone where WhatsApp arrives
-later, which is most new phones.** Provisioning starts the filter before the
+**So the fix that just shipped — 118 on the beta, 119 here — does not reach a
+phone where WhatsApp arrives later, which is most new phones.** Provisioning starts the filter before the
 parent has installed anything; the parent then installs WhatsApp in the pre-lock
 window; the tunnel that came up without it stays up. Calls fail exactly as issue
 1 describes, and the phone is running the policy that is supposed to have fixed
 it. **The beta phone does not show this** because WhatsApp was already installed
 when policy 118 landed — the `dns` block changed, the tunnel rebuilt, the
 exclusion took. That is the one ordering that works, and it is the one that was
-tested.
+tested. **The Moto has not been asked**, and it is the better phone to ask, since
+119 reaching it is the same event in the same order.
 
 **The switch is the same bug, in the direction nobody would look.** Switching
 *WhatsApp off* is safe: the app is hidden, a hidden app cannot run, and a stale
@@ -1379,7 +1517,35 @@ at the top of `PackageWatcher`.
 ships the workaround is a reboot after installing WhatsApp. Worth saying in the
 install instructions if this sits unbuilt for long.
 
-### 15. ~~WhatsApp calls fail~~ — fixed by policy 118, confirmed 2026-09-20
+#### What was built, 2026-09-20
+
+Three mechanisms, which is what `PackageWatcher`'s own header argues for and
+what item 16 is the cost of having none of:
+
+1. **A receiver in `DnsFilterService`** for `PACKAGE_ADDED`, `PACKAGE_REMOVED`
+   and `PACKAGE_CHANGED`, filtered to the names the document excludes.
+   Runtime-registered, because `PACKAGE_ADDED` has been an implicit broadcast
+   since Android 8.
+2. **A fifteen-minute reconcile**, matching the sweep interval next door. It
+   needs no broadcast to be right, which matters because hiding and unhiding —
+   the option-switch case — are reported inconsistently across versions.
+3. **An explicit poke from `MainActivity.applyOption`**, because that is the one
+   a parent watches happen and would report as broken if it took a quarter of
+   an hour.
+
+`reconcileExclusions` re-establishes only when the set actually changed. That
+restraint is load bearing: re-establishing drops DNS for the moment it takes, so
+every app on the phone sees one failed lookup, and a reconciler that fired on a
+timer for its own sake would be a worse bug than the one it fixes.
+
+**And it nearly was one.** The first version recorded "excluded" as *the calls
+that did not throw*, which turns out to be all of them — see the
+`addDisallowedApplication` entry in [Traps](#traps-that-cost-time-here). That
+made the two sets permanently unequal and would have rebuilt the tunnel every
+fifteen minutes on every phone, forever. It was caught by running it on an
+emulator rather than by reading it, which is the argument for running it.
+
+### 15. ~~WhatsApp calls fail~~ — fixed by policy 118 on the beta, carried here as 119
 
 **Reported by a user ([issue 1](https://github.com/Nilss3/drawbridge/issues/1))
 and reproduced by the owner on the beta phone, build 50, on 2026-09-19.** Chats
@@ -1423,8 +1589,10 @@ shape — *"error 21, are you using a VPN?"* — which this project has already
 measured once, and it is the shape the error text fitted from the start, blaming
 the network rather than the connection.
 
-**So `com.whatsapp` and `com.whatsapp.w4b` are out of the tunnel, in policy 118.**
-`com.google.android.projection.gearhead` is repeated beside them because setting
+**So `com.whatsapp` and `com.whatsapp.w4b` are out of the tunnel** — policy 118
+on the beta, and **119 here**, which is the shared counter doing its job rather
+than a second change. `com.google.android.projection.gearhead` is repeated
+beside them because setting
 `excluded_packages` replaces its default rather than adding to it, and dropping
 it would take Android Auto's exclusion away — a live invariant of the document
 now rather than a note in a test list. The reasoning for the door, and the four
@@ -1434,15 +1602,17 @@ rules that govern it, are in
 
 **It went to the beta first, deliberately and against the usual order**, because
 the beta phone is the one the failure was watched on and a phone that never
-showed the bug cannot show it fixed. `dev` is still on 116 published and needs a
-number above 118 when it catches up.
+showed the bug cannot show it fixed. This channel is the one that follows, for
+once; the Moto has not been asked, and does not need to be, since the phone that
+had the bug is the phone that lost it.
 
 **The test was run on the Nothing Phone on 2026-09-20, and it passed.** The phone
 polled 118 and WhatsApp calls work. That answers *was it drawbridge at all* —
 yes — and nothing beyond it.
 
 **Offline mode does not open, and this one is measured.** Tested on the beta
-phone on 2026-09-20: in offline mode WhatsApp is dead, calls included. An
+phone on 2026-09-20, and it holds for this channel for the same reason — the
+lockdown is a platform rule, not a policy value: in offline mode WhatsApp is dead, calls included. An
 excluded app is outside the *tunnel*, which is a routing decision, not outside
 the *lockdown*, which is a netd rule over every UID on the device with
 `setAlwaysOnVpnPackage`'s package allowlist as its only documented exit — and

@@ -102,6 +102,64 @@ class DeviceOwnerManager(context: Context) {
      * not withdrawn their protection, and the phone should stay locked down while
      * they do it. Only removal clears it.
      */
+    /**
+     * Grants drawbridge its own `POST_NOTIFICATIONS`, silently.
+     *
+     * **Because nothing else was ever going to.** From API 33 a declared
+     * `POST_NOTIFICATIONS` grants nothing on its own: an ordinary notification is
+     * dropped with no exception and no log until the runtime permission is held.
+     * drawbridge never asks for it — it has no onboarding screen to ask from, and
+     * a permission dialog during a cable provisioning is a prompt nobody is
+     * looking at — so on a real phone the grant is simply absent.
+     *
+     * That shipped, in build 51, and was invisible because the emulator test
+     * installed with `adb install -g`, which grants every runtime permission and
+     * is exactly what `tools/provision-adb.sh` does not do. The notice channel
+     * filed its messages correctly and rang on nobody's phone. See the handoff.
+     *
+     * A Device Owner can grant a runtime permission to itself without a prompt,
+     * which is the enterprise mechanism for precisely this and the right one
+     * here: the alternative is a dialog in the middle of somebody setting a
+     * child's phone up over a cable.
+     *
+     * **It cannot override a parent who turns the channel off afterwards**, and
+     * must not: `setPermissionGrantState` moves the permission, not the user's
+     * notification settings. Somebody who mutes *Messages from drawbridge* in
+     * Settings has muted it, and the messages still accumulate on the notices
+     * screen. [notificationsAllowed] is what reports the difference, and
+     * Diagnostics prints it.
+     *
+     * Below API 33 there is no runtime permission to grant and this is a no-op.
+     */
+    fun allowOwnNotifications() {
+        if (!isDeviceOwner) return
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) return
+
+        runCatching {
+            dpm.setPermissionGrantState(
+                admin,
+                appContext.packageName,
+                android.Manifest.permission.POST_NOTIFICATIONS,
+                DevicePolicyManager.PERMISSION_GRANT_STATE_GRANTED,
+            )
+        }
+            .onSuccess { Log.i(TAG, "POST_NOTIFICATIONS granted to drawbridge: $it") }
+            .onFailure { Log.w(TAG, "Could not grant drawbridge POST_NOTIFICATIONS", it) }
+    }
+
+    /**
+     * Whether a notification raised now would actually be seen.
+     *
+     * Two different answers collapse into this one: the runtime permission, which
+     * [allowOwnNotifications] handles, and whether the person has switched
+     * drawbridge's notifications off in Settings, which is theirs to decide and
+     * which no Device Owner call should undo. Diagnostics prints it because the
+     * failure is otherwise perfectly silent — a message that was filed, and rang
+     * for nobody.
+     */
+    fun notificationsAllowed(): Boolean =
+        androidx.core.app.NotificationManagerCompat.from(appContext).areNotificationsEnabled()
+
     fun reapplyIfProtected(vpnPackage: String = appContext.packageName) {
         if (ParentKey(appContext).protectedSince == 0L) {
             ProvisioningLog.record(appContext, "reapply skipped (never locked)")

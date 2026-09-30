@@ -68,7 +68,14 @@ class DrawbridgeApplication : Application() {
         /** drawbridge and herald read the same signed document from the same URL. */
         // BuildConfig.POLICY_URL is main's URL unless a build overrides it; see
         // dpc/build.gradle.kts. The dev channel is the only thing that does.
-        val policyConfig = PolicyConfig(policyUrl = BuildConfig.POLICY_URL)
+        // ownVersionCode is what a conditional policy fragment is judged
+        // against, and drawbridge is the app it is about: a fragment gated on
+        // build 53 is a statement about *this* app, which herald then takes from
+        // the selection rather than measuring against its own numbering.
+        val policyConfig = PolicyConfig(
+            policyUrl = BuildConfig.POLICY_URL,
+            ownVersionCode = BuildConfig.VERSION_CODE,
+        )
 
         fun policy(context: Context): PolicyManager =
             PolicyManager.getInstance(context, policyConfig)

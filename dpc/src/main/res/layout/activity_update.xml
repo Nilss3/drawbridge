@@ -24,8 +24,39 @@
             android:id="@+id/updateVersions"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingBottom="24dp"
+            android:paddingBottom="16dp"
             android:textAppearance="?attr/textAppearanceBodyLarge" />
+
+        <!--
+            What the release says about itself, between the version line and the
+            paragraph about Play Protect.
+
+            Above the buttons, not below the pictured walk. This is an input to
+            the decision the buttons ask for — the parent is being asked to take
+            an action drawbridge cannot take for itself, and this is the only
+            place they are told what for. Under the screenshots it would be a
+            changelog somebody scrolls to afterwards, which is a different and
+            much less useful thing.
+
+            Both views start gone and are shown together: a document with no
+            notes shows neither, rather than a heading standing over nothing.
+        -->
+        <TextView
+            android:id="@+id/updateNotesHeading"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="4dp"
+            android:text="@string/update_notes_heading"
+            android:textAppearance="?attr/textAppearanceTitleSmall"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/updateNotes"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="20dp"
+            android:textAppearance="?attr/textAppearanceBodyMedium"
+            android:visibility="gone" />
 
         <TextView
             android:layout_width="match_parent"
