@@ -121,7 +121,13 @@ code {
 }
 .hero-art img { display: block; width: 100%; height: auto; }
 
-/* The title sits on the picture, in the top-right sky.
+/* The title sits on the picture, in the top-left sky.
+
+   It was the top *right* until 2026-09-28, and moved with the artwork: in Van
+   Gogh's Langlois Bridge the right-hand sky is taken up by the bridge's far arm
+   and the roofs of Arles, while the left is open above the poplars. The rule is
+   unchanged — keyed to the sky it lies on — it is simply the other sky.
+
    Deliberately not themed. The same illustration is served to light and dark
    readers alike -- it is a sunset, warm enough for either -- so the text over
    it is keyed to the sky it lies on and not to --ink, which would turn pale
@@ -129,9 +135,9 @@ code {
 .hero-art-title {
   position: absolute;
   top: 5%;
-  right: 4.5%;
-  max-width: 55%;
-  text-align: right;
+  left: 4.5%;
+  max-width: 44%;
+  text-align: left;
   color: #2a2118;
   text-shadow: 0 1px 10px rgba(255, 244, 224, 0.75);
 }
@@ -152,6 +158,19 @@ code {
   /* Two even lines rather than a lone trailing word, where it wraps. */
   text-wrap: balance;
 }
+
+/* The painting's credit, under the picture rather than on it.
+
+   Small and quiet: it is there to be checked, not read. Sits tight under the
+   art because it belongs to it -- the lede below has its own space and should
+   not look like it is being introduced by a byline. */
+.hero-credit {
+  margin: -1.1rem 0 1.6rem;
+  font-size: 0.78rem;
+  opacity: 0.65;
+  text-align: right;
+}
+.hero-credit em { font-style: italic; }
 
 /* Below about 700px the picture is small enough that text scaled purely to it
    stops being readable -- 8px at a phone width -- so both sizes have a floor
