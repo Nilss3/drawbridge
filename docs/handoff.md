@@ -917,7 +917,8 @@ carries.
 **The replacement wording is *"use an account you do not mind the child having,
 or none at all"***, which `provisioning.md` already says the long way round. The
 Family Link half is answered too, and is a point in drawbridge's favour rather
-than a limitation: it cannot supervise a managed device at all, and it stops
+than a limitation: its setup does not complete while drawbridge is active (see
+below, retested 2026-10-09), and it stops
 being something a parent can rely on at 13 anyway, which is the age this project
 is built for.
 
@@ -938,12 +939,35 @@ What is left of the argument is weak and, worse, partly points the other way:
   Nothing in the docs has ever mentioned this, and it is a larger risk than the
   one the advice was written to prevent.
 
-**The Family Link half is now answered, and the answer is no.** Tried on the
-provisioned G15 on 2026-08-10: setting Family Link up fails partway through, with
-Family Link itself reporting that it cannot be used together with this. That
-matches the documented platform behaviour — a device with a Device Owner is
-fully managed, and Family Link does not supervise managed devices — so it is
-inherent rather than a drawbridge fault, and it applies to any tool of this kind.
+**The Family Link half is now answered, and the answer is no.** First tried on
+the provisioned G15 on 2026-08-10, and retested on the same phone on 2026-10-09
+with a dev build, which corrected what this entry used to say:
+
+1. **The first refusal is Google's account rule, not drawbridge.** The message
+   says an adult account and a child account cannot be on the same device. That
+   holds on any phone, managed or not, and it is what this entry previously
+   recorded as Family Link "reporting that it cannot be used together with this".
+2. **With the adult account removed and the child's account signed in, setup
+   proceeds and then hangs at the very end.** No message; it just never finishes.
+3. **One step back, *Deactivate drawbridge* in trial mode, forward again — and
+   setup completed.**
+
+So drawbridge being active is what stops it, and nothing finer than that is
+established. Deactivation releases everything at once — Device Owner, the
+always-on VPN and its lockdown, the account lock, every user restriction (see
+`DeviceOwnerManager.releaseDeviceOwnership`) — so the test cannot say which of
+them Family Link trips over. The likeliest is Device Owner itself: supervision
+wants a device-admin role that a fully managed phone has already given away. The
+other live candidate is the DNS filter refusing a Google host the last step
+needs, which would produce a hang rather than a message — consistent with what
+was seen, and fixable if it is the cause. A logcat taken right after the stall
+(`adb logcat -d`, looking for `supervision`, `kids` and drawbridge's blocked
+queries) would tell the two apart.
+
+The earlier version of this entry called the managed-device refusal "documented
+platform behaviour". No Google page found on 2026-10-09 says so — the Family
+Link help lists supported devices and is silent on managed ones — so it rests on
+these two tests, not on a citation.
 
 **It matters less than it first looked, and the owner was right to say so.** The
 first draft of this note called it "the question every parent will ask". It is
@@ -963,14 +987,15 @@ install **herald on its own**. That is the standalone deliverable the README
 already describes, and the browser is exactly the gap Family Link leaves open.
 
 What that leaves of the child-account question: a *supervised* account is not
-possible at all, so the advice can only ever be about an ordinary one — and
+possible while drawbridge is active, so the advice can only ever be about an ordinary one — and
 against an ordinary account the reasoning above still applies, symmetrical and
 partly backwards. The wording is still worth rewriting; the likeliest honest
 replacement is "use an account you do not mind the child having, or none at all"
 rather than a flat prohibition. Not yet done.
 
-The exact on-screen wording of the failure was not captured. If it is seen again,
-write it down — it is the sentence a parent will search for.
+The exact wording of the account message is still not captured verbatim. If it is
+seen again, write it down — it is the sentence a parent will search for, and it
+will lead them to blame drawbridge for a rule that is Google's.
 
 Note `DISALLOW_MODIFY_ACCOUNTS` is still never applied, so accounts can be added
 to a locked phone without unlocking it. That is the state this was tried in.
