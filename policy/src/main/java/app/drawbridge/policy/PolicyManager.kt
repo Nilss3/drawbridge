@@ -144,13 +144,29 @@ class PolicyManager private constructor(
                 val active = if (policyUpdated) verified.policy else _policy.value
                 val blocklistChanged = store.syncBlocklists(active.blocklists, downloader)
 
+                // **Recorded before the policy is applied, not after.** Applying
+                // is what publishes the new document, and a collector reacting
+                // to it reads this state to know whether the device had already
+                // downloaded once — see [PolicyStore.StoredState.firstDownloadedVersion].
+                // Written afterwards, that reader races the write and a fresh
+                // install rings for whatever notice its first download carries.
+                // If applying throws, the catch below puts `previous` back.
+                store.writeState(
+                    previous.copy(
+                        lastCheckMillis = now,
+                        lastSuccessMillis = now,
+                        lastError = null,
+                        firstDownloadedVersion = if (previous.lastSuccessMillis == 0L) {
+                            active.version
+                        } else {
+                            previous.firstDownloadedVersion
+                        },
+                    ),
+                )
+
                 if (policyUpdated || blocklistChanged) {
                     applyPolicy(active)
                 }
-
-                store.writeState(
-                    previous.copy(lastCheckMillis = now, lastSuccessMillis = now, lastError = null),
-                )
                 RefreshOutcome.Success(
                     policyUpdated = policyUpdated,
                     blocklistUpdated = blocklistChanged,

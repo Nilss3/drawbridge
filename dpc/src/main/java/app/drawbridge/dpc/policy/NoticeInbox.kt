@@ -60,6 +60,7 @@ class NoticeInbox(context: Context) {
 
         val held = all()
         if (held.any { it.notice.id == notice.id }) return null
+        if (notice.id in acknowledged()) return null
 
         val entry = Received(notice = notice, receivedAt = System.currentTimeMillis())
         // Newest first on disk as well as in memory, so the screen can render
@@ -69,6 +70,34 @@ class NoticeInbox(context: Context) {
         Log.i(TAG, "Notice ${notice.id} received")
         return entry
     }
+
+    /**
+     * Marks [notice] as seen without filing it, so that [record] never reports it
+     * as new.
+     *
+     * **For the message that was already current when this phone joined.** The
+     * inbox of a freshly installed drawbridge is empty, so without this the
+     * first document it reads — bundled or fetched — rings for whatever notice
+     * that document happens to carry. Policy 124 on dev did exactly that on a
+     * factory-reset Moto G15 on 2026-10-09: *We can go live now*, a message to
+     * the phones that were already there, delivered as news to one that had
+     * existed for five minutes.
+     *
+     * Not filed either, because the archive is *what this project has said to
+     * this phone*, and nothing was said to it: a notice is about the state of
+     * the product when it was sent, and a phone installed afterwards is already
+     * past that state.
+     */
+    fun acknowledge(notice: PolicyNotice?) {
+        if (notice == null) return
+        val seen = acknowledged()
+        if (notice.id in seen) return
+        prefs.edit().putStringSet(KEY_ACKNOWLEDGED, seen + notice.id).apply()
+        Log.i(TAG, "Notice ${notice.id} predates this phone; acknowledged without filing")
+    }
+
+    private fun acknowledged(): Set<String> =
+        prefs.getStringSet(KEY_ACKNOWLEDGED, null).orEmpty()
 
     /** Everything this phone has been sent, newest first. */
     fun all(): List<Received> {
@@ -91,10 +120,35 @@ class NoticeInbox(context: Context) {
         prefs.edit().putString(KEY_RECEIVED, json.encodeToString(trimmed)).apply()
     }
 
-    private companion object {
-        const val TAG = "NoticeInbox"
-        const val PREFS_NAME = "drawbridge_notice"
-        const val KEY_RECEIVED = "received"
+    companion object {
+        /**
+         * Whether a notice carried by document [version] was already current
+         * when this phone joined, and should be [acknowledge]d rather than
+         * announced.
+         *
+         * **No download yet** means the document is the copy bundled in the APK,
+         * which is behind the live one by design. **At or below the first
+         * download** means the document is the one the phone found waiting on
+         * its first poll — on 2026-10-09 the bundle was 122 with no notice and
+         * the first download was 124 with one, so the bundle alone was not
+         * enough. Anything newer arrived after the phone did, and is news.
+         *
+         * A null [firstDownloadedVersion] with a download on record is a phone
+         * that was polling before the version was recorded. It keeps the old
+         * behaviour: every new notice is news.
+         */
+        fun predatesThisPhone(
+            version: Int,
+            lastSuccessfulDownloadMillis: Long,
+            firstDownloadedVersion: Int?,
+        ): Boolean =
+            lastSuccessfulDownloadMillis == 0L ||
+                (firstDownloadedVersion != null && version <= firstDownloadedVersion)
+
+        private const val TAG = "NoticeInbox"
+        private const val PREFS_NAME = "drawbridge_notice"
+        private const val KEY_RECEIVED = "received"
+        private const val KEY_ACKNOWLEDGED = "acknowledged"
 
         /**
          * A ceiling rather than a policy. At the rate this channel is meant to
@@ -102,7 +156,7 @@ class NoticeInbox(context: Context) {
          * sending end cannot grow a preferences file without bound on a phone
          * nobody is looking at.
          */
-        const val MAX_KEPT = 50
+        private const val MAX_KEPT = 50
 
         /**
          * `ignoreUnknownKeys` earns its place here rather than being habit: an
@@ -110,6 +164,6 @@ class NoticeInbox(context: Context) {
          * `dismissed`, and a phone updating to a build without it must read its
          * own history rather than throw it away.
          */
-        val json = Json { ignoreUnknownKeys = true }
+        private val json = Json { ignoreUnknownKeys = true }
     }
 }

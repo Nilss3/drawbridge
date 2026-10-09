@@ -254,6 +254,24 @@ class PolicyStore(context: Context, private val config: PolicyConfig) {
          * an app the parent had removed.
          */
         val seenOptionIds: List<String>? = null,
+
+        /**
+         * The version this device held after its first successful download, or
+         * null before that download and on a device that predates this field.
+         *
+         * **It exists so that a fresh install can tell news from history.** A
+         * document's `notice` is addressed to the devices that were already
+         * running when it was sent; one installed afterwards reads it on its
+         * first download and, with nothing to compare it against, takes it for
+         * news. Anything at or below this version was current when the device
+         * joined. Anything above it arrived later and is.
+         *
+         * Written only when [lastSuccessMillis] was still zero, so a device that
+         * was downloading before this field existed stays null — and null with a
+         * success on record reads as *every new notice is news*, which is what
+         * such a device has always done.
+         */
+        val firstDownloadedVersion: Int? = null,
     )
 
     companion object {
