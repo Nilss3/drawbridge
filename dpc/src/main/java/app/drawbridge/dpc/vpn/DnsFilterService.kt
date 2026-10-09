@@ -235,9 +235,22 @@ class DnsFilterService : VpnService() {
         val inbox = NoticeInbox(this)
         serviceScope.launch {
             policy.policy
-                .map { it.notice }
-                .distinctUntilChanged()
-                .collect { notice ->
+                .distinctUntilChanged { old, new -> old.notice == new.notice }
+                .collect { document ->
+                    val notice = document.notice
+                    // **A fresh phone is told nothing.** Its inbox is empty, so
+                    // the notice in the first document it reads would otherwise
+                    // look new and ring. See [NoticeInbox.predatesThisPhone].
+                    val state = policy.state()
+                    if (NoticeInbox.predatesThisPhone(
+                            version = document.version,
+                            lastSuccessfulDownloadMillis = state.lastSuccessMillis,
+                            firstDownloadedVersion = state.firstDownloadedVersion,
+                        )
+                    ) {
+                        inbox.acknowledge(notice)
+                        return@collect
+                    }
                     val filed = inbox.record(notice) ?: return@collect
                     // **Filed always, announced rarely.** Every message lands on
                     // the messages screen; only one the document marks urgent
@@ -750,15 +763,23 @@ class DnsFilterService : VpnService() {
 
     private fun buildNotification(): Notification {
         val manager = getSystemService(NotificationManager::class.java)
+        // **MIN, so the notification stays out of sight.** A foreground service
+        // has to post one, but nothing requires it to be seen: at MIN it has no
+        // status-bar icon and folds into a single line at the foot of the shade.
+        // The system's own VPN key icon stays regardless, and is the honest
+        // signal that traffic is being routed. Muting the channel entirely, which
+        // anyone can do from Android's settings, does not stop the filter either.
+        //
+        // A new channel id, because an app cannot change the importance of a
+        // channel that already exists — phones that had the old LOW channel would
+        // keep it. The old one is deleted so it does not linger in settings.
+        manager.deleteNotificationChannel(LEGACY_CHANNEL_ID)
         if (manager.getNotificationChannel(CHANNEL_ID) == null) {
             manager.createNotificationChannel(
                 NotificationChannel(
                     CHANNEL_ID,
                     getString(R.string.filter_channel_name),
-                    // LOW so the persistent notification is quiet, but it cannot be
-                    // hidden entirely: Android requires a visible notification for
-                    // an active VPN, which is a good thing here.
-                    NotificationManager.IMPORTANCE_LOW,
+                    NotificationManager.IMPORTANCE_MIN,
                 ).apply { setShowBadge(false) },
             )
         }
@@ -768,6 +789,7 @@ class DnsFilterService : VpnService() {
             .setContentText(getString(R.string.filter_notification_text))
             .setSmallIcon(android.R.drawable.ic_lock_lock)
             .setOngoing(true)
+            .setPriority(NotificationCompat.PRIORITY_MIN)
             .setContentIntent(
                 PendingIntent.getActivity(
                     this,
@@ -805,7 +827,8 @@ class DnsFilterService : VpnService() {
                 .onFailure { Log.w(TAG, "Could not ask the filter to re-check exclusions", it) }
         }
 
-        private const val CHANNEL_ID = "drawbridge-filter"
+        private const val CHANNEL_ID = "drawbridge-filter-quiet"
+        private const val LEGACY_CHANNEL_ID = "drawbridge-filter"
         private const val NOTIFICATION_ID = 1
 
         private const val MTU = 1500

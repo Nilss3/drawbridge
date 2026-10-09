@@ -3,6 +3,7 @@ package app.drawbridge.dpc.policy
 import androidx.test.core.app.ApplicationProvider
 import app.drawbridge.policy.model.PolicyNotice
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
@@ -149,5 +150,71 @@ class NoticeInboxTest {
         val held = inbox.all()
         assertEquals(1, held.size)
         assertEquals("2026-09-calls", held.single().notice.id)
+    }
+
+    // --- A fresh phone is told nothing -----------------------------------------
+
+    /**
+     * The factory-reset Moto of 2026-10-09: a dev install rang for policy 124's
+     * *We can go live now* within minutes, because an empty inbox makes every
+     * notice look new.
+     */
+    @Test
+    fun `an acknowledged notice is never reported as new, and is not filed`() {
+        inbox.acknowledge(first)
+        assertNull(inbox.record(first))
+        assertTrue(inbox.all().isEmpty())
+    }
+
+    @Test
+    fun `acknowledging one notice leaves the next one free to ring`() {
+        inbox.acknowledge(first)
+        assertNotNull(inbox.record(second))
+    }
+
+    @Test
+    fun `a notice in the bundled document predates the phone`() {
+        assertTrue(
+            NoticeInbox.predatesThisPhone(
+                version = 122,
+                lastSuccessfulDownloadMillis = 0,
+                firstDownloadedVersion = null,
+            ),
+        )
+    }
+
+    /** The Moto's case: bundle 122 without a notice, first download 124 with one. */
+    @Test
+    fun `a notice in the first downloaded document predates the phone`() {
+        assertTrue(
+            NoticeInbox.predatesThisPhone(
+                version = 124,
+                lastSuccessfulDownloadMillis = 1,
+                firstDownloadedVersion = 124,
+            ),
+        )
+    }
+
+    @Test
+    fun `a notice in a later document is news`() {
+        assertFalse(
+            NoticeInbox.predatesThisPhone(
+                version = 125,
+                lastSuccessfulDownloadMillis = 1,
+                firstDownloadedVersion = 124,
+            ),
+        )
+    }
+
+    /** A phone that was downloading before the first version was recorded. */
+    @Test
+    fun `a phone without a recorded first download treats new notices as news`() {
+        assertFalse(
+            NoticeInbox.predatesThisPhone(
+                version = 125,
+                lastSuccessfulDownloadMillis = 1,
+                firstDownloadedVersion = null,
+            ),
+        )
     }
 }
