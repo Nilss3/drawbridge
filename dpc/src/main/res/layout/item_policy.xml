@@ -16,6 +16,11 @@
     carried one, and together they made a screen a parent had to scroll several
     times to reach the button they came for. What stays on the card is what tells
     them apart at a glance: the name and who it is for.
+
+    **No radio button since 2026-10-10.** The document has carried a single
+    profile for a long time, so the button only ever showed one choice, already
+    made — a control with nothing to control. The card still marks itself
+    checked, which keeps a second profile selectable if one ever returns.
 -->
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -36,16 +41,6 @@
         android:paddingTop="16dp"
         android:paddingEnd="4dp"
         android:paddingBottom="16dp">
-
-        <!-- The card is what is tapped; this only reports which one is chosen,
-             so it takes no touches of its own. -->
-        <RadioButton
-            android:id="@+id/policySelected"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:clickable="false"
-            android:focusable="false" />
 
         <LinearLayout
             android:layout_width="0dp"

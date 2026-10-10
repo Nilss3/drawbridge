@@ -27,6 +27,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
+import androidx.core.view.ViewCompat
 import androidx.lifecycle.lifecycleScope
 import app.drawbridge.dpc.BuildConfig
 import app.drawbridge.dpc.DrawbridgeApplication
@@ -99,6 +100,9 @@ class MainActivity : AppCompatActivity() {
     private lateinit var optionContainer: LinearLayout
     private lateinit var optionsExplanation: TextView
     private lateinit var optionsFootnote: TextView
+    private lateinit var optionsSection: View
+    private lateinit var browsersSection: View
+    private lateinit var offlineSection: View
 
     /**
      * Consent for the VPN, needed only when drawbridge is *not* device owner —
@@ -162,6 +166,15 @@ class MainActivity : AppCompatActivity() {
         optionContainer = findViewById(R.id.optionContainer)
         optionsExplanation = findViewById(R.id.optionsExplanation)
         optionsFootnote = findViewById(R.id.optionsFootnote)
+        optionsSection = findViewById(R.id.optionsSection)
+        browsersSection = findViewById(R.id.browsersSection)
+        offlineSection = findViewById(R.id.offlineSection)
+        // Bound once, here, so a section the parent opened stays open across the
+        // re-render every choice triggers. Not saved across a recreation: closed
+        // is the default and the summaries say what is inside.
+        bindCollapsible(optionsSection, R.string.options_heading, findViewById(R.id.optionsBody))
+        bindCollapsible(browsersSection, R.string.browser_heading, browserContainer)
+        bindCollapsible(offlineSection, R.string.disconnect_heading, findViewById(R.id.offlineBody))
 
         bindLanguages(findViewById(R.id.languageField))
 
@@ -518,7 +531,7 @@ class MainActivity : AppCompatActivity() {
             card.setOnClickListener { selectBrowsers(choice.choice) }
             browserContainer.addView(card)
         }
-
+        browsersSection.setSectionSummary(getString(BrowserChoice.of(current).title))
     }
 
     /**
@@ -702,6 +715,8 @@ class MainActivity : AppCompatActivity() {
         curfewSchedule.visibility =
             if (current == DisconnectSettings.Mode.CURFEW) View.VISIBLE else View.GONE
         renderCurfewWindows()
+        DisconnectChoice.entries.firstOrNull { it.mode == current }
+            ?.let { offlineSection.setSectionSummary(getString(it.title)) }
     }
 
     private fun renderCurfewWindows() {
@@ -881,7 +896,6 @@ class MainActivity : AppCompatActivity() {
                 title = choice.displayName(language),
                 body = choice.displayDescription(language),
             )
-            card.findViewById<RadioButton>(R.id.policySelected).isChecked = choice.id == selected
             card.isChecked = choice.id == selected
 
             card.setOnClickListener {
@@ -900,6 +914,7 @@ class MainActivity : AppCompatActivity() {
         optionsFootnote.visibility = if (hasOptions) View.VISIBLE else View.GONE
         if (!hasOptions) {
             optionContainer.addView(placeholder(R.string.options_none_available))
+            optionsSection.setSectionSummary(getString(R.string.options_none_available))
             return
         }
 
@@ -931,6 +946,40 @@ class MainActivity : AppCompatActivity() {
             switch.setOnCheckedChangeListener { _, checked -> applyOption(option, checked) }
             optionContainer.addView(row)
         }
+        optionsSection.setSectionSummary(
+            options.filter { it.id in enabled }
+                .joinToString(" · ") { it.displayName(language) }
+                .ifEmpty { getString(R.string.options_summary_none) },
+        )
+    }
+
+    // --- Collapsible sections ------------------------------------------------
+
+    /**
+     * Makes [header] open and close [body], closed to begin with.
+     *
+     * See section_collapsible_header.xml for why the summary line exists. The
+     * chevron turns over rather than swapping drawables, and the open or closed
+     * state is announced to TalkBack, which otherwise hears a title that does
+     * something unstated when tapped.
+     */
+    private fun bindCollapsible(header: View, title: Int, body: View) {
+        header.findViewById<TextView>(R.id.sectionTitle).setText(title)
+        val chevron = header.findViewById<ImageView>(R.id.sectionChevron)
+        fun show(open: Boolean) {
+            body.visibility = if (open) View.VISIBLE else View.GONE
+            chevron.rotation = if (open) 180f else 0f
+            ViewCompat.setStateDescription(
+                header,
+                getString(if (open) R.string.section_expanded else R.string.section_collapsed),
+            )
+        }
+        show(open = false)
+        header.setOnClickListener { show(open = body.visibility != View.VISIBLE) }
+    }
+
+    private fun View.setSectionSummary(text: String) {
+        findViewById<TextView>(R.id.sectionSummary).text = text
     }
 
     /**

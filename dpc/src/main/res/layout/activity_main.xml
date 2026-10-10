@@ -200,16 +200,15 @@
         </com.google.android.material.card.MaterialCardView>
 
         <!--
-            **The policy comes first, as of 2026-08-15, and the sentence under it
-            is why.** It used to sit below the disconnect philosophy, on the
-            reasoning that whether the phone reaches the web at all is the larger
-            question — true, and it left the line about the filter stranded at the
-            top describing controls three sections away.
+            **The base filter comes first, and the sentence under it is why.** It
+            is the one thing on this screen that acts immediately, and it is not
+            a choice: the document carries one profile, so the card shows it
+            without a radio button. Renamed from "Policy" on 2026-10-10, which
+            named the mechanism rather than what it does.
 
-            The policy is also the one thing on this screen that acts
-            immediately. Putting it first lets the sentence beneath it say two
-            things in the right order: this part is already running, everything
-            below waits for the lock. Read top to bottom it now explains itself.
+            The thick rule under it is the line between *always on* and *at the
+            lock*, and the sentence sits under the rule because it describes
+            everything below it.
         -->
         <TextView
             style="@style/TextAppearance.Drawbridge.SectionHeading"
@@ -224,130 +223,106 @@
             android:orientation="vertical"
             android:paddingHorizontal="24dp" />
 
-        <!--
-            Directly under the policy it describes. It used to be at the very top
-            and had to name every section it covered; now it points at what is
-            just above it and what is just below, and needs no list.
-        -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="3dp"
+            android:layout_marginTop="12dp"
+            android:background="?attr/colorOutline" />
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="24dp"
-            android:paddingTop="8dp"
-            android:paddingBottom="28dp"
+            android:paddingTop="16dp"
+            android:paddingBottom="8dp"
             android:text="@string/settings_take_effect_at_lock"
             android:textAppearance="?attr/textAppearanceBodyMedium"
             android:textColor="?attr/colorPrimary" />
 
-        <TextView
-            style="@style/TextAppearance.Drawbridge.SectionHeading"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/disconnect_heading" />
+        <!--
+            **The app questions, together and collapsed.** Three questions about
+            what may be on the phone — which services, how much browser, whether
+            anything new — used to be three full sections interleaved with the
+            offline question, each spelling out every card. Closed by default,
+            each says what it is set to underneath its title; see
+            section_collapsible_header.xml.
+        -->
+        <include
+            android:id="@+id/optionsSection"
+            layout="@layout/section_collapsible_header" />
 
         <LinearLayout
-            android:id="@+id/disconnectContainer"
+            android:id="@+id/optionsBody"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingHorizontal="24dp" />
-
-        <!-- Shown only while the curfew is the chosen philosophy. -->
-        <LinearLayout
-            android:id="@+id/curfewSchedule"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="28dp"
-            android:orientation="vertical"
-            android:paddingHorizontal="24dp"
             android:visibility="gone">
 
             <TextView
+                android:id="@+id/optionsExplanation"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingTop="4dp"
-                android:paddingBottom="12dp"
-                android:text="@string/curfew_explanation"
+                android:layout_marginHorizontal="24dp"
+                android:paddingBottom="8dp"
+                android:text="@string/options_explanation"
+                android:textAppearance="?attr/textAppearanceBodyMedium" />
+
+            <LinearLayout
+                android:id="@+id/optionContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingHorizontal="24dp" />
+
+            <TextView
+                android:id="@+id/optionsFootnote"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="24dp"
+                android:layout_marginTop="12dp"
+                android:layout_marginBottom="16dp"
+                android:alpha="0.75"
+                android:text="@string/options_footnote"
                 android:textAppearance="?attr/textAppearanceBodySmall" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/curfew_weekdays"
-                android:textAppearance="?attr/textAppearanceTitleSmall" />
-
-            <Button
-                android:id="@+id/curfewWeekdayButton"
-                style="@style/Widget.Material3.Button.TextButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/curfew_weekend"
-                android:textAppearance="?attr/textAppearanceTitleSmall" />
-
-            <Button
-                android:id="@+id/curfewWeekendButton"
-                style="@style/Widget.Material3.Button.TextButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
         </LinearLayout>
 
-        <!--
-            Between the disconnect philosophy and the options on purpose. It is
-            the same shape of question as the philosophy above it — how much of a
-            thing this phone has, answered once — and it lands at the lock like
-            the options below it.
-        -->
-        <TextView
-            style="@style/TextAppearance.Drawbridge.SectionHeading"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/browser_heading" />
+        <include
+            android:id="@+id/browsersSection"
+            layout="@layout/section_collapsible_header" />
 
         <LinearLayout
             android:id="@+id/browserContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="28dp"
+            android:layout_marginBottom="8dp"
             android:orientation="vertical"
-            android:paddingHorizontal="24dp" />
+            android:paddingHorizontal="24dp"
+            android:visibility="gone" />
 
         <!--
-            The third "how much of a thing does this phone have" question, after
-            the disconnect philosophy and the browser policy and before the
-            per-service switches. Not inflated from a list like those two: there
-            is exactly one of it, and it comes from the device rather than from
-            the signed document.
-
-            **It keeps its explanation on the card**, like the three disconnect
-            philosophies and unlike the policy and the options. The name alone
-            does not carry the meaning — "only the apps already on this phone"
-            does not say that updates still arrive, which is the half that makes
-            it livable — and the ⓘ carries what it costs, which is a paragraph.
+            Not collapsible: it is one switch, so its title row *is* the control,
+            and there is nothing to hide. It keeps its explanation underneath
+            because the name alone does not say that updates still arrive, which
+            is the half that makes it livable — and the ⓘ carries what it costs.
         -->
-        <TextView
-            style="@style/TextAppearance.Drawbridge.SectionHeading"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/install_lock_heading" />
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
+            android:minHeight="64dp"
             android:orientation="horizontal"
-            android:paddingHorizontal="24dp">
+            android:paddingStart="24dp"
+            android:paddingTop="12dp"
+            android:paddingEnd="24dp">
 
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="@string/install_lock_name"
-                android:textAppearance="?attr/textAppearanceTitleSmall" />
+                android:textAppearance="?attr/textAppearanceTitleMedium"
+                android:textColor="?attr/colorPrimary"
+                android:textStyle="bold" />
 
             <ImageButton
                 android:id="@+id/installLockInfo"
@@ -367,42 +342,87 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="24dp"
-            android:layout_marginBottom="28dp"
+            android:layout_marginBottom="16dp"
             android:text="@string/install_lock_description"
             android:textAppearance="?attr/textAppearanceBodySmall" />
 
-        <TextView
-            style="@style/TextAppearance.Drawbridge.SectionHeading"
+        <View
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/options_heading" />
+            android:layout_height="1dp"
+            android:background="?attr/colorOutlineVariant" />
 
-        <TextView
-            android:id="@+id/optionsExplanation"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="24dp"
-            android:paddingBottom="8dp"
-            android:text="@string/options_explanation"
-            android:textAppearance="?attr/textAppearanceBodyMedium" />
+        <!-- Whether the phone reaches the internet at all, apart from the app
+             questions because it is not one. -->
+        <include
+            android:id="@+id/offlineSection"
+            layout="@layout/section_collapsible_header" />
 
         <LinearLayout
-            android:id="@+id/optionContainer"
+            android:id="@+id/offlineBody"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
             android:orientation="vertical"
-            android:paddingHorizontal="24dp" />
+            android:visibility="gone">
 
-        <TextView
-            android:id="@+id/optionsFootnote"
+            <LinearLayout
+                android:id="@+id/disconnectContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingHorizontal="24dp" />
+
+            <!-- Shown only while the curfew is the chosen philosophy. -->
+            <LinearLayout
+                android:id="@+id/curfewSchedule"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingHorizontal="24dp"
+                android:visibility="gone">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="4dp"
+                    android:paddingBottom="12dp"
+                    android:text="@string/curfew_explanation"
+                    android:textAppearance="?attr/textAppearanceBodySmall" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/curfew_weekdays"
+                    android:textAppearance="?attr/textAppearanceTitleSmall" />
+
+                <Button
+                    android:id="@+id/curfewWeekdayButton"
+                    style="@style/Widget.Material3.Button.TextButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/curfew_weekend"
+                    android:textAppearance="?attr/textAppearanceTitleSmall" />
+
+                <Button
+                    android:id="@+id/curfewWeekendButton"
+                    style="@style/Widget.Material3.Button.TextButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- The second thick rule: everything above is what the phone will be,
+             and below it is the act that makes it so. -->
+        <View
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="24dp"
-            android:layout_marginTop="12dp"
-            android:layout_marginBottom="28dp"
-            android:alpha="0.75"
-            android:text="@string/options_footnote"
-            android:textAppearance="?attr/textAppearanceBodySmall" />
+            android:layout_height="3dp"
+            android:layout_marginBottom="24dp"
+            android:background="?attr/colorOutline" />
 
         <LinearLayout
             android:id="@+id/updateNotice"
