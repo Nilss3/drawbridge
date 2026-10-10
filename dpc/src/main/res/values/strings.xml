@@ -50,7 +50,7 @@
         to whoever is holding the phone the useful phrase is "the policy this
         phone runs", so that is what the screen says.
     -->
-    <string name="policy_heading">Policy</string>
+    <string name="policy_heading">Base web and app filter</string>
     <string name="policy_none_available">This policy document offers nothing to choose from.</string>
     <string name="policy_confirm_title">Switch to %1$s?</string>
     <string name="policy_confirm_message">Apps this policy does not allow are removed straight away. Switching back later does not reinstall them.\n\nThe DNS resolver and the blocklists change with it.</string>
@@ -67,11 +67,11 @@
     <string name="change_blocked_at_lock">%1$s blocked after lock.</string>
     <string name="change_applied">%1$s applied.</string>
     <string name="info_button_description">More about %1$s</string>
-    <string name="settings_take_effect_at_lock">This policy is always active, also when drawbridge is unlocked. The options underneath are further restrictions and are active only when locked.</string>
+    <string name="settings_take_effect_at_lock">The base filter is always active, also when drawbridge is unlocked. Everything below adds further restrictions, which are active only when locked.</string>
 
     <!-- Browser choice. Promised on the website before it was built: a limited
          list by default, herald mono alone for browsing addiction, or nothing. -->
-    <string name="browser_heading">Browser policy</string>
+    <string name="browser_heading">Browsers</string>
     <string name="browser_all_name">Allow the browsers</string>
     <string name="browser_all_description">Every browser that works properly with the web filter. We recommend herald: it is minimalist, it shows a clear page when something is blocked, and it follows drawbridge\'s policy.</string>
     <string name="browser_mono_name">herald mono only</string>
@@ -84,12 +84,11 @@
          off by default because it changes what the phone is rather than what it
          filters. The wording has to carry the cost: an app you have not
          installed yet, you cannot install. -->
-    <string name="install_lock_heading">App installs</string>
-    <string name="install_lock_name">No other apps</string>
+    <string name="install_lock_name">No further app installs</string>
     <string name="install_lock_description">After the lock, no new app can be installed. The apps that are on the phone at that moment go on updating as normal.</string>
     <string name="install_lock_info">Before locking, prune down your apps and keep only those you want to have on your phone. After locking, no new apps will be allowed. Updates of existing apps do come through, so keep the Play Store to update.\n\nIf you want no browser, pick that option above. Otherwise, herald will remain installed.\n\nLeave this off if you are not sure. A blocked app can always be blocked later; an app nobody can install is a phone somebody has to come to you about.</string>
 
-    <string name="options_heading">Options</string>
+    <string name="options_heading">WhatsApp, Telegram and video apps</string>
     <string name="options_explanation">drawbridge when unlocked allows all of the following. If you don\'t want some of these \u2018services\u2019, and rightfully so, disallow them and lock drawbridge.</string>
     <string name="options_none_available">This policy offers nothing to switch on.</string>
     <string name="options_footnote">The policy is inspired by best practices in digital minimalism and is a good choice for anyone, including adults. The ages are a recommendation by pediatricians and neurologists, and are only relevant for caretakers setting up a device for a teen.</string>
@@ -268,7 +267,7 @@
     <string name="filter_notification_text">Filtering DNS for every app on this device</string>
 
     <!-- Disconnect philosophy: whether the phone reaches the internet at all. -->
-    <string name="disconnect_heading">Disconnect philosophy</string>
+    <string name="disconnect_heading">Offline phone</string>
     <string name="disconnect_offline_name">Always blissfully offline</string>
     <string name="disconnect_offline_description">After lock: No internet traffic possible. Only calls and SMS, as well as GPS reception and FM-radio when available.</string>
     <string name="disconnect_online_name">Sadly always online</string>
@@ -304,4 +303,7 @@
     <string name="notices_empty">No messages yet. This is where they will appear if the project ever needs to tell you something.</string>
     <string name="notice_channel_name">Messages from drawbridge</string>
     <string name="notice_channel_description">Rare messages from the drawbridge project about this phone. Not advertising.</string>
+    <string name="options_summary_none">All blocked</string>
+    <string name="section_collapsed">Collapsed</string>
+    <string name="section_expanded">Expanded</string>
 </resources>

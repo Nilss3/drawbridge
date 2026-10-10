@@ -25,7 +25,7 @@
     <string name="welcome_subtitle">Laten we de brug ophalen voor het toxische, verslavende internet en onze gemoedsrust bewaren.</string>
     <string name="welcome_scene_description">Het schilderij De brug van Langlois te Arles van Vincent van Gogh, 1888: een opgehaalde houten ophaalbrug over een kanaal, met een jaagpad ernaast.</string>
 
-    <string name="policy_heading">Beleid</string>
+    <string name="policy_heading">Basisfilter voor web en apps</string>
     <string name="policy_none_available">Dit beleidsdocument biedt niets om uit te kiezen.</string>
     <string name="policy_confirm_title">Overschakelen naar %1$s?</string>
     <string name="policy_confirm_message">Apps die dit beleid niet toelaat worden meteen verwijderd. Later terugschakelen installeert ze niet opnieuw.\n\nDe DNS-resolver en de bloklijsten veranderen mee.</string>
@@ -37,9 +37,9 @@
     <string name="change_blocked_at_lock">%1$s geblokkeerd na vergrendeling.</string>
     <string name="change_applied">%1$s toegepast.</string>
     <string name="info_button_description">Meer over %1$s</string>
-    <string name="settings_take_effect_at_lock">Dit beleid is altijd actief, ook wanneer drawbridge ontgrendeld is. De opties hieronder zijn bijkomende beperkingen en gelden alleen wanneer drawbridge vergrendeld is.</string>
+    <string name="settings_take_effect_at_lock">De basisfilter is altijd actief, ook wanneer drawbridge ontgrendeld is. Alles hieronder zijn bijkomende beperkingen, die alleen gelden wanneer drawbridge vergrendeld is.</string>
 
-    <string name="browser_heading">Browserbeleid</string>
+    <string name="browser_heading">Browsers</string>
     <string name="browser_all_name">De browsers toestaan</string>
     <string name="browser_all_description">Elke browser die goed werkt met de webfilter. We raden herald aan: minimalistisch, toont een duidelijke pagina bij blokkeren, en volgt het beleid van drawbridge.</string>
     <string name="browser_mono_name">Enkel herald mono</string>
@@ -47,13 +47,11 @@
     <string name="browser_none_name">Helemaal geen browser</string>
     <string name="browser_none_description">Laat de telefoon achter zonder browser die je kan openen. Zorg dat al je apps ingelogd zijn voor je dit vastzet, want sommige apps hebben een browser nodig om aan te melden.\n\nHou er ook rekening mee dat bepaalde functies kunnen haperen of niet werken, bv. betalingen, QR-codes, enz.\n\nZe worden niet verwijderd: elke andere browser wordt opgeschort en verborgen, en komt terug met zijn favorieten en aanmeldingen intact zodra je hem opnieuw toelaat. Wil je hem echt kwijt, verwijder hem dan zelf voor je vergrendelt.</string>
     <string name="browser_icons_description">De browsers die deze keuze toelaat</string>
-
-    <string name="install_lock_heading">App-installaties</string>
-    <string name="install_lock_name">Geen andere apps</string>
+    <string name="install_lock_name">Geen verdere app-installaties</string>
     <string name="install_lock_description">Na de vergrendeling kan geen enkele nieuwe app geïnstalleerd worden. De apps die op dat moment op de telefoon staan blijven gewoon updaten.</string>
     <string name="install_lock_info">Snoei je apps voor je vergrendelt en hou enkel de apps die je op je telefoon wil. Na de vergrendeling worden geen nieuwe apps meer toegelaten. Updates van bestaande apps komen wel door, dus hou de Play Store om bij te werken.\n\nWil je geen browser, kies dan die optie hierboven. Anders blijft herald geïnstalleerd.\n\nLaat dit uit als je twijfelt. Een app blokkeren kan later altijd nog; een telefoon waarop niemand iets kan installeren is een telefoon waarvoor men bij jou moet aankloppen.</string>
 
-    <string name="options_heading">Opties</string>
+    <string name="options_heading">WhatsApp, Telegram en video-apps</string>
     <string name="options_explanation">drawbridge laat, wanneer het ontgrendeld is, alles hieronder toe. Wil je sommige van deze ‘diensten’ niet, en terecht, verbied ze dan en vergrendel drawbridge.</string>
     <string name="options_none_available">Dit beleid biedt niets om aan te zetten.</string>
     <string name="options_footnote">Het beleid is geïnspireerd op de beste praktijken uit het digitale minimalisme en is een goede keuze voor iedereen, ook voor volwassenen. De leeftijden zijn een aanbeveling van kinderartsen en neurologen, en zijn enkel relevant voor verzorgers die een toestel instellen voor een tiener.</string>
@@ -178,7 +176,7 @@
     <string name="filter_notification_title">Inhoudsfilter actief</string>
     <string name="filter_notification_text">Filtert DNS voor elke app op dit toestel</string>
 
-    <string name="disconnect_heading">Verbindingsfilosofie</string>
+    <string name="disconnect_heading">Offline telefoon</string>
     <string name="disconnect_offline_name">Altijd zalig offline</string>
     <string name="disconnect_offline_description">Na vergrendeling: geen internetverkeer mogelijk. Alleen bellen en sms\'en, en gps-ontvangst en FM-radio indien beschikbaar.</string>
     <string name="disconnect_online_name">Helaas altijd online</string>
@@ -204,4 +202,7 @@
     <string name="notices_empty">Nog geen berichten. Hier verschijnen ze als het project je ooit iets moet laten weten.</string>
     <string name="notice_channel_name">Berichten van drawbridge</string>
     <string name="notice_channel_description">Zeldzame berichten van het drawbridge-project over deze telefoon. Geen reclame.</string>
+    <string name="options_summary_none">Alles geblokkeerd</string>
+    <string name="section_collapsed">Ingeklapt</string>
+    <string name="section_expanded">Uitgeklapt</string>
 </resources>
