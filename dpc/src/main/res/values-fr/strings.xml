@@ -205,4 +205,5 @@
     <string name="options_summary_none">Tout est bloqué</string>
     <string name="section_collapsed">Réduit</string>
     <string name="section_expanded">Développé</string>
+    <string name="restrictions_heading">Restrictions et options supplémentaires</string>
 </resources>
