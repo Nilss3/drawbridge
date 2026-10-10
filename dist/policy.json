@@ -1,7 +1,7 @@
 {
-  "version": 124,
-  "issued_at": "2026-09-30T09:00:00Z",
-  "comment": "DEV CHANNEL ONLY. Carries one message and changes nothing else: the end-to-end check of the notice channel, from a signed document to a notification to the messages screen. It is marked urgent, which is what makes build 53 announce it rather than file it quietly -- the point of the test is that it arrives unprompted. drawbridge stays at 0.2.28 build 53, herald at 0.1.19 arm64 at v0.2.8-dev.11. 369 blocked packages.",
+  "version": 126,
+  "issued_at": "2026-10-10T11:00:00Z",
+  "comment": "DEV CHANNEL ONLY. drawbridge 0.2.29 build 54. The configuration screen is regrouped: the base web and app filter first, then the further restrictions that apply at the lock, with the app questions and the offline phone collapsible and showing their current choice. A fresh install no longer rings for the notice that was current when it joined, and the filter's foreground notification moves to a minimum-importance channel. 126 rather than 125, because main holds 125. herald unchanged at 0.1.19 arm64 at v0.2.8-dev.11. 369 blocked packages.",
   "dns": {
     "upstreams": [
       "94.140.14.15",
@@ -830,14 +830,14 @@
   },
   "app_update": {
     "package_name": "app.drawbridge.dpc",
-    "version_code": 53,
-    "url": "https://dev.drawbridge-project.pages.dev/assets/dpc-ecd39f6bf819cd28.apk",
-    "sha256": "ecd39f6bf819cd2866b00ce791d6216efeae0e4eef8e65955ec29f91560ed6e3",
-    "version_name": "0.2.28",
-    "notes": "Messages from drawbridge no longer make a sound unless they are urgent. They still appear under Messages from drawbridge in the \u22ee menu.\n\nThe welcome picture is now a painting: Vincent van Gogh\u2019s The Langlois Bridge at Arles, from 1888.\n\nGroundwork so that a future setting can be added without switching anything off that you already had. Nothing changes on this phone today.",
+    "version_code": 54,
+    "url": "https://dev.drawbridge-project.pages.dev/assets/dpc-ab86a1a0dc089add.apk",
+    "sha256": "ab86a1a0dc089adde9f6baa0b09c79e0664e32c56cc75869d0722cca29491c69",
+    "version_name": "0.2.29",
+    "notes": "The settings screen is reorganised. The base web and app filter comes first. Below it are the further restrictions that apply once drawbridge is locked: WhatsApp, Telegram and video apps, browsers, app installs and the offline phone. Tap a section to open it; closed, it shows what it is set to.\n\nThe notification saying the filter is running is now as discreet as Android allows.\n\nA newly installed drawbridge no longer shows an old message as a notification.",
     "notes_i18n": {
-      "nl": "Berichten van drawbridge maken geen geluid meer tenzij ze dringend zijn. Ze blijven staan onder Berichten van drawbridge in het \u22ee-menu.\n\nDe welkomstafbeelding is nu een schilderij: De brug van Langlois te Arles van Vincent van Gogh, uit 1888.\n\nVoorbereidend werk zodat een toekomstige instelling kan worden toegevoegd zonder iets uit te zetten dat je al had. Er verandert vandaag niets op deze telefoon.",
-      "fr": "Les messages de drawbridge ne font plus de bruit sauf s\u2019ils sont urgents. Ils restent sous Messages de drawbridge dans le menu \u22ee.\n\nL\u2019image d\u2019accueil est d\u00e9sormais un tableau : Le Pont de Langlois \u00e0 Arles de Vincent van Gogh, de 1888.\n\nTravaux pr\u00e9paratoires pour qu\u2019un futur r\u00e9glage puisse \u00eatre ajout\u00e9 sans d\u00e9sactiver ce que vous aviez d\u00e9j\u00e0. Rien ne change sur ce t\u00e9l\u00e9phone aujourd\u2019hui."
+      "nl": "Het instellingenscherm is opnieuw ingedeeld. De basisfilter voor web en apps staat bovenaan. Daaronder staan de bijkomende beperkingen die gelden zodra drawbridge vergrendeld is: WhatsApp, Telegram en video-apps, browsers, app-installaties en de offline telefoon. Tik op een onderdeel om het te openen; dichtgeklapt toont het wat er ingesteld is.\n\nDe melding dat de filter actief is, is nu zo onopvallend als Android toelaat.\n\nEen pas ge\u00efnstalleerde drawbridge toont een oud bericht niet meer als melding.",
+      "fr": "L\u2019\u00e9cran des r\u00e9glages est r\u00e9organis\u00e9. Le filtre de base web et applications vient en premier. En dessous se trouvent les restrictions suppl\u00e9mentaires qui s\u2019appliquent une fois drawbridge verrouill\u00e9 : WhatsApp, Telegram et applications vid\u00e9o, navigateurs, installation d\u2019applications et t\u00e9l\u00e9phone hors ligne. Touchez une section pour l\u2019ouvrir ; ferm\u00e9e, elle indique son r\u00e9glage actuel.\n\nLa notification indiquant que le filtre est actif est d\u00e9sormais aussi discr\u00e8te qu\u2019Android le permet.\n\nUn drawbridge fra\u00eechement install\u00e9 n\u2019affiche plus un ancien message sous forme de notification."
     }
   },
   "required_apps": [
