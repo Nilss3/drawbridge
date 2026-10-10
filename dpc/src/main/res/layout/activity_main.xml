@@ -229,11 +229,18 @@
             android:layout_marginTop="12dp"
             android:background="?attr/colorOutline" />
 
+        <!-- No rule of its own: the thick one directly above already is. -->
+        <TextView
+            style="@style/TextAppearance.Drawbridge.SectionHeading.First"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="24dp"
+            android:text="@string/restrictions_heading" />
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="24dp"
-            android:paddingTop="16dp"
             android:paddingBottom="8dp"
             android:text="@string/settings_take_effect_at_lock"
             android:textAppearance="?attr/textAppearanceBodyMedium"

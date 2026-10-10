@@ -306,4 +306,5 @@
     <string name="options_summary_none">All blocked</string>
     <string name="section_collapsed">Collapsed</string>
     <string name="section_expanded">Expanded</string>
+    <string name="restrictions_heading">Further restrictions and options</string>
 </resources>

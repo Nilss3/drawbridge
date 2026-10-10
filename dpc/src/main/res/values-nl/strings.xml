@@ -205,4 +205,5 @@
     <string name="options_summary_none">Alles geblokkeerd</string>
     <string name="section_collapsed">Ingeklapt</string>
     <string name="section_expanded">Uitgeklapt</string>
+    <string name="restrictions_heading">Bijkomende beperkingen en opties</string>
 </resources>
