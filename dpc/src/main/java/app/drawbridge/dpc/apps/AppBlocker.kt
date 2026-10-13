@@ -119,6 +119,14 @@ class AppBlocker(context: Context) {
      * full sweep the moment the key is committed.
      */
     fun evaluate(packageName: String): Action {
+        // **Nothing to do for a package the phone does not carry.** The first
+        // periodic pass after drawbridge starts asks the platform what changed
+        // since boot, and that list includes packages drawbridge itself already
+        // removed. Evaluating those issued an uninstall for each — harmless for
+        // the ones that were truly gone, and the route by which a hidden system
+        // app was uninstalled, before [isSystemPackage] learnt to see it.
+        if (!isKnown(packageName)) return Action.NONE
+
         val policy = DrawbridgeApplication.policy(appContext).policy.value
         val allowedBrowsers = allowedBrowsers(policy)
 
@@ -1054,8 +1062,24 @@ class AppBlocker(context: Context) {
             .mapTo(mutableSetOf()) { it.activityInfo.packageName }
     }
 
+    /**
+     * **`MATCH_UNINSTALLED_PACKAGES`, or a hidden system app reads as an ordinary
+     * one.** A hidden package is absent from a plain lookup — see [isKnown] — and
+     * without the flag this answered false for exactly the system apps drawbridge
+     * had already hidden, which sent them down the uninstall path. Android cannot
+     * remove a system app, so the uninstall stripped its updates and wiped its
+     * data instead.
+     *
+     * Found on the owner's Moto G15 on 2026-10-13, on Motorola's app-pusher
+     * `com.dti.motorola`: wiped, it woke up as if on a new phone, updated itself
+     * and installed a batch of games, fifteen minutes after every restart of
+     * drawbridge. See AppBlockerHiddenSystemAppTest.
+     */
     private fun isSystemPackage(packageName: String): Boolean = try {
-        val info = packageManager.getApplicationInfo(packageName, 0)
+        val info = packageManager.getApplicationInfo(
+            packageName,
+            PackageManager.MATCH_UNINSTALLED_PACKAGES,
+        )
         info.flags and (ApplicationInfo.FLAG_SYSTEM or ApplicationInfo.FLAG_UPDATED_SYSTEM_APP) != 0
     } catch (e: PackageManager.NameNotFoundException) {
         false

@@ -56,6 +56,25 @@ class AppBlockerLockGateTest {
         parentKey.clear()
         blocker = AppBlocker(context)
         runBlocking { DrawbridgeApplication.policy(context).ensureLoaded() }
+        installOnDevice(blocked)
+        installOnDevice(optionGoverned)
+    }
+
+    /**
+     * Puts [packageName] on the test device as an ordinary app. Evaluation
+     * returns early for a package the phone does not carry, as of 2026-10-13, so
+     * a test about removing an app has to have the app there first.
+     */
+    private fun installOnDevice(packageName: String) {
+        val context = ApplicationProvider.getApplicationContext<android.app.Application>()
+        org.robolectric.Shadows.shadowOf(context.packageManager).installPackage(
+            android.content.pm.PackageInfo().apply {
+                this.packageName = packageName
+                applicationInfo = android.content.pm.ApplicationInfo().apply {
+                    this.packageName = packageName
+                }
+            },
+        )
     }
 
     @Test
