@@ -1,7 +1,7 @@
 {
-  "version": 125,
-  "issued_at": "2026-09-30T11:00:00Z",
-  "comment": "BETA. Pins drawbridge 0.2.28 build 53, the beta catching up with three dpc releases at once. WhatsApp keeps working when it is installed after drawbridge or switched off and on again, instead of needing a restart. drawbridge can now show a message when it has to -- rare, and only with a notification when the document says urgent -- kept under Messages from drawbridge in the overflow menu. The update screen says which version it offers and what changed. The welcome picture is Van Gogh's The Langlois Bridge at Arles rather than an illustration that read as AI-generated. herald is unchanged at 0.1.19 arm64 at v0.2.23, and Vanadium stays allowed. 369 blocked packages.",
+  "version": 127,
+  "issued_at": "2026-10-13T10:00:00Z",
+  "comment": "BETA. The beta catches up with dev: drawbridge 0.2.29 build 54. The configuration screen is regrouped (base web and app filter first, then the further restrictions that apply at the lock, collapsible, each showing its current choice); a fresh install no longer rings for the notice current when it joined; the filter's foreground notification moves to a minimum-importance channel. 127 because dev holds 126. herald unchanged at 0.1.19 at v0.2.23. 369 blocked packages.",
   "dns": {
     "upstreams": [
       "94.140.14.15",
@@ -830,14 +830,14 @@
   },
   "app_update": {
     "package_name": "app.drawbridge.dpc",
-    "version_code": 53,
-    "url": "https://drawbridge-project.pages.dev/assets/dpc-afded98a326a6386.apk",
-    "sha256": "afded98a326a63869be34bd02a309ba0b0e78197a02546cf3f0baf5cdac8ab64",
-    "version_name": "0.2.28",
-    "notes": "WhatsApp calls keep working even when WhatsApp is installed after drawbridge, or switched off and on again. Before this the phone had to be restarted first.\n\ndrawbridge can now tell you something when it needs to. Messages are kept under Messages from drawbridge in the \u22ee menu, and only make a sound when they are urgent. They are meant to be rare.\n\nThis screen now says which version it is offering you, and what changed.\n\nThe welcome picture is a painting: Vincent van Gogh\u2019s The Langlois Bridge at Arles, from 1888.",
+    "version_code": 54,
+    "url": "https://drawbridge-project.pages.dev/assets/dpc-70d0617d1e7d7f32.apk",
+    "sha256": "70d0617d1e7d7f32631e89eed9b1103b6dc11eaa2b503dd276cf13078e8dfe2b",
+    "version_name": "0.2.29",
+    "notes": "The settings screen is reorganised. The base web and app filter comes first. Below it are the further restrictions that apply once drawbridge is locked: WhatsApp, Telegram and video apps, browsers, app installs and the offline phone. Tap a section to open it; closed, it shows what it is set to.\n\nThe notification saying the filter is running is now as discreet as Android allows.\n\nA newly installed drawbridge no longer shows an old message as a notification.",
     "notes_i18n": {
-      "nl": "WhatsApp-oproepen blijven werken, ook als WhatsApp na drawbridge is ge\u00efnstalleerd of uit en weer aan is gezet. Daarvoor moest de telefoon eerst opnieuw opstarten.\n\ndrawbridge kan je nu iets laten weten als dat nodig is. Berichten staan onder Berichten van drawbridge in het \u22ee-menu en maken alleen geluid als ze dringend zijn. Ze zijn bedoeld om zeldzaam te zijn.\n\nDit scherm zegt nu welke versie het aanbiedt, en wat er veranderd is.\n\nDe welkomstafbeelding is een schilderij: De brug van Langlois te Arles van Vincent van Gogh, uit 1888.",
-      "fr": "Les appels WhatsApp continuent de fonctionner, m\u00eame si WhatsApp est install\u00e9 apr\u00e8s drawbridge ou d\u00e9sactiv\u00e9 puis r\u00e9activ\u00e9. Auparavant, il fallait d\u2019abord red\u00e9marrer le t\u00e9l\u00e9phone.\n\ndrawbridge peut maintenant vous dire quelque chose lorsque c\u2019est n\u00e9cessaire. Les messages restent sous Messages de drawbridge dans le menu \u22ee et ne sonnent que s\u2019ils sont urgents. Ils sont cens\u00e9s \u00eatre rares.\n\nCet \u00e9cran indique d\u00e9sormais quelle version il propose, et ce qui a chang\u00e9.\n\nL\u2019image d\u2019accueil est un tableau : Le Pont de Langlois \u00e0 Arles de Vincent van Gogh, de 1888."
+      "nl": "Het instellingenscherm is opnieuw ingedeeld. De basisfilter voor web en apps staat bovenaan. Daaronder staan de bijkomende beperkingen die gelden zodra drawbridge vergrendeld is: WhatsApp, Telegram en video-apps, browsers, app-installaties en de offline telefoon. Tik op een onderdeel om het te openen; dichtgeklapt toont het wat er ingesteld is.\n\nDe melding dat de filter actief is, is nu zo onopvallend als Android toelaat.\n\nEen pas ge\u00efnstalleerde drawbridge toont een oud bericht niet meer als melding.",
+      "fr": "L\u2019\u00e9cran des r\u00e9glages est r\u00e9organis\u00e9. Le filtre de base web et applications vient en premier. En dessous se trouvent les restrictions suppl\u00e9mentaires qui s\u2019appliquent une fois drawbridge verrouill\u00e9 : WhatsApp, Telegram et applications vid\u00e9o, navigateurs, installation d\u2019applications et t\u00e9l\u00e9phone hors ligne. Touchez une section pour l\u2019ouvrir ; ferm\u00e9e, elle indique son r\u00e9glage actuel.\n\nLa notification indiquant que le filtre est actif est d\u00e9sormais aussi discr\u00e8te qu\u2019Android le permet.\n\nUn drawbridge fra\u00eechement install\u00e9 n\u2019affiche plus un ancien message sous forme de notification."
     }
   },
   "required_apps": [
