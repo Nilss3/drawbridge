@@ -20,6 +20,7 @@ class BrowserActivity : AppCompatActivity() {
         TabIntentProcessor(
             components.useCases.tabsUseCases,
             components.useCases.searchUseCases.newTabSearch,
+            applicationScope = components.applicationScope,
         )
     }
 

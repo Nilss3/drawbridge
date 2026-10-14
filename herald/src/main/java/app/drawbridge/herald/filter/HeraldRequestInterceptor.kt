@@ -5,8 +5,8 @@ import app.drawbridge.herald.HeraldPolicy
 import app.drawbridge.herald.browser.LoadPauseIntegration
 import app.drawbridge.herald.search.SafeSearch
 import mozilla.components.browser.errorpages.ErrorPages
-import mozilla.components.browser.errorpages.ErrorType
 import mozilla.components.concept.engine.EngineSession
+import mozilla.components.concept.engine.request.ErrorType
 import mozilla.components.concept.engine.request.RequestInterceptor
 
 /**
