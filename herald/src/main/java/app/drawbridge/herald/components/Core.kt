@@ -3,6 +3,7 @@ package app.drawbridge.herald.components
 import android.content.Context
 import app.drawbridge.herald.downloads.DownloadService
 import app.drawbridge.herald.filter.HeraldRequestInterceptor
+import kotlinx.coroutines.CoroutineScope
 import mozilla.components.browser.engine.gecko.autofill.GeckoAutocompleteStorageDelegate
 import mozilla.components.browser.engine.gecko.permission.GeckoSitePermissionsStorage
 import mozilla.components.browser.icons.BrowserIcons
@@ -39,7 +40,11 @@ import app.drawbridge.herald.media.MediaSessionService
  * The browser's long-lived objects: engine, state store and the storage backing
  * history, bookmarks and saved logins.
  */
-class Core(private val context: Context, private val downloads: Downloads) {
+class Core(
+    private val context: Context,
+    private val downloads: Downloads,
+    private val applicationScope: CoroutineScope,
+) {
 
     val engine: Engine by lazy {
         EngineProvider.createEngine(
@@ -120,7 +125,7 @@ class Core(private val context: Context, private val downloads: Downloads) {
         return if (country.isNullOrBlank()) RegionState.Default else RegionState(country, country)
     }
 
-    val sessionStorage: SessionStorage by lazy { SessionStorage(context, engine) }
+    val sessionStorage: SessionStorage by lazy { SessionStorage(context, engine, applicationScope = applicationScope) }
 
     val lazyHistoryStorage = lazy { PlacesHistoryStorage(context) }
     val historyStorage: PlacesHistoryStorage by lazy { lazyHistoryStorage.value }
@@ -148,7 +153,7 @@ class Core(private val context: Context, private val downloads: Downloads) {
     }
 
     val fileUploadsDirCleaner: FileUploadsDirCleaner by lazy {
-        FileUploadsDirCleaner { context.cacheDir }
+        FileUploadsDirCleaner(scope = applicationScope) { context.cacheDir }
     }
 
     /**
@@ -162,8 +167,10 @@ class Core(private val context: Context, private val downloads: Downloads) {
                 creditCardsAddressesStorageDelegate = NoCreditCardsOrAddresses,
                 loginStorageDelegate = GeckoLoginStorageDelegate(
                     loginStorage = lazyLoginsStorage,
+                    scope = applicationScope,
                     isLoginAutofillEnabled = { true },
                 ),
+                applicationScope = applicationScope,
             )
     }
 

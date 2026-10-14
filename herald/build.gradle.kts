@@ -33,7 +33,14 @@ fun signingValue(propertyKey: String, environmentKey: String): String? =
 
 android {
     namespace = "app.drawbridge.herald"
-    compileSdk = 36
+    // SDK 37.2 because GeckoView requires it: its AAR declares minCompileSdk 37
+    // and minCompileMinorSdk 2 from engine 158 (37.1 from 154). Compiling
+    // against it changes nothing at run time — targetSdk stays 36 below.
+    compileSdk {
+        version = release(37) {
+            minorApiLevel = 2
+        }
+    }
 
     defaultConfig {
         /**
