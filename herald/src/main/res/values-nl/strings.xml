@@ -45,6 +45,20 @@
     <string name="history_no_results">Geen enkele pagina komt overeen.</string>
     <string name="history_clear_all_title">Alle geschiedenis wissen?</string>
     <string name="history_clear_all_message">Elke pagina die je bezocht hebt wordt vergeten. Dit kan niet ongedaan gemaakt worden.</string>
+
+    <string name="menu_downloads">Downloads</string>
+    <string name="downloads_empty">Nog geen downloads.</string>
+    <string name="downloads_search_hint">Downloads doorzoeken</string>
+    <string name="downloads_no_results">Geen enkele download komt overeen.</string>
+    <string name="downloads_clear_all_title">De downloadlijst wissen?</string>
+    <string name="downloads_clear_all_message">De lijst wordt leeggemaakt. De bestanden zelf blijven op de telefoon, in de map Downloads.</string>
+    <string name="downloads_file_missing">Dit bestand staat niet meer op de telefoon. Het is misschien verplaatst of verwijderd.</string>
+    <string name="downloads_no_app">Geen enkele app op deze telefoon kan dit soort bestand openen.</string>
+    <string name="downloads_status_downloading">Bezig met downloaden…</string>
+    <string name="downloads_status_progress">Bezig met downloaden · %1$d%%</string>
+    <string name="downloads_status_paused">Gepauzeerd</string>
+    <string name="downloads_status_failed">Mislukt</string>
+    <string name="downloads_status_cancelled">Geannuleerd</string>
     <string name="bookmarks_empty">Nog geen bladwijzers.</string>
     <string name="bookmarks_folder_empty">Deze map is leeg.</string>
     <string name="bookmarks_search_hint">Bladwijzers doorzoeken</string>

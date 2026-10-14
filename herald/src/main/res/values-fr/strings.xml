@@ -47,6 +47,20 @@
     <string name="history_no_results">Aucune page ne correspond.</string>
     <string name="history_clear_all_title">Effacer tout l\'historique ?</string>
     <string name="history_clear_all_message">Chaque page que vous avez visitée est oubliée. Cette action est irréversible.</string>
+
+    <string name="menu_downloads">Téléchargements</string>
+    <string name="downloads_empty">Pas encore de téléchargements.</string>
+    <string name="downloads_search_hint">Rechercher dans les téléchargements</string>
+    <string name="downloads_no_results">Aucun téléchargement ne correspond.</string>
+    <string name="downloads_clear_all_title">Effacer la liste des téléchargements ?</string>
+    <string name="downloads_clear_all_message">La liste est vidée. Les fichiers eux-mêmes restent sur le téléphone, dans son dossier Téléchargements.</string>
+    <string name="downloads_file_missing">Ce fichier n\'est plus sur le téléphone. Il a peut-être été déplacé ou supprimé.</string>
+    <string name="downloads_no_app">Aucune application de ce téléphone ne peut ouvrir ce type de fichier.</string>
+    <string name="downloads_status_downloading">Téléchargement…</string>
+    <string name="downloads_status_progress">Téléchargement · %1$d %%</string>
+    <string name="downloads_status_paused">En pause</string>
+    <string name="downloads_status_failed">Échec</string>
+    <string name="downloads_status_cancelled">Annulé</string>
     <string name="bookmarks_empty">Pas encore de marque-pages.</string>
     <string name="bookmarks_folder_empty">Ce dossier est vide.</string>
     <string name="bookmarks_search_hint">Rechercher dans les marque-pages</string>

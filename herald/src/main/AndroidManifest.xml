@@ -92,6 +92,11 @@
             android:label="@string/menu_history" />
 
         <activity
+            android:name=".downloads.DownloadsActivity"
+            android:exported="false"
+            android:label="@string/menu_downloads" />
+
+        <activity
             android:name=".bookmarks.BookmarksActivity"
             android:exported="false"
             android:label="@string/menu_bookmarks" />
