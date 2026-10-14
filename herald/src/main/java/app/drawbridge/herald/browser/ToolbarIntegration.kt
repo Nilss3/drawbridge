@@ -12,6 +12,7 @@ import app.drawbridge.herald.R
 import app.drawbridge.herald.bookmarks.BookmarksActivity
 import app.drawbridge.herald.ext.components
 import app.drawbridge.herald.ext.share
+import app.drawbridge.herald.downloads.DownloadsActivity
 import app.drawbridge.herald.history.HistoryActivity
 import app.drawbridge.herald.logins.LoginsActivity
 import app.drawbridge.herald.settings.SettingsActivity
@@ -371,6 +372,12 @@ class ToolbarIntegration(
                 start = icon(mozilla.components.ui.icons.R.drawable.mozac_ic_history_24),
             ) {
                 context.startActivityNewTask(HistoryActivity::class.java)
+            },
+            TextMenuCandidate(
+                context.getString(R.string.menu_downloads),
+                start = icon(mozilla.components.ui.icons.R.drawable.mozac_ic_download_24),
+            ) {
+                context.startActivityNewTask(DownloadsActivity::class.java)
             },
             TextMenuCandidate(
                 context.getString(R.string.menu_passwords),

@@ -41,6 +41,20 @@
     <string name="history_no_results">No pages match that.</string>
     <string name="history_clear_all_title">Clear all history?</string>
     <string name="history_clear_all_message">Every page you have visited is forgotten. This cannot be undone.</string>
+
+    <string name="menu_downloads">Downloads</string>
+    <string name="downloads_empty">No downloads yet.</string>
+    <string name="downloads_search_hint">Search downloads</string>
+    <string name="downloads_no_results">No downloads match that.</string>
+    <string name="downloads_clear_all_title">Clear the downloads list?</string>
+    <string name="downloads_clear_all_message">The list is emptied. The files themselves stay on the phone, in its Downloads folder.</string>
+    <string name="downloads_file_missing">This file is no longer on the phone. It may have been moved or deleted.</string>
+    <string name="downloads_no_app">No app on this phone can open this kind of file.</string>
+    <string name="downloads_status_downloading">Downloading…</string>
+    <string name="downloads_status_progress">Downloading · %1$d%%</string>
+    <string name="downloads_status_paused">Paused</string>
+    <string name="downloads_status_failed">Failed</string>
+    <string name="downloads_status_cancelled">Cancelled</string>
     <string name="bookmarks_empty">No bookmarks yet.</string>
     <string name="bookmarks_folder_empty">This folder is empty.</string>
     <string name="bookmarks_search_hint">Search bookmarks</string>

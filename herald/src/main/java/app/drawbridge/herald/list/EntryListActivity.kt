@@ -23,7 +23,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 /**
- * Shared screen for history, bookmarks and saved passwords: a titled list where
+ * Shared screen for history, downloads and saved passwords: a titled list where
  * each row can be opened and removed.
  *
  * The three screens differ only in where their rows come from, so they share one
@@ -161,6 +161,15 @@ abstract class EntryListActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
+        lifecycleScope.launch { refresh() }
+    }
+
+    /**
+     * Reloads the rows outside the usual moments — opening the screen, a search,
+     * a delete. For a screen whose rows change on their own, which is the
+     * downloads list while something is still coming in.
+     */
+    protected fun reload() {
         lifecycleScope.launch { refresh() }
     }
 
