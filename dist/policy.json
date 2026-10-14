@@ -1,7 +1,7 @@
 {
-  "version": 127,
-  "issued_at": "2026-10-13T10:00:00Z",
-  "comment": "BETA. The beta catches up with dev: drawbridge 0.2.29 build 54. The configuration screen is regrouped (base web and app filter first, then the further restrictions that apply at the lock, collapsible, each showing its current choice); a fresh install no longer rings for the notice current when it joined; the filter's foreground notification moves to a minimum-importance channel. 127 because dev holds 126. herald unchanged at 0.1.19 at v0.2.23. 369 blocked packages.",
+  "version": 129,
+  "issued_at": "2026-10-14T09:30:00Z",
+  "comment": "BETA. drawbridge 0.2.30 build 55, the same source as dev's build 55: a hidden system app is no longer uninstalled, which wiped Motorola's app-pusher after every restart and set it pushing games; packages the phone does not carry are no longer evaluated. 129 because dev holds 128. herald unchanged at 0.1.19 at v0.2.23. 369 blocked packages.",
   "dns": {
     "upstreams": [
       "94.140.14.15",
@@ -830,14 +830,14 @@
   },
   "app_update": {
     "package_name": "app.drawbridge.dpc",
-    "version_code": 54,
-    "url": "https://drawbridge-project.pages.dev/assets/dpc-70d0617d1e7d7f32.apk",
-    "sha256": "70d0617d1e7d7f32631e89eed9b1103b6dc11eaa2b503dd276cf13078e8dfe2b",
-    "version_name": "0.2.29",
-    "notes": "The settings screen is reorganised. The base web and app filter comes first. Below it are the further restrictions that apply once drawbridge is locked: WhatsApp, Telegram and video apps, browsers, app installs and the offline phone. Tap a section to open it; closed, it shows what it is set to.\n\nThe notification saying the filter is running is now as discreet as Android allows.\n\nA newly installed drawbridge no longer shows an old message as a notification.",
+    "version_code": 55,
+    "url": "https://drawbridge-project.pages.dev/assets/dpc-c20e5746f81f563e.apk",
+    "sha256": "c20e5746f81f563e2a34126e568af5360828e69cff0d1b0b562b6d3cfc10aef9",
+    "version_name": "0.2.30",
+    "notes": "Fixes a problem where drawbridge could reset one of the phone's preinstalled apps, which then installed games that drawbridge had to remove again.\n\nEverything in 0.2.29 is still here: the reorganised settings screen, the quieter filter notification, and no old message as a notification on a new install.",
     "notes_i18n": {
-      "nl": "Het instellingenscherm is opnieuw ingedeeld. De basisfilter voor web en apps staat bovenaan. Daaronder staan de bijkomende beperkingen die gelden zodra drawbridge vergrendeld is: WhatsApp, Telegram en video-apps, browsers, app-installaties en de offline telefoon. Tik op een onderdeel om het te openen; dichtgeklapt toont het wat er ingesteld is.\n\nDe melding dat de filter actief is, is nu zo onopvallend als Android toelaat.\n\nEen pas ge\u00efnstalleerde drawbridge toont een oud bericht niet meer als melding.",
-      "fr": "L\u2019\u00e9cran des r\u00e9glages est r\u00e9organis\u00e9. Le filtre de base web et applications vient en premier. En dessous se trouvent les restrictions suppl\u00e9mentaires qui s\u2019appliquent une fois drawbridge verrouill\u00e9 : WhatsApp, Telegram et applications vid\u00e9o, navigateurs, installation d\u2019applications et t\u00e9l\u00e9phone hors ligne. Touchez une section pour l\u2019ouvrir ; ferm\u00e9e, elle indique son r\u00e9glage actuel.\n\nLa notification indiquant que le filtre est actif est d\u00e9sormais aussi discr\u00e8te qu\u2019Android le permet.\n\nUn drawbridge fra\u00eechement install\u00e9 n\u2019affiche plus un ancien message sous forme de notification."
+      "nl": "Lost een probleem op waarbij drawbridge een van de vooraf ge\u00efnstalleerde apps van de telefoon kon resetten, die daarna games installeerde die drawbridge opnieuw moest verwijderen.\n\nAlles uit 0.2.29 blijft: het opnieuw ingedeelde instellingenscherm, de onopvallendere filtermelding, en geen oud bericht als melding bij een nieuwe installatie.",
+      "fr": "Corrige un probl\u00e8me o\u00f9 drawbridge pouvait r\u00e9initialiser une des applications pr\u00e9install\u00e9es du t\u00e9l\u00e9phone, qui installait ensuite des jeux que drawbridge devait \u00e0 nouveau supprimer.\n\nTout ce qui \u00e9tait dans 0.2.29 demeure : l\u2019\u00e9cran des r\u00e9glages r\u00e9organis\u00e9, la notification du filtre plus discr\u00e8te, et plus d\u2019ancien message en notification lors d\u2019une nouvelle installation."
     }
   },
   "required_apps": [
