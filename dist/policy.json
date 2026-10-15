@@ -1,7 +1,7 @@
 {
-  "version": 129,
-  "issued_at": "2026-10-14T09:30:00Z",
-  "comment": "BETA. drawbridge 0.2.30 build 55, the same source as dev's build 55: a hidden system app is no longer uninstalled, which wiped Motorola's app-pusher after every restart and set it pushing games; packages the phone does not carry are no longer evaluated. 129 because dev holds 128. herald unchanged at 0.1.19 at v0.2.23. 369 blocked packages.",
+  "version": 132,
+  "issued_at": "2026-10-15T15:00:00Z",
+  "comment": "BETA. herald 0.1.19 -> 0.1.21 at v0.2.24, the same source as dev's 0.1.21: a Downloads screen, the tabs screen as a plain list, neutral greys in place of Material 3's pink tint, and GeckoView 153 -> 158.0.20261007201254, the latest stable, which needed AGP 9 and SDK 37.2. drawbridge unchanged at 0.2.30 build 55. 132 because dev holds 131. 369 blocked packages.",
   "dns": {
     "upstreams": [
       "94.140.14.15",
@@ -843,16 +843,16 @@
   "required_apps": [
     {
       "package_name": "app.drawbridge.herald",
-      "version_code": 19,
-      "url": "https://github.com/Nilss3/drawbridge/releases/download/v0.2.23/herald-arm64-v8a-release.apk",
-      "sha256": "cb86ab7c59cc4f594026edd0a576c74518d9e014c1efef2c5ba2d97d010d8d95",
+      "version_code": 21,
+      "url": "https://github.com/Nilss3/drawbridge/releases/download/v0.2.24/herald-arm64-v8a-release.apk",
+      "sha256": "2b2378f72cb586fbf04e6d165cca77b52cf4972f51c01c20faa0b4ccded8cb76",
       "abi": "arm64-v8a"
     },
     {
       "package_name": "app.drawbridge.heraldmono",
-      "version_code": 19,
-      "url": "https://github.com/Nilss3/drawbridge/releases/download/v0.2.23/herald-mono-arm64-v8a-release.apk",
-      "sha256": "0496033e9da3f70e435f455826abf1ae352243022e4e83486423f79138983d05",
+      "version_code": 21,
+      "url": "https://github.com/Nilss3/drawbridge/releases/download/v0.2.24/herald-mono-arm64-v8a-release.apk",
+      "sha256": "8abe87d26b3e645a4e4e2fe93d8dbfaac98f8f1e34f1ecaaa8c41228d160018b",
       "abi": "arm64-v8a"
     }
   ],

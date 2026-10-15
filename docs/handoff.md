@@ -58,7 +58,7 @@ symptom is a policy that reports success and changes nothing. **Read
 number: the table is written by hand and goes stale exactly when it matters.
 
 **The beta's herald is pinned by name rather than through
-`/releases/latest/download/`, as of policy 96 — at `v0.2.23` since policy 111, at `v0.2.22` from policy 108,
+`/releases/latest/download/`, as of policy 96 — at `v0.2.24` since policy 132, at `v0.2.23` from policy 111, at `v0.2.22` from policy 108,
 at `v0.2.20.1` from policy 101, and at `v0.2.19` before that.** GitHub resolves
 that path at request time to whichever release wears the Latest flag, so a
 drawbridge-only release taking that flag would have redirected herald's download
@@ -92,7 +92,7 @@ fetches herald itself from the URLs the policy pins.
 After switching branches, re-stage:
 
 ```bash
-gh release download v0.2.23       --pattern 'herald-*.apk' --dir dist/release --clobber  # main
+gh release download v0.2.24       --pattern 'herald-*.apk' --dir dist/release --clobber  # main
 gh release download v0.2.8-dev.11 --pattern 'herald-*.apk' --dir dist/release --clobber # dev
 shasum -a 256 -c dist/release/SHA256SUMS
 ```
