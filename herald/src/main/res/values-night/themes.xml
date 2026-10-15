@@ -6,5 +6,16 @@
         <!-- Night: dark strips, so light icons. See values/themes.xml. -->
         <item name="android:windowLightStatusBar">false</item>
         <item name="android:windowLightNavigationBar" tools:targetApi="o_mr1">false</item>
+
+        <!-- Neutral surfaces; see values/themes.xml. -->
+        <item name="android:colorBackground">@color/app_background</item>
+        <item name="colorSurface">@color/app_background</item>
+        <item name="colorSurfaceBright">@color/app_background</item>
+        <item name="colorSurfaceDim">@color/app_surface_container</item>
+        <item name="colorSurfaceContainerLowest">@color/app_background</item>
+        <item name="colorSurfaceContainerLow">@color/app_surface_container</item>
+        <item name="colorSurfaceContainer">@color/app_surface_container</item>
+        <item name="colorSurfaceContainerHigh">@color/app_surface_container_high</item>
+        <item name="colorSurfaceContainerHighest">@color/app_surface_container_high</item>
     </style>
 </resources>
