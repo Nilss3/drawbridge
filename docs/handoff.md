@@ -46,7 +46,7 @@ else that put this channel back above the beta as 98 once did. Then **117 on
 main**, the beta catching up with three dpc releases at once, **118 on main** for
 the WhatsApp fix, **119 on dev**, which is this channel taking that fix and
 clearing the beta again, **120 on dev** for drawbridge 0.2.26 build 51, and **121 on dev** for 0.2.27
-build 52, which is 51's notice channel made able to notify anybody. After that: 122 to 124 on dev, **125 on main**, and **126 on dev** for drawbridge 0.2.29 build 54 — the regrouped configuration screen, the quiet filter notification, and fresh installs no longer ringing for an old notice. Then **127 on main** for the same build, **128 on dev** and **129 on main** for build 55, which stops drawbridge uninstalling a hidden system app — Motorola's app-pusher, wiped by it after every restart, kept reinstalling games.
+build 52, which is 51's notice channel made able to notify anybody. After that: 122 to 124 on dev, **125 on main**, and **126 on dev** for drawbridge 0.2.29 build 54 — the regrouped configuration screen, the quiet filter notification, and fresh installs no longer ringing for an old notice. Then **127 on main** for the same build, **128 on dev** and **129 on main** for build 55, which stops drawbridge uninstalling a hidden system app — Motorola's app-pusher, wiped by it after every restart, kept reinstalling games. Then **130 on dev** for herald 0.1.20 at `v0.2.8-dev.12`: the Downloads screen and GeckoView 158, the first engine past 153, which needed AGP 9 and SDK 37.2.
 
 **117 was very nearly taken twice, and that is the counter's failure mode.** The
 WhatsApp fix was first written on this branch against a version table that still
@@ -93,7 +93,7 @@ After switching branches, re-stage:
 
 ```bash
 gh release download v0.2.23       --pattern 'herald-*.apk' --dir dist/release --clobber  # main
-gh release download v0.2.8-dev.11 --pattern 'herald-*.apk' --dir dist/release --clobber # dev
+gh release download v0.2.8-dev.12 --pattern 'herald-*.apk' --dir dist/release --clobber # dev
 shasum -a 256 -c dist/release/SHA256SUMS
 ```
 

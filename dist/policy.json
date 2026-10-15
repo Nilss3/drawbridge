@@ -1,7 +1,7 @@
 {
-  "version": 128,
-  "issued_at": "2026-10-14T09:00:00Z",
-  "comment": "DEV CHANNEL ONLY. drawbridge 0.2.30 build 55. A hidden system app is no longer uninstalled: isSystemPackage could not see hidden packages, so the first periodic sweep after every start uninstalled Motorola's hidden app-pusher, com.dti.motorola, which stripped its update and wiped its data; it then updated itself and pushed a batch of games. Packages the phone does not carry are no longer evaluated. 128 because main holds 127. herald unchanged at 0.1.19 arm64 at v0.2.8-dev.11. 369 blocked packages.",
+  "version": 130,
+  "issued_at": "2026-10-15T10:40:00Z",
+  "comment": "DEV CHANNEL ONLY. herald 0.1.20 at v0.2.8-dev.12: a Downloads screen, and the engine five majors on, GeckoView 153 -> 158.0.20261007201254 (android-components 158.0), which needed AGP 9 and compiling against SDK 37.2. drawbridge unchanged at 0.2.30 build 55. 130 because main holds 129. 369 blocked packages.",
   "dns": {
     "upstreams": [
       "94.140.14.15",
@@ -843,16 +843,16 @@
   "required_apps": [
     {
       "package_name": "app.drawbridge.herald",
-      "version_code": 19,
-      "url": "https://github.com/Nilss3/drawbridge/releases/download/v0.2.8-dev.11/herald-arm64-v8a-release.apk",
-      "sha256": "feb6593004fc4101bdc0bf1544cc5d56583061bd1e8607a7d9ebafced3956787",
+      "version_code": 20,
+      "url": "https://github.com/Nilss3/drawbridge/releases/download/v0.2.8-dev.12/herald-arm64-v8a-release.apk",
+      "sha256": "0faf76622290e20e5463665bca375828bc8b917cb80e57df6460fde3e96c5e6a",
       "abi": "arm64-v8a"
     },
     {
       "package_name": "app.drawbridge.heraldmono",
-      "version_code": 19,
-      "url": "https://github.com/Nilss3/drawbridge/releases/download/v0.2.8-dev.11/herald-mono-arm64-v8a-release.apk",
-      "sha256": "79d7cef1df01a1ef0081d2b72b1c4fae9ee9652e9ed6785e430fb00bc49888f1",
+      "version_code": 20,
+      "url": "https://github.com/Nilss3/drawbridge/releases/download/v0.2.8-dev.12/herald-mono-arm64-v8a-release.apk",
+      "sha256": "3c8898711cabc0dd5aa7e4a02106629a0529ee58e5ef4b664e8a644e9dda090d",
       "abi": "arm64-v8a"
     }
   ],
