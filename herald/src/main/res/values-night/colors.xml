@@ -6,11 +6,15 @@
     <color name="toolbar_hint">#FFB0AFB8</color>
     <color name="menu_icon">#FFFBFBFE</color>
 
-    <color name="tab_item_background">#FF42414D</color>
+    <color name="tab_item_background">@color/app_background</color>
     <color name="tab_item_selected_background">#FF5B5675</color>
     <color name="tab_item_text">#FFFBFBFE</color>
     <color name="tab_item_url">#FFB0AFB8</color>
 
     <color name="mozac_ui_tabcounter_default_tint">@color/toolbar_text</color>
     <color name="mozac_ui_tabcounter_default_text">@color/toolbar_text</color>
+
+    <color name="app_background">#FF1C1B22</color>
+    <color name="app_surface_container">#FF2B2A33</color>
+    <color name="app_surface_container_high">#FF42414D</color>
 </resources>

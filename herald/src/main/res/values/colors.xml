@@ -16,7 +16,7 @@
 
     <!-- Tab tray rows. The library's defaults are a white card and a bright blue
          selection, which is glaring against a dark tray. -->
-    <color name="tab_item_background">#FFFFFFFF</color>
+    <color name="tab_item_background">@color/app_background</color>
     <color name="tab_item_selected_background">#FFE7E4F9</color>
     <color name="tab_item_text">#FF15141A</color>
     <color name="tab_item_url">#FF5B5B66</color>
@@ -30,4 +30,11 @@
     -->
     <color name="mozac_ui_tabcounter_default_tint">@color/toolbar_text</color>
     <color name="mozac_ui_tabcounter_default_text">@color/toolbar_text</color>
+
+    <!-- Neutral greys for the theme's own surfaces, from the same palette as
+         the toolbar. Material 3's defaults carry a purple tint that reads as
+         pink on every list screen. See themes.xml. -->
+    <color name="app_background">#FFFFFFFF</color>
+    <color name="app_surface_container">#FFF9F9FB</color>
+    <color name="app_surface_container_high">#FFF0F0F4</color>
 </resources>

@@ -11,5 +11,20 @@
              both. -->
         <item name="android:windowLightStatusBar">true</item>
         <item name="android:windowLightNavigationBar" tools:targetApi="o_mr1">true</item>
+
+        <!-- **Neutral surfaces, not Material 3's.** Its baseline background and
+             surfaces are tinted purple (#FEF7FF by day), which a user saw as a
+             pink tabs screen on 2026-10-15 — and which sat behind Downloads,
+             History, Bookmarks and Settings too. Every surface the theme hands
+             out is one of herald's own greys instead. -->
+        <item name="android:colorBackground">@color/app_background</item>
+        <item name="colorSurface">@color/app_background</item>
+        <item name="colorSurfaceBright">@color/app_background</item>
+        <item name="colorSurfaceDim">@color/app_surface_container</item>
+        <item name="colorSurfaceContainerLowest">@color/app_background</item>
+        <item name="colorSurfaceContainerLow">@color/app_surface_container</item>
+        <item name="colorSurfaceContainer">@color/app_surface_container</item>
+        <item name="colorSurfaceContainerHigh">@color/app_surface_container_high</item>
+        <item name="colorSurfaceContainerHighest">@color/app_surface_container_high</item>
     </style>
 </resources>
