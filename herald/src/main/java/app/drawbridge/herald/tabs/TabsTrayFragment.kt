@@ -6,7 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import app.drawbridge.herald.BrowserActivity
 import app.drawbridge.herald.R
@@ -14,7 +15,6 @@ import app.drawbridge.herald.browser.BrowserFragment
 import app.drawbridge.herald.ext.applySystemBarInsets
 import app.drawbridge.herald.ext.requireComponents
 import mozilla.components.browser.state.state.TabSessionState
-import mozilla.components.browser.tabstray.DefaultTabViewHolder
 import mozilla.components.browser.tabstray.TabsAdapter
 import mozilla.components.browser.tabstray.TabsTray
 import mozilla.components.browser.tabstray.TabsTrayStyling
@@ -81,13 +81,13 @@ class TabsTrayFragment : Fragment(), UserInteractionHandler {
 
         val adapter = TabsAdapter(
             thumbnailLoader = thumbnailLoader,
-            // Android Components' own row layout is a list item; this is the same
-            // holder against a card layout, which is what makes the grid a grid.
-            // DefaultTabViewHolder binds by id, so tab_grid_item.xml keeps them.
+            // The library's holder against herald's own row, so the title gets
+            // the whole width and the type size the rest of the app uses.
+            // TabListViewHolder binds by id; see tab_list_item.xml.
             viewHolderProvider = { parent ->
-                DefaultTabViewHolder(
+                TabListViewHolder(
                     LayoutInflater.from(parent.context)
-                        .inflate(R.layout.tab_grid_item, parent, false),
+                        .inflate(R.layout.tab_list_item, parent, false),
                     thumbnailLoader,
                 )
             },
@@ -114,17 +114,11 @@ class TabsTrayFragment : Fragment(), UserInteractionHandler {
         )
 
         view.findViewById<RecyclerView>(R.id.tabsTray).apply {
-            layoutManager = GridLayoutManager(requireContext(), TAB_GRID_COLUMNS)
-            val edge = resources.getDimensionPixelSize(R.dimen.tab_grid_padding)
-            setPadding(edge, edge, edge, edge)
-            clipToPadding = false
+            layoutManager = LinearLayoutManager(requireContext())
+            addItemDecoration(DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL))
             this.adapter = adapter
         }
 
         return adapter
-    }
-
-    private companion object {
-        const val TAB_GRID_COLUMNS = 2
     }
 }

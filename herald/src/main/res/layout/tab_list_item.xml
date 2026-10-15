@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    One open tab as a list row: the site's icon, the title in full-size type,
+    the address under it, and a cross to close it.
+
+    **A list since 2026-10-15, replacing a two-column grid of thumbnail cards.**
+    A user found the grid sloppy, and the complaint was fair on its own terms: at
+    half the screen's width a card has room for about fifteen characters of
+    title, so telling two tabs on the same site apart meant reading thumbnails.
+    A row gives the title the whole width.
+
+    The ids are Android Components' own, because DefaultTabViewHolder binds by id
+    and needs all five. The thumbnail is therefore present and never shown.
+
+    The holder paints the root with the tray styling, which is what highlights
+    the tab you are on.
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical"
+    android:minHeight="64dp"
+    android:orientation="horizontal"
+    android:paddingStart="16dp"
+    android:paddingTop="8dp"
+    android:paddingEnd="4dp"
+    android:paddingBottom="8dp">
+
+    <ImageView
+        android:id="@+id/mozac_browser_tabstray_icon"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:contentDescription="@null" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/mozac_browser_tabstray_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="2"
+            android:textColor="@color/tab_item_text"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/mozac_browser_tabstray_url"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textColor="@color/tab_item_url"
+            android:textSize="13sp" />
+    </LinearLayout>
+
+    <androidx.appcompat.widget.AppCompatImageButton
+        android:id="@+id/mozac_browser_tabstray_close"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="@string/tabs_tray_close_tab"
+        android:padding="12dp"
+        android:src="@drawable/mozac_ic_cross_24"
+        app:tint="@color/tab_item_text" />
+
+    <mozilla.components.browser.tabstray.thumbnail.TabThumbnailView
+        android:id="@+id/mozac_browser_tabstray_thumbnail"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:contentDescription="@null"
+        android:visibility="gone" />
+</LinearLayout>
