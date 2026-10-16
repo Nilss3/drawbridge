@@ -1,51 +1,150 @@
 {
   "_comment": "Display names for the packages the blocklist page tabulates. The *rows* of those tables come from dist/policy.json at build time and cannot drift; this file only supplies a human name and the store rating for each package. Refresh it with tools/refresh-app-names.py after adding packages to the policy — the build prints any package it has no name for and falls back to the package id.",
   "ai_companions": [
+    "ai.anirole.mobile",
     "ai.botify.app",
+    "ai.boyfriend.imate.virtual.companion",
     "ai.character.app",
+    "ai.charland.charland",
     "ai.girlfriend.virtual.dating.lover.igirl",
+    "ai.hangjam.app",
+    "ai.lizlis.android",
+    "ai.lookatmy.app",
+    "ai.moescape.android",
+    "ai.nexalify.charma",
     "ai.replika.app",
+    "ai.rochat.bot",
     "ai.socialapps.speakmaster",
+    "ai.tain.reelso",
     "anima.virtual.ai.robot.friend",
+    "app.emergent.lunaaicompanion123b6b136",
+    "app.inlyth",
+    "app.source.faketalksimulator",
+    "caitty.com.AiBoyfriend2Pro",
+    "caitty.com.AiGirlfriend",
+    "caitty.com.aiboyfriend",
+    "caitty.com.findboyfriend",
     "chat.aimimo.mimo",
+    "chat.kun.app",
     "com.Beauchamp.Messenger.external",
+    "com.ai.chat.artificial.intelligence.aichat",
     "com.ai.chat.assistant.smart.bot",
     "com.aigc.ushow.ichat",
+    "com.aiidolchat.app",
+    "com.anna.aichat",
+    "com.aria.aigirlfriend.chatjoy.aicharacter.roleplay",
+    "com.badalaryal.soulmate",
+    "com.bfin.aisoulmate",
+    "com.bnl.saend",
+    "com.characterai.character_ai",
+    "com.characterchat.ai",
+    "com.charmsy.app",
     "com.cho.kajiwoto",
     "com.crushx.aichatfriends",
     "com.cycleai.android",
+    "com.deeplove.ai",
+    "com.dewy.prod",
+    "com.digitalsoul",
+    "com.fandyai.fandy",
     "com.fantasia.ai",
     "com.fantasychat.withai",
     "com.fantasyx.chat",
+    "com.fjsh.alwayssupportiveboyfriend",
+    "com.fjsh.moshas",
+    "com.growinpainsllc.intimate",
+    "com.haoshun.maisai",
     "com.hiwaifu.app",
+    "com.hyperitycorp.hisstoryai",
     "com.ifriend.app",
+    "com.imiss.ai.girlfriend.simulator",
+    "com.incredi.your.boyfriend.virtual.ai",
+    "com.incredi.your.girlfriend.virtual.ai",
+    "com.intimaiforwoman",
+    "com.isekai.world",
+    "com.isetai.justmet",
+    "com.isetai.raki",
     "com.ismaker.android.simsimi",
     "com.joyland.ai",
     "com.kindroid.app",
+    "com.konrev.bagelchat",
+    "com.lazyapp.aigirflriend",
     "com.magicai.android",
+    "com.masterpiece.loreai",
+    "com.nexalify.cherrytalk",
+    "com.oshikoi.app",
+    "com.paluma.ai",
     "com.roleplai.app",
     "com.rosytalk.ai",
+    "com.siya.ai",
+    "com.slay.pengu",
+    "com.ssw.mecord",
+    "com.talefyaiapp",
+    "com.thirtythreeapps.chikachatbot",
+    "com.thirtythreeapps.jackchatbot",
+    "com.tipsyturbo.app",
+    "com.underfiction.app",
     "com.weaver.app.prod",
     "com.withfeelingai.test",
+    "com.xshort.app",
+    "com.xvideostudio.videodownload",
+    "com.yourwaifus",
+    "com.zing.chat.android",
+    "io.iftech.lovie",
+    "io.soulmate",
+    "kinda.character.chat",
+    "laixen.ai.character.chat",
+    "ncp.bigbearded.simulate",
     "nomi.ai.friend.chat",
     "online.fantasyai.android"
   ],
   "names": {
+    "ai.anirole.mobile": {
+      "title": "Chacha - AI Anime Chat",
+      "rating": "Parental guidance"
+    },
     "ai.botify.app": {
       "title": "Botify AI: Chatbot & Companion",
       "rating": "PEGI 16"
+    },
+    "ai.boyfriend.imate.virtual.companion": {
+      "title": "Imate - AI boyfriend who cares",
+      "rating": "PEGI 3"
     },
     "ai.character.app": {
       "title": "Character AI: Chat, Talk, Text",
       "rating": "PEGI 18"
     },
+    "ai.charland.charland": {
+      "title": "Charland - Character AI Chat",
+      "rating": "Parental guidance"
+    },
     "ai.girlfriend.virtual.dating.lover.igirl": {
       "title": "iGirl: AI Girlfriend",
       "rating": "PEGI 16"
     },
+    "ai.hangjam.app": {
+      "title": "Hangjam: AI Chat and Roleplay",
+      "rating": "Parental guidance"
+    },
+    "ai.lizlis.android": {
+      "title": "Lizlis - AI Character Chat",
+      "rating": "Parental guidance"
+    },
+    "ai.lookatmy.app": {
+      "title": "lookatmy.ai: AI Companion",
+      "rating": "PEGI 3"
+    },
     "ai.mistral.chat": {
       "title": "Vibe by Mistral (ex-Le Chat)",
       "rating": "Parental guidance"
+    },
+    "ai.moescape.android": {
+      "title": "Moescape - Character AI & Art",
+      "rating": "Parental guidance"
+    },
+    "ai.nexalify.charma": {
+      "title": "CharPal: AI Character Roleplay",
+      "rating": "PEGI 3"
     },
     "ai.perplexity.app.android": {
       "title": "Perplexity - Ask Anything",
@@ -55,9 +154,17 @@
       "title": "Replika: My AI Friend",
       "rating": "Parental guidance"
     },
+    "ai.rochat.bot": {
+      "title": "Rochat - AI Character Chat",
+      "rating": "Parental guidance"
+    },
     "ai.socialapps.speakmaster": {
       "title": "PolyBuzz: Chat with AI Friends",
       "rating": "PEGI 18"
+    },
+    "ai.tain.reelso": {
+      "title": "LoveyDovey - Dream Chats",
+      "rating": "Parental guidance"
     },
     "air.ITVMobilePlayer": {
       "title": "ITVX",
@@ -67,9 +174,21 @@
       "title": "Anima: AI Friend Virtual Chat",
       "rating": "PEGI 3"
     },
+    "app.emergent.lunaaicompanion123b6b136": {
+      "title": "Luna: Realistic AI Soulmate",
+      "rating": "Parental guidance"
+    },
+    "app.inlyth": {
+      "title": "Inlyth: AI Companion Chat",
+      "rating": "PEGI 3"
+    },
     "app.newpharma.shop": {
       "title": "Newpharma",
       "rating": "PEGI 18"
+    },
+    "app.source.faketalksimulator": {
+      "title": "Char.ai : Chat & Roleplay",
+      "rating": "PEGI 3"
     },
     "au.com.shiftyjelly.pocketcasts": {
       "title": "Pocket Casts - Podcast App",
@@ -79,6 +198,22 @@
       "title": "Streamz",
       "rating": "Parental guidance"
     },
+    "caitty.com.AiBoyfriend2Pro": {
+      "title": "AI Boyfriend",
+      "rating": "PEGI 3"
+    },
+    "caitty.com.AiGirlfriend": {
+      "title": "AI Girlfriend",
+      "rating": "PEGI 3"
+    },
+    "caitty.com.aiboyfriend": {
+      "title": "AI Boyfriend",
+      "rating": "PEGI 3"
+    },
+    "caitty.com.findboyfriend": {
+      "title": "Everen: AI Boyfriend Chat",
+      "rating": "PEGI 3"
+    },
     "ch.threema.app": {
       "title": "Threema. The Secure Messenger",
       "rating": "Parental guidance"
@@ -86,6 +221,10 @@
     "chat.aimimo.mimo": {
       "title": "Mimo: Connect with Characters",
       "rating": "PEGI 16"
+    },
+    "chat.kun.app": {
+      "title": "KUN: Anime AI Boyfriend Chat",
+      "rating": "PEGI 3"
     },
     "chat.simplex.app": {
       "title": "SimpleX Chat",
@@ -99,6 +238,10 @@
       "title": "atresplayer・Estrenos de Series",
       "rating": "PEGI 3"
     },
+    "com.ai.chat.artificial.intelligence.aichat": {
+      "title": "AI Chat - Your AI Friend",
+      "rating": "PEGI 3"
+    },
     "com.ai.chat.assistant.smart.bot": {
       "title": "AI Character: Roleplay Chat",
       "rating": "PEGI 3"
@@ -106,6 +249,10 @@
     "com.aigc.ushow.ichat": {
       "title": "Linky AI: Chat, Play, Connect",
       "rating": "PEGI 18"
+    },
+    "com.aiidolchat.app": {
+      "title": "AI Girlfriend - Idolchat",
+      "rating": "Parental guidance"
     },
     "com.amazon.amazonvideo.livingroom": {
       "title": "Prime Video",
@@ -131,6 +278,10 @@
       "title": "Anghami: Play music & Podcasts",
       "rating": "Parental guidance"
     },
+    "com.anna.aichat": {
+      "title": "Anna AI: Character Chat & Call",
+      "rating": "PEGI 3"
+    },
     "com.antena3.atresplayer.tv": {
       "title": "atresplayer: Ver TV online",
       "rating": "PEGI 3"
@@ -151,6 +302,10 @@
       "title": "Apple TV: Shows, Movies & More",
       "rating": "Parental guidance"
     },
+    "com.aria.aigirlfriend.chatjoy.aicharacter.roleplay": {
+      "title": "Aria: AI Girlfriend ChatJoy",
+      "rating": "PEGI 3"
+    },
     "com.aspiro.tidal": {
       "title": "TIDAL Music: HiFi sound",
       "rating": "Parental guidance"
@@ -161,6 +316,10 @@
     },
     "com.audiomack": {
       "title": "Audiomack: Music Downloader",
+      "rating": "Parental guidance"
+    },
+    "com.badalaryal.soulmate": {
+      "title": "Soulmate: AI Dating & Chat",
       "rating": "Parental guidance"
     },
     "com.bambuna.podcastaddict": {
@@ -183,6 +342,14 @@
       "title": "beIN SPORTS CONNECT (TV)",
       "rating": "PEGI 3"
     },
+    "com.bfin.aisoulmate": {
+      "title": "AI Romance Chat: AI Soulmate",
+      "rating": "PEGI 3"
+    },
+    "com.bnl.saend": {
+      "title": "Saen-D: AI Companion",
+      "rating": "PEGI 3"
+    },
     "com.britbox.tv": {
       "title": "BritBox: Home of British TV",
       "rating": "PEGI 16"
@@ -198,6 +365,18 @@
     "com.cbs.app": {
       "title": "Paramount+",
       "rating": "Parental guidance"
+    },
+    "com.characterai.character_ai": {
+      "title": "Talk AI Character Roleplay",
+      "rating": "PEGI 3"
+    },
+    "com.characterchat.ai": {
+      "title": "AI Character Chat",
+      "rating": "PEGI 3"
+    },
+    "com.charmsy.app": {
+      "title": "Charmsy: AI Chat Text Stories",
+      "rating": "PEGI 3"
     },
     "com.chirpbirding.birda": {
       "title": "Birda - Birding Made Better",
@@ -235,8 +414,20 @@
       "title": "DAZN - Watch Live Sports",
       "rating": "Parental guidance"
     },
+    "com.deeplove.ai": {
+      "title": "DeepLove AI：Dream AI Love Chat",
+      "rating": "PEGI 3"
+    },
     "com.deepseek.chat": {
       "title": "DeepSeek - AI Assistant",
+      "rating": "Parental guidance"
+    },
+    "com.dewy.prod": {
+      "title": "Dewy: Chat with AI Characters",
+      "rating": "Parental guidance"
+    },
+    "com.digitalsoul": {
+      "title": "DigitalSoul: AI Character Chat",
       "rating": "Parental guidance"
     },
     "com.disney.disneyplus": {
@@ -255,6 +446,10 @@
       "title": "DStv Stream",
       "rating": "Parental guidance"
     },
+    "com.fandyai.fandy": {
+      "title": "Fandy: Chat with AI Characters",
+      "rating": "PEGI 3"
+    },
     "com.fantasia.ai": {
       "title": "Fantasia: Character AI Chat",
       "rating": "PEGI 16"
@@ -270,6 +465,14 @@
     "com.fitapp": {
       "title": "Running Tracker App – FITAPP",
       "rating": "Parental guidance"
+    },
+    "com.fjsh.alwayssupportiveboyfriend": {
+      "title": "AI Boyfriend:Love Chat Partner",
+      "rating": "PEGI 3"
+    },
+    "com.fjsh.moshas": {
+      "title": "AI Boyfriend Maker: Moshas",
+      "rating": "PEGI 3"
     },
     "com.foodient.whisk": {
       "title": "Samsung Food: Meal Planner",
@@ -295,6 +498,14 @@
       "title": "Google TV",
       "rating": "Parental guidance"
     },
+    "com.growinpainsllc.intimate": {
+      "title": "Intimate - AI Girlfriend",
+      "rating": "Parental guidance"
+    },
+    "com.haoshun.maisai": {
+      "title": "Maisai：AI虛擬戀人",
+      "rating": "Parental guidance"
+    },
     "com.hiwaifu.app": {
       "title": "HiWaifu: AI Friend & Waifu Hub",
       "rating": "PEGI 18"
@@ -303,12 +514,44 @@
       "title": "Hulu: Stream TV shows & movies",
       "rating": "Parental guidance"
     },
+    "com.hyperitycorp.hisstoryai": {
+      "title": "HisStory: AI Boyfriend Chat",
+      "rating": "PEGI 3"
+    },
     "com.ifriend.app": {
       "title": "EVA AI Soulmate",
       "rating": "PEGI 18"
     },
+    "com.imiss.ai.girlfriend.simulator": {
+      "title": "Imiss: Sweet AI Girlfriend",
+      "rating": "PEGI 3"
+    },
+    "com.incredi.your.boyfriend.virtual.ai": {
+      "title": "Your Boyfriend AI Chat",
+      "rating": "PEGI 3"
+    },
+    "com.incredi.your.girlfriend.virtual.ai": {
+      "title": "Your Girlfriend - AI Chat",
+      "rating": "PEGI 3"
+    },
+    "com.intimaiforwoman": {
+      "title": "AI Boyfriend 18+",
+      "rating": "Parental guidance"
+    },
     "com.iqiyi.i18n": {
       "title": "iQIYI - Drama, Anime, Show",
+      "rating": "Parental guidance"
+    },
+    "com.isekai.world": {
+      "title": "ISEKAI ZERO: Anime AI Roleplay",
+      "rating": "Parental guidance"
+    },
+    "com.isetai.justmet": {
+      "title": "JustMet: AI Girlfriend",
+      "rating": "Parental guidance"
+    },
+    "com.isetai.raki": {
+      "title": "Raki: Chat with AI Characters",
       "rating": "Parental guidance"
     },
     "com.ismaker.android.simsimi": {
@@ -331,9 +574,21 @@
       "title": "Kobo | eBooks & Audiobooks",
       "rating": "Parental guidance"
     },
+    "com.konrev.bagelchat": {
+      "title": "BagelChat: AI Character Story",
+      "rating": "Parental guidance"
+    },
+    "com.lazyapp.aigirflriend": {
+      "title": "Lust: AI Girlfriend Simulator",
+      "rating": "Parental guidance"
+    },
     "com.magicai.android": {
       "title": "Magic: Fantasy Roleplay Chat",
       "rating": "PEGI 18"
+    },
+    "com.masterpiece.loreai": {
+      "title": "Lore: Chat With AI Characters",
+      "rating": "PEGI 3"
     },
     "com.megogo.application": {
       "title": "MEGOGO: Online TV, Movies",
@@ -359,6 +614,10 @@
       "title": "Netflix",
       "rating": "Parental guidance"
     },
+    "com.nexalify.cherrytalk": {
+      "title": "CherryTalk: AI Chat & Story",
+      "rating": "Parental guidance"
+    },
     "com.odysee.app": {
       "title": "Odysee",
       "rating": "Parental guidance"
@@ -366,6 +625,10 @@
     "com.openai.chatgpt": {
       "title": "ChatGPT",
       "rating": "Parental guidance"
+    },
+    "com.oshikoi.app": {
+      "title": "OshiKoi - 3D AI Companion",
+      "rating": "PEGI 3"
     },
     "com.osn.go": {
       "title": "OSN+",
@@ -377,6 +640,10 @@
     },
     "com.overdrive.mobile.android.libby": {
       "title": "Libby: Read Library Books",
+      "rating": "Parental guidance"
+    },
+    "com.paluma.ai": {
+      "title": "Paluma: AI Character Chat",
       "rating": "Parental guidance"
     },
     "com.peacocktv.peacockandroid": {
@@ -407,9 +674,17 @@
       "title": "Shazam: Find Music & Concerts",
       "rating": "Parental guidance"
     },
+    "com.siya.ai": {
+      "title": "Siya - AI Soulmate",
+      "rating": "Parental guidance"
+    },
     "com.skyshowtime.skyshowtime.google": {
       "title": "SkyShowtime: Movies & Series",
       "rating": "Parental guidance"
+    },
+    "com.slay.pengu": {
+      "title": "Friends – Raise AI Companions",
+      "rating": "PEGI 3"
     },
     "com.sonyliv": {
       "title": "Sony LIV: Sports & Entmt",
@@ -421,6 +696,10 @@
     },
     "com.spotify.music": {
       "title": "Spotify: Music and Podcasts",
+      "rating": "Parental guidance"
+    },
+    "com.ssw.mecord": {
+      "title": "Meco - AI Character Chat",
       "rating": "Parental guidance"
     },
     "com.star.mobile.video": {
@@ -443,13 +722,33 @@
       "title": "Sports Tracker: Run Bike Hike",
       "rating": "Parental guidance"
     },
+    "com.talefyaiapp": {
+      "title": "Talefy: AI Character Roleplay",
+      "rating": "PEGI 3"
+    },
     "com.tencent.qqlivei18n.us": {
       "title": "Tencent Video",
+      "rating": "Parental guidance"
+    },
+    "com.thirtythreeapps.chikachatbot": {
+      "title": "Anime AI Waifu Chat: Chika",
+      "rating": "PEGI 3"
+    },
+    "com.thirtythreeapps.jackchatbot": {
+      "title": "Jack - AI Boyfriend",
+      "rating": "PEGI 3"
+    },
+    "com.tipsyturbo.app": {
+      "title": "Tipsy Chat: Live Your Story",
       "rating": "Parental guidance"
     },
     "com.todtv.tod": {
       "title": "TOD by beIN",
       "rating": "Parental guidance"
+    },
+    "com.underfiction.app": {
+      "title": "Underfiction: AI Roleplay",
+      "rating": "PEGI 3"
     },
     "com.univision.prendetv": {
       "title": "ViX: TV, Deportes y Noticias",
@@ -483,9 +782,25 @@
       "title": "Paradot: Personal AI chat",
       "rating": "Parental guidance"
     },
+    "com.xshort.app": {
+      "title": "Winkio: Chat With Character",
+      "rating": "Parental guidance"
+    },
+    "com.xvideostudio.videodownload": {
+      "title": "AI GirlFriend AI Story ChatJoy",
+      "rating": "Parental guidance"
+    },
     "com.youku.international.phone": {
       "title": "YOUKU-Drama, Film, Show, Anime",
       "rating": "Parental guidance"
+    },
+    "com.yourwaifus": {
+      "title": "YourWaifus: AI Girlfriend",
+      "rating": "Parental guidance"
+    },
+    "com.zing.chat.android": {
+      "title": "ZingChat: Charming AI Roleplay",
+      "rating": "PEGI 3"
     },
     "de.danoeh.antennapod": {
       "title": "AntennaPod - Podcast Player",
@@ -523,9 +838,29 @@
       "title": "JioHotstar",
       "rating": "Parental guidance"
     },
+    "io.iftech.lovie": {
+      "title": "Lovie - Chat with AI Character",
+      "rating": "PEGI 3"
+    },
+    "io.soulmate": {
+      "title": "Soulmate",
+      "rating": "Parental guidance"
+    },
     "it.telecomitalia.cubovision": {
       "title": "TIMVISION",
       "rating": "Parental guidance"
+    },
+    "kinda.character.chat": {
+      "title": "Kinda: AI Character Chat",
+      "rating": "PEGI 3"
+    },
+    "laixen.ai.character.chat": {
+      "title": "Laixen: Chat with AI Character",
+      "rating": "Parental guidance"
+    },
+    "ncp.bigbearded.simulate": {
+      "title": "simulate: AI World & Character",
+      "rating": "PEGI 3"
     },
     "net.mbc.shahid": {
       "title": "MBC Shahid",
