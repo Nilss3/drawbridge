@@ -52,3 +52,28 @@ com.xvideostudio.videodownload  # AI GirlFriend AI Story ChatJoy [Parental guida
 com.yourwaifus  # YourWaifus: AI Girlfriend [Parental guidance]
 io.soulmate  # Soulmate [Parental guidance]
 laixen.ai.character.chat  # Laixen: Chat with AI Character [Parental guidance]
+
+# --- Second pass, 2026-10-16: seeds named by the owner, plus neighbours found from them ---
+# Not companions, deliberately left out: com.cykj.weave (video generator), com.cykj.infinitetalk (avatar video), com.cykj.oss (assistant).
+# named by the owner
+app.source.faketalksimulator  # Char.ai : Chat & Roleplay [PEGI 3]
+com.characterchat.ai  # AI Character Chat [PEGI 3]
+ai.nexalify.charma  # CharPal: AI Character Roleplay [PEGI 3]
+com.anna.aichat  # Anna AI: Character Chat & Call [PEGI 3]
+com.masterpiece.loreai  # Lore: Chat With AI Characters [PEGI 3]
+io.iftech.lovie  # Lovie - Chat with AI Character [PEGI 3]
+com.ai.chat.artificial.intelligence.aichat  # AI Chat - Your AI Friend (description not read) [PEGI 3]
+com.characterai.character_ai  # Talk AI Character Roleplay [PEGI 3]
+com.zing.chat.android  # ZingChat: Charming AI Roleplay [PEGI 3]
+com.fandyai.fandy  # Fandy: Chat with AI Characters [PEGI 3]
+ncp.bigbearded.simulate  # simulate: AI World & Character [PEGI 3]
+com.charmsy.app  # Charmsy: AI Chat Text Stories [PEGI 3]
+kinda.character.chat  # Kinda: AI Character Chat [PEGI 3]
+# found by related/search from those seeds
+ai.anirole.mobile  # Chacha - AI Anime Chat [Parental guidance]
+ai.lizlis.android  # Lizlis - AI Character Chat [Parental guidance]
+com.digitalsoul  # DigitalSoul: AI Character Chat [Parental guidance]
+com.konrev.bagelchat  # BagelChat: AI Character Story [Parental guidance]
+com.ssw.mecord  # Meco - AI Character Chat [Parental guidance]
+com.nexalify.cherrytalk  # CherryTalk: AI Chat & Story [Parental guidance]
+com.squadhouse.storyworld  # StoryZone: AI Roleplay & Story [PEGI 3]
