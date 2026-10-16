@@ -15,6 +15,7 @@ whose founding constraint is "no account, no backend".
   tools/app-ratings.py audit --corpus tools/corpora/useful.txt
   tools/app-ratings.py audit --policy-blocklist          # is the curated list still needed?
   tools/app-ratings.py search "ai girlfriend" "ai companion"
+  tools/app-ratings.py related ai.character.app com.talkie.ai --depth 2
 
 **Two extractions were written and thrown away before this one.** The listing
 page contains two to four different rating strings — carousels, "similar apps" —
@@ -323,6 +324,105 @@ def cmd_search(args: argparse.Namespace) -> int:
     return report(rows, expect=None)
 
 
+PACKAGE_REF = re.compile(r'\["([A-Za-z][A-Za-z0-9_]*(?:\.[A-Za-z0-9_]+)+)",7\]')
+SIMILAR_CLUSTER = re.compile(r'/store/apps/collection/cluster\?gsr=[^"\\]+')
+
+# Only a hint for the human reading the table; the verdict column is the rule.
+COMPANION_HINTS = re.compile(
+    r"girlfriend|boyfriend|companion|roleplay|role-play|character|waifu|romance|"
+    r"crush|persona|virtual (?:friend|partner)|ai friend|soulmate|dating|"
+    r"talk to|chat with|story",
+    re.IGNORECASE,
+)
+
+
+def _get(url: str) -> str | None:
+    request = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
+    try:
+        return urllib.request.urlopen(request, timeout=30).read().decode("utf-8", "replace")
+    except Exception as error:  # noqa: BLE001
+        print(f"  {url[:70]}...: {type(error).__name__}", file=sys.stderr)
+        return None
+
+
+def similar_apps(package: str, region: str) -> list[str]:
+    """The ids Play lists as similar to `package`.
+
+    The listing page itself carries only a handful inline; its "similar apps"
+    carousel links to a cluster page with roughly fifty. Package ids are read from
+    the structured `["id",7]` references, never from bare links, for the same
+    reason the rating is anchored on the schema: a page mentions many apps.
+    """
+    page = _get(
+        "https://play.google.com/store/apps/details"
+        f"?id={urllib.parse.quote(package)}&hl=en&gl={region}"
+    )
+    if page is None:
+        return []
+    ids = PACKAGE_REF.findall(page)
+    cluster = SIMILAR_CLUSTER.search(page)
+    if cluster:
+        more = _get(f"https://play.google.com{html.unescape(cluster.group(0))}&hl=en&gl={region}")
+        if more:
+            ids += PACKAGE_REF.findall(more)
+    return [i for i in dict.fromkeys(ids) if i != package]
+
+
+def cmd_related(args: argparse.Namespace) -> int:
+    """Snowball from seed apps through Play's "similar apps" lists.
+
+    `search` needs the right words; this needs one app that is already known to be
+    in the category. Each round fetches the similar-apps list of every id found in
+    the previous round, so --depth 2 reaches the neighbours of the neighbours. What
+    comes out is a candidate list for a human, in the same sense as `search`:
+    the rule's verdict is a first judgement, not a decision.
+    """
+    rule = load_rule()
+    region = rule["store_region"]
+    seeds = list(dict.fromkeys(args.seeds))
+    surfaced_by: dict[str, list[str]] = {}
+    frontier = seeds
+    visited = set(seeds)
+    for depth in range(1, args.depth + 1):
+        with concurrent.futures.ThreadPoolExecutor(6) as pool:
+            results = list(pool.map(lambda p: similar_apps(p, region), frontier))
+        nxt: list[str] = []
+        for seed, ids in zip(frontier, results):
+            print(f"  depth {depth}: {seed}: {len(ids)} similar")
+            for package in ids:
+                surfaced_by.setdefault(package, []).append(seed)
+                if package not in visited:
+                    visited.add(package)
+                    nxt.append(package)
+        frontier = nxt
+
+    known = set()
+    if POLICY_PATH.exists():
+        known = set(json.loads(POLICY_PATH.read_text()).get("blocked_packages", []))
+    fresh = [p for p in surfaced_by if p not in known and p not in seeds]
+    print(f"\n{len(surfaced_by)} distinct ids, {len(fresh)} not already on the blocklist.\n")
+    if not fresh:
+        return 0
+
+    cache = Cache()
+    metas = fetch_all(fresh, region, cache)
+    cache.save()
+    rows = [(m, verdict(m, rule)) for m in metas]
+    # Most-corroborated first: an app that three seeds each call similar is a better
+    # candidate than one that surfaced once at depth 2.
+    rows.sort(key=lambda r: -len(surfaced_by[r[0]["package"]]))
+    print("Candidates, for a human to accept or reject — see docs/blocklist-notes.md.")
+    print("`seeds` = how many seeds listed it; `hint` = companion-ish words in the title.\n")
+    for meta, (kind, why) in rows:
+        title = meta.get("title") or ""
+        hint = "hint" if COMPANION_HINTS.search(title) else ""
+        print(
+            f"{MARK[kind]} seeds={len(surfaced_by[meta['package']]):<2} {hint:<4} "
+            f"{meta['package']:<44} {title[:40]:<40} {why}"
+        )
+    return 0
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     sub = parser.add_subparsers(dest="command", required=True)
@@ -349,6 +449,13 @@ def main() -> int:
     search = sub.add_parser("search", help="harvest candidate package ids from Play search")
     search.add_argument("terms", nargs="+")
     search.set_defaults(func=cmd_search)
+
+    related = sub.add_parser(
+        "related", help="snowball candidate ids from Play's 'similar apps' lists"
+    )
+    related.add_argument("seeds", nargs="+", help="package ids already known to be in the category")
+    related.add_argument("--depth", type=int, default=1, help="rounds of snowballing (default 1)")
+    related.set_defaults(func=cmd_related)
 
     args = parser.parse_args()
     return args.func(args)
