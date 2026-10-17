@@ -1,7 +1,7 @@
 {
   "version": 133,
   "issued_at": "2026-10-16T12:00:00Z",
-  "comment": "BETA. 67 more AI companion and character-chat apps, found by Play search and similar-apps snowballing from named seeds; every one is PEGI 3 or Parental guidance, so the rating rule cannot remove it. Everything else is unchanged from 132 (herald 0.1.21, drawbridge 0.2.30 build 55). 133 because dev holds 131 and the beta held 132. 436 blocked packages.",
+  "comment": "BETA. 67 more AI companion and character-chat apps, found by Play search and similar-apps snowballing from named seeds; every one is PEGI 3 or Parental guidance, so the rating rule cannot remove it. Their own sites join dist/lists/ai-companions.txt (36 domains, list re-pinned). Everything else is unchanged from 132 (herald 0.1.21, drawbridge 0.2.30 build 55). 133 because dev holds 131 and the beta held 132. 436 blocked packages.",
   "dns": {
     "upstreams": [
       "94.140.14.15",
@@ -61,7 +61,7 @@
       "url": "https://raw.githubusercontent.com/Nilss3/drawbridge/main/dist/lists/ai-companions.txt",
       "format": "domains",
       "category": "ai-companions",
-      "sha256": "87dfb598efa7457601d162304ded12da652e86930b3efaa7de03af99e1c65640"
+      "sha256": "4705d5a146366bf1099b38b1938a99ec031a012ddb56ff4508e1b7cd6b037ff2"
     },
     {
       "id": "dating",

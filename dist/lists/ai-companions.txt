@@ -106,3 +106,46 @@ kindroid.org
 # Behind Cloudflare, so the page could not be read; the name is distinctive
 # enough and the app id com.hiwaifu.app is confirmed.
 hiwaifu.com
+
+# Policy 133. The sites of the character-chat and AI-companion apps added to
+# blocked_packages in the same policy, each read from the app's own Play listing
+# (developer website) and checked to answer with that service. Developer-studio
+# domains that front several unrelated apps (caitty.com, thirtythreeapps.com,
+# isetai.com ...) and shared hosts (github.io, notion.site, web.app) are left
+# out on purpose: they would block more than the companion.
+charland.ai
+chacha-ai.io
+chaterai.xyz
+fandy.space
+getlore.eu
+getsoulmate.ai
+hangjam.ai
+inlyth.app
+kun.chat
+laixen.com
+lizlis.ai
+lookatmy.ai
+lovie.chat
+myimate.app
+myintimate.app
+oshikoi.io
+soulmateapp.link
+soulmateapp.net
+talefy.ai
+underfiction.com
+charmsy.io
+charpal.app
+chatjoy.chat
+cherrytalk.app
+deeploveai.net
+digitalsoul.chat
+isekaizero.ai
+loveydovey.ai
+mecordai.com
+palumachat.com
+penguapp.co
+yourwaifus.com
+zingchat.me
+dewy.chat
+bagelchat.ai
+soumichat.com
