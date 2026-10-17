@@ -1,6 +1,8 @@
 # Blocked apps
 
-All 177 apps blocked as of policy 26. Source of truth is `blocked_packages` in
+The sections below name the apps blocked as of policy 26 (177 of them), plus the AI
+companion additions of policy 133. `blocked_packages` now carries 436 packages in all, so
+this page is a readable subset, not a complete count. Source of truth is `blocked_packages` in
 `dist/policy.json`; package ids and reasoning are in [blocklist-notes](blocklist-notes.md).
 
 ## Messaging
@@ -104,6 +106,77 @@ is 9gag.com).
 - Linky AI
 - Botify AI
 - iGirl
+
+## AI companions and character chatbots — added in policy 133
+
+67 more, found by searching Play for companion terms and by following "similar apps" from named seed apps (`tools/app-ratings.py search` and `related`). Every one is rated PEGI 3 or Parental guidance in Belgium, so the rating rule cannot remove it and the blocklist has to. Each listing was checked to be the app it claims to be. Their own websites are on `dist/lists/ai-companions.txt` (36 domains). The package ids are in `blocked_packages` and the candidate review file is [`tools/corpora/ai-companion-candidates.txt`](../tools/corpora/ai-companion-candidates.txt).
+
+- AI Boyfriend (two listings)
+- AI Boyfriend 18+
+- AI Boyfriend Maker: Moshas
+- AI Boyfriend:Love Chat Partner
+- AI Character Chat
+- AI Chat - Your AI Friend
+- AI Girlfriend
+- AI Girlfriend - Idolchat
+- AI GirlFriend AI Story ChatJoy
+- AI Romance Chat: AI Soulmate
+- Anime AI Waifu Chat: Chika
+- Anna AI: Character Chat & Call
+- Aria: AI Girlfriend ChatJoy
+- BagelChat: AI Character Story
+- Chacha - AI Anime Chat
+- Char.ai : Chat & Roleplay
+- Charland - Character AI Chat
+- Charmsy: AI Chat Text Stories
+- CharPal: AI Character Roleplay
+- CherryTalk: AI Chat & Story
+- DeepLove AI：Dream AI Love Chat
+- Dewy: Chat with AI Characters
+- DigitalSoul: AI Character Chat
+- Everen: AI Boyfriend Chat
+- Fandy: Chat with AI Characters
+- Friends – Raise AI Companions
+- Hangjam: AI Chat and Roleplay
+- HisStory: AI Boyfriend Chat
+- Imate - AI boyfriend who cares
+- Imiss: Sweet AI Girlfriend
+- Inlyth: AI Companion Chat
+- Intimate - AI Girlfriend
+- ISEKAI ZERO: Anime AI Roleplay
+- Jack - AI Boyfriend
+- JustMet: AI Girlfriend
+- Kinda: AI Character Chat
+- KUN: Anime AI Boyfriend Chat
+- Laixen: Chat with AI Character
+- Lizlis - AI Character Chat
+- lookatmy.ai: AI Companion
+- Lore: Chat With AI Characters
+- LoveyDovey - Dream Chats
+- Lovie - Chat with AI Character
+- Luna: Realistic AI Soulmate
+- Lust: AI Girlfriend Simulator
+- Maisai：AI虛擬戀人
+- Meco - AI Character Chat
+- Moescape - Character AI & Art
+- OshiKoi - 3D AI Companion
+- Paluma: AI Character Chat
+- Raki: Chat with AI Characters
+- Rochat - AI Character Chat
+- Saen-D: AI Companion
+- simulate: AI World & Character
+- Siya - AI Soulmate
+- Soulmate
+- Soulmate: AI Dating & Chat
+- Talefy: AI Character Roleplay
+- Talk AI Character Roleplay
+- Tipsy Chat: Live Your Story
+- Underfiction: AI Roleplay
+- Winkio: Chat With Character
+- Your Boyfriend AI Chat
+- Your Girlfriend - AI Chat
+- YourWaifus: AI Girlfriend
+- ZingChat: Charming AI Roleplay
 
 ## Games — crime sandbox
 
