@@ -1,7 +1,7 @@
 {
-  "version": 133,
-  "issued_at": "2026-10-16T12:00:00Z",
-  "comment": "BETA. 67 more AI companion and character-chat apps, found by Play search and similar-apps snowballing from named seeds; every one is PEGI 3 or Parental guidance, so the rating rule cannot remove it. Their own sites join dist/lists/ai-companions.txt (36 domains, list re-pinned). Everything else is unchanged from 132 (herald 0.1.21, drawbridge 0.2.30 build 55). 133 because dev holds 131 and the beta held 132. 436 blocked packages.",
+  "version": 134,
+  "issued_at": "2026-10-18T12:00:00Z",
+  "comment": "BETA. Text only: the YouTube and streaming options no longer say their services are blocked by default, which was untrue while both options are default-on; they now say what the switch does on and off. Blocking unchanged from 133. 134 because the beta held 133. 436 blocked packages.",
   "dns": {
     "upstreams": [
       "94.140.14.15",
@@ -611,7 +611,7 @@
       "name": "Allow YouTube",
       "subject": "YouTube",
       "recommended_age": 16,
-      "description": "YouTube's recommendation feed and Shorts are built to keep you watching, which is why it is blocked by default. Switching this on restores YouTube and its family (Kids, TV, Creator Studio, Music) and turns Google's own Restricted Mode on for the YouTube app and for the browser. The phone enforces that, so it cannot be switched off from inside YouTube. In herald, Shorts open as ordinary videos.",
+      "description": "YouTube's recommendation feed and Shorts are built to keep you watching. With this on, YouTube and its family (Kids, TV, Creator Studio, Music) work, and Google's own Restricted Mode is on for the YouTube app and for the browser. The phone enforces that, so it cannot be switched off from inside YouTube. In herald, Shorts open as ordinary videos. Switch this off to block YouTube altogether.",
       "default_enabled": true,
       "exempt_packages": [
         "com.google.android.youtube",
@@ -636,8 +636,8 @@
         "fr": "Autoriser YouTube"
       },
       "description_i18n": {
-        "nl": "De aanbevelingsfeed en Shorts van YouTube zijn gemaakt om je te laten doorkijken, en daarom staat YouTube standaard uit. Zet je dit aan, dan komen YouTube en zijn familie terug (Kids, TV, Creator Studio, Music) en gaat Google's eigen Beperkte modus aan voor de YouTube-app en voor de browser. De telefoon dwingt dat af, dus het kan niet vanuit YouTube worden uitgezet. In herald openen Shorts als gewone video's.",
-        "fr": "Le fil de recommandations et les Shorts de YouTube sont con\u00e7us pour vous garder devant l'\u00e9cran : c'est pourquoi YouTube est bloqu\u00e9 par d\u00e9faut. En activant ceci, YouTube et sa famille reviennent (Kids, TV, Creator Studio, Music) et le mode Restreint de Google s'active pour l'application YouTube et pour le navigateur. Le t\u00e9l\u00e9phone l'impose, il ne peut donc pas \u00eatre d\u00e9sactiv\u00e9 depuis YouTube. Dans herald, les Shorts s'ouvrent comme des vid\u00e9os ordinaires."
+        "nl": "De aanbevelingsfeed en Shorts van YouTube zijn gemaakt om je te laten doorkijken. Staat dit aan, dan werken YouTube en zijn familie (Kids, TV, Creator Studio, Music), en staat Google's eigen Beperkte modus aan voor de YouTube-app en voor de browser. De telefoon dwingt dat af, dus het kan niet vanuit YouTube worden uitgezet. In herald openen Shorts als gewone video's. Zet dit uit om YouTube helemaal te blokkeren.",
+        "fr": "Le fil de recommandations et les Shorts de YouTube sont con\u00e7us pour vous garder devant l'\u00e9cran. Lorsque ceci est activ\u00e9, YouTube et sa famille (Kids, TV, Creator Studio, Music) fonctionnent, et le mode Restreint de Google est actif pour l'application YouTube et pour le navigateur. Le t\u00e9l\u00e9phone l'impose, il ne peut donc pas \u00eatre d\u00e9sactiv\u00e9 depuis YouTube. Dans herald, les Shorts s'ouvrent comme des vid\u00e9os ordinaires. D\u00e9sactivez ceci pour bloquer compl\u00e8tement YouTube."
       },
       "subject_i18n": {
         "nl": "YouTube",
@@ -679,7 +679,7 @@
       "name": "Allow long-form video streaming",
       "subject": "Long-form video streaming",
       "recommended_age": 16,
-      "description": "Netflix, Prime Video, Disney+, HBO Max and around fifty other subscription video services are blocked by default, because an evening disappears into one as easily as into a feed. Switching this on restores all of them at once, the apps and the websites. YouTube is not included: it has its own option, since a recommendation feed is a different thing from a film you sat down to watch.",
+      "description": "Netflix, Prime Video, Disney+, HBO Max and around fifty other subscription video services, the apps and the websites, all on one switch. An evening disappears into one as easily as into a feed, so switching this off blocks all of them at once. YouTube is not included: it has its own option, since a recommendation feed is a different thing from a film you sat down to watch.",
       "default_enabled": true,
       "exempt_packages": [
         "com.netflix.mediaclient",
@@ -864,8 +864,8 @@
         "fr": "Autoriser le streaming vid\u00e9o long format"
       },
       "description_i18n": {
-        "nl": "Netflix, Prime Video, Disney+, HBO Max en een vijftigtal andere abonnementsdiensten voor video staan standaard uit, want een avond verdwijnt daarin even makkelijk als in een feed. Zet je dit aan, dan komen ze allemaal tegelijk terug, de apps en de websites. YouTube hoort hier niet bij: dat heeft zijn eigen optie, want een aanbevelingsfeed is iets anders dan een film waar je voor bent gaan zitten.",
-        "fr": "Netflix, Prime Video, Disney+, HBO Max et une cinquantaine d'autres services vid\u00e9o par abonnement sont bloqu\u00e9s par d\u00e9faut, car une soir\u00e9e y dispara\u00eet aussi facilement que dans un fil d'actualit\u00e9. En activant ceci, ils reviennent tous d'un coup, les applications comme les sites. YouTube n'en fait pas partie : il a sa propre option, car un fil de recommandations n'est pas la m\u00eame chose qu'un film devant lequel on s'est install\u00e9."
+        "nl": "Netflix, Prime Video, Disney+, HBO Max en een vijftigtal andere abonnementsdiensten voor video, de apps en de websites, samen op \u00e9\u00e9n schakelaar. Een avond verdwijnt daarin even makkelijk als in een feed, dus dit uitzetten blokkeert ze allemaal tegelijk. YouTube hoort hier niet bij: dat heeft zijn eigen optie, want een aanbevelingsfeed is iets anders dan een film waar je voor bent gaan zitten.",
+        "fr": "Netflix, Prime Video, Disney+, HBO Max et une cinquantaine d'autres services vid\u00e9o par abonnement, applications et sites compris, sur un seul interrupteur. Une soir\u00e9e y dispara\u00eet aussi facilement que dans un fil d'actualit\u00e9 : d\u00e9sactiver ceci les bloque tous d'un coup. YouTube n'en fait pas partie : il a sa propre option, car un fil de recommandations n'est pas la m\u00eame chose qu'un film devant lequel on s'est install\u00e9."
       },
       "various_ages": true,
       "subject_i18n": {
