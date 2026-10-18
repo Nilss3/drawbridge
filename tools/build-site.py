@@ -182,7 +182,7 @@ def render_page(
   <div class="wrap">
     <span>{FOOTER[lang].format(url=BUILDER_URL)}</span>
     <span><a href="{prefix}/privacy/">{FOOTER_PRIVACY[lang]}</a></span>
-    <span><a href="https://github.com/Nilss3/drawbridge">{FOOTER_SOURCE[lang]}</a></span>
+    <span><a href="{prefix}/contact/">{CONTACT_NAV[lang]}</a> · <a href="https://github.com/Nilss3/drawbridge">{FOOTER_SOURCE[lang]}</a></span>
   </div>
 </footer>
 {scripts}</body>
@@ -1766,7 +1766,8 @@ FAQ = {
 
             ("h3", "How can I switch off or bypass drawbridge? Other limitations."),
             ("h4", "Limitations"),
-            ("p", "Drawbridge has both a network filter and an on-device filter, and is therefore about as watertight as it gets. Even so, there are still websites and apps that will occasionally show something harmful, or that can get around a network filter. Do not hesitate to report it."),
+            ("p", "Drawbridge has both a network filter and an on-device filter, and is therefore about as watertight as it gets. Even so, there are still websites and apps that will occasionally show something harmful, or that can get around a network filter. Do not hesitate to report it through the <a href='/contact/'>contact form</a>."),
+            ("p", 'The list of AI companions in particular is a best effort, and they will have holes: new apps appear every week, under new names. If you find one we missed, <a href="/contact/">let us know</a>. Adding an app to the policy is easy, and it reaches every phone at its next check.'),
             ("p", "A consequence of this filter is that you cannot use VPNs or pick your own DNS (the DNS that is used is encrypted and privacy-focused). You also cannot configure other users, use the private space, or create a guest account. For those same reasons you cannot use parental control apps, not even Google Family Link (which, incidentally, only goes up to 13 anyway). Screen time settings on the device do remain possible. Finally, while locked, you cannot use developer settings."),
             ("h4", "Removing it"),
             ("p", "How you remove drawbridge depends on the mode. In <strong>trial mode</strong>, unlock it, press \"Deactivate drawbridge to uninstall\" on the card at the top of the app, and uninstall it. Nothing on the phone is lost."),
@@ -1848,7 +1849,8 @@ FAQ = {
 
             ("h3", "Hoe kan ik drawbridge uitschakelen of omzeilen? Andere beperkingen."),
             ("h4", "Beperkingen"),
-            ("p", "Drawbridge heeft zowel een netwerkfilter als on-device filter en is daarom zo goed als waterdicht. Toch zijn er nog websites en apps die af en toe iets schadelijks zullen tonen of een netwerkfilter kunnen omzeilen. Aarzel niet om dit te melden."),
+            ("p", "Drawbridge heeft zowel een netwerkfilter als on-device filter en is daarom zo goed als waterdicht. Toch zijn er nog websites en apps die af en toe iets schadelijks zullen tonen of een netwerkfilter kunnen omzeilen. Aarzel niet om dit te melden via het <a href='/nl/contact/'>contactformulier</a>."),
+            ("p", 'Vooral de lijst van AI companions is een zo goed mogelijke poging, en er zullen gaten in zitten: elke week verschijnen er nieuwe apps, onder nieuwe namen. Vind je er een die we gemist hebben, <a href="/nl/contact/">laat het ons weten</a>. Een app toevoegen aan de policy is eenvoudig, en het bereikt elk toestel bij zijn volgende controle.'),
             ("p", "Het gevolg van deze filter is dat men geen VPN's kan gebruiken of zelf een DNS kan kiezen (de gekozen DNS is wel versleuteld en privacygericht). Men kan ook geen andere gebruikers configureren, de private space gebruiken of een gastaccount maken. Wegens deze zelfde redenen kan men geen parental control apps gebruiken, zelfs niet Google Family Link (deze laatste is overigens toch maar tot 13 jaar). Schermtijd-instellingen op het toestel blijven wel mogelijk. Tenslotte kan men, wanneer vergrendeld, geen developer settings gebruiken."),
             ("h4", "Verwijderen"),
             ("p", "Hoe je drawbridge verwijdert hangt af van de modus. In de <strong>proefmodus</strong> ontgrendel je het, druk je op \"Drawbridge uitschakelen om te verwijderen\" op de kaart bovenaan de app, en verwijder je het. Er gaat niets verloren op de telefoon."),
@@ -1930,7 +1932,8 @@ FAQ = {
 
             ("h3", "Comment désactiver ou contourner drawbridge ? Autres limitations."),
             ("h4", "Limitations"),
-            ("p", "Drawbridge combine un filtre réseau et un filtre sur l'appareil, et est donc à peu près aussi étanche que possible. Il reste néanmoins des sites et des applications qui montreront de temps à autre quelque chose de nuisible, ou qui parviennent à contourner un filtre réseau. N'hésitez pas à le signaler."),
+            ("p", "Drawbridge combine un filtre réseau et un filtre sur l'appareil, et est donc à peu près aussi étanche que possible. Il reste néanmoins des sites et des applications qui montreront de temps à autre quelque chose de nuisible, ou qui parviennent à contourner un filtre réseau. N'hésitez pas à le signaler via le <a href='/fr/contact/'>formulaire de contact</a>."),
+            ("p", "La liste des compagnons IA en particulier est faite au mieux, et elle aura des trous : de nouvelles applications apparaissent chaque semaine, sous de nouveaux noms. Si vous en trouvez une que nous avons manquée, <a href=\"/fr/contact/\">dites-le-nous</a>. Ajouter une application à la policy est simple, et cela atteint chaque téléphone à sa prochaine vérification."),
             ("p", "La conséquence de ce filtre est que vous ne pouvez pas utiliser de VPN ni choisir vous-même un DNS (le DNS utilisé est chiffré et respectueux de la vie privée). Vous ne pouvez pas non plus configurer d'autres utilisateurs, utiliser l'espace privé ou créer un compte invité. Pour ces mêmes raisons, vous ne pouvez pas utiliser d'applications de contrôle parental, pas même Google Family Link (qui, de toute façon, ne va que jusqu'à 13 ans). Les réglages de temps d'écran sur l'appareil restent possibles. Enfin, une fois verrouillé, vous ne pouvez plus utiliser les options pour développeurs."),
             ("h4", "Retirer drawbridge"),
             ("p", "La façon de retirer drawbridge dépend du mode. En <strong>mode d'essai</strong>, déverrouillez-le, appuyez sur « Désactiver drawbridge pour le désinstaller » sur la carte en haut de l'application, et désinstallez-le. Rien n'est perdu sur le téléphone."),
@@ -2072,6 +2075,141 @@ def render_why_summary(lang: str) -> str:
         title=c["title"],
         description=c["description"],
         body=body,
+    )
+
+
+# ---------------------------------------------------------------------------
+# Contact. The form posts to a Cloudflare Worker (workers/contact/) that mails
+# it on, so the project's address appears nowhere on the site. The Worker sends
+# the visitor back to /contact/sent/ or /contact/failed/ in their language.
+# ---------------------------------------------------------------------------
+
+CONTACT_ENDPOINT = "https://drawbridge-project.org/api/contact"
+
+# The *site* key of the Turnstile widget: public by design, it only names the
+# widget. The secret key is a Worker secret. Empty until the widget exists, and
+# the build says so; see workers/contact/README.md.
+TURNSTILE_SITE_KEY = ""
+
+CONTACT_NAV = {"en": "Contact", "nl": "Contact", "fr": "Contact"}
+
+CONTACT = {
+    "en": dict(
+        title="Contact · drawbridge",
+        description="Report an app or website drawbridge missed, or ask a question.",
+        h1="Contact",
+        intro="Found an app or website that slips through, an AI companion or chatbot we missed, or something blocked that should not be? Tell us here. Adding an app to the policy is easy, and it reaches every phone at its next check.",
+        message="Your message",
+        app="App or website (optional)",
+        app_hint="The name, or a Play Store or web link",
+        email="Your email address (optional, only if you would like an answer)",
+        send="Send",
+        privacy="Your message is emailed to the people behind drawbridge and goes nowhere else. The check against bots is Cloudflare Turnstile, from the company that already hosts this site.",
+        sent_title="Message sent · drawbridge",
+        sent_h1="Thank you",
+        sent_p="Your message is on its way. If you left an address, we will answer when we can.",
+        failed_title="Message not sent · drawbridge",
+        failed_h1="That did not go through",
+        failed_p="Your message could not be sent. Please go back and try again; if it keeps failing, the form itself may be broken, and reporting that through GitHub is welcome.",
+        back="Back to the form",
+    ),
+    "nl": dict(
+        title="Contact · drawbridge",
+        description="Meld een app of website die drawbridge gemist heeft, of stel een vraag.",
+        h1="Contact",
+        intro="Een app of website gevonden die erdoor glipt, een AI companion of chatbot die we gemist hebben, of iets dat geblokkeerd wordt maar dat niet zou moeten? Laat het ons hier weten. Een app toevoegen aan de policy is eenvoudig, en het bereikt elk toestel bij zijn volgende controle.",
+        message="Je bericht",
+        app="App of website (optioneel)",
+        app_hint="De naam, of een link naar de Play Store of de website",
+        email="Je e-mailadres (optioneel, enkel als je een antwoord wilt)",
+        send="Versturen",
+        privacy="Je bericht wordt per e-mail bezorgd aan de mensen achter drawbridge en gaat nergens anders heen. De controle tegen bots is Cloudflare Turnstile, van het bedrijf dat deze site al host.",
+        sent_title="Bericht verstuurd · drawbridge",
+        sent_h1="Bedankt",
+        sent_p="Je bericht is onderweg. Heb je een adres achtergelaten, dan antwoorden we zodra we kunnen.",
+        failed_title="Bericht niet verstuurd · drawbridge",
+        failed_h1="Dat is niet gelukt",
+        failed_p="Je bericht kon niet verstuurd worden. Ga terug en probeer het opnieuw; blijft het mislukken, dan is het formulier zelf misschien stuk, en dat melden via GitHub is welkom.",
+        back="Terug naar het formulier",
+    ),
+    "fr": dict(
+        title="Contact · drawbridge",
+        description="Signalez une application ou un site que drawbridge a manqué, ou posez une question.",
+        h1="Contact",
+        intro="Vous avez trouvé une application ou un site qui passe entre les mailles, un compagnon IA ou un chatbot que nous avons manqué, ou quelque chose de bloqué qui ne devrait pas l'être ? Dites-le-nous ici. Ajouter une application à la policy est simple, et cela atteint chaque téléphone à sa prochaine vérification.",
+        message="Votre message",
+        app="Application ou site (facultatif)",
+        app_hint="Le nom, ou un lien vers le Play Store ou le site",
+        email="Votre adresse e-mail (facultatif, seulement si vous souhaitez une réponse)",
+        send="Envoyer",
+        privacy="Votre message est envoyé par e-mail aux personnes derrière drawbridge et nulle part ailleurs. La vérification anti-robots est Cloudflare Turnstile, de l'entreprise qui héberge déjà ce site.",
+        sent_title="Message envoyé · drawbridge",
+        sent_h1="Merci",
+        sent_p="Votre message est en route. Si vous avez laissé une adresse, nous répondrons dès que possible.",
+        failed_title="Message non envoyé · drawbridge",
+        failed_h1="Cela n'a pas fonctionné",
+        failed_p="Votre message n'a pas pu être envoyé. Revenez en arrière et réessayez ; si cela échoue encore, c'est peut-être le formulaire lui-même qui est cassé, et le signaler via GitHub est bienvenu.",
+        back="Retour au formulaire",
+    ),
+}
+
+
+def render_contact(lang: str) -> str:
+    c = CONTACT[lang]
+    # The one script on the site that is not served from it: Turnstile has to
+    # come from Cloudflare, which already serves every page here.
+    turnstile = '<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>\n'
+    body = f"""
+  <section class="section">
+    <div class="wrap">
+      <h1>{c['h1']}</h1>
+      <p>{c['intro']}</p>
+      <form class="contact-form" method="post" action="{CONTACT_ENDPOINT}">
+        <input type="hidden" name="lang" value="{lang}" />
+        <label>{c['message']}
+          <textarea name="message" rows="8" maxlength="5000" required></textarea>
+        </label>
+        <label>{c['app']}
+          <input type="text" name="app" maxlength="300" placeholder="{c['app_hint']}" />
+        </label>
+        <label>{c['email']}
+          <input type="email" name="email" maxlength="254" autocomplete="email" />
+        </label>
+        <div class="contact-hp" aria-hidden="true">
+          <label>Website <input type="text" name="website" tabindex="-1" autocomplete="off" /></label>
+        </div>
+        <div class="cf-turnstile" data-sitekey="{TURNSTILE_SITE_KEY}" data-language="{lang}"></div>
+        <div class="btn-row">
+          <button class="btn btn--primary" type="submit">{c['send']}</button>
+        </div>
+      </form>
+      <p class="contact-privacy">{c['privacy']}</p>
+    </div>
+  </section>
+"""
+    return render_page(
+        lang=lang, path="contact/", title=c["title"], description=c["description"],
+        body=body, scripts=turnstile,
+    )
+
+
+def render_contact_result(lang: str, outcome: str) -> str:
+    c = CONTACT[lang]
+    back = f"{lang_prefix(lang)}/contact/"
+    body = f"""
+  <section class="section">
+    <div class="wrap">
+      <h1>{c[outcome + '_h1']}</h1>
+      <p>{c[outcome + '_p']}</p>
+      <div class="btn-row">
+        <a class="btn btn--ghost" href="{back}">{c['back']}</a>
+      </div>
+    </div>
+  </section>
+"""
+    return render_page(
+        lang=lang, path=f"contact/{outcome}/", title=c[outcome + "_title"],
+        description=c["description"], body=body,
     )
 
 
@@ -2557,8 +2695,14 @@ def build_all() -> None:
         write(base / "privacy" / "index.html", render_privacy(lang))
         if lang in WHY_SUMMARY:
             write(base / "why-blocked" / "index.html", render_why_summary(lang))
+        write(base / "contact" / "index.html", render_contact(lang))
+        for outcome in ("sent", "failed"):
+            write(base / "contact" / outcome / "index.html", render_contact_result(lang, outcome))
 
     check_internal_links()
+    if not TURNSTILE_SITE_KEY:
+        print("  TURNSTILE_SITE_KEY is empty: the contact form will refuse every message "
+              "until it is set (workers/contact/README.md, step 2).")
     print(f"Built {len(LANGUAGES)} languages into {SITE_OUT}")
 
 

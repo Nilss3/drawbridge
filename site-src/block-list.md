@@ -243,6 +243,11 @@ without anybody adding it here.
 
 This is a separate high-risk category, not a always game genre. These apps simulate friendship, romance or role-play, often with user-created characters. Age labels are inconsistent and must not be treated as a safety guarantee: most vendors below publish a 17+/18+ rule while some European Play listings show PEGI 3, PEGI 16 or only "Parental guidance."
 
+The list of companion apps is a best effort and
+will have holes: new ones appear every week under new names. If you find one we missed,
+[let us know](/contact/). Adding an app to the policy is easy, and it
+reaches every phone at its next check.
+
 ### Why this category needs a stricter rule
 
 - **Synthetic intimacy is the product.** The European Commission's minor-protection guidance calls for safeguards around integrated AI chatbots and for removal of persuasive, engagement-maximising design; a child-development review identifies time displacement, psychological dependence and unrealistic relationship expectations as core risks ([European Commission DSA guidance](https://digital-strategy.ec.europa.eu/en/library/commission-publishes-guidelines-protection-minors); [Child Development Perspectives review](https://pmc.ncbi.nlm.nih.gov/articles/PMC12928748/)).

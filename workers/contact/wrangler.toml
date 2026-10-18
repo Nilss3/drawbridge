@@ -1,0 +1,26 @@
+# The contact form's Worker. Deploy with `npx wrangler deploy` from this
+# folder; setup, including the two secrets, is in README.md.
+name = "drawbridge-contact"
+main = "src/index.js"
+compatibility_date = "2026-10-01"
+
+# Only this path. Everything else on the domain stays with Cloudflare Pages.
+routes = [
+  { pattern = "drawbridge-project.org/api/contact", zone_name = "drawbridge-project.org" },
+]
+
+# Mail out through Email Routing. No destination_address here on purpose: it
+# would put the recipient in this public repository. The binding may then send
+# to any address *verified* in Email Routing, and the Worker only ever sends to
+# the CONTACT_TO secret.
+[[send_email]]
+name = "MAILER"
+
+[vars]
+# Must be an address on the domain whose Email Routing is enabled. It does not
+# need to receive mail; it only signs what the form sends.
+CONTACT_FROM = "form@drawbridge-project.org"
+
+# Secrets, set with `npx wrangler secret put <NAME>` and never committed:
+#   CONTACT_TO        the verified address the messages go to
+#   TURNSTILE_SECRET  the secret key of the site's Turnstile widget
