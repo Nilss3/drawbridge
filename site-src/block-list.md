@@ -245,7 +245,7 @@ This is a separate high-risk category, not a always game genre. These apps simul
 
 The list of companion apps, like the list of chatbots behind their own switch, is a best effort and
 will have holes: new ones appear every week under new names. If you find one we missed,
-[let us know](https://github.com/Nilss3/drawbridge/issues). Adding an app to the policy is easy, and it
+[let us know](/contact/). Adding an app to the policy is easy, and it
 reaches every phone at its next check.
 
 ### Why this category needs a stricter rule

@@ -770,3 +770,28 @@ td:first-child, th:first-child { white-space: nowrap; }
   margin: -1px; padding: 0; border: 0;
   overflow: hidden; clip-path: inset(50%);
 }
+
+/* contact form */
+
+.contact-form { display: grid; gap: 1rem; max-width: 640px; margin: 1.5rem 0 0.5rem; }
+.contact-form label { display: grid; gap: 0.35rem; font-weight: 600; }
+.contact-form input,
+.contact-form textarea {
+  font: inherit;
+  font-weight: 400;
+  color: var(--ink);
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 0.65rem 0.8rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+.contact-form textarea { resize: vertical; min-height: 9rem; }
+.contact-form input:focus,
+.contact-form textarea:focus { outline: 2px solid var(--slate); outline-offset: 1px; }
+.contact-form .btn-row { margin: 0.2rem 0 0; }
+/* The honeypot: out of sight and out of the tab order, so only a script that
+   fills in every field it finds will fill this one in. */
+.contact-hp { position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden; }
+.contact-privacy { color: var(--ink-soft); font-size: 0.92rem; max-width: 640px; }
