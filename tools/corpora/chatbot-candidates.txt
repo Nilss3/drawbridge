@@ -1,0 +1,97 @@
+# General-purpose AI chatbots, governed by the `chatbots` option (policy 135).
+# Harvested 2026-10-18 with tools/app-ratings.py related (seeded with ChatGPT, Claude,
+# Gemini, Copilot, Perplexity, DeepSeek, Le Chat, Kimi, Poe, Pi, Meta AI, Monica) and
+# search; every listing read. Each id is in blocked_packages AND in the option's
+# exempt_packages: off removes it, on keeps it whatever its rating says.
+# Left out on purpose: writing, homework and language-tutor tools, Google Assistant,
+# Alexa, NotebookLM, the Google app; and after reading the listing, ChatPilot
+# (a read-receipt tool), Pocket (a meeting recorder), FYI.AI (a productivity app).
+## Major assistants
+
+com.openai.chatgpt  # ChatGPT [Parental guidance]
+com.anthropic.claude  # Claude by Anthropic [Parental guidance]
+com.google.android.apps.bard  # Google Gemini [Parental guidance]
+com.microsoft.office.officehubrow  # Microsoft Copilot [Parental guidance]
+ai.perplexity.app.android  # Perplexity - Ask Anything [Parental guidance]
+com.deepseek.chat  # DeepSeek - AI Assistant [Parental guidance]
+ai.mistral.chat  # Vibe by Mistral (ex-Le Chat) [Parental guidance]
+com.moonshot.kimichat  # Kimi [Parental guidance]
+com.poe.android  # Poe - Fast AI Chat [PEGI 3]
+ai.inflection.pi  # Pi, your personal AI [PEGI 3]
+com.facebook.stella  # Meta AI [PEGI 3]
+com.larus.wolf  # Dola: Smart AI Assistant [Parental guidance]
+com.yandex.aliceapp  # Alice AI [PEGI 3]
+me.proton.android.lumo  # Lumo by Proton [PEGI 3]
+co.thewordlab.luzia  # Luzia: AI Assistant & Chat [PEGI 3]
+com.brainlogic.zapia  # Zapia: Personal AI Assistant [PEGI 3]
+tech.butterfly.app  # Manus AI [PEGI 3]
+
+## Multi-model hubs
+
+im.monica.app.monica  # Monica AI: Ultimate AI Assist [PEGI 3]
+com.foyer.merlin  # Merlin AI: AI Chat Assistant [PEGI 3]
+ai.sider.ChatGPT.android  # Sider: Chat & Work with All AI [PEGI 3]
+com.turbofasttools.geniusai  # Clever AI Hub - Pro AI Agents [PEGI 3]
+com.askmodel.app  # Ask AI Models [PEGI 3]
+
+## Generic 'AI Chat' wrappers
+
+com.connectinno.chataiultraapp  # AI! Chatbot Agent－Ask & Chat [PEGI 3]
+ai.chatbot.ask.chat.deep.seek.assistant.search.free  # Deep Think - AI Seek Chatbot [PEGI 3]
+starnest.aichat.aichatbot.assistant  # AI Chat : Chatbot & Assistant [PEGI 3]
+com.jetkite.gemmy  # AI Chatbot & Assistant - Jimmy [PEGI 3]
+com.smartwidgetlabs.chatgpt  # Chat Smith: AI Chatbot & Agent [PEGI 3]
+com.codespaceapps.aichat  # Chatbot AI - Search Assistant [PEGI 3]
+com.codeway.chatapp  # Chat AI: Ask Agent Anything [PEGI 3]
+com.scaleup.chatai  # AI Chatbot - Nova [PEGI 3]
+evolly.ai.chatbot.chatgpt  # Ask Me Anything - AI Chatbot [PEGI 3]
+newway.open.chatgpt.ai.chat.bot.free  # Chatbot AI - Chat & Ask AI [PEGI 3]
+ai.chat.gpt.bot  # ChatOn - AI Chat Bot Assistant [Parental guidance]
+com.mlink.ai.chat.assistant.robot  # AI Chat・Ask Chatbot Assistant [PEGI 3]
+ai.chat.app  # Chatbot - AI Smart Assistant [PEGI 3]
+co.appnation.geniechat  # Chatbot AI Assistant - Genie [PEGI 3]
+com.chatbot.ai.aichat.openaibot.chat  # AI Chat: Ask AI Chat Anything [Parental guidance]
+ai.lume.blue  # AI Chatbot - Bluu [PEGI 3]
+chatgpt.ai.chatbot.open.chat.gpt.bot.writer.assistant  # ChatBox: AI Chat Bot Assistant [PEGI 3]
+com.appstation.chatgpt  # AI Chat: AI Chatbot Assistant [PEGI 3]
+ai.chat.pro.plus.smart.chatbot.ai.writing.tool  # AI Chat App - AI Chat bot [PEGI 3]
+com.KalromSystems.VoiceChatGPT  # AI Voice Chat Bot: Open Wisdom [PEGI 3]
+com.KalromSystems.AIVoiceChatOpenWisdom  # AI Speech Chatbot Text & Voice [PEGI 3]
+com.aichatbot.mateai  # MateAI: AI Virtual Chatbot [Parental guidance]
+com.marcusxtechnologies.mj  # MJ - Smarter AI Chatbot [PEGI 3]
+ai.chat.gpt.app  # AI Chat - AI Chatbot Assistant [PEGI 3]
+com.enjoy.aichat.chatbot.mindchat  # AI Chat bot build on GPT MChat [PEGI 3]
+com.aichat.voiceai.chatbot  # AI Chat: AI Assistant & Voice [PEGI 3]
+chatgpt.open.ask.ai.chatbot.free.smart.assistant  # AI Chat: Ask Chatbot Assistant [PEGI 3]
+ai.forty4pixels.chat  # AI Chatbot: Pixi [PEGI 3]
+com.aimate.app  # AI Mate - GPT chat [PEGI 3]
+com.loqal.labs.ai.chat  # Ask A.I - Your Personal Helper [PEGI 3]
+com.ai.chatbot.askai  # Ask AI - Chatbot & Assistants [PEGI 3]
+com.ai.ask.chat.chatgpt.chatbot  # Ask AI ChatBot: Assistant Chat [PEGI 3]
+ask.gpt.chatting.ai.charaterai  # Ask GPT-4: AI Voice Chatbot [PEGI 3]
+ai.chatbot.assistant.ask.gpt  # AskGPT AI Chat App & Assistant [PEGI 3]
+com.appzone.chatbotai  # Chat AI - AI ChatBot & Agent [PEGI 3]
+com.brainsoft.apps.ai.chat.bot.assistant.nova.gpt  # Chat AI - Chatbot Assistant [PEGI 3]
+com.aichat.ask.chatbot.app  # Chatbot AI: AI Smart Assistant [PEGI 3]
+ai.app.ai  # Chatbot App - AI Assistant [PEGI 3]
+com.wachanga.superchat  # ChatGO - AI Chat Assistant [Parental guidance]
+com.ffp.jarvis_chat_gpt  # Jarvis - AI Chatbot [Parental guidance]
+com.gpt.chat.assistant  # Omni AI: Chat & GPT Assistant [PEGI 3]
+gpt.voice.chatgpt  # Voice AI: Chat Assistant [PEGI 3]
+com.argeneration.voicegptmax  # Voice Chat & AI Assistant [PEGI 3]
+com.layla  # Layla [PEGI 3]
+cx.jarvis.ai  # Jarvis: AI Copilot Chat [PEGI 3]
+
+## Personal-assistant apps (check)
+
+cueai.app  # Cue: Personal AI Assistant [PEGI 3]
+ai.leaaxel.axel  # Axel AI — Personal Assistant [PEGI 3]
+ai.today.android.app  # Today: AI Personal Assistant [PEGI 3]
+
+## Therapy and coaching bots (your call)
+
+bot.touchkin  # Wysa: Mental Wellbeing AI [PEGI 3]
+com.capitalx.blissfully  # Noah - Your AI Therapist [PEGI 3]
+com.cyrano.cyrano  # CounselCat - AI Therapy [PEGI 3]
+app.reflection.reflection  # Reflection: AI Journal & Coach [PEGI 3]
+io.mondayhero.sageai  # Sage AI - AI Coach & Assistant [PEGI 3]

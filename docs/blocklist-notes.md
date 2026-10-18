@@ -503,3 +503,25 @@ the tier that database reserves for packages it considers safe to remove.
 
 Only `com.dti.motorola` has been seen on a real phone, and only as a name on a
 screen. Nothing here has been verified on a handset of each brand.
+
+## `chatbots.txt`, the first list behind a switch that is about conversation
+
+Policy 135. The web side of the `chatbots` option, and like `streaming.txt` every
+entry is repeated in the option's `allowed_domains`, which `policytool.py sign`
+enforces. 29 hosts, each resolved and loaded on 2026-10-18.
+
+**Hosts, not parents, wherever a parent carries something else.**
+`gemini.google.com` and `bard.google.com`, never `google.com`;
+`copilot.microsoft.com`, `copilot.cloud.microsoft` and `m365copilot.com`, never
+`microsoft365.com` or Office on the web; `chat.deepseek.com`, `chat.mistral.ai`,
+`chat.qwen.ai`, `lumo.proton.me` and `alice.yandex.ru` for the same reason. Suffix
+matching means a parent entry would take everything under it.
+
+**Wrapper apps get no domains.** The 46 generic "AI Chat" apps are built by app
+studios whose websites front several unrelated products, which is the
+`caitty.com` lesson from the companion list. The apps are where those chatbots
+live; their studios' sites are not.
+
+`meta.ai` is here although Meta AI inside WhatsApp is under the WhatsApp option:
+the site and the standalone app are the long-conversation product, and WhatsApp
+itself talks to `whatsapp.net`, which this list does not touch.

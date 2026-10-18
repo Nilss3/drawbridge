@@ -1,7 +1,8 @@
 # Blocked apps
 
 The sections below name the apps blocked as of policy 26 (177 of them), plus the AI
-companion additions of policy 133. `blocked_packages` now carries 436 packages in all, so
+companion additions of policy 133 and the chatbots behind the switch of policy 135.
+`blocked_packages` now carries 511 packages in all, so
 this page is a readable subset, not a complete count. Source of truth is `blocked_packages` in
 `dist/policy.json`; package ids and reasoning are in [blocklist-notes](blocklist-notes.md).
 
@@ -177,6 +178,103 @@ is 9gag.com).
 - Your Girlfriend - AI Chat
 - YourWaifus: AI Girlfriend
 - ZingChat: Charming AI Roleplay
+
+## AI chatbots — behind the *Allow AI chatbots* switch (policy 135)
+
+Blocked only while the switch is off; on, they are kept whatever their rating. 75 apps,
+found by following Play's "similar apps" from the major assistants and by search, every
+listing read. Their web side is `dist/lists/chatbots.txt`. Why the line is drawn at the long
+conversation rather than at AI is in [app-ratings](app-ratings.md#chatbots-sit-behind-a-switch-and-the-line-is-the-long-conversation).
+
+### Major assistants
+
+- ChatGPT
+- Claude by Anthropic
+- Google Gemini
+- Microsoft Copilot
+- Perplexity - Ask Anything
+- DeepSeek - AI Assistant
+- Vibe by Mistral (ex-Le Chat)
+- Kimi
+- Poe - Fast AI Chat
+- Pi, your personal AI
+- Meta AI
+- Dola: Smart AI Assistant
+- Alice AI
+- Lumo by Proton
+- Luzia: AI Assistant & Chat
+- Zapia: Personal AI Assistant
+- Manus AI
+
+### Multi-model hubs
+
+- Monica AI: Ultimate AI Assist
+- Merlin AI: AI Chat Assistant
+- Sider: Chat & Work with All AI
+- Clever AI Hub - Pro AI Agents
+- Ask AI Models
+
+### Generic 'AI Chat' wrappers
+
+- AI! Chatbot Agent－Ask & Chat
+- Deep Think - AI Seek Chatbot
+- AI Chat : Chatbot & Assistant
+- AI Chatbot & Assistant - Jimmy
+- Chat Smith: AI Chatbot & Agent
+- Chatbot AI - Search Assistant
+- Chat AI: Ask Agent Anything
+- AI Chatbot - Nova
+- Ask Me Anything - AI Chatbot
+- Chatbot AI - Chat & Ask AI
+- ChatOn - AI Chat Bot Assistant
+- AI Chat・Ask Chatbot Assistant
+- Chatbot - AI Smart Assistant
+- Chatbot AI Assistant - Genie
+- AI Chat: Ask AI Chat Anything
+- AI Chatbot - Bluu
+- ChatBox: AI Chat Bot Assistant
+- AI Chat: AI Chatbot Assistant
+- AI Chat App - AI Chat bot
+- AI Voice Chat Bot: Open Wisdom
+- AI Speech Chatbot Text & Voice
+- MateAI: AI Virtual Chatbot
+- MJ - Smarter AI Chatbot
+- AI Chat - AI Chatbot Assistant
+- AI Chat bot build on GPT MChat
+- AI Chat: AI Assistant & Voice
+- AI Chat: Ask Chatbot Assistant
+- AI Chatbot: Pixi
+- AI Mate - GPT chat
+- Ask A.I - Your Personal Helper
+- Ask AI - Chatbot & Assistants
+- Ask AI ChatBot: Assistant Chat
+- Ask GPT-4: AI Voice Chatbot
+- AskGPT AI Chat App & Assistant
+- Chat AI - AI ChatBot & Agent
+- Chat AI - Chatbot Assistant
+- Chatbot AI: AI Smart Assistant
+- Chatbot App - AI Assistant
+- ChatGO - AI Chat Assistant
+- Jarvis - AI Chatbot
+- Omni AI: Chat & GPT Assistant
+- Voice AI: Chat Assistant
+- Voice Chat & AI Assistant
+- Layla
+- Jarvis: AI Copilot Chat
+
+### Personal-assistant apps
+
+- Cue: Personal AI Assistant
+- Axel AI — Personal Assistant
+- Today: AI Personal Assistant
+
+### Therapy and coaching bots
+
+- Wysa: Mental Wellbeing AI
+- Noah - Your AI Therapist
+- CounselCat - AI Therapy
+- Reflection: AI Journal & Coach
+- Sage AI - AI Coach & Assistant
 
 ## Games — crime sandbox
 

@@ -445,9 +445,50 @@ which is the same rule the browser choice follows.
 
 ---
 
-## Chatbots are not blocked, and the reason is architectural
+## Chatbots sit behind a switch, and the line is the long conversation
 
-**An earlier draft of this file specified a chatbot toggle. It is withdrawn.**
+**Reversed 2026-10-18, on the owner's decision.** Until policy 135 this section
+said chatbots were not blocked, for an architectural reason that still stands and
+is kept below. What changed is the question. The risk worth a switch is not AI as
+such, it is the *long conversation*: until recently a chatbot remembered little and
+a session ran out after a few questions; now they hold a conversation for weeks
+and remember the person between chats. That is where dependence, a chatbot that
+agrees with everything, withdrawal and conversations about self-harm and suicide
+come from, and OpenAI itself wrote in 2025 that its safeguards are more reliable in
+short exchanges than in long ones. Anthropic allows only adults on Claude.
+
+**What the `chatbots` option covers** ("Allow AI chatbots", `recommended_age` 18,
+default on so no phone loses them unasked):
+
+- 75 apps in `blocked_packages` *and* in the option's `exempt_packages`: the major
+  assistants, the multi-model hubs, the long tail of PEGI-3 "AI Chat" wrappers,
+  personal assistants with memory, and AI therapy and coaching apps, which are
+  built around exactly that conversation. The list and the reasoning per group
+  are in `tools/corpora/chatbot-candidates.txt`.
+- `dist/lists/chatbots.txt`, 29 web hosts, mirrored in `allowed_domains`.
+- Eight of the apps were on the `app_ratings` whitelist, which existed because
+  the rating rule removes *Parental guidance* too. They left it: an option now
+  keeps them (branch 1) when it is on, and `blocked_packages` removes them
+  (branch 2) when it is off. Both halves are needed: a *Parental guidance* app
+  missing from `exempt_packages` would be removed by the rating rule even with the
+  switch on, and a PEGI 3 app missing from `blocked_packages` would survive it off.
+
+**What it does not cover, on purpose.** Short, functional chatbots: the AI answer
+in a search engine, a shop's help bot, the assistant that summarises a document in
+Word. They are built for a quick question rather than a relationship, and blocking
+them all would be blocking half the web; a household that wants no new chatbot
+apps at all has the install lock. Meta AI inside WhatsApp is under the WhatsApp
+option. Gemini and Copilot are split along the same line: their own apps and
+`gemini.google.com` / `copilot.microsoft.com` are behind the switch, the assistant
+inside the Google app, Gmail and Office is not. In Belgium the Play listing called
+*Microsoft Copilot* is the renamed Office app, `com.microsoft.office.officehubrow`;
+Word, Excel and PowerPoint remain as their own apps, so switching chatbots off
+costs nothing for documents. **Untested:** on recent phones the long-press-power
+Gemini overlay runs from the Google app, so blocking the Gemini app may not stop it.
+
+### The measurement that kept chatbots unblocked, still true
+
+It is why the switch promises apps and sites and not "no AI on this phone".
 
 The question that settled it: can drawbridge suppress the AI assistant built into
 the search engines it already allows? Measured 2026-08-17:
@@ -471,21 +512,10 @@ drawbridge can rewrite in. That is precisely the test Ecosia failed on
 allows Chrome, Focus or Vivaldi, Gemini answers in the search box whether or not
 the ChatGPT app is installed.
 
-So blocking the apps would be a claim the phone cannot keep, and this project
-deletes those rather than shipping them. **General-purpose assistants go on the
-whitelist** — ChatGPT, Claude, Gemini, Copilot, Perplexity, DeepSeek, Le Chat,
-Pi, Meta AI — six of which are *Parental guidance* and would otherwise be caught
-by the rating rule as a side effect.
-
-**The line is companion versus assistant, not AI versus not-AI.** Grok,
-Character.AI, Chai and Talkie stay blocked as AI companions: that is a decision
-about content, it is reachable by the rating rule (all four are PEGI 18), and it
-is unaffected by what a search box does. Grok's domains live in
-`ai-companions.txt`, which has no option behind it, so the mirror check that
-`policytool.py sign` enforces has nothing to complain about.
-
-The website should say plainly that AI chat is not blocked and why. The
-documentation already takes that position; this is the measurement behind it.
+That is still the case, and it is now a limit stated in the option's own text
+rather than a reason to block nothing. Grok, Character.AI, Chai and Talkie stay on
+`ai-companions.txt`, always blocked: companions are a decision about content, the
+switch is a decision about conversation.
 
 ---
 
@@ -633,7 +663,7 @@ coincidence, and it is much better evidence than either was alone.
 
 **A first pass at this reported 37% and was wrong**, having divided 13 by all 35
 and counted sixteen general-purpose assistants — ChatGPT, Gemini, Perplexity,
-Copilot, Poe — as escapes. They are not escapes; the chatbot toggle names them,
+Copilot, Poe — as escapes. They are not escapes; the `chatbots` option (policy 135) names them,
 and the rating rule leaving them alone is the design working. The wrong
 denominator then invited an invented explanation about prominent apps rating
 themselves higher, which no evidence supported. Recorded because the arithmetic

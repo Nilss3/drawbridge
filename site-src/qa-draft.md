@@ -38,9 +38,9 @@ Wat met YouTube?
 
 YouTube is eigenlijk social media. Hoewel de inhoud streng gemodereerd wordt op uitwassen zoals naakt, gokken en geweld, blijft er veel schadelijke of misleidende inhoud over. YouTube serveert alles op een zeer verslavende wijze, waarvoor Google reeds veroordeeld is. Het schadelijkst van al zijn de YouTube shorts, die men zeer moeilijk kan onderscheiden van de andere YouTube filmpjes en waarop men niet kan filteren zonder privavyschending of foutgevoelige AI. Wegens de alomtegenwoordigheid van YouTube als 'videotheek' met allerhande nuttige informatie (bv. tijdens het koken, het doe-het-zelven,...) wordt er overwogen een toggle te maken zoals voor WhatsApp, onder voorbehoud.
 
-Waarom worden chatbots niet geblokkeerd?
+Waarom kunnen chatbots geblokkeerd worden, en waarom niet allemaal?
 
-Reguliere chatbots, zoals chatGPT, Claude, of Gemini, kunnen inderdaad schadelijke effecten hebben op het brein bij overmatig gebruik en het vervangen van cognitief zware taken. Het is niet zo dat er verslavende mechanismen ingebouwd zijn, en net zoals met zoekmachines komen er steeds strengere guardrails wat te doen bij sommige soorten vragen. Het grootste probleem is echter de alomtegenwoordigheid van de chatbots: elke website of dienst heeft tegenwoordig wel een 'assistent' waar je eigenlijk gelijk wat aan kan vragen. Indien je dit niet wil, dan gebruik je beter geen internet.
+Het grootste risico van chatbots zoals ChatGPT, Claude of Gemini is niet een snelle vraag, maar het lange gesprek. Tot voor kort onthield een chatbot weinig: je stelde een paar vragen en dan was de sessie op. Vandaag houden ze een gesprek wekenlang gaande en onthouden ze je. Daar zit de echte schade: emotionele afhankelijkheid, een chatbot die met alles akkoord gaat, je terugtrekken van de mensen rondom je, en gesprekken over zelfbeschadiging en zelfdoding die de chatbot niet stopzet. Daarom heeft drawbridge een schakelaar, AI-chatbots toestaan, aangeraden vanaf 18. De korte, functionele chatbots (in een zoekmachine, op een webwinkel, in Word) worden om evidente redenen niet geblokkeerd: dan blokkeren we het halve internet, en wie helemaal geen nieuwe chatbot-apps wil, kan het installeren van apps uitzetten. De volledige tekst staat in tools/build-site.py.
 
 Hoe zit het met de browser?
 

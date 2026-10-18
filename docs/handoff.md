@@ -746,7 +746,8 @@ is on it is genuinely on it.
 | **Closed as fixed** | **15** — WhatsApp calls, policy 118 on the beta and 119 here, confirmed 2026-09-20; **16** — the stale exclusion list, built in 0.2.26 build 51, unreleased |
 | **Closed as shipped** | 4, 6, 10 — built, and the entries had gone stale |
 | **Closed as answered** | 2 and 2a — FRP was tested and does not hold |
-| **Closed as won't do** | 5 (F-Droid); **17** — a toggle for general-purpose chatbots |
+| **Closed as won't do** | 5 (F-Droid) |
+| **Reopened and built** | **17** — a toggle for general-purpose chatbots, policy 135 |
 | **Closed as not ours to fix** | 1 — Play Protect, on Google-certified phones |
 | **Closed as done enough** | 12b, 12c, 12g — the app is in public beta |
 
@@ -1386,7 +1387,20 @@ before locking, precisely so a phone cannot be sealed pointing at a resolver
 nobody can change; and `block_encrypted_dns` blackholes known DoT endpoints, so
 the chosen resolver needs an exception carved for it.
 
-### 17. ~~A toggle for general-purpose chatbots~~ — won't do, 2026-09-28
+### 17. A toggle for general-purpose chatbots — reopened and built, policy 135, 2026-10-18
+
+**Reopened by the owner on 2026-10-18, on a different line than the one below.**
+The switch is not about AI as such but about the *long conversation*: chatbots now
+hold a conversation for weeks and remember the person, and that is where
+dependence and conversations about suicide come from (see
+[app-ratings](app-ratings.md#chatbots-sit-behind-a-switch-and-the-line-is-the-long-conversation)).
+The objection recorded below, that blocking the big assistants pushes people to
+shady alternatives, is answered by the list itself: 46 of its 75 apps *are* those
+alternatives, the PEGI-3 "AI Chat" wrappers, found with `app-ratings.py related`
+the same way the companions were. 18+, default on. What follows is the record of
+the 2026-09-28 cancellation, kept for its measurements.
+
+#### Cancelled 2026-09-28
 
 **Asked for, designed, measured, and cancelled by the owner the same day.** The
 measurements are kept because they are the expensive part and the conclusion
