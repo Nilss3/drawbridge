@@ -29,7 +29,11 @@ import java.time.ZoneId
  * to make, and a browser that could change it would be a way around the lock.
  *
  * A device without drawbridge simply has no provider here. herald treats that as
- * "no selection", which is the standalone case and the strict reading.
+ * "no selection" and switches every option off, which is the standalone case and
+ * the strict reading. The same happens for the moment the provider is gone during
+ * a drawbridge upgrade, which is why [DrawbridgeApplication] calls
+ * [notifyChanged] on every start: a browser that read nothing gets told to read
+ * again.
  *
  * ## It also publishes whether the phone is deliberately offline
  *

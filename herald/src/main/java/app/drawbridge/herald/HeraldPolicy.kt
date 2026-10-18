@@ -34,6 +34,9 @@ object HeraldPolicy {
     fun config(context: Context): PolicyConfig = cachedConfig ?: synchronized(this) {
         cachedConfig ?: PolicyConfig(
             selectionSource = DrawbridgeSelection(context),
+            // No drawbridge, no switches: the standalone browser blocks what
+            // every option would release, YouTube and streaming included.
+            optionsOffWithoutSelection = true,
             // Blank in every build but a dev-channel one, where it has to match
             // the URL drawbridge polls; see herald/build.gradle.kts.
             policyUrl = BuildConfig.POLICY_URL.ifBlank { PolicyConfig.DEFAULT_POLICY_URL },

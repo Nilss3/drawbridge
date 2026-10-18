@@ -21,10 +21,12 @@ import app.drawbridge.policy.SelectionSource
  * browser.
  *
  * On a phone without drawbridge there is no provider to query and this returns
- * null, which is exactly the standalone case: the browser follows the document's
- * own defaults. That is also the strict reading, so the failure mode of a
- * drawbridge that is missing, crashed or mid-upgrade is a browser that blocks
- * more than it needs to rather than less.
+ * null, which is exactly the standalone case: the browser treats every option as
+ * switched off ([app.drawbridge.policy.PolicyConfig.optionsOffWithoutSelection]).
+ * That is the strict reading, so the failure mode of a drawbridge that is
+ * missing, crashed or mid-upgrade is a browser that blocks more than it needs to
+ * rather than less — and drawbridge announces itself on start, so a browser that
+ * read during an upgrade is told again once the provider is back.
  *
  * The same provider also answers [connectivity], which is a different kind of
  * question and is read separately — see that function.

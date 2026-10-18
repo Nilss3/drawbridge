@@ -283,8 +283,9 @@ class PolicyManager private constructor(
      *
      * An unreadable external source falls back to this app's own stored state
      * rather than to nothing, so a browser that momentarily cannot reach
-     * drawbridge keeps filtering on the document's defaults instead of losing
-     * its rules.
+     * drawbridge keeps filtering on the document's default profile instead of
+     * losing its rules. The options are resolved separately, in
+     * [resolvedOptionIds].
      */
     private fun selection(): Pair<String?, List<String>?> {
         config.selectionSource?.read()?.let { return it.profileId to it.optionIds }
@@ -302,12 +303,12 @@ class PolicyManager private constructor(
      * be the browser second-guessing the DPC. That is the divergence
      * `SelectionProvider` exists to prevent: an option the parent had switched
      * off would come back on in the browser and nowhere else.
+     *
+     * **No answer at all reads as every option off** where the config asks for
+     * it — the standalone browser; see [PolicyConfig.optionsOffWithoutSelection].
      */
-    private fun resolvedOptionIds(): Set<String> {
-        config.selectionSource?.read()?.let { return baseline.enabledOptionIds(it.optionIds) }
-        val state = store.readState()
-        return baseline.enabledOptionIds(state.optionIds, state.seenOptionIds)
-    }
+    private fun resolvedOptionIds(): Set<String> =
+        resolveOptionIds(baseline, config, config.selectionSource?.read(), store::readState)
 
     /**
      * The build a conditional fragment should be judged against.
@@ -386,5 +387,28 @@ class PolicyManager private constructor(
             instance ?: synchronized(this) {
                 instance ?: PolicyManager(context, config).also { instance = it }
             }
+
+        /**
+         * [resolvedOptionIds] without the manager around it, so the rule can be
+         * tested against a plain [Policy] instead of a signed document on disk.
+         *
+         * [external] is what [PolicyConfig.selectionSource] answered, read once by
+         * the caller; [ownState] is only read when nothing else decides — this app
+         * owns the selection, or its source is silent and the config does not
+         * ask for every option off.
+         */
+        internal fun resolveOptionIds(
+            baseline: Policy,
+            config: PolicyConfig,
+            external: SelectionSource.Selection?,
+            ownState: () -> PolicyStore.StoredState,
+        ): Set<String> {
+            if (config.selectionSource != null) {
+                if (external != null) return baseline.enabledOptionIds(external.optionIds)
+                if (config.optionsOffWithoutSelection) return emptySet()
+            }
+            val state = ownState()
+            return baseline.enabledOptionIds(state.optionIds, state.seenOptionIds)
+        }
     }
 }
