@@ -88,3 +88,13 @@ What it does not yet include is a named organisation that has formally
 endorsed drawbridge itself. If one does, credit it here and in the README
 before leaning on it in outward-facing copy — the same order that avoided the
 problem the first time.
+
+## The contact form
+
+`/contact/` posts to a Cloudflare Worker on `drawbridge-project.org/api/contact`,
+which mails the message through Email Routing to an address that is a Worker
+secret, so it appears nowhere on the site or in this repository. The Worker,
+its tests and its one-time setup (Turnstile widget, two secrets, `wrangler
+deploy`) are in [`workers/contact/`](../workers/contact/README.md). Until the
+Turnstile site key is filled in at `TURNSTILE_SITE_KEY` in
+`tools/build-site.py`, the build warns and the form refuses every message.
