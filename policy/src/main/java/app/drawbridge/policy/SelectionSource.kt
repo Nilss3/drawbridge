@@ -18,11 +18,12 @@ fun interface SelectionSource {
      * The current selection, or null if it cannot be read — because the app
      * holding it is not installed, or is not answering.
      *
-     * Null means "fall back to what this app stores for itself", which for the
-     * standalone browser is nothing at all and therefore the document's own
-     * defaults. That fallback is the safe direction: the defaults are the strict
-     * reading, so a browser that cannot reach drawbridge blocks more than it
-     * might need to rather than less.
+     * Null means "fall back to what this app stores for itself" — or, where
+     * [PolicyConfig.optionsOffWithoutSelection] is set, as it is in herald,
+     * "every option off". The document's defaults are not the strict reading
+     * (policy 133 ships all four options on), so a browser that cannot reach
+     * drawbridge must not use them, or it would block less than the phone's
+     * owner chose.
      *
      * Called on a background thread, and may do IPC.
      */

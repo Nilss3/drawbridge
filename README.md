@@ -84,8 +84,8 @@ They ship as two deliverables:
    stops it.
 2. **Standalone browser** — herald on its own, for a phone that already has app
    blocking (Family Link or similar) and only needs the browser gap closed. With
-   no drawbridge to ask, it follows the policy document's own defaults, which are
-   the stricter reading.
+   no drawbridge to ask, every switch reads as off: YouTube, Telegram and the
+   streaming services stay blocked, so the browser is not the way around them.
 
 ## How it filters
 

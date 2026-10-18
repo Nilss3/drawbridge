@@ -110,4 +110,56 @@ class SelectionSourceTest {
         assertEquals(listOf("whatsapp"), chosen.optionIds)
         store.clear()
     }
+
+    // The standalone browser: herald with no drawbridge behind it. Policy 133 ships
+    // every option default-on, so following the defaults here would let YouTube and
+    // the streaming services through the one browser a phone allows.
+
+    private val allOnByDefault = document.copy(
+        options = listOf(whatsapp.copy(defaultEnabled = true)),
+    )
+    private val heraldConfig = PolicyConfig(
+        selectionSource = { null },
+        optionsOffWithoutSelection = true,
+    )
+    private val nothingStored = { PolicyStore.StoredState() }
+
+    @Test
+    fun `with no drawbridge to answer, herald reads every option as off`() {
+        val enabled = PolicyManager.resolveOptionIds(allOnByDefault, heraldConfig, null, nothingStored)
+
+        assertEquals(emptySet<String>(), enabled)
+        assertEquals(
+            emptyList<String>(),
+            allOnByDefault.effective("default", enabled).allowedDomains,
+        )
+    }
+
+    @Test
+    fun `an answer from drawbridge still wins, defaults and all`() {
+        // Installed, nobody has chosen: drawbridge enforces the defaults at the DNS
+        // layer, so the browser has to agree with it rather than be stricter.
+        val unchosen = SelectionSource.Selection(profileId = null, optionIds = null)
+        assertEquals(
+            setOf("whatsapp"),
+            PolicyManager.resolveOptionIds(allOnByDefault, heraldConfig, unchosen, nothingStored),
+        )
+
+        val switchedOff = SelectionSource.Selection(profileId = null, optionIds = emptyList())
+        assertEquals(
+            emptySet<String>(),
+            PolicyManager.resolveOptionIds(allOnByDefault, heraldConfig, switchedOff, nothingStored),
+        )
+    }
+
+    @Test
+    fun `an app that owns its selection is untouched by the switch`() {
+        // drawbridge has no selection source, so the flag means nothing to it and
+        // a fresh install still starts from the document's defaults.
+        val owner = PolicyConfig(optionsOffWithoutSelection = true)
+        assertEquals(
+            setOf("whatsapp"),
+            PolicyManager.resolveOptionIds(allOnByDefault, owner, null, nothingStored),
+        )
+    }
 }

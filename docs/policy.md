@@ -456,7 +456,9 @@ confirmation and says so before applying.
 **herald follows the same selection.** On a managed device it asks drawbridge
 which profile and which options are in force, so the browser and the DNS layer
 enforce the same reading of this document. The standalone browser has nothing to
-ask and follows `default_profile` and the options' own `default_enabled`. See
+ask: it follows `default_profile` and treats **every option as off**, whatever
+`default_enabled` says, so YouTube, Telegram and the streaming services stay
+blocked in a browser no drawbridge is managing. See
 [design-decisions](design-decisions.md#herald-reads-drawbridges-selection-or-it-enforces-a-different-policy).
 
 ## Options: one switch each

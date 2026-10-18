@@ -52,6 +52,27 @@ data class PolicyConfig(
      * selection this app stores for itself".
      */
     val selectionSource: SelectionSource? = null,
+
+    /**
+     * What the options read as when [selectionSource] gives no answer: every
+     * option off, rather than the document's `default_enabled`.
+     *
+     * herald sets it. The standalone browser is installed as the only browser on
+     * a phone whose apps are already blocked by something else, and with no
+     * drawbridge to say which switches are on, the defaults — all four on in
+     * policy 133 — would make it the bypass: YouTube, the streaming services and
+     * Telegram's web client, in the one browser the phone allows. Every option
+     * only ever *releases* something, so "all off" is the strict reading, and
+     * the failure mode of a drawbridge that is missing, crashed or mid-upgrade is
+     * a browser that blocks more than it needs to rather than less.
+     *
+     * An answer that arrives without option ids — drawbridge installed, nobody
+     * has chosen yet — still follows the defaults, because that is what
+     * drawbridge itself enforces at the DNS layer underneath; this only governs
+     * the case where nothing answers at all. Ignored when [selectionSource] is
+     * null, since an app that owns its selection has its own stored answer.
+     */
+    val optionsOffWithoutSelection: Boolean = false,
 ) {
     companion object {
         /**
