@@ -1257,11 +1257,22 @@ change the selection would be a way around the lock.
 
 Three properties are load-bearing:
 
-- **A missing provider means "no selection", not "no rules".** The standalone
-  browser has no drawbridge to ask, and neither does one whose drawbridge is
-  mid-upgrade. Both fall back to the document's own defaults, which are the
-  *strict* reading — so the failure mode is a browser that blocks more than it
-  needs to, never less.
+- **A missing provider means every option off, not the document's defaults.**
+  The standalone browser has no drawbridge to ask, and neither does one whose
+  drawbridge is mid-upgrade. This used to fall back to the defaults on the
+  reasoning that they were the *strict* reading, and that stopped being true
+  when the options went default-on so that a new one would not arrive as a
+  confiscation (see [policy.md](policy.md#adding-an-option-without-taking-something-away)):
+  by policy 133 all four were on, and standalone herald loaded YouTube, Telegram
+  and seventy streaming services. **Changed 2026-10-18, on the owner's
+  decision:** standalone herald is installed as the only browser on a phone
+  whose apps are already blocked by something else, so a browser that follows
+  the defaults is the bypass for exactly the thing people want off or limited.
+  `PolicyConfig.optionsOffWithoutSelection` makes no answer read as nothing
+  switched on — the strict reading again, so the failure mode is a browser that
+  blocks more than it needs to, never less. drawbridge notifies the provider on
+  every start, so a browser that read during an upgrade gap is told to read
+  again rather than staying stricter until the next switch.
 - **An empty answer is not a missing one.** `option_ids=""` means the parent
   turned everything off; a missing column means nobody answered. Conflating them
   would silently re-enable every default-on option.

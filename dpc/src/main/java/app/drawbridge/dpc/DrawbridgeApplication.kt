@@ -9,6 +9,7 @@ import app.drawbridge.dpc.apps.AppBlocker
 import app.drawbridge.dpc.apps.store.StoreScanWorker
 import app.drawbridge.dpc.curfew.CurfewController
 import app.drawbridge.dpc.curfew.CurfewWorker
+import app.drawbridge.dpc.policy.SelectionProvider
 import app.drawbridge.dpc.security.LockTimerController
 import app.drawbridge.dpc.security.LockTimerWorker
 import app.drawbridge.dpc.update.UpdateWorker
@@ -28,7 +29,15 @@ class DrawbridgeApplication : Application() {
     override fun onCreate() {
         super.onCreate()
 
-        applicationScope.launch { policy(this@DrawbridgeApplication).ensureLoaded() }
+        applicationScope.launch {
+            policy(this@DrawbridgeApplication).ensureLoaded()
+            // herald reads every option as off while this provider cannot answer,
+            // which includes the moments of an upgrade. Announcing the selection
+            // on every start is what brings a browser that read during that gap
+            // back to what the parent chose, rather than leaving it stricter until
+            // the next switch or the next policy.
+            SelectionProvider.notifyChanged(this@DrawbridgeApplication)
+        }
         PolicyWorker.schedule(this)
         UpdateWorker.schedule(this)
         // Weekly, on Wi-Fi, and mostly a job that finds nothing to do: only a
