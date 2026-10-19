@@ -447,7 +447,7 @@ which is the same rule the browser choice follows.
 
 ## Chatbots sit behind a switch, and the line is the long conversation
 
-**Reversed 2026-10-18, on the owner's decision.** Until policy 135 this section
+**Reversed 2026-10-18, on the owner's decision.** Until policy 136 this section
 said chatbots were not blocked, for an architectural reason that still stands and
 is kept below. What changed is the question. The risk worth a switch is not AI as
 such, it is the *long conversation*: until recently a chatbot remembered little and
@@ -663,7 +663,7 @@ coincidence, and it is much better evidence than either was alone.
 
 **A first pass at this reported 37% and was wrong**, having divided 13 by all 35
 and counted sixteen general-purpose assistants — ChatGPT, Gemini, Perplexity,
-Copilot, Poe — as escapes. They are not escapes; the `chatbots` option (policy 135) names them,
+Copilot, Poe — as escapes. They are not escapes; the `chatbots` option (policy 136) names them,
 and the rating rule leaving them alone is the design working. The wrong
 denominator then invited an invented explanation about prominent apps rating
 themselves higher, which no evidence supported. Recorded because the arithmetic

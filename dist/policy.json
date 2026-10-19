@@ -1,7 +1,7 @@
 {
-  "version": 135,
-  "issued_at": "2026-10-18T15:00:00Z",
-  "comment": "BETA. A new option, chatbots (Allow AI chatbots, 18+, default on): 75 general-purpose chatbot apps join blocked_packages and the option's exempt_packages, and dist/lists/chatbots.txt carries 29 of their web hosts, mirrored in allowed_domains. 8 of them leave the app_ratings whitelist, which an option-governed package cannot be on. 135 because 134 (PR #5) precedes it. 511 blocked packages.",
+  "version": 136,
+  "issued_at": "2026-10-19T09:00:00Z",
+  "comment": "BETA. Two changes since 133. A new option, chatbots (Allow AI chatbots, 18+, default on): 75 general-purpose chatbot apps join blocked_packages and the option's exempt_packages, and dist/lists/chatbots.txt carries 29 of their web hosts, mirrored in allowed_domains; 8 of them leave the app_ratings whitelist, which an option-governed package cannot be on. And the YouTube and streaming options stop saying their services are blocked by default. 136 because dev holds 134 and tests this content as dev 135. 511 blocked packages.",
   "dns": {
     "upstreams": [
       "94.140.14.15",

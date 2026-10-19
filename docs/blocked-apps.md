@@ -1,7 +1,7 @@
 # Blocked apps
 
 The sections below name the apps blocked as of policy 26 (177 of them), plus the AI
-companion additions of policy 133 and the chatbots behind the switch of policy 135.
+companion additions of policy 133 and the chatbots behind the switch of policy 136.
 `blocked_packages` now carries 511 packages in all, so
 this page is a readable subset, not a complete count. Source of truth is `blocked_packages` in
 `dist/policy.json`; package ids and reasoning are in [blocklist-notes](blocklist-notes.md).
@@ -179,7 +179,7 @@ is 9gag.com).
 - YourWaifus: AI Girlfriend
 - ZingChat: Charming AI Roleplay
 
-## AI chatbots — behind the *Allow AI chatbots* switch (policy 135)
+## AI chatbots — behind the *Allow AI chatbots* switch (policy 136)
 
 Blocked only while the switch is off; on, they are kept whatever their rating. 75 apps,
 found by following Play's "similar apps" from the major assistants and by search, every

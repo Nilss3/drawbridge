@@ -1,4 +1,4 @@
-# General-purpose AI chatbots, governed by the `chatbots` option (policy 135).
+# General-purpose AI chatbots, governed by the `chatbots` option (policy 136).
 # Harvested 2026-10-18 with tools/app-ratings.py related (seeded with ChatGPT, Claude,
 # Gemini, Copilot, Perplexity, DeepSeek, Le Chat, Kimi, Poe, Pi, Meta AI, Monica) and
 # search; every listing read. Each id is in blocked_packages AND in the option's

@@ -747,7 +747,7 @@ is on it is genuinely on it.
 | **Closed as shipped** | 4, 6, 10 — built, and the entries had gone stale |
 | **Closed as answered** | 2 and 2a — FRP was tested and does not hold |
 | **Closed as won't do** | 5 (F-Droid) |
-| **Reopened and built** | **17** — a toggle for general-purpose chatbots, policy 135 |
+| **Reopened and built** | **17** — a toggle for general-purpose chatbots, policy 136 |
 | **Closed as not ours to fix** | 1 — Play Protect, on Google-certified phones |
 | **Closed as done enough** | 12b, 12c, 12g — the app is in public beta |
 
@@ -1387,7 +1387,7 @@ before locking, precisely so a phone cannot be sealed pointing at a resolver
 nobody can change; and `block_encrypted_dns` blackholes known DoT endpoints, so
 the chosen resolver needs an exception carved for it.
 
-### 17. A toggle for general-purpose chatbots — reopened and built, policy 135, 2026-10-18
+### 17. A toggle for general-purpose chatbots — reopened and built, policy 136, 2026-10-18
 
 **Reopened by the owner on 2026-10-18, on a different line than the one below.**
 The switch is not about AI as such but about the *long conversation*: chatbots now

@@ -328,7 +328,7 @@ The rating rule removes anything the store does not rate PEGI 3, which is delibe
 would take a pile of ordinary tools with it. These {{table:count-whitelist}} are named as exceptions, one at a
 time. They are tools rather than entertainment: music you already chose, messaging that is not a
 feed, recipes, sport tracking, and video calls for school and work. The general-purpose chatbots
-used to be here too; since policy 135 they sit behind their own switch, *Allow AI chatbots*, which
+used to be here too; since policy 136 they sit behind their own switch, *Allow AI chatbots*, which
 keeps them whatever their rating when it is on and blocks them when it is off.
 None of them has an algorithmic feed of strangers' content, which is the line this list is drawn
 on.

@@ -506,7 +506,7 @@ screen. Nothing here has been verified on a handset of each brand.
 
 ## `chatbots.txt`, the first list behind a switch that is about conversation
 
-Policy 135. The web side of the `chatbots` option, and like `streaming.txt` every
+Policy 136. The web side of the `chatbots` option, and like `streaming.txt` every
 entry is repeated in the option's `allowed_domains`, which `policytool.py sign`
 enforces. 29 hosts, each resolved and loaded on 2026-10-18.
 
