@@ -170,7 +170,16 @@
                 android:textAppearance="?attr/textAppearanceBodyLarge"
                 android:visibility="gone" />
 
-            <!-- Starts the running timer over; shown only while one is running. -->
+            <!-- Ends a timer somebody started from this screen (the forgotten-code wait). -->
+            <Button
+                android:id="@+id/cancelTimerButton"
+                style="?attr/materialButtonOutlinedStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:visibility="gone" />
+
+            <!-- Starts a timer chosen before the lock over; shown only while one is running. -->
             <Button
                 android:id="@+id/restartTimerButton"
                 style="?attr/materialButtonOutlinedStyle"

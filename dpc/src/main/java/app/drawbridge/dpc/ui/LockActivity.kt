@@ -378,16 +378,22 @@ class LockActivity : AppCompatActivity() {
     private fun showRunningTimer() {
         val notice = findViewById<TextView>(R.id.timerNotice)
         val restart = findViewById<Button>(R.id.restartTimerButton)
+        val cancel = findViewById<Button>(R.id.cancelTimerButton)
         if (!lockTimer.isArmed) {
             notice.visibility = View.GONE
             restart.visibility = View.GONE
+            cancel.visibility = View.GONE
             return
         }
-        restart.visibility = View.VISIBLE
+        val forgotten = lockTimer.reason == LockTimer.Reason.FORGOTTEN
+        // A timer chosen before the lock can be started over; the one started
+        // from this screen by whoever lost the code can be cancelled, which puts
+        // the lock back to key-only.
+        restart.visibility = if (forgotten) View.GONE else View.VISIBLE
+        cancel.visibility = if (forgotten) View.VISIBLE else View.GONE
         restart.text = getString(R.string.lock_timer_restart, getString(lockTimer.armedLength.label))
         restart.setOnClickListener { restartTimer() }
-
-        val forgotten = lockTimer.reason == LockTimer.Reason.FORGOTTEN
+        cancel.setOnClickListener { cancelTimer() }
         notice.visibility = View.VISIBLE
         notice.text = getString(
             if (forgotten) R.string.lock_timer_running_forgotten else R.string.lock_timer_running,
@@ -652,6 +658,20 @@ class LockActivity : AppCompatActivity() {
     private fun restartTimer() {
         lockTimer.restart()
         DeviceOwnerManager(this).updateLockScreenInfo()
+        LockTimerController(this).apply()
+        showRunningTimer()
+    }
+
+    /**
+     * Drops the countdown the forgotten-code door started, leaving a lock that
+     * only the key opens. Not behind the key, for the same reason restarting is
+     * not: it can only make the lock stricter.
+     */
+    private fun cancelTimer() {
+        lockTimer.disarm()
+        DeviceOwnerManager(this).updateLockScreenInfo()
+        // The clock pin goes if no curfew still needs it, and the alarm with it.
+        CurfewController(this).apply()
         LockTimerController(this).apply()
         showRunningTimer()
     }

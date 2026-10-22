@@ -155,6 +155,7 @@
     <string name="lock_timer_months_12">12 mois</string>
     <string name="lock_timer_months_18">18 mois</string>
     <string name="lock_timer_restart">Relancer la minuterie de déverrouillage de %1$s</string>
+    <string name="lock_timer_cancel">Annuler la minuterie de déverrouillage</string>
 
     <!-- Code oublié, sur un téléphone verrouillé -->
     <string name="forgot_key_title">Code oublié ?</string>

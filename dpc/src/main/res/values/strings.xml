@@ -245,6 +245,7 @@
     <string name="lock_timer_months_12">12 months</string>
     <string name="lock_timer_months_18">18 months</string>
     <string name="lock_timer_restart">Restart unlock timer of %1$s</string>
+    <string name="lock_timer_cancel">Cancel unlock timer</string>
 
     <!-- The code-forgotten door, on a locked phone. -->
     <string name="forgot_key_title">Forgotten the code?</string>

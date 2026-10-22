@@ -155,6 +155,7 @@
     <string name="lock_timer_months_12">12 maanden</string>
     <string name="lock_timer_months_18">18 maanden</string>
     <string name="lock_timer_restart">Ontgrendeltimer van %1$s opnieuw starten</string>
+    <string name="lock_timer_cancel">Ontgrendeltimer annuleren</string>
 
     <!-- Code vergeten, op een vergrendelde telefoon -->
     <string name="forgot_key_title">Code vergeten?</string>
