@@ -1,7 +1,7 @@
 {
-  "version": 133,
-  "issued_at": "2026-10-16T12:00:00Z",
-  "comment": "BETA. 67 more AI companion and character-chat apps, found by Play search and similar-apps snowballing from named seeds; every one is PEGI 3 or Parental guidance, so the rating rule cannot remove it. Their own sites join dist/lists/ai-companions.txt (36 domains, list re-pinned). Everything else is unchanged from 132 (herald 0.1.21, drawbridge 0.2.30 build 55). 133 because dev holds 131 and the beta held 132. 436 blocked packages.",
+  "version": 137,
+  "issued_at": "2026-10-22T20:30:00Z",
+  "comment": "BETA. herald 0.1.22 (version_code 22, both editions, v0.2.25): a page with a huge title or address no longer freezes the tab list. Content unchanged from 133, which carried the 67 AI companion apps. drawbridge unchanged at 0.2.30 build 55. 137 because dev holds 136 and the beta held 133. 436 blocked packages.",
   "dns": {
     "upstreams": [
       "94.140.14.15",
@@ -910,16 +910,16 @@
   "required_apps": [
     {
       "package_name": "app.drawbridge.herald",
-      "version_code": 21,
-      "url": "https://github.com/Nilss3/drawbridge/releases/download/v0.2.24/herald-arm64-v8a-release.apk",
-      "sha256": "2b2378f72cb586fbf04e6d165cca77b52cf4972f51c01c20faa0b4ccded8cb76",
+      "version_code": 22,
+      "url": "https://github.com/Nilss3/drawbridge/releases/download/v0.2.25/herald-arm64-v8a-release.apk",
+      "sha256": "ffd74923c5611a31641d2a25a367c43e48b8454c0ef39690e3fab98fd1430db9",
       "abi": "arm64-v8a"
     },
     {
       "package_name": "app.drawbridge.heraldmono",
-      "version_code": 21,
-      "url": "https://github.com/Nilss3/drawbridge/releases/download/v0.2.24/herald-mono-arm64-v8a-release.apk",
-      "sha256": "8abe87d26b3e645a4e4e2fe93d8dbfaac98f8f1e34f1ecaaa8c41228d160018b",
+      "version_code": 22,
+      "url": "https://github.com/Nilss3/drawbridge/releases/download/v0.2.25/herald-mono-arm64-v8a-release.apk",
+      "sha256": "7a226e5ae9e648b32b007aabffa609a857d6191f70b2a8ba7642e21e5b775dac",
       "abi": "arm64-v8a"
     }
   ],
