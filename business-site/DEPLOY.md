@@ -2,7 +2,8 @@
 
 One HTML file, no build step, no dependencies, no external requests — the
 fonts are the ones already on the visitor's device and the favicon is inline.
-Whatever is in this folder is the whole website.
+Whatever is in the `site` folder is the whole website; this file stays outside it so
+it is never published.
 
 **The site is at <https://ontheway-consulting.pages.dev>.** Written down because
 it is not derivable from anything in this folder, and a neighbouring name is
@@ -19,19 +20,23 @@ making a Worker instead. You do not need one.
 There is a zip ready to go: build it with
 
 ```bash
-cd business-site && zip ../on-the-way-site.zip index.html _headers
+cd business-site/site && zip ../../on-the-way-site.zip index.html _headers
 ```
 
 `index.html` must sit at the *root* of that zip, not inside a folder within it,
-or every path 404s. Note that `DEPLOY.md` is deliberately left out — everything
-in the upload is served publicly, and these notes are nobody else's business.
+or every path 404s. Zipping `site` itself would nest it one level down and do
+exactly that, which is why the command zips the two files rather than the
+folder.
 
 1. Cloudflare dashboard → **Workers & Pages** → **Create**. The page has
    separate **Workers** and **Pages** tabs; take **Pages** → **Upload assets**.
 2. Name the project. That name becomes the address, `<project-name>.pages.dev`,
    and is awkward to change later.
-3. Drop in the zip, or the whole `business-site` folder. Either way its
-   *contents* land at the site root, so `index.html` becomes the homepage.
+3. Drop in the zip, or the `business-site/site` folder. Either way its
+   *contents* land at the site root: `index.html` becomes the homepage and
+   `_headers` sets the response headers. The folder holds exactly the website,
+   so these notes are never uploaded — which is the point of them living one
+   level up.
 4. **Deploy site.**
 
 Nothing builds on Cloudflare's side. There is no framework preset to pick and
@@ -48,7 +53,7 @@ From a terminal instead, which skips the zip entirely — Wrangler takes a
 directory and *only* a directory:
 
 ```bash
-npx wrangler pages deploy ./business-site --project-name=<project-name>
+npx wrangler pages deploy ./business-site/site --project-name=<project-name>
 ```
 
 ## The Worker route, and why not to bother
@@ -101,7 +106,7 @@ hostnames, and both hostnames arrive at the same project.
 
 ## Editing
 
-Edit `index.html` directly — it is the whole site, content and styling in one
+Edit `site/index.html` directly — it is the whole site, content and styling in one
 file. Three things live in more than one place and have to be changed in all of
 them, so they are worth knowing about:
 
@@ -126,9 +131,9 @@ search engine without it.
 To see the result before it is public:
 
 ```bash
-python3 -m http.server 8811 --directory business-site
+python3 -m http.server 8811 --directory business-site/site
 ```
 
-then <http://localhost:8811>. Opening `index.html` as a `file://` URL works too
+then <http://localhost:8811>. Opening `site/index.html` as a `file://` URL works too
 — there are no absolute paths in it — but the local server is closer to what
 Cloudflare will serve.
