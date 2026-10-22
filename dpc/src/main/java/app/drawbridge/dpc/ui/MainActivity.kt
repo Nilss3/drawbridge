@@ -1260,10 +1260,20 @@ class MainActivity : AppCompatActivity() {
                 title = title,
                 body = choice.displayDescription(language),
             )
-            card.isChecked = choice.id == selected
-
-            card.setOnClickListener {
-                if (choice.id != selected) confirmPolicy(choice)
+            if (single) {
+                // A status, not a choice: no border, no selected tint, nothing to
+                // tap. Drawn flat, with its text on the same left edge as the
+                // headings above and below it.
+                card.isCheckable = false
+                card.isClickable = false
+                card.strokeWidth = 0
+                card.setCardBackgroundColor(android.graphics.Color.TRANSPARENT)
+                card.getChildAt(0).setPaddingRelative(0, card.getChildAt(0).paddingTop, 0, card.getChildAt(0).paddingBottom)
+            } else {
+                card.isChecked = choice.id == selected
+                card.setOnClickListener {
+                    if (choice.id != selected) confirmPolicy(choice)
+                }
             }
             policyContainer.addView(card)
         }
