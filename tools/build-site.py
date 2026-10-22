@@ -235,7 +235,7 @@ HOME = {
         ],
         cta_primary="Get started",
         cta_secondary="See what's blocked, and why",
-        partner_text="Drawbridge was co-developed by Kids Unplugged and takes into account the advice of its medical board as well as the best practices from other parents organisations.",
+        partner_text="Drawbridge was co-developed by <a href='https://www.kidsunplugged.be'>Kids Unplugged</a> and takes into account the advice of its medical board as well as the best practices from other parents organisations.",
         partner_logo_alt="Kids Unplugged Belgium",
         how_h2="How it works",
         how_p1='You connect the phone to a computer once, over USB, and run the installer. There is no factory reset, and nothing on the phone is erased. This will embed drawbridge on your device. Once installed, just start it. Installing it does uninstall the apps it blocks, so expect those to go. Move anything you want to keep off the phone first.',
@@ -300,7 +300,7 @@ HOME = {
         ],
         cta_primary="Aan de slag",
         cta_secondary="Bekijk wat geblokkeerd wordt, en waarom",
-        partner_text="Drawbridge werd mee ontwikkeld door Kids Unplugged en houdt rekening met het advies van haar medische raad en met de beste praktijken van andere ouderverenigingen.",
+        partner_text="Drawbridge werd mee ontwikkeld door <a href='https://www.kidsunplugged.be'>Kids Unplugged</a> en houdt rekening met het advies van haar medische raad en met de beste praktijken van andere ouderverenigingen.",
         partner_logo_alt="Kids Unplugged Belgium",
         how_h2="Hoe het werkt",
         how_p1='Je verbindt de telefoon één keer met een computer via USB en voert de installer uit. Er is geen factory reset nodig, en er wordt niets op de telefoon gewist. Dat installeert drawbridge op je toestel. Eenmaal geïnstalleerd, start je het gewoon op. Bij het installeren verdwijnen wel de apps die drawbridge blokkeert, dus zet eerst weg wat je wil bewaren.',
@@ -365,7 +365,7 @@ HOME = {
         ],
         cta_primary="Commencer",
         cta_secondary="Voir ce qui est bloqué, et pourquoi",
-        partner_text="Drawbridge a été co-développé avec Kids Unplugged et tient compte des conseils de son conseil médical ainsi que des meilleures pratiques d'autres associations de parents.",
+        partner_text="Drawbridge a été co-développé avec <a href='https://www.kidsunplugged.be'>Kids Unplugged</a> et tient compte des conseils de son conseil médical ainsi que des meilleures pratiques d'autres associations de parents.",
         partner_logo_alt="Kids Unplugged Belgium",
         how_h2="Comment ça marche",
         how_p1="Vous reliez le téléphone à un ordinateur une seule fois, par USB, et vous lancez l'installeur. Il n'y a aucune réinitialisation, et rien n'est effacé sur le téléphone. Cela installe drawbridge sur votre appareil. Une fois installé, il suffit de le démarrer. L'installation désinstalle en revanche les applications qu'il bloque, mettez donc d'abord de côté ce que vous voulez garder.",
@@ -933,7 +933,7 @@ def render_home(lang: str) -> str:
   -->
   <section class="section partner">
     <div class="wrap partner-inner">
-      <img class="partner-logo" src="/assets/img/kids-unplugged.webp" alt="{c['partner_logo_alt']}" width="568" height="202" />
+      <a class="partner-link" href="https://www.kidsunplugged.be"><img class="partner-logo" src="/assets/img/kids-unplugged.webp" alt="{c['partner_logo_alt']}" width="568" height="202" /></a>
       <p>{c['partner_text']}</p>
     </div>
   </section>
