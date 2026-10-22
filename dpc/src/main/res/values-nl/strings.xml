@@ -9,8 +9,9 @@
     <string name="permission_read_selection">het gekozen drawbridge-beleid en de opties lezen</string>
 
     <!-- Proef- en definitieve modus. -->
-    <string name="permanence_unlocked_title">Drawbridge is actief maar ontgrendeld</string>
-    <string name="permanence_unlocked_summary">Pornografische inhoud, sociale media en games worden buiten gehouden, apps en websites. Verdere beperkingen zijn mogelijk maar vereisen vergrendelen.</string>
+    <string name="permanence_trial_title">Drawbridge in proefmodus</string>
+    <string name="policy_active_title">Drawbridge is actief maar ontgrendeld</string>
+    <string name="policy_active_summary">Pornografische inhoud, sociale media en games worden buiten gehouden, apps en websites. Verdere beperkingen zijn mogelijk maar vereisen vergrendelen.</string>
     <string name="permanence_permanent_title">Drawbridge is definitief</string>
     <string name="permanence_action">Definitief maken</string>
     <string name="permanence_remove_action">Drawbridge uitschakelen om te verwijderen</string>

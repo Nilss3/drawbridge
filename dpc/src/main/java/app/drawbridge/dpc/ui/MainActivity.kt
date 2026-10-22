@@ -687,7 +687,7 @@ class MainActivity : AppCompatActivity() {
     private fun renderPermanence() {
         val permanent = permanence.isPermanent
         permanenceTitle.setText(
-            if (permanent) R.string.permanence_permanent_title else R.string.permanence_unlocked_title,
+            if (permanent) R.string.permanence_permanent_title else R.string.permanence_trial_title,
         )
         // **Permanent mode is these two lines.** Everything else the mode does
         // is one conditional restriction that only bites on a locked phone; what
@@ -1235,8 +1235,17 @@ class MainActivity : AppCompatActivity() {
 
             // The policy's own words come from the signed document, not from a
             // string resource, so they carry their translations with them.
-            card.findViewById<TextView>(R.id.policyName).text = choice.displayName(language)
-            card.bindOptionalText(R.id.policySubtitle, choice.displaySubtitle(language))
+            // **With one profile, the card is the status rather than a choice**, so
+            // it says what state the phone is in instead of naming the profile:
+            // the base filter is on, and anything further waits for the lock. The
+            // ⓘ keeps the document's own description for the detail.
+            val single = choices.size == 1
+            val title = if (single) getString(R.string.policy_active_title) else choice.displayName(language)
+            card.findViewById<TextView>(R.id.policyName).text = title
+            card.bindOptionalText(
+                R.id.policySubtitle,
+                if (single) getString(R.string.policy_active_summary) else choice.displaySubtitle(language),
+            )
             // The same shield the options carry. It used to be "(+14)" inside the
             // subtitle sentence, spelled three different ways across the
             // translations, which is the one number somebody compares profiles by.
@@ -1248,7 +1257,7 @@ class MainActivity : AppCompatActivity() {
             )
             card.bindInfo(
                 R.id.policyInfo,
-                title = choice.displayName(language),
+                title = title,
                 body = choice.displayDescription(language),
             )
             card.isChecked = choice.id == selected

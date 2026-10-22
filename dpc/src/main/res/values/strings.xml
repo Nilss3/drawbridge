@@ -25,8 +25,9 @@
         the ⓘ. The thirty-day door's conditions are in that text, one tap away,
         and a confirmation nobody finishes reading protects nobody.
     -->
-    <string name="permanence_unlocked_title">Drawbridge is active but unlocked</string>
-    <string name="permanence_unlocked_summary">Adult content, social media and games are kept out, apps and websites. Further restrictions are possible but require locking.</string>
+    <string name="permanence_trial_title">Drawbridge in trial mode</string>
+    <string name="policy_active_title">Drawbridge is active but unlocked</string>
+    <string name="policy_active_summary">Adult content, social media and games are kept out, apps and websites. Further restrictions are possible but require locking.</string>
     <string name="permanence_permanent_title">Drawbridge is permanent</string>
     <string name="permanence_action">Make it permanent</string>
     <string name="permanence_remove_action">Deactivate drawbridge to uninstall</string>

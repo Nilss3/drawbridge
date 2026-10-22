@@ -242,15 +242,6 @@
                         android:src="@drawable/ic_info" />
                 </LinearLayout>
 
-                <!-- What "unlocked" still means: the base filter is on, the rest waits for the lock. -->
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingEnd="12dp"
-                    android:paddingBottom="10dp"
-                    android:text="@string/permanence_unlocked_summary"
-                    android:textAppearance="?attr/textAppearanceBodySmall" />
-
                 <!--
                     Deliberately not match_parent: a full-width button here would
                     read as the action of the screen, and the action of this
