@@ -109,7 +109,6 @@
         <item quantity="one">%d minute</item>
         <item quantity="other">%d minutes</item>
     </plurals>
-    <string name="lock_key_glyphs">Une clé ne contient jamais les lettres O, I ni L. Un caractère rond est un zéro. Si votre écriture est ambiguë, taper O, I ou l fonctionne quand même.</string>
     <string name="lock_reveal_confirm">J\'ai noté ou enregistré la clé, ou je l\'ai oubliée volontairement.</string>
     <string name="lock_reveal_share">Imprimer ou enregistrer la clé</string>
     <string name="lock_reveal_subject">clé drawbridge</string>

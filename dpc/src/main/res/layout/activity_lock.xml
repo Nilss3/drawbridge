@@ -67,13 +67,6 @@
                 android:textAppearance="?attr/textAppearanceTitleLarge"
                 android:textIsSelectable="true" />
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingTop="8dp"
-                android:text="@string/lock_key_glyphs"
-                android:textAppearance="?attr/textAppearanceBodySmall" />
-
             <!--
                 Shown only when the configuration screen asked for a timer. It
                 says the period rather than a date on purpose: the countdown
@@ -224,13 +217,6 @@
                 android:fontFamily="monospace"
                 android:hint="@string/lock_challenge_hint"
                 android:inputType="textVisiblePassword" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingTop="8dp"
-                android:text="@string/lock_key_glyphs"
-                android:textAppearance="?attr/textAppearanceBodySmall" />
 
             <LinearLayout
                 android:id="@+id/updateNotice"

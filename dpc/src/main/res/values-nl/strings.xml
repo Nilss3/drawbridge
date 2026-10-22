@@ -109,7 +109,6 @@
         <item quantity="one">%d minuut</item>
         <item quantity="other">%d minuten</item>
     </plurals>
-    <string name="lock_key_glyphs">Een sleutel bevat nooit de letters O, I of L. Een rond teken is een nul. Schrijf je er een dubbelzinnig op, dan werkt O, I of l intypen alsnog.</string>
     <string name="lock_reveal_confirm">Ik heb de sleutel opgeschreven of opgeslagen, of ze met opzet vergeten.</string>
     <string name="lock_reveal_share">Sleutel afdrukken of bewaren</string>
     <string name="lock_reveal_subject">drawbridge-sleutel</string>

@@ -193,7 +193,6 @@
         <item quantity="one">%d minute</item>
         <item quantity="other">%d minutes</item>
     </plurals>
-    <string name="lock_key_glyphs">A key never contains the letters O, I or L. A round character is a zero. If you write one down ambiguously, typing O, I or l back still works.</string>
     <string name="lock_reveal_confirm">I have written down or saved the key, or forgot it on purpose.</string>
     <string name="lock_reveal_share">Print or save the key</string>
     <string name="lock_reveal_subject">drawbridge key</string>
