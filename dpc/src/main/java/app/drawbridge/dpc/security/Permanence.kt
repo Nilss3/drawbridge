@@ -82,6 +82,18 @@ class Permanence(context: Context) {
      * made permanent. The restriction it governs is only re-derived at the next
      * lock, so there is no second chance to notice.
      */
+    /**
+     * Whether the person setting the phone up has answered *trial or permanent*,
+     * by either route. Permanent is an answer by itself; trial is what the app is
+     * until then, so the setup wizard records that it was asked.
+     */
+    val hasChosen: Boolean
+        get() = isPermanent || prefs.getBoolean(KEY_CHOSEN, false)
+
+    fun chooseTrial() {
+        prefs.edit().putBoolean(KEY_CHOSEN, true).apply()
+    }
+
     fun makePermanent() {
         prefs.edit().putBoolean(KEY_PERMANENT, true).commit()
     }
@@ -103,11 +115,12 @@ class Permanence(context: Context) {
      * life.
      */
     fun clear() {
-        prefs.edit().remove(KEY_PERMANENT).apply()
+        prefs.edit().remove(KEY_PERMANENT).remove(KEY_CHOSEN).apply()
     }
 
     private companion object {
         const val PREFS_NAME = "drawbridge_permanence"
         const val KEY_PERMANENT = "permanent"
+        const val KEY_CHOSEN = "chosen"
     }
 }
