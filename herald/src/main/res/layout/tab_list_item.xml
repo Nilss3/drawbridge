@@ -46,6 +46,8 @@
             android:layout_height="wrap_content"
             android:ellipsize="end"
             android:maxLines="2"
+            android:breakStrategy="simple"
+            android:hyphenationFrequency="none"
             android:textColor="@color/tab_item_text"
             android:textSize="16sp" />
 
@@ -55,6 +57,8 @@
             android:layout_height="wrap_content"
             android:ellipsize="end"
             android:maxLines="1"
+            android:breakStrategy="simple"
+            android:hyphenationFrequency="none"
             android:textColor="@color/tab_item_url"
             android:textSize="13sp" />
     </LinearLayout>
