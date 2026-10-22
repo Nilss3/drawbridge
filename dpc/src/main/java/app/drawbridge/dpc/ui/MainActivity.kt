@@ -334,7 +334,7 @@ class MainActivity : AppCompatActivity() {
     private fun renderPermanence() {
         val permanent = permanence.isPermanent
         permanenceTitle.setText(
-            if (permanent) R.string.permanence_permanent_title else R.string.permanence_trial_title,
+            if (permanent) R.string.permanence_permanent_title else R.string.permanence_unlocked_title,
         )
         // **Permanent mode is these two lines.** Everything else the mode does
         // is one conditional restriction that only bites on a locked phone; what

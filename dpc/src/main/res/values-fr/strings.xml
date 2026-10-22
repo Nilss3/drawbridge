@@ -9,7 +9,8 @@
     <string name="permission_read_selection">lire la politique drawbridge choisie et ses options</string>
 
     <!-- Mode d'essai et mode définitif. -->
-    <string name="permanence_trial_title">Drawbridge en mode d\'essai</string>
+    <string name="permanence_unlocked_title">Drawbridge est actif mais déverrouillé</string>
+    <string name="permanence_unlocked_summary">Les contenus pour adultes, les réseaux sociaux et les jeux sont tenus à l\'écart, applications et sites web. D\'autres restrictions sont possibles mais nécessitent le verrouillage.</string>
     <string name="permanence_permanent_title">Drawbridge est définitif</string>
     <string name="permanence_action">Rendre définitif</string>
     <string name="permanence_remove_action">Désactiver drawbridge pour le désinstaller</string>
