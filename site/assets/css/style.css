@@ -275,6 +275,8 @@ code {
 .partner-inner { display: flex; align-items: center; gap: 1.6rem; }
 .partner-logo { width: 220px; max-width: 40%; height: auto; border-radius: 12px; flex: none; }
 .partner-inner p { margin: 0; }
+.partner-link { display: block; flex: none; max-width: 40%; }
+.partner-link .partner-logo { max-width: 100%; }
 @media (max-width: 600px) {
   .partner-inner { flex-direction: column; align-items: flex-start; gap: 1rem; }
   .partner-logo { max-width: 70%; }
