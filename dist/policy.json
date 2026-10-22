@@ -1,7 +1,7 @@
 {
-  "version": 135,
-  "issued_at": "2026-10-19T09:00:00Z",
-  "comment": "DEV CHANNEL ONLY. The beta's coming policy 136, carried over for testing: a new option, chatbots (Allow AI chatbots, 18+, default on), with 75 chatbot apps in blocked_packages and the option's exempt_packages, 29 hosts in dist/lists/chatbots.txt mirrored in allowed_domains, and 8 chatbots off the app_ratings whitelist; plus the YouTube and streaming option text. herald and drawbridge unchanged from 134. 135 because dev held 134. 511 blocked packages.",
+  "version": 136,
+  "issued_at": "2026-10-22T20:00:00Z",
+  "comment": "DEV CHANNEL ONLY. herald 0.1.22 (version_code 22, both editions, v0.2.8-dev.14): a page with a huge title or address no longer freezes the tab list. Content unchanged from 135, which carried the chatbots option (Allow AI chatbots, 18+, default on). drawbridge unchanged at 0.2.30 build 55. 136 because 135 was dev's last and the beta's own chatbots policy was drafted as 136 but is not issued. 511 blocked packages.",
   "dns": {
     "upstreams": [
       "94.140.14.15",
@@ -1120,16 +1120,16 @@
   "required_apps": [
     {
       "package_name": "app.drawbridge.herald",
-      "version_code": 21,
-      "url": "https://github.com/Nilss3/drawbridge/releases/download/v0.2.8-dev.13/herald-arm64-v8a-release.apk",
-      "sha256": "3d95d8fb9f7653b750f9cc7d416ffc465c70317e91e80cc94c13782bf229daf6",
+      "version_code": 22,
+      "url": "https://github.com/Nilss3/drawbridge/releases/download/v0.2.8-dev.14/herald-arm64-v8a-release.apk",
+      "sha256": "002cfde77cc61da20c0c8594b0c27ef8e019ab233aa7902367845958d8be4c15",
       "abi": "arm64-v8a"
     },
     {
       "package_name": "app.drawbridge.heraldmono",
-      "version_code": 21,
-      "url": "https://github.com/Nilss3/drawbridge/releases/download/v0.2.8-dev.13/herald-mono-arm64-v8a-release.apk",
-      "sha256": "fb88b263f791ad60f1ffe4e7620674494dcd52d791c7a502715973631c851fea",
+      "version_code": 22,
+      "url": "https://github.com/Nilss3/drawbridge/releases/download/v0.2.8-dev.14/herald-mono-arm64-v8a-release.apk",
+      "sha256": "a539b57f0ab3317281ff9d05d70a22b57114ebbdfcf0ffe232486bc261d5c15e",
       "abi": "arm64-v8a"
     }
   ],
