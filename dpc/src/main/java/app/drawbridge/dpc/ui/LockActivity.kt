@@ -393,6 +393,7 @@ class LockActivity : AppCompatActivity() {
         cancel.visibility = if (forgotten) View.VISIBLE else View.GONE
         restart.text = getString(R.string.lock_timer_restart, getString(lockTimer.armedLength.label))
         restart.setOnClickListener { restartTimer() }
+        cancel.setText(R.string.lock_timer_cancel)
         cancel.setOnClickListener { cancelTimer() }
         notice.visibility = View.VISIBLE
         notice.text = getString(
