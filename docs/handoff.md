@@ -21,9 +21,9 @@ which is kept whole on purpose.
 
 | | `main` (the beta) | `dev` |
 |---|---|---|
-| drawbridge | **0.2.25, build 50** | **0.2.28, build 53** |
-| herald | **0.1.19** | **0.1.19** |
-| policy | **118** | **124** |
+| drawbridge | **0.2.30, build 55** | **0.2.30, build 55** |
+| herald | **0.1.21** | **0.1.21** |
+| policy | **133** | **135** |
 | install page | <https://drawbridge-project.pages.dev/install/> | <https://dev.drawbridge-project.pages.dev/install/> |
 | phone | the owner's Nothing Phone (A059) | the Moto G15 |
 
@@ -746,7 +746,8 @@ is on it is genuinely on it.
 | **Closed as fixed** | **15** — WhatsApp calls, policy 118 on the beta and 119 here, confirmed 2026-09-20; **16** — the stale exclusion list, built in 0.2.26 build 51, unreleased |
 | **Closed as shipped** | 4, 6, 10 — built, and the entries had gone stale |
 | **Closed as answered** | 2 and 2a — FRP was tested and does not hold |
-| **Closed as won't do** | 5 (F-Droid); **17** — a toggle for general-purpose chatbots |
+| **Closed as won't do** | 5 (F-Droid) |
+| **Closed as built, then reopened** | **17** — the chatbots toggle: cancelled 2026-09-28, built anyway on 2026-10-18 (policy 135 on dev, 136 on the beta branch) |
 | **Closed as not ours to fix** | 1 — Play Protect, on Google-certified phones |
 | **Closed as done enough** | 12b, 12c, 12g — the app is in public beta |
 
@@ -1386,7 +1387,20 @@ before locking, precisely so a phone cannot be sealed pointing at a resolver
 nobody can change; and `block_encrypted_dns` blackholes known DoT endpoints, so
 the chosen resolver needs an exception carved for it.
 
-### 17. ~~A toggle for general-purpose chatbots~~ — won't do, 2026-09-28
+### 17. A toggle for general-purpose chatbots — cancelled 2026-09-28, then built
+
+**Reversed: the switch exists.** "Allow AI chatbots" (18+, default on) went in as
+policy 135 on dev, signed 2026-10-22, with `dist/lists/chatbots.txt` (29 hosts)
+and 75 packages behind it; the same content is policy 136 on the beta's branch
+(`ccr-65e885dc-b0qwdy`), **not yet on `main`**. It had been sitting unsigned on
+the cloud branches until the owner noticed it was missing from the latest
+policy. Untested on a handset.
+
+The rest of this entry is the 2026-09-28 reasoning for cancelling it, kept because
+the measurements are the expensive part and the objection (a blocked big assistant
+sends people to shadier ones) still stands. It is why the switch is **on by
+default**: the parent who wants assistants blocked switches it off.
+
 
 **Asked for, designed, measured, and cancelled by the owner the same day.** The
 measurements are kept because they are the expensive part and the conclusion
