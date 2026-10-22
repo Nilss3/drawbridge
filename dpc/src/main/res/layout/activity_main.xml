@@ -305,6 +305,15 @@
             android:layout_marginBottom="20dp"
             android:text="@string/wizard_start" />
 
+        <TextView
+            android:id="@+id/wizExplainNote"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="24dp"
+            android:paddingBottom="16dp"
+            android:textAppearance="?attr/textAppearanceBodyMedium"
+            android:visibility="gone" />
+
         <LinearLayout android:id="@+id/wizFilter" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
         <!--
             **The base filter comes first, and the sentence under it is why.** It
@@ -356,16 +365,6 @@
             android:textColor="?attr/colorPrimary" />
 
         </LinearLayout>
-        <TextView
-            android:id="@+id/wizExplainNote"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="24dp"
-            android:paddingBottom="16dp"
-            android:text="@string/wizard_explain_note"
-            android:textAppearance="?attr/textAppearanceBodyMedium"
-            android:visibility="gone" />
-
         <RadioGroup
             android:id="@+id/wizAge"
             android:layout_width="match_parent"

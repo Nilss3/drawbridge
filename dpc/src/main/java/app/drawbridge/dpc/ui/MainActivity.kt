@@ -350,7 +350,7 @@ class MainActivity : AppCompatActivity() {
      * plain screen, so the two cannot disagree and nothing is maintained twice.
      * The plain screen is untouched and is what the wizard hands back to.
      */
-    private enum class Step { WELCOME, EXPLAIN, AGE, OPTIONS, BROWSERS, INSTALLS, OFFLINE, LOCK }
+    private enum class Step { WELCOME, AGE, EXPLAIN, OPTIONS, BROWSERS, INSTALLS, OFFLINE, LOCK }
 
     private val wizardSettings by lazy { WizardSettings(this) }
 
@@ -546,13 +546,21 @@ class MainActivity : AppCompatActivity() {
                 show(R.id.wizPermanence, !permanence.hasChosen)
             }
 
-            // The two blocks the plain screen already has for this, with the
-            // same words, and a line saying what the later pages depend on.
+            // After the age, because what is worth saying about the lock depends on
+            // it: an adult is told the base filter may be enough, a teenager that
+            // more is strongly recommended, and a child under 14 that this is
+            // probably the wrong device. The base filter's own card follows.
             Step.EXPLAIN -> {
                 heading(R.string.wizard_explain_title)
-                show(R.id.wizFilter, true)
-                show(R.id.wizRestrictions, true)
+                findViewById<TextView>(R.id.wizExplainNote).setText(
+                    when (wizardSettings.age) {
+                        WizardAge.UNDER_14 -> R.string.wizard_explain_child
+                        WizardAge.AGE_14_16, WizardAge.AGE_16_18 -> R.string.wizard_explain_teen
+                        WizardAge.ADULT, null -> R.string.wizard_explain_adult
+                    },
+                )
                 show(R.id.wizExplainNote, true)
+                show(R.id.wizFilter, true)
             }
 
             Step.AGE -> {
