@@ -377,10 +377,15 @@ class LockActivity : AppCompatActivity() {
      */
     private fun showRunningTimer() {
         val notice = findViewById<TextView>(R.id.timerNotice)
+        val restart = findViewById<Button>(R.id.restartTimerButton)
         if (!lockTimer.isArmed) {
             notice.visibility = View.GONE
+            restart.visibility = View.GONE
             return
         }
+        restart.visibility = View.VISIBLE
+        restart.text = getString(R.string.lock_timer_restart, getString(lockTimer.armedLength.label))
+        restart.setOnClickListener { restartTimer() }
 
         val forgotten = lockTimer.reason == LockTimer.Reason.FORGOTTEN
         notice.visibility = View.VISIBLE
@@ -636,6 +641,19 @@ class LockActivity : AppCompatActivity() {
             .setPositiveButton(R.string.forgot_key_start) { _, _ -> startForgottenKeyTimer() }
             .setNegativeButton(android.R.string.cancel, null)
             .show()
+    }
+
+    /**
+     * Starts the running countdown over with the length it was armed with.
+     *
+     * Not behind the key: it can only push the deadline later, so the worst
+     * anybody holding the phone can do with it is keep it locked longer.
+     */
+    private fun restartTimer() {
+        lockTimer.restart()
+        DeviceOwnerManager(this).updateLockScreenInfo()
+        LockTimerController(this).apply()
+        showRunningTimer()
     }
 
     private fun startForgottenKeyTimer() {

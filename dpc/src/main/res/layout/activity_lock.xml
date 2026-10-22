@@ -170,6 +170,15 @@
                 android:textAppearance="?attr/textAppearanceBodyLarge"
                 android:visibility="gone" />
 
+            <!-- Starts the running timer over; shown only while one is running. -->
+            <Button
+                android:id="@+id/restartTimerButton"
+                style="?attr/materialButtonOutlinedStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:visibility="gone" />
+
             <!--
                 What this phone is actually set to. The lock screen is the screen
                 a managed phone spends its life on, and until now it said when the

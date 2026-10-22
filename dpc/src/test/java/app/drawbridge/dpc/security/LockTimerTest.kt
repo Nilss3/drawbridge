@@ -131,13 +131,14 @@ class LockTimerTest {
     }
 
     @Test
-    fun `every length is a distinct period, in order, from two hours to six months`() {
+    fun `every length is a distinct period, in order, from two hours to eighteen months`() {
         val lengths = LockTimer.Length.entries
 
         assertEquals(2 * 60L * 60L * 1000L, lengths.first().millis)
-        // Six months of thirty-day months. The ceiling was forty days until
+        // Eighteen months of thirty-day months. The ceiling was forty days until
         // 2026-08-24; see the note on Length for why it moved.
-        assertEquals(180 * day, lengths.last().millis)
+        assertEquals(540 * day, lengths.last().millis)
+        assertEquals(360 * day, LockTimer.Length.MONTHS_12.millis)
         // Ordering is what the picker shows, so a list out of order would read as
         // a mistake even though nothing enforces it elsewhere.
         assertEquals(lengths.map { it.millis }.sorted(), lengths.map { it.millis })
