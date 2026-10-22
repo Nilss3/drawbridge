@@ -578,6 +578,7 @@ class MainActivity : AppCompatActivity() {
 
             Step.OPTIONS -> {
                 heading(R.string.wizard_options_title)
+                optionsFootnote.visibility = View.GONE
                 show(R.id.wizOptions, true)
             }
 
@@ -1265,7 +1266,10 @@ class MainActivity : AppCompatActivity() {
         val options = policy.options
         val hasOptions = options.isNotEmpty()
         optionsExplanation.visibility = if (hasOptions) View.VISIBLE else View.GONE
-        optionsFootnote.visibility = if (hasOptions) View.VISIBLE else View.GONE
+        // The footnote about where the ages come from stays on the plain screen;
+        // the wizard's page is short enough without it.
+        optionsFootnote.visibility =
+            if (hasOptions && wizardStep == null) View.VISIBLE else View.GONE
         if (!hasOptions) {
             optionContainer.addView(placeholder(R.string.options_none_available))
             optionsSection.setSectionSummary(getString(R.string.options_none_available))
