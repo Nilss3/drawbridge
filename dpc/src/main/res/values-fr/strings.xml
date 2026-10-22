@@ -135,7 +135,6 @@
     <string name="lock_confirm_timer">Ce verrouillage prend fin de lui-même après %1$s. Vous recevez toujours une clé et elle fonctionne toujours — la minuterie n\'est que ce qui se passe si personne ne l\'utilise.</string>
     <string name="lock_timer_reveal">Ce téléphone se déverrouille de lui-même %1$s après votre appui sur Terminé, avec ou sans cette clé. D\'ici là, la clé est la seule entrée.</string>
     <string name="lock_timer_running">Se déverrouille de lui-même le %1$s</string>
-    <string name="lock_timer_running_forgotten">Quelqu\'un a indiqué sur ce téléphone que le code était perdu : il se déverrouille donc de lui-même le %1$s. Si vous avez encore le code, déverrouillez puis verrouillez à nouveau pour l\'arrêter.</string>
 
     <string name="lock_timer_hours_2">2 heures</string>
     <string name="lock_timer_hours_4">4 heures</string>

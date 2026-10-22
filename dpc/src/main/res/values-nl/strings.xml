@@ -135,7 +135,6 @@
     <string name="lock_confirm_timer">Deze vergrendeling stopt van zichzelf na %1$s. Je krijgt nog steeds een sleutel en die werkt nog steeds — de timer is enkel wat er gebeurt als niemand hem gebruikt.</string>
     <string name="lock_timer_reveal">Deze telefoon ontgrendelt zichzelf %1$s nadat je op Klaar tikt, met of zonder deze sleutel. Tot dan is de sleutel de enige weg naar binnen.</string>
     <string name="lock_timer_running">Ontgrendelt zichzelf op %1$s</string>
-    <string name="lock_timer_running_forgotten">Iemand heeft op deze telefoon gezegd dat de code kwijt was, dus ontgrendelt ze zichzelf op %1$s. Heb je de code nog, ontgrendel dan en vergrendel opnieuw om dat te stoppen.</string>
 
     <string name="lock_timer_hours_2">2 uur</string>
     <string name="lock_timer_hours_4">4 uur</string>

@@ -365,11 +365,10 @@ class LockActivity : AppCompatActivity() {
     /**
      * On the challenge: the day this lock lifts without anybody typing anything.
      *
-     * Two sentences rather than one, because the two timers are not the same
-     * news. A period the parent chose before locking is a confirmation; a
+     * The same line for both timers, though they are not the same news. A period the parent chose before locking is a confirmation; a
      * code-forgotten countdown may have been started by whoever was holding the
-     * phone, and a parent who still has their key needs to see that in words
-     * strong enough to act on. It is coloured as an error for the same reason.
+     * phone, and the Cancel button beside the date is how a parent who still has
+     * their key ends it.
      *
      * The keyguard carries the same fact — see
      * [app.drawbridge.dpc.admin.DeviceOwnerManager.updateLockScreenInfo] — so
@@ -396,22 +395,8 @@ class LockActivity : AppCompatActivity() {
         cancel.setText(R.string.lock_timer_cancel)
         cancel.setOnClickListener { cancelTimer() }
         notice.visibility = View.VISIBLE
-        notice.text = getString(
-            if (forgotten) R.string.lock_timer_running_forgotten else R.string.lock_timer_running,
-            formatMoment(lockTimer.expiresAt),
-        )
-        // Resolved off the theme rather than from a colour resource, so the line
-        // follows dark mode like every other themed colour on these screens.
-        notice.setTextColor(
-            MaterialColors.getColor(
-                notice,
-                if (forgotten) {
-                    androidx.appcompat.R.attr.colorError
-                } else {
-                    androidx.appcompat.R.attr.colorPrimary
-                },
-            ),
-        )
+        notice.text = getString(R.string.lock_timer_running, formatMoment(lockTimer.expiresAt))
+        notice.setTextColor(MaterialColors.getColor(notice, androidx.appcompat.R.attr.colorPrimary))
     }
 
     private fun showLockHistory() {

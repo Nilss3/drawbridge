@@ -225,7 +225,6 @@
     <string name="lock_confirm_timer">This lock ends by itself after %1$s. You still get a key and it still works — the timer is only what happens if nobody uses it.</string>
     <string name="lock_timer_reveal">This phone unlocks itself %1$s after you tap Done, with or without this key. Until then the key is the only way in.</string>
     <string name="lock_timer_running">Unlocks by itself on %1$s</string>
-    <string name="lock_timer_running_forgotten">Somebody on this phone said the code was lost, so it unlocks by itself on %1$s. If you still have the code, unlock and lock again to stop that.</string>
 
     <string name="lock_timer_hours_2">2 hours</string>
     <string name="lock_timer_hours_4">4 hours</string>
