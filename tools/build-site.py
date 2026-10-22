@@ -219,6 +219,8 @@ HOME = {
         ],
         cta_primary="Get started",
         cta_secondary="See what's blocked, and why",
+        partner_text="Drawbridge was co-developed by Kids Unplugged and takes into account the advice of its medical board as well as the best practices from other parents organisations.",
+        partner_logo_alt="Kids Unplugged Belgium",
         how_h2="How it works",
         how_p1='You connect the phone to a computer once, over USB, and run the installer. There is no factory reset, and nothing on the phone is erased. This will embed drawbridge on your device. Once installed, just start it. Installing it does uninstall the apps it blocks, so expect those to go. Move anything you want to keep off the phone first.',
         how_p2="Drawbridge relies on a web filter, a block list, and automatic app uninstalls. You don't need an account, and no data leaves your device. As opposed to parental controls or app blockers, there is little to no configuration, it already has everything there to protect you. There is also no workaround.",
@@ -282,6 +284,8 @@ HOME = {
         ],
         cta_primary="Aan de slag",
         cta_secondary="Bekijk wat geblokkeerd wordt, en waarom",
+        partner_text="Drawbridge werd mee ontwikkeld door Kids Unplugged en houdt rekening met het advies van haar medische raad en met de beste praktijken van andere ouderverenigingen.",
+        partner_logo_alt="Kids Unplugged Belgium",
         how_h2="Hoe het werkt",
         how_p1='Je verbindt de telefoon één keer met een computer via USB en voert de installer uit. Er is geen factory reset nodig, en er wordt niets op de telefoon gewist. Dat installeert drawbridge op je toestel. Eenmaal geïnstalleerd, start je het gewoon op. Bij het installeren verdwijnen wel de apps die drawbridge blokkeert, dus zet eerst weg wat je wil bewaren.',
         how_p2='Drawbridge steunt op een webfilter, een blocklist, en het automatisch verwijderen van apps. Je hebt geen account nodig, en er wordt nooit data van je toestel verzonden. In tegenstelling tot parental controls of app blockers is er nauwelijks tot geen configuratie nodig: alles staat er al klaar om je te beschermen. Er is ook geen workaround.',
@@ -345,6 +349,8 @@ HOME = {
         ],
         cta_primary="Commencer",
         cta_secondary="Voir ce qui est bloqué, et pourquoi",
+        partner_text="Drawbridge a été co-développé avec Kids Unplugged et tient compte des conseils de son conseil médical ainsi que des meilleures pratiques d'autres associations de parents.",
+        partner_logo_alt="Kids Unplugged Belgium",
         how_h2="Comment ça marche",
         how_p1="Vous reliez le téléphone à un ordinateur une seule fois, par USB, et vous lancez l'installeur. Il n'y a aucune réinitialisation, et rien n'est effacé sur le téléphone. Cela installe drawbridge sur votre appareil. Une fois installé, il suffit de le démarrer. L'installation désinstalle en revanche les applications qu'il bloque, mettez donc d'abord de côté ce que vous voulez garder.",
         how_p2="Drawbridge s'appuie sur un filtre web, une liste de blocage, et la désinstallation automatique des applications. Aucun compte n'est nécessaire, et aucune donnée ne quitte votre appareil. Contrairement aux contrôles parentaux ou aux bloqueurs d'applications, il n'y a que peu, voire aucune configuration à faire : tout est déjà en place pour vous protéger. Il n'existe pas non plus de moyen de contournement.",
@@ -900,6 +906,19 @@ def render_home(lang: str) -> str:
         <a class="btn btn--primary" href="{install_href}">{c['cta_primary']}</a>
         <a class="btn btn--ghost" href="{why_href}">{c['cta_secondary']}</a>
       </div>
+    </div>
+  </section>
+
+  <!--
+    Who it was made with, directly under the call to action: somebody deciding
+    whether to put this on a child's phone is deciding whether to trust it, and
+    the organisation behind the advice is the answer they came looking for.
+    The logo is shown as supplied (a yellow field), so it is not given a frame.
+  -->
+  <section class="section partner">
+    <div class="wrap partner-inner">
+      <img class="partner-logo" src="/assets/img/kids-unplugged.webp" alt="{c['partner_logo_alt']}" width="568" height="202" />
+      <p>{c['partner_text']}</p>
     </div>
   </section>
 
