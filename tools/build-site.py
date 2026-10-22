@@ -2130,6 +2130,11 @@ def generated_tables() -> dict[str, str]:
         for title, packages in sorted(grouped.items(), key=lambda kv: kv[0].lower())
     ]
 
+    # The chatbots switch is described in prose, with its counts taken from the
+    # policy; a table would be mostly package ids, as most of these apps have no
+    # display name in app-names.json yet.
+    chatbots = next(o for o in policy["options"] if o["id"] == "chatbots")
+
     tables = {
         "ai-companions": table(["App", "Play rating (BE)", "Package"], app_rows(companions)),
         "whitelist": table(
@@ -2144,6 +2149,8 @@ def generated_tables() -> dict[str, str]:
     tables["count-whitelist"] = str(len(policy["app_ratings"]["allowed_packages"]))
     tables["count-streaming"] = str(len(grouped))
     tables["count-streaming-domains"] = str(len(streaming["allowed_domains"]))
+    tables["count-chatbots"] = str(len(chatbots["exempt_packages"]))
+    tables["count-chatbot-domains"] = str(len(chatbots["allowed_domains"]))
     if unknown:
         print("  no display name for, showing the package id:", ", ".join(sorted(set(unknown))))
     return tables
