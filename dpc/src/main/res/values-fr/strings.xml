@@ -209,4 +209,32 @@
     <string name="section_collapsed">Réduit</string>
     <string name="section_expanded">Développé</string>
     <string name="restrictions_heading">Restrictions et options supplémentaires</string>
+
+    <!-- The setup wizard -->
+    <string name="wizard_title">Configuration</string>
+    <string name="wizard_close">Fermer la configuration</string>
+    <string name="wizard_start">Lancer l\'assistant de configuration</string>
+    <string name="wizard_back">Retour</string>
+    <string name="wizard_next">Suivant</string>
+    <string name="wizard_done">Terminé</string>
+    <string name="wizard_permanence_question">Voulez-vous essayer drawbridge temporairement ou le garder indéfiniment ?</string>
+    <string name="wizard_try_temporarily">L\'essayer temporairement</string>
+    <string name="wizard_keep_indefinitely">Le garder indéfiniment</string>
+    <string name="wizard_explain_title">Le filtre de base est toujours actif</string>
+    <string name="wizard_explain_note">Les préréglages d\'âge et les paramètres des pages suivantes ne prennent effet que lorsque vous verrouillez drawbridge à la fin. Même sans verrouillage, le filtre de base est actif.</string>
+    <string name="wizard_age_title">Quel est l\'âge de l\'utilisateur ?</string>
+    <string name="wizard_age_subtitle">Cela préréglera les paramètres des pages suivantes.</string>
+    <string name="wizard_age_under_14">Moins de 14 ans</string>
+    <string name="wizard_age_14_16">14 à 16 ans</string>
+    <string name="wizard_age_16_18">16 à 18 ans</string>
+    <string name="wizard_age_adult">Adulte</string>
+    <string name="wizard_options_title">Applications facultatives</string>
+    <string name="wizard_browsers_title">Navigateurs</string>
+    <string name="wizard_install_title">Plus aucune installation d\'application</string>
+    <string name="wizard_install_note">Avant de verrouiller, supprimez toutes les applications dont vous n\'avez pas besoin.</string>
+    <string name="wizard_offline_title">Paramètres hors ligne</string>
+    <string name="wizard_offline_under_14">Les moins de 14 ans devraient utiliser un téléphone hors ligne ou presque.</string>
+    <string name="wizard_offline_14_16">Les 14 à 16 ans devraient avoir des limites strictes.</string>
+    <string name="wizard_lock_title">Verrouiller les paramètres</string>
+    <string name="wizard_lock_intro">Vous recevrez un code de déverrouillage. C\'est un code long et unique. Vous pouvez aussi verrouiller les paramètres pour une durée donnée, que vous pouvez prolonger à tout moment. Même avec une minuterie, le code fonctionne, mais vous pouvez oublier le code sans risque.</string>
 </resources>

@@ -209,4 +209,32 @@
     <string name="section_collapsed">Ingeklapt</string>
     <string name="section_expanded">Uitgeklapt</string>
     <string name="restrictions_heading">Bijkomende beperkingen en opties</string>
+
+    <!-- The setup wizard -->
+    <string name="wizard_title">Instellen</string>
+    <string name="wizard_close">De installatie sluiten</string>
+    <string name="wizard_start">De installatiehulp starten</string>
+    <string name="wizard_back">Terug</string>
+    <string name="wizard_next">Volgende</string>
+    <string name="wizard_done">Klaar</string>
+    <string name="wizard_permanence_question">Wil je drawbridge tijdelijk uitproberen of voor onbepaalde tijd houden?</string>
+    <string name="wizard_try_temporarily">Tijdelijk uitproberen</string>
+    <string name="wizard_keep_indefinitely">Voor onbepaalde tijd houden</string>
+    <string name="wizard_explain_title">Het basisfilter staat altijd aan</string>
+    <string name="wizard_explain_note">De leeftijdsinstellingen en de instellingen op de volgende pagina\'s werken pas als je drawbridge aan het einde vergrendelt. Ook zonder vergrendeling is het basisfilter actief.</string>
+    <string name="wizard_age_title">Wat is de leeftijd van de gebruiker?</string>
+    <string name="wizard_age_subtitle">Dit stelt de instellingen op de volgende pagina\'s vooraf in.</string>
+    <string name="wizard_age_under_14">Jonger dan 14</string>
+    <string name="wizard_age_14_16">14 tot 16</string>
+    <string name="wizard_age_16_18">16 tot 18</string>
+    <string name="wizard_age_adult">Volwassen</string>
+    <string name="wizard_options_title">Optionele apps</string>
+    <string name="wizard_browsers_title">Browsers</string>
+    <string name="wizard_install_title">Geen nieuwe apps meer</string>
+    <string name="wizard_install_note">Verwijder voor het vergrendelen alle apps die je niet nodig hebt.</string>
+    <string name="wizard_offline_title">Offline-instellingen</string>
+    <string name="wizard_offline_under_14">Kinderen jonger dan 14 horen een offline of grotendeels offline telefoon te gebruiken.</string>
+    <string name="wizard_offline_14_16">14 tot 16 hoort strikte beperkingen te hebben.</string>
+    <string name="wizard_lock_title">De instellingen vergrendelen</string>
+    <string name="wizard_lock_intro">Je krijgt een code om te ontgrendelen. Het is een lange, unieke code. Je kunt de instellingen ook voor een bepaalde tijd vergrendelen, een tijd die je op elk moment kunt verlengen. Ook met een timer werkt de code, maar het is veilig om de code te vergeten.</string>
 </resources>

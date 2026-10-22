@@ -310,4 +310,32 @@
     <string name="section_collapsed">Collapsed</string>
     <string name="section_expanded">Expanded</string>
     <string name="restrictions_heading">Further restrictions and options</string>
+
+    <!-- The setup wizard -->
+    <string name="wizard_title">Setup</string>
+    <string name="wizard_close">Close the setup</string>
+    <string name="wizard_start">Start the setup wizard</string>
+    <string name="wizard_back">Back</string>
+    <string name="wizard_next">Next</string>
+    <string name="wizard_done">Done</string>
+    <string name="wizard_permanence_question">Do you want to try drawbridge temporarily or keep it indefinitely?</string>
+    <string name="wizard_try_temporarily">Try it temporarily</string>
+    <string name="wizard_keep_indefinitely">Keep it indefinitely</string>
+    <string name="wizard_explain_title">The base filter is always on</string>
+    <string name="wizard_explain_note">The age presets and the settings on the following pages only take effect when you lock drawbridge at the end. Even without a lock, the base filter is active.</string>
+    <string name="wizard_age_title">What is the age of the user?</string>
+    <string name="wizard_age_subtitle">This will preset the settings in the further pages.</string>
+    <string name="wizard_age_under_14">Under 14</string>
+    <string name="wizard_age_14_16">14 to 16</string>
+    <string name="wizard_age_16_18">16 to 18</string>
+    <string name="wizard_age_adult">Adult</string>
+    <string name="wizard_options_title">Optional apps</string>
+    <string name="wizard_browsers_title">Browsers</string>
+    <string name="wizard_install_title">No further app installs</string>
+    <string name="wizard_install_note">Before locking, remove all apps you don\'t need.</string>
+    <string name="wizard_offline_title">Offline settings</string>
+    <string name="wizard_offline_under_14">Under 14s should use an offline or mostly offline phone.</string>
+    <string name="wizard_offline_14_16">14 to 16 should have strict limitations.</string>
+    <string name="wizard_lock_title">Lock down the settings</string>
+    <string name="wizard_lock_intro">You\'ll get a code to unlock. It\'s a long and unique code. You may also choose to lock the settings for a certain amount of time, a time which you can prolong at any moment. Even when a timer is set, the code works, but it\'s safe to forget the code.</string>
 </resources>

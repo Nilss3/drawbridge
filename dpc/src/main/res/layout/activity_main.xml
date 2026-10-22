@@ -11,11 +11,42 @@
     at runtime from item_policy.xml and item_option.xml, because both lists come
     out of that document rather than out of this file.
 -->
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/root"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/screen"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <!-- The wizard's bar: its name and the way out. Only while the wizard is on. -->
+    <LinearLayout
+        android:id="@+id/wizardHeader"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="24dp"
+        android:paddingEnd="8dp"
+        android:visibility="gone">
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/wizard_title"
+            android:textAppearance="?attr/textAppearanceTitleMedium" />
+        <ImageButton
+            android:id="@+id/wizardClose"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/wizard_close"
+            android:src="@drawable/ic_close" />
+    </LinearLayout>
+
+    <ScrollView
+    android:id="@+id/root"
+    android:layout_width="match_parent"
+    android:layout_height="0dp"
+    android:layout_weight="1"
     android:fillViewport="true">
 
     <LinearLayout
@@ -25,6 +56,28 @@
         android:paddingTop="8dp"
         android:paddingBottom="32dp">
 
+        <LinearLayout
+            android:id="@+id/wizHeading"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="24dp"
+            android:orientation="vertical"
+            android:paddingTop="8dp"
+            android:paddingBottom="16dp"
+            android:visibility="gone">
+            <TextView
+                android:id="@+id/wizHeadingTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="?attr/textAppearanceHeadlineSmall" />
+            <TextView
+                android:id="@+id/wizHeadingSubtitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="8dp"
+                android:textAppearance="?attr/textAppearanceBodyMedium" />
+        </LinearLayout>
+        <LinearLayout android:id="@+id/wizLanguage" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
         <TextView
             style="@style/TextAppearance.Drawbridge.SectionHeading.First"
             android:layout_width="match_parent"
@@ -46,7 +99,9 @@
                 android:layout_height="wrap_content"
                 android:inputType="none" />
         </com.google.android.material.textfield.TextInputLayout>
+        </LinearLayout>
 
+        <LinearLayout android:id="@+id/wizWelcomeImage" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
         <!--
             Shown whole rather than cropped to a band. The master is composed as
             one picture: the reader on his bench at the left and the monsters at
@@ -71,6 +126,8 @@
             android:src="@drawable/welcome_scene"
             app:shapeAppearanceOverlay="@style/ShapeAppearance.Drawbridge.Hero" />
 
+        </LinearLayout>
+        <LinearLayout android:id="@+id/wizWelcomeText" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -86,6 +143,37 @@
             android:paddingBottom="20dp"
             android:text="@string/welcome_subtitle"
             android:textAppearance="?attr/textAppearanceBodyMedium" />
+        </LinearLayout>
+        <!-- Step 1, only while neither mode has been chosen: the question, and the
+             two answers. Trial is what the app already is, so choosing it only
+             records that the question was answered. -->
+        <LinearLayout
+            android:id="@+id/wizPermanence"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="24dp"
+            android:orientation="vertical"
+            android:paddingBottom="20dp"
+            android:visibility="gone">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="12dp"
+                android:text="@string/wizard_permanence_question"
+                android:textAppearance="?attr/textAppearanceTitleMedium" />
+            <Button
+                android:id="@+id/wizTrialButton"
+                style="?attr/materialButtonOutlinedStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/wizard_try_temporarily" />
+            <Button
+                android:id="@+id/wizPermanentButton"
+                style="?attr/materialButtonOutlinedStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/wizard_keep_indefinitely" />
+        </LinearLayout>
 
         <!--
             Under the welcome and above every control, which took two moves on
@@ -208,6 +296,16 @@
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
+        <Button
+            android:id="@+id/wizardStartButton"
+            style="?attr/materialButtonOutlinedStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="24dp"
+            android:layout_marginBottom="20dp"
+            android:text="@string/wizard_start" />
+
+        <LinearLayout android:id="@+id/wizFilter" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
         <!--
             **The base filter comes first, and the sentence under it is why.** It
             is the one thing on this screen that acts immediately, and it is not
@@ -238,6 +336,8 @@
             android:layout_marginTop="12dp"
             android:background="?attr/colorOutline" />
 
+        </LinearLayout>
+        <LinearLayout android:id="@+id/wizRestrictions" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
         <!-- No rule of its own: the thick one directly above already is. -->
         <TextView
             style="@style/TextAppearance.Drawbridge.SectionHeading.First"
@@ -255,6 +355,55 @@
             android:textAppearance="?attr/textAppearanceBodyMedium"
             android:textColor="?attr/colorPrimary" />
 
+        </LinearLayout>
+        <TextView
+            android:id="@+id/wizExplainNote"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="24dp"
+            android:paddingBottom="16dp"
+            android:text="@string/wizard_explain_note"
+            android:textAppearance="?attr/textAppearanceBodyMedium"
+            android:visibility="gone" />
+
+        <RadioGroup
+            android:id="@+id/wizAge"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="24dp"
+            android:orientation="vertical"
+            android:paddingBottom="16dp"
+            android:visibility="gone">
+            <com.google.android.material.radiobutton.MaterialRadioButton
+                android:id="@+id/wizAgeUnder14"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="56dp"
+                android:text="@string/wizard_age_under_14"
+                android:textAppearance="?attr/textAppearanceBodyLarge" />
+            <com.google.android.material.radiobutton.MaterialRadioButton
+                android:id="@+id/wizAge1416"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="56dp"
+                android:text="@string/wizard_age_14_16"
+                android:textAppearance="?attr/textAppearanceBodyLarge" />
+            <com.google.android.material.radiobutton.MaterialRadioButton
+                android:id="@+id/wizAge1618"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="56dp"
+                android:text="@string/wizard_age_16_18"
+                android:textAppearance="?attr/textAppearanceBodyLarge" />
+            <com.google.android.material.radiobutton.MaterialRadioButton
+                android:id="@+id/wizAgeAdult"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="56dp"
+                android:text="@string/wizard_age_adult"
+                android:textAppearance="?attr/textAppearanceBodyLarge" />
+        </RadioGroup>
+        <LinearLayout android:id="@+id/wizOptions" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
         <!--
             **The app questions, together and collapsed.** Three questions about
             what may be on the phone — which services, how much browser, whether
@@ -301,7 +450,9 @@
                 android:text="@string/options_footnote"
                 android:textAppearance="?attr/textAppearanceBodySmall" />
         </LinearLayout>
+        </LinearLayout>
 
+        <LinearLayout android:id="@+id/wizBrowsers" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
         <include
             android:id="@+id/browsersSection"
             layout="@layout/section_collapsible_header" />
@@ -315,6 +466,16 @@
             android:paddingHorizontal="24dp"
             android:visibility="gone" />
 
+        </LinearLayout>
+        <TextView
+            android:id="@+id/wizInstallNote"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="24dp"
+            android:paddingBottom="16dp"
+            android:textAppearance="?attr/textAppearanceBodyLarge"
+            android:visibility="gone" />
+        <LinearLayout android:id="@+id/wizInstall" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
         <!--
             Not collapsible: it is one switch, so its title row *is* the control,
             and there is nothing to hide. It keeps its explanation underneath
@@ -366,7 +527,17 @@
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="?attr/colorOutlineVariant" />
+        </LinearLayout>
 
+        <TextView
+            android:id="@+id/wizOfflineNote"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="24dp"
+            android:paddingBottom="16dp"
+            android:textAppearance="?attr/textAppearanceBodyLarge"
+            android:visibility="gone" />
+        <LinearLayout android:id="@+id/wizOffline" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
         <!-- Whether the phone reaches the internet at all, apart from the app
              questions because it is not one. -->
         <include
@@ -431,7 +602,9 @@
                     android:layout_height="wrap_content" />
             </LinearLayout>
         </LinearLayout>
+        </LinearLayout>
 
+        <LinearLayout android:id="@+id/wizRule2" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
         <!-- The second thick rule: everything above is what the phone will be,
              and below it is the act that makes it so. -->
         <View
@@ -439,6 +612,7 @@
             android:layout_height="3dp"
             android:layout_marginBottom="24dp"
             android:background="?attr/colorOutline" />
+        </LinearLayout>
 
         <LinearLayout
             android:id="@+id/updateNotice"
@@ -464,6 +638,15 @@
                 android:text="@string/update_action" />
         </LinearLayout>
 
+        <TextView
+            android:id="@+id/wizLockIntro"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="24dp"
+            android:paddingBottom="16dp"
+            android:textAppearance="?attr/textAppearanceBodyMedium"
+            android:visibility="gone" />
+        <LinearLayout android:id="@+id/wizLock" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -534,5 +717,33 @@
                     android:inputType="none" />
             </com.google.android.material.textfield.TextInputLayout>
         </LinearLayout>
+        </LinearLayout>
     </LinearLayout>
 </ScrollView>
+
+    <LinearLayout
+        android:id="@+id/wizardFooter"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="8dp"
+        android:visibility="gone">
+        <Button
+            android:id="@+id/wizardBack"
+            style="?attr/materialButtonOutlinedStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/wizard_back" />
+        <Space
+            android:layout_width="12dp"
+            android:layout_height="0dp" />
+        <Button
+            android:id="@+id/wizardNext"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/wizard_next" />
+    </LinearLayout>
+</LinearLayout>
