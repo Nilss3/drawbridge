@@ -909,6 +909,16 @@ def render_home(lang: str) -> str:
         the title for the same sky would be a third thing to keep legible.
       -->
       <p class="hero-credit">{c['hero_credit']}</p>
+      <!--
+        Who it was made with, directly under the painting: somebody deciding
+        whether to put this on a child's phone is deciding whether to trust it,
+        and the organisation behind the advice is the answer they came looking
+        for. The logo is shown as supplied (a yellow field), so it has no frame.
+      -->
+      <div class="partner">
+        <a class="partner-link" href="https://www.kidsunplugged.be"><img class="partner-logo" src="/assets/img/kids-unplugged.webp" alt="{c['partner_logo_alt']}" width="568" height="202" /></a>
+        <p>{c['partner_text']}</p>
+      </div>
       <p class="lede">{c['lede']}</p>
       <p class="voices-lead">{c['use_cases_lead']}</p>
       <ul class="voices">
@@ -922,19 +932,6 @@ def render_home(lang: str) -> str:
         <a class="btn btn--primary" href="{install_href}">{c['cta_primary']}</a>
         <a class="btn btn--ghost" href="{why_href}">{c['cta_secondary']}</a>
       </div>
-    </div>
-  </section>
-
-  <!--
-    Who it was made with, directly under the call to action: somebody deciding
-    whether to put this on a child's phone is deciding whether to trust it, and
-    the organisation behind the advice is the answer they came looking for.
-    The logo is shown as supplied (a yellow field), so it is not given a frame.
-  -->
-  <section class="section partner">
-    <div class="wrap partner-inner">
-      <a class="partner-link" href="https://www.kidsunplugged.be"><img class="partner-logo" src="/assets/img/kids-unplugged.webp" alt="{c['partner_logo_alt']}" width="568" height="202" /></a>
-      <p>{c['partner_text']}</p>
     </div>
   </section>
 
