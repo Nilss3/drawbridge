@@ -1,0 +1,8 @@
+# Cloudflare Pages reads this file from the root of the uploaded folder.
+# It is not served; it only sets response headers.
+
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  X-Frame-Options: DENY
+  Permissions-Policy: geolocation=(), camera=(), microphone=()
