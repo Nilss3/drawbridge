@@ -317,13 +317,13 @@ FTC 6(b) inquiry: https://www.ftc.gov/news-events/news/press-releases/2025/09/ft
 Character.AI under-18 changes: https://blog.character.ai/an-update-on-changes-to-our-under-18-experience/
 
 
-## AI chatbots: a switch, not a rule
+## General-purpose chatbots: a switch, not a rule
 
-**General-purpose assistants are not companions, and drawbridge treats them differently.** An
-assistant such as ChatGPT, Claude, Gemini, Copilot, Perplexity or DeepSeek is not built around
+**General-purpose chatbots are not companions, and drawbridge treats them differently.** A
+chatbot such as ChatGPT, Claude, Gemini, Copilot, Perplexity or DeepSeek is not built around
 synthetic friendship or romance, and people use them for homework, translation and work. So they are
 not in the always-blocked categories above. They are one switch on the configuration screen,
-**Allow AI chatbots**, covering {{table:count-chatbots}} apps and {{table:count-chatbot-domains}}
+**Allow general-purpose chatbots**, covering {{table:count-chatbots}} apps and {{table:count-chatbot-domains}}
 websites, including the many AI chat apps built on the same models and AI therapy and coaching
 apps.
 
@@ -338,6 +338,9 @@ the companion apps above, which are the most harmful part of this category, are 
 remember you and keep talking, and their makers say they struggle to contain what can follow, from
 emotional dependence to conversations about suicide. If that worries you for a teenager, switch it
 off before locking: the apps are hidden and the websites are blocked.
+
+**Grok is not on this switch.** It is always blocked, with the companion apps, whatever the switch
+says.
 
 **What it does not touch.** Chatbots built into a search engine, on a shop's help page or inside a
 work tool are not affected; this is a switch for chatbot apps and sites, not for every place a

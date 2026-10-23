@@ -1,7 +1,7 @@
 {
-  "version": 136,
-  "issued_at": "2026-10-22T20:00:00Z",
-  "comment": "DEV CHANNEL ONLY. herald 0.1.22 (version_code 22, both editions, v0.2.8-dev.14): a page with a huge title or address no longer freezes the tab list. Content unchanged from 135, which carried the chatbots option (Allow AI chatbots, 18+, default on). drawbridge unchanged at 0.2.30 build 55. 136 because 135 was dev's last and the beta's own chatbots policy was drafted as 136 but is not issued. 511 blocked packages.",
+  "version": 138,
+  "issued_at": "2026-10-23T09:00:00Z",
+  "comment": "DEV CHANNEL ONLY. drawbridge 0.2.31 build 56: a setup wizard, 12- and 18-month unlock timers with restart and cancel buttons, a clearer unlocked-state line. The chatbots option is renamed general-purpose chatbots and its text says Grok is always blocked. herald unchanged at 0.1.22. 138 because the beta holds 137. 511 blocked packages.",
   "dns": {
     "upstreams": [
       "94.140.14.15",
@@ -957,10 +957,10 @@
     },
     {
       "id": "chatbots",
-      "name": "Allow AI chatbots",
-      "subject": "AI chatbots",
+      "name": "Allow general-purpose chatbots",
+      "subject": "general-purpose chatbots",
       "recommended_age": 18,
-      "description": "ChatGPT, Claude, Gemini, Copilot, Perplexity, DeepSeek, Le Chat, Meta AI and the many AI chat apps built on them, AI therapy and coaching apps included: their apps and websites, on one switch. The risk is the long conversation. They now remember you and keep talking, and their makers say they struggle to contain what can follow, from dependence to conversations about suicide. Switching this off blocks them. Chatbots in a search engine, on a shop's help page or inside a work tool are not affected.",
+      "description": "ChatGPT, Claude, Gemini and other chatbots which are able to keep long conversations and have been shown to have harmful addictive effects, and can even entertain suicidal thoughts. This toggle does not include Grok: Grok is always blocked.",
       "default_enabled": true,
       "exempt_packages": [
         "com.openai.chatgpt",
@@ -1071,16 +1071,16 @@
         "alice.yandex.ru"
       ],
       "name_i18n": {
-        "nl": "AI-chatbots toestaan",
-        "fr": "Autoriser les chatbots IA"
+        "nl": "Algemene chatbots toestaan",
+        "fr": "Autoriser les chatbots g\u00e9n\u00e9ralistes"
       },
       "description_i18n": {
-        "nl": "ChatGPT, Claude, Gemini, Copilot, Perplexity, DeepSeek, Le Chat, Meta AI en de vele AI-chatapps die erop gebouwd zijn, AI-apps voor therapie en coaching inbegrepen: hun apps en websites, op \u00e9\u00e9n schakelaar. Het risico zit in het lange gesprek. Ze onthouden je nu en blijven praten, en hun makers zeggen dat ze moeilijk kunnen beheersen wat daaruit kan volgen, van afhankelijkheid tot gesprekken over zelfdoding. Zet je dit uit, dan worden ze geblokkeerd. Chatbots in een zoekmachine, op de hulppagina van een webwinkel of in een werktool vallen hier niet onder.",
-        "fr": "ChatGPT, Claude, Gemini, Copilot, Perplexity, DeepSeek, Le Chat, Meta AI et les nombreuses applications de chat IA construites dessus, applications IA de th\u00e9rapie et de coaching comprises : leurs applications et leurs sites, sur un seul interrupteur. Le risque, c'est la longue conversation. Elles se souviennent d\u00e9sormais de vous et continuent de parler, et leurs cr\u00e9ateurs disent avoir du mal \u00e0 contenir ce qui peut en d\u00e9couler, de la d\u00e9pendance aux conversations sur le suicide. D\u00e9sactiver ceci les bloque. Les chatbots d'un moteur de recherche, de la page d'aide d'une boutique en ligne ou d'un outil de travail ne sont pas concern\u00e9s."
+        "nl": "ChatGPT, Claude, Gemini en andere chatbots die lange gesprekken kunnen voeren, waarvan is aangetoond dat ze schadelijke, verslavende effecten hebben en die zelfs zelfmoordgedachten kunnen onderhouden. Deze schakelaar geldt niet voor Grok: Grok wordt altijd geblokkeerd.",
+        "fr": "ChatGPT, Claude, Gemini et d'autres chatbots capables d'entretenir de longues conversations, dont il a \u00e9t\u00e9 montr\u00e9 qu'ils ont des effets addictifs nocifs et qu'ils peuvent m\u00eame entretenir des pens\u00e9es suicidaires. Cet interrupteur n'inclut pas Grok : Grok est toujours bloqu\u00e9."
       },
       "subject_i18n": {
-        "nl": "AI-chatbots",
-        "fr": "chatbots IA"
+        "nl": "algemene chatbots",
+        "fr": "chatbots g\u00e9n\u00e9ralistes"
       }
     }
   ],
@@ -1107,14 +1107,14 @@
   },
   "app_update": {
     "package_name": "app.drawbridge.dpc",
-    "version_code": 55,
-    "url": "https://dev.drawbridge-project.pages.dev/assets/dpc-e46a494f6cd85b77.apk",
-    "sha256": "e46a494f6cd85b77b6452155c89d5cfc1e4e7f89e26481bdbec5118e9bf1111d",
-    "version_name": "0.2.30",
-    "notes": "Fixes a problem where drawbridge could reset one of the phone's preinstalled apps, which then installed games that drawbridge had to remove again.\n\nEverything in 0.2.29 is still here: the reorganised settings screen, the quieter filter notification, and no old message as a notification on a new install.",
+    "version_code": 56,
+    "url": "https://dev.drawbridge-project.pages.dev/assets/dpc-92fd27269331d8c6.apk",
+    "sha256": "92fd27269331d8c6d45ea77b7ab7b1b3feaf3cffacfb202aed31261925ad22f7",
+    "version_name": "0.2.31",
+    "notes": "New: a setup wizard for newcomers, with settings preset by the age of the user. Unlock timers of 12 and 18 months, and a button to restart a running timer without unlocking. A button to cancel the 30-day timer started with \u2018Forgot the code\u2019. A clearer line on the settings screen saying drawbridge is active but unlocked. The chatbots switch is now called \u2018general-purpose chatbots\u2019 and says Grok is always blocked.\n\nEverything in 0.2.30 is still here.",
     "notes_i18n": {
-      "nl": "Lost een probleem op waarbij drawbridge een van de vooraf ge\u00efnstalleerde apps van de telefoon kon resetten, die daarna games installeerde die drawbridge opnieuw moest verwijderen.\n\nAlles uit 0.2.29 blijft: het opnieuw ingedeelde instellingenscherm, de onopvallendere filtermelding, en geen oud bericht als melding bij een nieuwe installatie.",
-      "fr": "Corrige un probl\u00e8me o\u00f9 drawbridge pouvait r\u00e9initialiser une des applications pr\u00e9install\u00e9es du t\u00e9l\u00e9phone, qui installait ensuite des jeux que drawbridge devait \u00e0 nouveau supprimer.\n\nTout ce qui \u00e9tait dans 0.2.29 demeure : l\u2019\u00e9cran des r\u00e9glages r\u00e9organis\u00e9, la notification du filtre plus discr\u00e8te, et plus d\u2019ancien message en notification lors d\u2019une nouvelle installation."
+      "nl": "Nieuw: een installatiehulp voor nieuwkomers, die de instellingen voorinvult op basis van de leeftijd van de gebruiker. Ontgrendeltimers van 12 en 18 maanden, en een knop om een lopende timer opnieuw te starten zonder te ontgrendelen. Een knop om de timer van 30 dagen te annuleren die met \u2018Code vergeten\u2019 werd gestart. Een duidelijkere regel op het instellingenscherm die zegt dat drawbridge actief maar ontgrendeld is. De chatbotschakelaar heet nu \u2018algemene chatbots\u2019 en zegt dat Grok altijd geblokkeerd is.\n\nAlles uit 0.2.30 zit er nog in.",
+      "fr": "Nouveau : un assistant de configuration pour les nouveaux venus, qui pr\u00e9configure les r\u00e9glages selon l\u2019\u00e2ge de l\u2019utilisateur. Des minuteries de d\u00e9verrouillage de 12 et 18 mois, et un bouton pour relancer une minuterie en cours sans d\u00e9verrouiller. Un bouton pour annuler la minuterie de 30 jours lanc\u00e9e avec \u00ab Code oubli\u00e9 \u00bb. Une ligne plus claire sur l\u2019\u00e9cran des r\u00e9glages indiquant que drawbridge est actif mais d\u00e9verrouill\u00e9. L\u2019interrupteur des chatbots s\u2019appelle d\u00e9sormais \u00ab chatbots g\u00e9n\u00e9ralistes \u00bb et pr\u00e9cise que Grok est toujours bloqu\u00e9.\n\nTout ce qui \u00e9tait dans la 0.2.30 y est encore."
     }
   },
   "required_apps": [
