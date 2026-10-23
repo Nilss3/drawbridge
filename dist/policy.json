@@ -1,7 +1,7 @@
 {
-  "version": 138,
-  "issued_at": "2026-10-23T09:00:00Z",
-  "comment": "DEV CHANNEL ONLY. drawbridge 0.2.31 build 56: a setup wizard, 12- and 18-month unlock timers with restart and cancel buttons, a clearer unlocked-state line. The chatbots option is renamed general-purpose chatbots and its text says Grok is always blocked. herald unchanged at 0.1.22. 138 because the beta holds 137. 511 blocked packages.",
+  "version": 142,
+  "issued_at": "2026-10-23T15:55:00Z",
+  "comment": "DEV CHANNEL ONLY. drawbridge 0.2.32 build 57 and herald 0.1.23 (version_code 23, both editions, v0.2.8-dev.15): a default-on option no longer turns itself off after its first appearance. The chatbots option keeps the id it had in 135 and 138, which phones that already took those carry as seen. 142 because the beta holds 141. 511 blocked packages.",
   "dns": {
     "upstreams": [
       "94.140.14.15",
@@ -1107,29 +1107,29 @@
   },
   "app_update": {
     "package_name": "app.drawbridge.dpc",
-    "version_code": 56,
-    "url": "https://dev.drawbridge-project.pages.dev/assets/dpc-92fd27269331d8c6.apk",
-    "sha256": "92fd27269331d8c6d45ea77b7ab7b1b3feaf3cffacfb202aed31261925ad22f7",
-    "version_name": "0.2.31",
-    "notes": "New: a setup wizard for newcomers, with settings preset by the age of the user. Unlock timers of 12 and 18 months, and a button to restart a running timer without unlocking. A button to cancel the 30-day timer started with \u2018Forgot the code\u2019. A clearer line on the settings screen saying drawbridge is active but unlocked. The chatbots switch is now called \u2018general-purpose chatbots\u2019 and says Grok is always blocked.\n\nEverything in 0.2.30 is still here.",
+    "version_code": 57,
+    "url": "https://dev.drawbridge-project.pages.dev/assets/dpc-174e2a5a6e4d73ba.apk",
+    "sha256": "174e2a5a6e4d73ba38d648e08d74300230b4e93129c1ecd131daba2aecfdd904",
+    "version_name": "0.2.32",
+    "notes": "New: a new option that is on by default no longer switches itself off after it first appears, which on a locked phone had taken the option's apps away. Everything in 0.2.31 is still here: the setup wizard, unlock timers of 12 and 18 months with restart and cancel buttons, and the clearer unlocked-state line.",
     "notes_i18n": {
-      "nl": "Nieuw: een installatiehulp voor nieuwkomers, die de instellingen voorinvult op basis van de leeftijd van de gebruiker. Ontgrendeltimers van 12 en 18 maanden, en een knop om een lopende timer opnieuw te starten zonder te ontgrendelen. Een knop om de timer van 30 dagen te annuleren die met \u2018Code vergeten\u2019 werd gestart. Een duidelijkere regel op het instellingenscherm die zegt dat drawbridge actief maar ontgrendeld is. De chatbotschakelaar heet nu \u2018algemene chatbots\u2019 en zegt dat Grok altijd geblokkeerd is.\n\nAlles uit 0.2.30 zit er nog in.",
-      "fr": "Nouveau : un assistant de configuration pour les nouveaux venus, qui pr\u00e9configure les r\u00e9glages selon l\u2019\u00e2ge de l\u2019utilisateur. Des minuteries de d\u00e9verrouillage de 12 et 18 mois, et un bouton pour relancer une minuterie en cours sans d\u00e9verrouiller. Un bouton pour annuler la minuterie de 30 jours lanc\u00e9e avec \u00ab Code oubli\u00e9 \u00bb. Une ligne plus claire sur l\u2019\u00e9cran des r\u00e9glages indiquant que drawbridge est actif mais d\u00e9verrouill\u00e9. L\u2019interrupteur des chatbots s\u2019appelle d\u00e9sormais \u00ab chatbots g\u00e9n\u00e9ralistes \u00bb et pr\u00e9cise que Grok est toujours bloqu\u00e9.\n\nTout ce qui \u00e9tait dans la 0.2.30 y est encore."
+      "nl": "Nieuw: een nieuwe optie die standaard aan staat, schakelt zichzelf niet meer uit nadat ze voor het eerst verschijnt, wat op een vergrendelde telefoon de apps van die optie had weggenomen. Alles uit 0.2.31 zit er nog in: de installatiehulp, ontgrendeltimers van 12 en 18 maanden met knoppen om te herstarten en te annuleren, en de duidelijkere regel voor de ontgrendelde toestand.",
+      "fr": "Nouveau : une nouvelle option activ\u00e9e par d\u00e9faut ne se d\u00e9sactive plus d\u2019elle-m\u00eame apr\u00e8s sa premi\u00e8re apparition, ce qui, sur un t\u00e9l\u00e9phone verrouill\u00e9, avait retir\u00e9 les applications de cette option. Tout ce qui \u00e9tait dans la 0.2.31 y est encore : l\u2019assistant de configuration, les minuteries de 12 et 18 mois avec boutons pour relancer et annuler, et la ligne plus claire sur l\u2019\u00e9tat d\u00e9verrouill\u00e9."
     }
   },
   "required_apps": [
     {
       "package_name": "app.drawbridge.herald",
-      "version_code": 22,
-      "url": "https://github.com/Nilss3/drawbridge/releases/download/v0.2.8-dev.14/herald-arm64-v8a-release.apk",
-      "sha256": "002cfde77cc61da20c0c8594b0c27ef8e019ab233aa7902367845958d8be4c15",
+      "version_code": 23,
+      "url": "https://github.com/Nilss3/drawbridge/releases/download/v0.2.8-dev.15/herald-arm64-v8a-release.apk",
+      "sha256": "ee3df9bc25025e60c3bf0efb63b44386b1c0ff7d7cd6b5b8b7da2ff3eef64b93",
       "abi": "arm64-v8a"
     },
     {
       "package_name": "app.drawbridge.heraldmono",
-      "version_code": 22,
-      "url": "https://github.com/Nilss3/drawbridge/releases/download/v0.2.8-dev.14/herald-mono-arm64-v8a-release.apk",
-      "sha256": "a539b57f0ab3317281ff9d05d70a22b57114ebbdfcf0ffe232486bc261d5c15e",
+      "version_code": 23,
+      "url": "https://github.com/Nilss3/drawbridge/releases/download/v0.2.8-dev.15/herald-mono-arm64-v8a-release.apk",
+      "sha256": "4f0167633038e0f61f43776d875ced20ecccb6e2ee2ffe1fb225715c8ead1cea",
       "abi": "arm64-v8a"
     }
   ],
