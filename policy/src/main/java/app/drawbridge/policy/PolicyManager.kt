@@ -336,9 +336,9 @@ class PolicyManager private constructor(
     private fun rememberOfferedOptions(published: Policy) {
         if (config.selectionSource != null) return
         val state = store.readState()
-        val offered = state.seenOptionIds.orEmpty().toSet() + published.offeredOptionIds()
-        if (offered.size == state.seenOptionIds?.size) return
-        store.writeState(state.copy(seenOptionIds = offered.toList()))
+        val next = withOfferedOptions(state, published)
+        if (next == state) return
+        store.writeState(next)
     }
 
     private fun applyPolicy(published: Policy) {
@@ -375,6 +375,42 @@ class PolicyManager private constructor(
 
     companion object {
         private const val TAG = "PolicyManager"
+
+        /**
+         * [state] after [published]'s options have been offered to the device.
+         *
+         * **A default-on option that arrives is written into the stored selection
+         * in the same step that marks it seen.** Recording it as seen alone is
+         * what used to happen, and it silently undid the default: the arrival was
+         * resolved as *on* once, in memory, and then — with the id already in the
+         * seen set and not in the stored list — every later resolution read it as
+         * an option the parent had decided against. On a locked phone that took
+         * the option's apps away for good, with nobody having touched a switch.
+         *
+         * A device that has never chosen (a null stored list) needs nothing: it
+         * resolves to the defaults every time. A device without a seen set at all
+         * keeps the old behaviour, as [Policy.enabledOptionIds] explains.
+         */
+        internal fun withOfferedOptions(
+            state: PolicyStore.StoredState,
+            published: Policy,
+        ): PolicyStore.StoredState {
+            val seen = state.seenOptionIds?.toSet()
+            val offered = published.offeredOptionIds()
+            val arriving = if (seen == null) emptySet() else offered - seen
+            val stored = state.optionIds
+            val optionIds = if (stored == null || arriving.isEmpty()) {
+                stored
+            } else {
+                val defaultedOn = published.options
+                    .filter { it.defaultEnabled && it.id in arriving }
+                    .map { it.id }
+                (stored + defaultedOn).distinct()
+            }
+            val allSeen = (seen.orEmpty() + offered).toList()
+            if (optionIds == stored && allSeen.size == seen?.size) return state
+            return state.copy(optionIds = optionIds, seenOptionIds = allSeen)
+        }
 
         @Volatile
         private var instance: PolicyManager? = null
