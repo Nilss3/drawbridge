@@ -1,7 +1,7 @@
 {
-  "version": 137,
-  "issued_at": "2026-10-22T20:30:00Z",
-  "comment": "BETA. herald 0.1.22 (version_code 22, both editions, v0.2.25): a page with a huge title or address no longer freezes the tab list. Content unchanged from 133, which carried the 67 AI companion apps. drawbridge unchanged at 0.2.30 build 55. 137 because dev holds 136 and the beta held 133. 436 blocked packages.",
+  "version": 139,
+  "issued_at": "2026-10-23T13:00:00Z",
+  "comment": "BETA. herald 0.1.23 (version_code 23, both editions, v0.2.26): a standalone herald \u2014 one with no drawbridge to ask \u2014 now reads every option as off, so the browser blocks YouTube, Telegram and the streaming services that the switches would release. A managed phone is unchanged: an answer from drawbridge still wins, including \"nobody has chosen\". herald mono's own screens are white rather than Material 3's purple. Content unchanged from 133, which carried the 67 AI companion apps. drawbridge unchanged at 0.2.30 build 55. 139 because dev holds 138. 436 blocked packages.",
   "dns": {
     "upstreams": [
       "94.140.14.15",
@@ -910,16 +910,16 @@
   "required_apps": [
     {
       "package_name": "app.drawbridge.herald",
-      "version_code": 22,
-      "url": "https://github.com/Nilss3/drawbridge/releases/download/v0.2.25/herald-arm64-v8a-release.apk",
-      "sha256": "ffd74923c5611a31641d2a25a367c43e48b8454c0ef39690e3fab98fd1430db9",
+      "version_code": 23,
+      "url": "https://github.com/Nilss3/drawbridge/releases/download/v0.2.26/herald-arm64-v8a-release.apk",
+      "sha256": "0dfc518570c99346e965e03a6f559acf12fa0ce682ac94fad8636c03c7b8d165",
       "abi": "arm64-v8a"
     },
     {
       "package_name": "app.drawbridge.heraldmono",
-      "version_code": 22,
-      "url": "https://github.com/Nilss3/drawbridge/releases/download/v0.2.25/herald-mono-arm64-v8a-release.apk",
-      "sha256": "7a226e5ae9e648b32b007aabffa609a857d6191f70b2a8ba7642e21e5b775dac",
+      "version_code": 23,
+      "url": "https://github.com/Nilss3/drawbridge/releases/download/v0.2.26/herald-mono-arm64-v8a-release.apk",
+      "sha256": "2e781c24e617430d7edbb12f626709459a32abb671866a7cf5535a8af1452eb2",
       "abi": "arm64-v8a"
     }
   ],
