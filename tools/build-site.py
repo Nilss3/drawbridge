@@ -75,6 +75,21 @@ FOOTER = {
 }
 BUILDER_URL = "https://www.ontheway-consulting.com"
 FOOTER_SOURCE = {"en": "Source on GitHub", "nl": "Broncode op GitHub", "fr": "Code source sur GitHub"}
+FOOTER_PRIVACY = {"en": "Privacy", "nl": "Privacy", "fr": "Confidentialité"}
+
+# Who publishes the apps, and the address on the privacy page. Google Play
+# requires a listing's policy to carry both, and Belgian company law requires
+# the same details on a company's site. Written here rather than inline in
+# three languages so there is one place to change them.
+#
+# The build refuses to run while these are unset: a privacy page naming an
+# address that does not exist is worse than no page, and Play reviewers do
+# click the link.
+PRIVACY_PUBLISHER = (
+    "On the Way BV &mdash; Kasteelstraat 37, 1560 Hoeilaart, Belgium "
+    "&mdash; enterprise number BE 0651.912.452"
+)
+PRIVACY_CONTACT = "info@drawbridge-project.org"
 
 
 
@@ -166,6 +181,7 @@ def render_page(
 <footer class="site-footer">
   <div class="wrap">
     <span>{FOOTER[lang].format(url=BUILDER_URL)}</span>
+    <span><a href="{prefix}/privacy/">{FOOTER_PRIVACY[lang]}</a></span>
     <span><a href="https://github.com/Nilss3/drawbridge">{FOOTER_SOURCE[lang]}</a></span>
   </div>
 </footer>
@@ -2133,6 +2149,241 @@ def generated_tables() -> dict[str, str]:
     return tables
 
 
+# ---------------------------------------------------------------------------
+# Privacy
+#
+# Required by Google Play for every listing, and the one page on this site that
+# makes a *promise* rather than an explanation: everything here has to stay true
+# of the code. The claims are deliberately narrow — "we receive nothing" is
+# checkable (there is no server to receive it), while "we do not track you"
+# would be a slogan. Anything that reaches the network at all is named, down to
+# the engine's own security lists, because a browser that quietly talks to five
+# hosts while its privacy page says "nothing is uploaded" is the exact thing
+# this project exists to be the opposite of.
+#
+# If herald ever gains a network call, it belongs here before it ships.
+# ---------------------------------------------------------------------------
+
+PRIVACY_UPDATED = "23 October 2026"
+
+PRIVACY = {
+    "en": dict(
+        title="Privacy · drawbridge",
+        description="What drawbridge and herald do with your data: nothing leaves your device for us, because there is no account, no backend and no analytics.",
+        heading="Privacy",
+        updated=f"Last updated {PRIVACY_UPDATED}.",
+        summary_h="The short version",
+        summary=[
+            "We receive nothing. There is no account, no server of ours to send anything to, no analytics, no advertising and no crash reporting.",
+            "Your browsing stays on your phone. History, bookmarks and settings are stored on the device and are never uploaded.",
+            "The apps are open source (MIT). Anyone can check that this is true, and the source is linked at the bottom of every page.",
+        ],
+        apps_h="Which apps this covers",
+        apps=[
+            "<strong>herald</strong> and <strong>herald mono</strong> — the browser, whether installed on its own or as part of a drawbridge phone.",
+            "<strong>drawbridge</strong> — the protection app itself.",
+        ],
+        device_h="What stays on your device",
+        device_intro="The browser keeps the ordinary things a browser keeps, all of it on the phone and none of it anywhere else:",
+        device=[
+            "the pages you have visited, and your bookmarks",
+            "cookies and site data from the sites you open",
+            "your settings, such as the search engine you chose",
+        ],
+        device_outro="Removing the app, or clearing its data from Android&rsquo;s settings, removes all of it. We never have a copy, so there is nothing for you to ask us to delete.",
+        network_h="What leaves your device, and where it goes",
+        network_intro="Using a browser means connecting to things. Here is the complete list of what these apps connect to, and none of it is us:",
+        network=[
+            "<strong>The websites you visit</strong>, and your searches, which go to the search engine you have selected. Those sites and search engines have their own privacy policies and we have no part in them.",
+            "<strong>The policy document</strong> &mdash; the signed list of what is blocked &mdash; which both apps fetch from GitHub, where it is published as a file. GitHub sees that request the way any web server sees a visitor. Nothing identifying you is attached to it: it is the same file, fetched the same way, for everyone.",
+            "<strong>Filter lists</strong> for the built-in ad blocker (uBlock Origin), fetched from the list maintainers in the usual way.",
+            "<strong>The browser engine&rsquo;s own safety and update checks.</strong> herald is built on Mozilla&rsquo;s GeckoView, the engine behind Firefox, which keeps its security and phishing-protection lists current by itself.",
+        ],
+        network_outro="There is no step in which any of this reaches us, because we run no service that could receive it.",
+        permissions_h="Permissions",
+        permissions="herald asks for internet access, network state, the ability to keep a download or playback running, notifications and a wake lock. It asks for no contacts, no location, no microphone and no camera. drawbridge is a device policy controller and necessarily holds device-management permissions, which it uses to apply the rules on the phone &mdash; locally, and on that phone alone.",
+        managed_h="On a managed phone",
+        managed="When drawbridge manages the phone, the browser asks it which rules apply. That question is answered on the device itself, through a read-only channel protected by the apps&rsquo; shared signature. <strong>The browser does not report your browsing to whoever set the phone up</strong> &mdash; there is no history screen for a parent, no log that is sent anywhere, and no server in between. What a parent can see is what they chose in drawbridge, not what was done with the phone afterwards.",
+        diagnostics_h="Diagnostics",
+        diagnostics="drawbridge has a diagnostics screen that shows what the phone has been doing, so a problem can be described accurately. It is displayed on the screen only. Nothing is sent anywhere unless you copy the text and send it to us yourself.",
+        children_h="Children",
+        children="These apps are made for teenagers and adults and are not directed at children under 13. They collect nothing from anyone, of any age.",
+        changes_h="Changes",
+        changes="If this policy changes, the new version appears on this page with a new date, and the change is in the public commit history along with everything else.",
+        contact_h="Who we are, and how to reach us",
+    ),
+    "nl": dict(
+        title="Privacy · drawbridge",
+        description="Wat drawbridge en herald met je gegevens doen: er verlaat niets je toestel richting ons, want er is geen account, geen backend en geen analytics.",
+        heading="Privacy",
+        updated=f"Laatst bijgewerkt op {PRIVACY_UPDATED}.",
+        summary_h="Kort samengevat",
+        summary=[
+            "Wij ontvangen niets. Er is geen account, geen server van ons om iets naartoe te sturen, geen analytics, geen reclame en geen crashrapportage.",
+            "Je surfgedrag blijft op je telefoon. Geschiedenis, bladwijzers en instellingen staan op het toestel en worden nooit geüpload.",
+            "De apps zijn open source (MIT). Iedereen kan nagaan dat dit klopt; de broncode staat onderaan elke pagina.",
+        ],
+        apps_h="Over welke apps dit gaat",
+        apps=[
+            "<strong>herald</strong> en <strong>herald mono</strong> &mdash; de browser, of je die nu apart installeert of als deel van een drawbridge-telefoon.",
+            "<strong>drawbridge</strong> &mdash; de beschermingsapp zelf.",
+        ],
+        device_h="Wat op je toestel blijft",
+        device_intro="De browser bewaart de gewone dingen die een browser bewaart, allemaal op de telefoon en nergens anders:",
+        device=[
+            "de pagina&rsquo;s die je bezocht hebt, en je bladwijzers",
+            "cookies en sitegegevens van de sites die je opent",
+            "je instellingen, zoals de zoekmachine die je koos",
+        ],
+        device_outro="De app verwijderen, of de gegevens wissen via de instellingen van Android, wist dat allemaal. Wij hebben er nooit een kopie van, dus er is niets dat je ons kan vragen te verwijderen.",
+        network_h="Wat je toestel verlaat, en waarheen",
+        network_intro="Een browser gebruiken betekent verbinding maken. Dit is de volledige lijst van wat deze apps contacteren, en niets daarvan zijn wij:",
+        network=[
+            "<strong>De websites die je bezoekt</strong>, en je zoekopdrachten, die naar de zoekmachine gaan die je gekozen hebt. Die sites en zoekmachines hebben hun eigen privacybeleid, waar wij buiten staan.",
+            "<strong>Het beleidsdocument</strong> &mdash; de ondertekende lijst van wat geblokkeerd is &mdash; dat beide apps ophalen bij GitHub, waar het als bestand gepubliceerd staat. GitHub ziet die aanvraag zoals elke webserver een bezoeker ziet. Er hangt niets aan vast dat jou identificeert: het is hetzelfde bestand, op dezelfde manier opgehaald, voor iedereen.",
+            "<strong>Filterlijsten</strong> voor de ingebouwde advertentieblokkering (uBlock Origin), opgehaald bij de beheerders van die lijsten zoals gebruikelijk.",
+            "<strong>De eigen veiligheids- en updatecontroles van de browsermotor.</strong> herald is gebouwd op GeckoView van Mozilla, de motor achter Firefox, die zijn beveiligings- en phishinglijsten zelf bijhoudt.",
+        ],
+        network_outro="Er is geen stap waarin iets daarvan bij ons terechtkomt, want wij draaien geen dienst die het zou kunnen ontvangen.",
+        permissions_h="Toestemmingen",
+        permissions="herald vraagt internettoegang, netwerkstatus, de mogelijkheid om een download of afspelen door te laten lopen, meldingen en een wake lock. Het vraagt geen contacten, geen locatie, geen microfoon en geen camera. drawbridge is een device policy controller en heeft noodzakelijkerwijs beheerrechten op het toestel, die het gebruikt om de regels toe te passen &mdash; lokaal, en alleen op die telefoon.",
+        managed_h="Op een beheerde telefoon",
+        managed="Wanneer drawbridge de telefoon beheert, vraagt de browser daaraan welke regels gelden. Die vraag wordt op het toestel zelf beantwoord, via een alleen-lezen kanaal dat beschermd is door de gedeelde handtekening van de apps. <strong>De browser rapporteert je surfgedrag niet aan wie de telefoon ingesteld heeft</strong> &mdash; er is geen geschiedenisscherm voor een ouder, geen logboek dat ergens naartoe gaat, en geen server ertussen. Wat een ouder kan zien, is wat die zelf in drawbridge gekozen heeft, niet wat er nadien met de telefoon gebeurd is.",
+        diagnostics_h="Diagnostiek",
+        diagnostics="drawbridge heeft een diagnostiekscherm dat toont wat de telefoon gedaan heeft, zodat een probleem juist beschreven kan worden. Het wordt alleen op het scherm getoond. Er wordt niets verstuurd, tenzij je de tekst zelf kopieert en naar ons stuurt.",
+        children_h="Kinderen",
+        children="Deze apps zijn gemaakt voor tieners en volwassenen en richten zich niet tot kinderen onder 13 jaar. Ze verzamelen van niemand iets, op welke leeftijd ook.",
+        changes_h="Wijzigingen",
+        changes="Als dit beleid verandert, verschijnt de nieuwe versie op deze pagina met een nieuwe datum, en staat de wijziging net als al het andere in de publieke commitgeschiedenis.",
+        contact_h="Wie we zijn, en hoe je ons bereikt",
+    ),
+    "fr": dict(
+        title="Confidentialité · drawbridge",
+        description="Ce que drawbridge et herald font de vos données : rien ne quitte votre appareil vers nous, car il n'y a ni compte, ni serveur, ni analytique.",
+        heading="Confidentialité",
+        updated=f"Dernière mise à jour le {PRIVACY_UPDATED}.",
+        summary_h="En bref",
+        summary=[
+            "Nous ne recevons rien. Il n&rsquo;y a aucun compte, aucun serveur à nous vers lequel envoyer quoi que ce soit, aucune analytique, aucune publicité et aucun rapport de plantage.",
+            "Votre navigation reste sur votre téléphone. L&rsquo;historique, les favoris et les réglages sont stockés sur l&rsquo;appareil et ne sont jamais téléversés.",
+            "Les applications sont open source (MIT). N&rsquo;importe qui peut vérifier que c&rsquo;est vrai ; le code source est en bas de chaque page.",
+        ],
+        apps_h="Quelles applications sont concernées",
+        apps=[
+            "<strong>herald</strong> et <strong>herald mono</strong> &mdash; le navigateur, qu&rsquo;il soit installé seul ou dans le cadre d&rsquo;un téléphone drawbridge.",
+            "<strong>drawbridge</strong> &mdash; l&rsquo;application de protection elle-même.",
+        ],
+        device_h="Ce qui reste sur votre appareil",
+        device_intro="Le navigateur conserve ce qu&rsquo;un navigateur conserve d&rsquo;ordinaire, entièrement sur le téléphone et nulle part ailleurs :",
+        device=[
+            "les pages que vous avez visitées, et vos favoris",
+            "les cookies et les données des sites que vous ouvrez",
+            "vos réglages, comme le moteur de recherche choisi",
+        ],
+        device_outro="Désinstaller l&rsquo;application, ou effacer ses données depuis les réglages d&rsquo;Android, supprime tout cela. Nous n&rsquo;en avons jamais de copie : il n&rsquo;y a donc rien que vous puissiez nous demander d&rsquo;effacer.",
+        network_h="Ce qui quitte votre appareil, et vers où",
+        network_intro="Utiliser un navigateur implique de se connecter. Voici la liste complète de ce que ces applications contactent, et rien de tout cela n&rsquo;est nous :",
+        network=[
+            "<strong>Les sites que vous visitez</strong>, et vos recherches, qui vont au moteur de recherche que vous avez choisi. Ces sites et ces moteurs ont leurs propres politiques de confidentialité, auxquelles nous ne prenons aucune part.",
+            "<strong>Le document de politique</strong> &mdash; la liste signée de ce qui est bloqué &mdash; que les deux applications récupèrent sur GitHub, où il est publié comme un fichier. GitHub voit cette requête comme tout serveur web voit un visiteur. Rien qui vous identifie n&rsquo;y est joint : c&rsquo;est le même fichier, récupéré de la même façon, pour tout le monde.",
+            "<strong>Les listes de filtrage</strong> du bloqueur de publicités intégré (uBlock Origin), récupérées auprès de leurs mainteneurs de la manière habituelle.",
+            "<strong>Les vérifications de sécurité et de mise à jour propres au moteur.</strong> herald repose sur GeckoView de Mozilla, le moteur de Firefox, qui tient à jour lui-même ses listes de sécurité et d&rsquo;anti-hameçonnage.",
+        ],
+        network_outro="Aucune étape ne fait parvenir quoi que ce soit jusqu&rsquo;à nous, car nous n&rsquo;exploitons aucun service capable de le recevoir.",
+        permissions_h="Autorisations",
+        permissions="herald demande l&rsquo;accès à internet, l&rsquo;état du réseau, la possibilité de poursuivre un téléchargement ou une lecture, les notifications et un wake lock. Il ne demande ni contacts, ni localisation, ni microphone, ni caméra. drawbridge est un device policy controller et détient nécessairement des droits d&rsquo;administration de l&rsquo;appareil, qu&rsquo;il utilise pour appliquer les règles &mdash; localement, et sur ce téléphone uniquement.",
+        managed_h="Sur un téléphone géré",
+        managed="Lorsque drawbridge gère le téléphone, le navigateur lui demande quelles règles s&rsquo;appliquent. Cette question trouve sa réponse sur l&rsquo;appareil même, par un canal en lecture seule protégé par la signature commune des applications. <strong>Le navigateur ne rapporte pas votre navigation à la personne qui a configuré le téléphone</strong> &mdash; il n&rsquo;y a pas d&rsquo;écran d&rsquo;historique pour un parent, pas de journal envoyé ailleurs, et aucun serveur entre les deux. Ce qu&rsquo;un parent peut voir, c&rsquo;est ce qu&rsquo;il a choisi dans drawbridge, pas ce qui a été fait ensuite avec le téléphone.",
+        diagnostics_h="Diagnostic",
+        diagnostics="drawbridge dispose d&rsquo;un écran de diagnostic qui montre ce que le téléphone a fait, afin qu&rsquo;un problème puisse être décrit avec précision. Il s&rsquo;affiche uniquement à l&rsquo;écran. Rien n&rsquo;est envoyé, sauf si vous copiez le texte et nous l&rsquo;envoyez vous-même.",
+        children_h="Enfants",
+        children="Ces applications sont faites pour les adolescents et les adultes et ne s&rsquo;adressent pas aux enfants de moins de 13 ans. Elles ne collectent rien, de personne, à aucun âge.",
+        changes_h="Modifications",
+        changes="Si cette politique change, la nouvelle version paraît sur cette page avec une nouvelle date, et la modification figure dans l&rsquo;historique public des commits comme tout le reste.",
+        contact_h="Qui nous sommes, et comment nous joindre",
+    ),
+}
+
+
+def check_privacy_details() -> None:
+    """Refuses the build while the publisher or the contact address is a
+    placeholder. Called before anything is written or deleted, for the same
+    reason as [check_installer_preconditions]: a half-built `site/` is a worse
+    outcome than a build that never started."""
+    if "NOT_SET" in PRIVACY_PUBLISHER or "NOT_SET" in PRIVACY_CONTACT:
+        raise SystemExit(
+            "Set PRIVACY_PUBLISHER and PRIVACY_CONTACT in tools/build-site.py "
+            "before building: the privacy page is a Play Store requirement and "
+            "has to name a real publisher and a real address."
+        )
+
+
+def render_privacy(lang: str) -> str:
+    c = PRIVACY[lang]
+
+    def items(key: str) -> str:
+        return "\n        ".join(f"<li>{item}</li>" for item in c[key])
+
+    body = f"""
+  <section class="section">
+    <div class="wrap">
+      <h1>{c['heading']}</h1>
+      <p class="footnote">{c['updated']}</p>
+
+      <h2>{c['summary_h']}</h2>
+      <ul>
+        {items('summary')}
+      </ul>
+
+      <h2>{c['apps_h']}</h2>
+      <ul>
+        {items('apps')}
+      </ul>
+
+      <h2>{c['device_h']}</h2>
+      <p>{c['device_intro']}</p>
+      <ul>
+        {items('device')}
+      </ul>
+      <p>{c['device_outro']}</p>
+
+      <h2>{c['network_h']}</h2>
+      <p>{c['network_intro']}</p>
+      <ul>
+        {items('network')}
+      </ul>
+      <p>{c['network_outro']}</p>
+
+      <h2>{c['permissions_h']}</h2>
+      <p>{c['permissions']}</p>
+
+      <h2>{c['managed_h']}</h2>
+      <p>{c['managed']}</p>
+
+      <h2>{c['diagnostics_h']}</h2>
+      <p>{c['diagnostics']}</p>
+
+      <h2>{c['children_h']}</h2>
+      <p>{c['children']}</p>
+
+      <h2>{c['changes_h']}</h2>
+      <p>{c['changes']}</p>
+
+      <h2>{c['contact_h']}</h2>
+      <p>{PRIVACY_PUBLISHER}<br />
+        <a href="mailto:{PRIVACY_CONTACT}">{PRIVACY_CONTACT}</a></p>
+    </div>
+  </section>
+"""
+    return render_page(
+        lang=lang,
+        path="privacy/",
+        title=c["title"],
+        description=c["description"],
+        body=body,
+    )
+
+
 def render_why_blocked(content_fragment: str) -> str:
     paragraphs = "\n      ".join(f"<p>{p}</p>" for p in WHY_INTRO["en"])
     body = f"""
@@ -2261,6 +2512,7 @@ def stage_installer_assets(checked: dict) -> dict:
 
 def build_all() -> None:
     # Before the clear below, never after it: see check_installer_preconditions.
+    check_privacy_details()
     checked = check_installer_preconditions()
 
     if SITE_OUT.exists():
@@ -2286,6 +2538,7 @@ def build_all() -> None:
         write(base / "install" / "index.html", render_install(lang, apk))
         write(base / "install" / "usb" / "index.html", render_usb_redirect(lang))
         write(base / "faq" / "index.html", render_faq(lang))
+        write(base / "privacy" / "index.html", render_privacy(lang))
         if lang in WHY_SUMMARY:
             write(base / "why-blocked" / "index.html", render_why_summary(lang))
 
