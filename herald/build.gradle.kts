@@ -101,6 +101,36 @@ android {
         }
     }
 
+    /**
+     * **`splits` governs APKs; a bundle has no splits.** Play does the
+     * splitting itself at delivery, so an `.aab` ignores the block below
+     * entirely and carries every ABI GeckoView ships: 287 MB of upload and
+     * 547 MB of native libraries, three ABIs of which this project does not
+     * build APKs for and has never run.
+     *
+     * `ndk.abiFilters` is what a bundle does honour — but AGP refuses to have
+     * both ("Conflicting configuration: 'arm64-v8a' in ndk abiFilters cannot
+     * be present when splits abi filters are set"), so the two cannot simply
+     * be stated side by side. Hence the task-name switch: a `bundle*` build
+     * filters, every other build splits, and the published APK filenames that
+     * `required_apps` pins by URL do not move.
+     *
+     * Putting an ABI back means adding it in both places plus a
+     * `required_apps` line. On Play it would cost nothing at install, since a
+     * phone downloads its own ABI and no other; the reason not to is that
+     * nothing here has ever run a 32-bit build, and a store listing is a bad
+     * place to find out.
+     */
+    val buildingBundle = gradle.startParameter.taskNames.any { it.contains("bundle", true) }
+
+    if (buildingBundle) {
+        defaultConfig {
+            ndk {
+                abiFilters += "arm64-v8a"
+            }
+        }
+    }
+
     // GeckoView ships native libraries for every ABI; a universal APK would be
     // several hundred MB. Split per ABI instead.
     //
@@ -123,7 +153,9 @@ android {
     // emulator is arm64 and unaffected, on an Intel host it is not.
     splits {
         abi {
-            isEnable = true
+            // Off for a bundle build, where ndk.abiFilters above does this job
+            // and AGP will not accept both.
+            isEnable = !buildingBundle
             reset()
             include("arm64-v8a")
             isUniversalApk = false
