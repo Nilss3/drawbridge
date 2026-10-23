@@ -156,6 +156,21 @@ to agree with that page.
 
 ---
 
+## The app icon
+
+`images/store/mono-play-icon-512.png` — 512x512, opaque PNG, under Play's 1 MB
+cap. Play masks the corners itself, so the file is a full square.
+
+It is **not** the launcher foreground layer scaled down, which would show the
+lantern small inside a ring of blur. It is composed the way a launcher shows it:
+the adaptive foreground rendered at 108dp (768px) and centre-cropped to the 72dp
+the mask can reach (512px). What Play shows is then what a phone shows.
+
+To regenerate it after `art/herald-mono-icon.webp` changes, the recipe is in the
+commit that added it; it uses the same corner flood-fill as
+`tools/make-artwork.sh`, because the master has white rounded-rect corners that
+must become transparent before anything is composed over the blur.
+
 ## Screenshots
 
 `tools/capture-store-shots.py` takes them. `images/store/` holds the result:
