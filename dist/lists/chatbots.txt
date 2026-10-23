@@ -1,0 +1,44 @@
+# drawbridge — general-purpose AI chatbots
+#
+# The web side of the `chatbots` option: blocked while it is off, and every entry
+# repeated in that option's allowed_domains so switching it on brings them back
+# (policytool.py sign refuses when the two disagree).
+#
+# The line is the long conversation, not AI as such. These are the services where
+# a chat with memory goes on for weeks. Search engines' AI answers, help bots on
+# shops and assistants embedded in work tools are deliberately absent, and so are
+# the parent domains: gemini.google.com and copilot.microsoft.com are their own
+# hosts, so google.com, microsoft365.com and Office on the web keep working.
+#
+# Every host was resolved and loaded on 2026-10-18 and answers with its chatbot.
+# Grok is not here: it is on ai-companions.txt, always blocked.
+
+chatgpt.com
+chat.openai.com
+claude.ai
+gemini.google.com
+bard.google.com
+copilot.microsoft.com
+copilot.cloud.microsoft
+m365copilot.com
+perplexity.ai
+chat.deepseek.com
+chat.mistral.ai
+kimi.com
+kimi.ai
+kimi.moonshot.cn
+poe.com
+pi.ai
+meta.ai
+dola.com
+lumo.proton.me
+luzia.com
+manus.im
+monica.im
+getmerlin.in
+sider.ai
+duck.ai
+chat.qwen.ai
+chatsmith.io
+chaton.ai
+alice.yandex.ru
