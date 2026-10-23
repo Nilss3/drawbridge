@@ -89,6 +89,28 @@ to agree with that page.
 
 ---
 
+## The AI asset declaration
+
+Play asks, per listing, whether the uploaded images were created or edited with
+AI. **It asks about images only** — not about the app's source, however much of
+it was written with a model, and not about editing in the ordinary sense:
+resizing, greyscaling and compositing a generated master do not change the
+answer, and do not create one either.
+
+For herald mono the answer is **label**, and three assets carry it:
+
+| Asset | Declared | Why |
+|---|---|---|
+| App icon | yes | `art/herald-mono-icon.webp` is AI-generated |
+| Feature graphic | yes | composed from that same master |
+| `mono-*-3-refused.png` | yes | shows a block-page scene, also AI-generated |
+| The other 14 screenshots | no | the app's own interface, and photographs from Wikipedia |
+
+`art/README.md` records where every master came from, including the one that is
+**not** generated — the Van Gogh the website credits by name.
+
+---
+
 ## Dutch (nl-NL)
 
 ### Short description (57)
