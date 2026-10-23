@@ -23,4 +23,11 @@
 
     <color name="mozac_ui_tabcounter_default_tint">@color/toolbar_text</color>
     <color name="mozac_ui_tabcounter_default_text">@color/toolbar_text</color>
+
+    <!-- The theme's surfaces: white, and greys with no hue in them at all.
+         src/main's are a shade blue (#F9F9FB), which is a colour, and on this
+         edition that is the one thing a surface may not be. -->
+    <color name="app_background">#FFFFFFFF</color>
+    <color name="app_surface_container">#FFF2F2F2</color>
+    <color name="app_surface_container_high">#FFE6E6E6</color>
 </resources>
