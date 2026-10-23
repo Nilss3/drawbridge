@@ -175,6 +175,26 @@ For herald mono the answer is **label**, and three assets carry it:
     ni publicité, ni rapport de plantage.
 ---
 
+## Building the bundle
+
+```bash
+./gradlew :herald:bundleMonoRelease     # -> herald/build/outputs/bundle/monoRelease/
+```
+
+About 118 MB, signed with the release key, arm64 only. It is git-ignored and is
+not a GitHub release asset: it goes to Play Console and nowhere else.
+
+**A bundle ignores the `splits` block** — Play splits at delivery instead — so
+the first one built carried all four of GeckoView's ABIs at 287 MB. The ABI list
+now also appears as `ndk.abiFilters`, switched on for `bundle*` tasks only,
+because AGP refuses to accept `abiFilters` and `splits` together.
+
+At upload, choose **"use existing app signing key"** and export
+`drawbridge-release.jks` with PEPK. Letting Google generate one would break the
+`app.drawbridge.permission.READ_SELECTION` link between the two apps, which is
+declared at `signature` level: the Play copy of herald would run fine alone and
+silently fail to read the parent's settings on a managed phone.
+
 ## The feature graphic
 
 `images/store/mono-feature-graphic-1024x500.png`. Play asks for one per listing

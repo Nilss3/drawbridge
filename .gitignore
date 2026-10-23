@@ -17,6 +17,10 @@ keys/
 # They belong on a GitHub Release as assets, not in git history.
 dist/release/*.apk
 
+# The Play bundle, ~118 MB, and it is not a release asset either: it goes to
+# Play Console and nowhere else. Rebuild it with `:herald:bundleMonoRelease`.
+dist/release/*.aab
+
 # Debug APKs staged by tools/stage-release.sh; never published.
 dist/debug/
 tools/.app-ratings-cache.json
