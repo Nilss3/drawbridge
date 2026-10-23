@@ -69,13 +69,14 @@ Three corrections, each checkable against `dist/policy.json`:
   against policy 139 — youtube.com and netflix.com now reach the block page, and
   wikipedia.org does not. A managed phone is unaffected: drawbridge's answer
   still wins.
-- **"general purpose chatbot" removed, and it is the one claim still not true.**
-  `ai-companions.txt` says in its own header that chatgpt.com, claude.ai and
-  gemini.google.com are *deliberately* not listed, and `blocked_domains` carries
-  none of them either; what the list covers is companion and roleplay chat, plus
-  Grok for shipping a companion mode. dev's policy 138 adds an "Allow AI
-  chatbots" option, and once that reaches main the standalone rule above would
-  switch it off by itself — at which point this line can come back.
+- **"general-purpose chatbots" is true as of policy 140**, and was not before
+  it. `ai-companions.txt` deliberately leaves chatgpt.com, claude.ai and
+  gemini.google.com off — it covers companion and roleplay chat, plus Grok. The
+  chatbots list and its 18+ switch were ported from dev in policy 140, and the
+  standalone rule does the rest: a herald with no drawbridge reads the switch as
+  off, so the chatbots are blocked. On a managed phone they stay allowed until a
+  parent turns the switch off, which is the same document behaving differently
+  in the two places on purpose.
 - **"based on Firefox" → "built on Mozilla's Firefox engine".** herald embeds
   GeckoView, the engine, not the browser. The looser phrasing reads as a
   relationship with Mozilla that does not exist, which is the kind of claim a
@@ -155,6 +156,18 @@ to agree with that page.
     Code source : https://github.com/Nilss3/drawbridge
 
 ---
+
+## The feature graphic
+
+`images/store/mono-feature-graphic-1024x500.png`. Play asks for one per listing
+and shows it above the screenshots.
+
+Greyscale throughout, which is the one design decision that makes itself: an app
+whose premise is that there is no colour cannot advertise itself in colour.
+
+**Play crops this image on some surfaces**, so nothing load-bearing sits near an
+edge. If a crop ever eats the text, the fix is a centred variant rather than
+smaller type.
 
 ## The app icon
 

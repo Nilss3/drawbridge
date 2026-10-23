@@ -79,7 +79,7 @@ SHOTS = ["pause", "article", "refused", "menu", "settings"]
 # part of the shot that proves the point, so each language is scrolled to where
 # its own Wikipedia puts one: the French article leads with the infobox picture,
 # the English and Dutch ones open with a paragraph and need a flick.
-ARTICLE_FLICKS = {"en": 1, "nl": 1, "fr": 0}
+ARTICLE_FLICKS = {"en": 1, "nl": 0, "fr": 0}
 
 
 def adb(*args: str, binary: bool = False):
