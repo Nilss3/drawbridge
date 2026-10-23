@@ -34,10 +34,10 @@ keyword-shaped.
 
 ### Full description
 
-    herald mono is a minimalist, slow browser with a built-in content blocker,
+    Herald mono is a minimalist, slow browser with a built-in content blocker,
     for people who find they browse too much. It can be your one and only
-    browser: it adds friction to browsing without taking away what a browser is
-    for.
+    browser: it adds friction to browsing without taking away core functionality
+    you may need in daily life.
 
     It provides a slower browsing experience by introducing a breathing pause
     before every page, slower scrolling, no tabs (single-tasking), and pages
@@ -45,18 +45,16 @@ keyword-shaped.
 
     Just like the regular herald browser, herald mono blocks addictive content:
     adult sites, gambling, games, ads, dating platforms, social media, video
-    streaming, and AI companion and roleplay chat sites.
+    streaming, general-purpose chatbots and AI companion and roleplay chat sites.
 
-    It's free and open source, and built on Mozilla's Firefox engine. herald and
+    It's free and open source, and built on Mozilla's Firefox engine. Herald and
     herald mono are companion browsers of the drawbridge project, FOSS software
-    to turn your Android device into a minimalist phone or dumbphone. We make
-    the browsers separately available.
+    to turn your Android device into a minimalist phone or dumbphone. We make the
+    browsers separately available.
 
-    Nothing is uploaded and there is no account. No analytics, no advertising,
-    no crash reporting: https://drawbridge-project.org/privacy/
-
-    Source: https://github.com/Nilss3/drawbridge
-
+    The herald browsers are privacy-conscious. There is no account. Blocking
+    happens on the device itself. There is no telemetry, no analytics, no
+    advertising, no crash reporting.
 ### What was changed from the owner's draft, and why
 
 Three corrections, each checkable against `dist/policy.json`:
@@ -70,7 +68,8 @@ Three corrections, each checkable against `dist/policy.json`:
   wikipedia.org does not. A managed phone is unaffected: drawbridge's answer
   still wins.
 - **"general-purpose chatbots" is true as of policy 140**, and was not before
-  it. `ai-companions.txt` deliberately leaves chatgpt.com, claude.ai and
+  it. Checked on an emulator running the build that would be uploaded:
+  chatgpt.com, claude.ai and gemini.google.com all reach the block page. `ai-companions.txt` deliberately leaves chatgpt.com, claude.ai and
   gemini.google.com off — it covers companion and roleplay chat, plus Grok. The
   chatbots list and its 18+ switch were ported from dev in policy 140, and the
   standalone rule does the rest: a herald with no drawbridge reads the switch as
@@ -119,30 +118,28 @@ For herald mono the answer is **label**, and three assets carry it:
 
 ### Full description
 
-    herald mono is een minimalistische, trage browser met een ingebouwde
+    Herald mono is een minimalistische, trage browser met een ingebouwde
     inhoudsblokkering, voor mensen die merken dat ze te veel surfen. Het kan je
-    enige browser zijn: het voegt wrijving toe aan het surfen zonder weg te
-    nemen waar een browser voor dient.
+    enige browser zijn: het voegt wrijving toe aan het surfen zonder de
+    kernfunctionaliteit weg te nemen die je in het dagelijks leven nodig hebt.
 
-    Het maakt surfen trager met een adempauze vóór elke pagina, trager
-    scrollen, geen tabbladen (één ding tegelijk), en pagina's die standaard in
-    zwart-wit verschijnen (monochroom, vandaar de naam).
+    Het maakt surfen trager met een adempauze vóór elke pagina, trager scrollen,
+    geen tabbladen (één ding tegelijk), en pagina's die standaard in zwart-wit
+    verschijnen (monochroom, vandaar de naam).
 
     Net als de gewone herald-browser blokkeert herald mono verslavende inhoud:
     pornografie, gokken, games, reclame, datingplatformen, social media,
-    videostreaming, en AI-gezelschaps- en rollenspelchatsites.
+    videostreaming, algemene chatbots en AI-gezelschaps- en rollenspelchatsites.
 
     Het is gratis en open source, en gebouwd op de Firefox-motor van Mozilla.
-    herald en herald mono zijn de begeleidende browsers van het
+    Herald en herald mono zijn de begeleidende browsers van het
     drawbridge-project, FOSS-software om van je Android-toestel een
     minimalistische telefoon of dumbphone te maken. We maken de browsers
     afzonderlijk beschikbaar.
 
-    Er wordt niets geüpload en er is geen account. Geen analytics, geen
-    reclame, geen crashrapportage: https://drawbridge-project.org/nl/privacy/
-
-    Broncode: https://github.com/Nilss3/drawbridge
-
+    De herald-browsers zijn privacybewust. Er is geen account. Het blokkeren
+    gebeurt op het toestel zelf. Er is geen telemetrie, geen analytics, geen
+    reclame, geen crashrapportage.
 ---
 
 ## French (fr-FR)
@@ -153,30 +150,29 @@ For herald mono the answer is **label**, and three assets carry it:
 
 ### Full description
 
-    herald mono est un navigateur minimaliste et lent, doté d'un bloqueur de
+    Herald mono est un navigateur minimaliste et lent, doté d'un bloqueur de
     contenu intégré, pour les personnes qui constatent qu'elles naviguent trop.
     Il peut être votre seul et unique navigateur : il ajoute de la friction à la
-    navigation sans retirer ce qui fait un navigateur.
+    navigation sans retirer les fonctions essentielles dont vous pouvez avoir
+    besoin au quotidien.
 
     Il ralentit la navigation par une pause de respiration avant chaque page, un
-    défilement plus lent, l'absence d'onglets (une seule chose à la fois), et
-    des pages affichées par défaut en noir et blanc (monochrome, d'où le nom).
+    défilement plus lent, l'absence d'onglets (une seule chose à la fois), et des
+    pages affichées par défaut en noir et blanc (monochrome, d'où le nom).
 
     Comme le navigateur herald ordinaire, herald mono bloque les contenus
     addictifs : sites pornographiques, jeux d'argent, jeux, publicités, sites de
-    rencontre, réseaux sociaux, vidéo en streaming, et sites de compagnons IA et
-    de jeu de rôle conversationnel.
+    rencontre, réseaux sociaux, vidéo en streaming, chatbots généralistes et
+    sites de compagnons IA et de jeu de rôle conversationnel.
 
     Il est gratuit et open source, et repose sur le moteur Firefox de Mozilla.
-    herald et herald mono sont les navigateurs compagnons du projet drawbridge,
+    Herald et herald mono sont les navigateurs compagnons du projet drawbridge,
     un logiciel libre qui transforme votre appareil Android en téléphone
     minimaliste. Nous proposons les navigateurs séparément.
 
-    Rien n'est téléversé et il n'y a aucun compte. Ni analytique, ni publicité,
-    ni rapport de plantage : https://drawbridge-project.org/fr/privacy/
-
-    Code source : https://github.com/Nilss3/drawbridge
-
+    Les navigateurs herald respectent la vie privée. Il n'y a aucun compte. Le
+    blocage se fait sur l'appareil même. Il n'y a ni télémétrie, ni analytique,
+    ni publicité, ni rapport de plantage.
 ---
 
 ## The feature graphic
