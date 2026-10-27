@@ -1,7 +1,7 @@
 {
-  "version": 149,
-  "issued_at": "2026-10-27T12:29:37Z",
-  "comment": "DEV CHANNEL ONLY. drawbridge 0.2.34 build 59: the setup wizard applies a remembered age when you press Next on the age page. Policy 148's WhatsApp footnote, 18+ label and Beeper/DumberChat exclusions stay. herald 0.1.23 unchanged.",
+  "version": 150,
+  "issued_at": "2026-10-27T12:45:58Z",
+  "comment": "DEV CHANNEL ONLY. Messenger Kids (com.facebook.talk) is blocked. drawbridge 0.2.34 build 59, herald 0.1.23 unchanged.",
   "dns": {
     "upstreams": [
       "94.140.14.15",
@@ -319,6 +319,7 @@
     "com.facebook.orca",
     "com.facebook.stella",
     "com.facebook.system",
+    "com.facebook.talk",
     "com.fandyai.fandy",
     "com.fantasia.ai",
     "com.fantasychat.withai",
