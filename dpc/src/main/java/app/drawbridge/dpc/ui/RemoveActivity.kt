@@ -112,6 +112,7 @@ class RemoveActivity : AppCompatActivity() {
         // forecloses — and cleared here so the list of device-local state that
         // goes on the way out stays complete. See [Permanence.clear].
         permanence.clear()
+        WizardSettings(this).clear()
         // Every message this project sent this phone. Worth nothing without the
         // document that carried them, and a reinstalled drawbridge should file
         // and ring whatever the policy says now rather than silently swallow it

@@ -1,7 +1,7 @@
 {
-  "version": 141,
-  "issued_at": "2026-10-23T15:09:00Z",
-  "comment": "BETA. The chatbots option and its blocklist are withdrawn, and ChatGPT, Claude and the other general-purpose assistants are back on the rating-exceptions list, exactly as in 139. Policy 140 added them behind a new default-on option, and a flaw in how a phone records a new option turned it off after its first appearance, taking the assistants away from phones nobody had touched. The option returns under a new id once the fixed build is on phones. herald 0.1.23 and drawbridge 0.2.30 build 55 unchanged. 141 because dev holds 138 and the beta held 140. 436 blocked packages.",
+  "version": 152,
+  "issued_at": "2026-10-27T13:28:02Z",
+  "comment": "drawbridge 0.2.35 build 60: the setup wizard, unlock timers of 12 and 18 months with restart and cancel buttons, and the fix that a new default-on option no longer switches itself off after it first appears. WhatsApp is recommended 18+ and carries a footnote on third-party WhatsApp apps, which Beeper and DumberChat are allowed to be. Messenger Kids is blocked. herald 0.1.23 as before. The general-purpose chatbots switch stays withdrawn until this build is on the phones.",
   "dns": {
     "upstreams": [
       "94.140.14.15",
@@ -15,7 +15,9 @@
     "excluded_packages": [
       "com.google.android.projection.gearhead",
       "com.whatsapp",
-      "com.whatsapp.w4b"
+      "com.whatsapp.w4b",
+      "com.beeper.android",
+      "com.dumbermini.chat"
     ]
   },
   "blocklists": [
@@ -264,6 +266,7 @@
     "com.facebook.lite",
     "com.facebook.orca",
     "com.facebook.system",
+    "com.facebook.talk",
     "com.fandyai.fandy",
     "com.fantasia.ai",
     "com.fantasychat.withai",
@@ -552,7 +555,9 @@
   ],
   "allowed_browser_package": "app.drawbridge.herald",
   "exempt_packages": [
-    "org.thoughtcrime.securesms"
+    "org.thoughtcrime.securesms",
+    "com.beeper.android",
+    "com.dumbermini.chat"
   ],
   "profiles": [
     {
@@ -579,9 +584,9 @@
   "options": [
     {
       "id": "whatsapp",
-      "name": "Allow WhatsApp",
+      "name": "Allow WhatsApp*",
       "subject": "WhatsApp",
-      "recommended_age": 14,
+      "recommended_age": 18,
       "description": "WhatsApp carries privacy risks, has toxic social media features and an annoying chatbot. Signal is always allowed on this device, even though as a group chat app with risk of cyberbullying we also recommend 14+ and/or parental guidance. Switching this off does not uninstall the app: it is suspended and hidden, and comes back with all its chats and media intact if you switch it on again. If you would rather it were really gone, uninstall it yourself before locking.",
       "default_enabled": true,
       "exempt_packages": [
@@ -594,8 +599,8 @@
         "wa.me"
       ],
       "name_i18n": {
-        "nl": "WhatsApp toestaan",
-        "fr": "Autoriser WhatsApp"
+        "nl": "WhatsApp toestaan*",
+        "fr": "Autoriser WhatsApp*"
       },
       "description_i18n": {
         "nl": "WhatsApp brengt privacyrisico's mee, heeft toxische socialemediafuncties en een vervelende chatbot. Signal is op dit toestel altijd toegelaten, al raden we ook daar 14+ en/of ouderlijke begeleiding aan: als groepschat-app draagt het een risico op cyberpesten. Dit uitzetten verwijdert de app niet: ze wordt opgeschort en verborgen, en komt met al haar gesprekken en media intact terug zodra je ze weer aanzet. Wil je ze echt kwijt, verwijder ze dan zelf voor je vergrendelt.",
@@ -611,7 +616,7 @@
       "name": "Allow YouTube",
       "subject": "YouTube",
       "recommended_age": 16,
-      "description": "YouTube's recommendation feed and Shorts are built to keep you watching, which is why it is blocked by default. Switching this on restores YouTube and its family (Kids, TV, Creator Studio, Music) and turns Google's own Restricted Mode on for the YouTube app and for the browser. The phone enforces that, so it cannot be switched off from inside YouTube. In herald, Shorts open as ordinary videos.",
+      "description": "YouTube's recommendation feed and Shorts are built to keep you watching. With this on, YouTube and its family (Kids, TV, Creator Studio, Music) work, and Google's own Restricted Mode is on for the YouTube app and for the browser. The phone enforces that, so it cannot be switched off from inside YouTube. In herald, Shorts open as ordinary videos. Switch this off to block YouTube altogether.",
       "default_enabled": true,
       "exempt_packages": [
         "com.google.android.youtube",
@@ -636,8 +641,8 @@
         "fr": "Autoriser YouTube"
       },
       "description_i18n": {
-        "nl": "De aanbevelingsfeed en Shorts van YouTube zijn gemaakt om je te laten doorkijken, en daarom staat YouTube standaard uit. Zet je dit aan, dan komen YouTube en zijn familie terug (Kids, TV, Creator Studio, Music) en gaat Google's eigen Beperkte modus aan voor de YouTube-app en voor de browser. De telefoon dwingt dat af, dus het kan niet vanuit YouTube worden uitgezet. In herald openen Shorts als gewone video's.",
-        "fr": "Le fil de recommandations et les Shorts de YouTube sont con\u00e7us pour vous garder devant l'\u00e9cran : c'est pourquoi YouTube est bloqu\u00e9 par d\u00e9faut. En activant ceci, YouTube et sa famille reviennent (Kids, TV, Creator Studio, Music) et le mode Restreint de Google s'active pour l'application YouTube et pour le navigateur. Le t\u00e9l\u00e9phone l'impose, il ne peut donc pas \u00eatre d\u00e9sactiv\u00e9 depuis YouTube. Dans herald, les Shorts s'ouvrent comme des vid\u00e9os ordinaires."
+        "nl": "De aanbevelingsfeed en Shorts van YouTube zijn gemaakt om je te laten doorkijken. Staat dit aan, dan werken YouTube en zijn familie (Kids, TV, Creator Studio, Music), en staat Google's eigen Beperkte modus aan voor de YouTube-app en voor de browser. De telefoon dwingt dat af, dus het kan niet vanuit YouTube worden uitgezet. In herald openen Shorts als gewone video's. Zet dit uit om YouTube helemaal te blokkeren.",
+        "fr": "Le fil de recommandations et les Shorts de YouTube sont con\u00e7us pour vous garder devant l'\u00e9cran. Lorsque ceci est activ\u00e9, YouTube et sa famille (Kids, TV, Creator Studio, Music) fonctionnent, et le mode Restreint de Google est actif pour l'application YouTube et pour le navigateur. Le t\u00e9l\u00e9phone l'impose, il ne peut donc pas \u00eatre d\u00e9sactiv\u00e9 depuis YouTube. Dans herald, les Shorts s'ouvrent comme des vid\u00e9os ordinaires. D\u00e9sactivez ceci pour bloquer compl\u00e8tement YouTube."
       },
       "subject_i18n": {
         "nl": "YouTube",
@@ -679,7 +684,7 @@
       "name": "Allow long-form video streaming",
       "subject": "Long-form video streaming",
       "recommended_age": 16,
-      "description": "Netflix, Prime Video, Disney+, HBO Max and around fifty other subscription video services are blocked by default, because an evening disappears into one as easily as into a feed. Switching this on restores all of them at once, the apps and the websites. YouTube is not included: it has its own option, since a recommendation feed is a different thing from a film you sat down to watch.",
+      "description": "Netflix, Prime Video, Disney+, HBO Max and around fifty other subscription video services, the apps and the websites, all on one switch. An evening disappears into one as easily as into a feed, so switching this off blocks all of them at once. YouTube is not included: it has its own option, since a recommendation feed is a different thing from a film you sat down to watch.",
       "default_enabled": true,
       "exempt_packages": [
         "com.netflix.mediaclient",
@@ -864,8 +869,8 @@
         "fr": "Autoriser le streaming vid\u00e9o long format"
       },
       "description_i18n": {
-        "nl": "Netflix, Prime Video, Disney+, HBO Max en een vijftigtal andere abonnementsdiensten voor video staan standaard uit, want een avond verdwijnt daarin even makkelijk als in een feed. Zet je dit aan, dan komen ze allemaal tegelijk terug, de apps en de websites. YouTube hoort hier niet bij: dat heeft zijn eigen optie, want een aanbevelingsfeed is iets anders dan een film waar je voor bent gaan zitten.",
-        "fr": "Netflix, Prime Video, Disney+, HBO Max et une cinquantaine d'autres services vid\u00e9o par abonnement sont bloqu\u00e9s par d\u00e9faut, car une soir\u00e9e y dispara\u00eet aussi facilement que dans un fil d'actualit\u00e9. En activant ceci, ils reviennent tous d'un coup, les applications comme les sites. YouTube n'en fait pas partie : il a sa propre option, car un fil de recommandations n'est pas la m\u00eame chose qu'un film devant lequel on s'est install\u00e9."
+        "nl": "Netflix, Prime Video, Disney+, HBO Max en een vijftigtal andere abonnementsdiensten voor video, de apps en de websites, samen op \u00e9\u00e9n schakelaar. Een avond verdwijnt daarin even makkelijk als in een feed, dus dit uitzetten blokkeert ze allemaal tegelijk. YouTube hoort hier niet bij: dat heeft zijn eigen optie, want een aanbevelingsfeed is iets anders dan een film waar je voor bent gaan zitten.",
+        "fr": "Netflix, Prime Video, Disney+, HBO Max et une cinquantaine d'autres services vid\u00e9o par abonnement, applications et sites compris, sur un seul interrupteur. Une soir\u00e9e y dispara\u00eet aussi facilement que dans un fil d'actualit\u00e9 : d\u00e9sactiver ceci les bloque tous d'un coup. YouTube n'en fait pas partie : il a sa propre option, car un fil de recommandations n'est pas la m\u00eame chose qu'un film devant lequel on s'est install\u00e9."
       },
       "various_ages": true,
       "subject_i18n": {
@@ -897,14 +902,14 @@
   },
   "app_update": {
     "package_name": "app.drawbridge.dpc",
-    "version_code": 55,
-    "url": "https://drawbridge-project.pages.dev/assets/dpc-c20e5746f81f563e.apk",
-    "sha256": "c20e5746f81f563e2a34126e568af5360828e69cff0d1b0b562b6d3cfc10aef9",
-    "version_name": "0.2.30",
-    "notes": "Fixes a problem where drawbridge could reset one of the phone's preinstalled apps, which then installed games that drawbridge had to remove again.\n\nEverything in 0.2.29 is still here: the reorganised settings screen, the quieter filter notification, and no old message as a notification on a new install.",
+    "version_code": 60,
+    "url": "https://drawbridge-project.pages.dev/assets/dpc-1b2d3e88249ae9f6.apk",
+    "sha256": "1b2d3e88249ae9f60c4cee9aadb29d4e62636471994e64cf0dc4a27d997ce5e7",
+    "version_name": "0.2.35",
+    "notes": "New: a setup wizard that asks for the age and sets the options to match; unlock timers of 12 and 18 months, with buttons to restart or cancel a running timer; a clearer line when drawbridge is active but unlocked. Fixed: a new option that is on by default no longer switches itself off after it first appears, which on a locked phone had taken the option's apps away. The optional apps are listed by age, with a note on third-party WhatsApp apps.",
     "notes_i18n": {
-      "nl": "Lost een probleem op waarbij drawbridge een van de vooraf ge\u00efnstalleerde apps van de telefoon kon resetten, die daarna games installeerde die drawbridge opnieuw moest verwijderen.\n\nAlles uit 0.2.29 blijft: het opnieuw ingedeelde instellingenscherm, de onopvallendere filtermelding, en geen oud bericht als melding bij een nieuwe installatie.",
-      "fr": "Corrige un probl\u00e8me o\u00f9 drawbridge pouvait r\u00e9initialiser une des applications pr\u00e9install\u00e9es du t\u00e9l\u00e9phone, qui installait ensuite des jeux que drawbridge devait \u00e0 nouveau supprimer.\n\nTout ce qui \u00e9tait dans 0.2.29 demeure : l\u2019\u00e9cran des r\u00e9glages r\u00e9organis\u00e9, la notification du filtre plus discr\u00e8te, et plus d\u2019ancien message en notification lors d\u2019une nouvelle installation."
+      "nl": "Nieuw: een installatiehulp die naar de leeftijd vraagt en de opties daarop afstemt; ontgrendeltimers van 12 en 18 maanden, met knoppen om een lopende timer te herstarten of te annuleren; een duidelijkere regel als drawbridge actief maar ontgrendeld is. Opgelost: een nieuwe optie die standaard aan staat, schakelt zichzelf niet meer uit nadat ze voor het eerst verschijnt, wat op een vergrendelde telefoon de apps van die optie had weggenomen. De optionele apps staan op leeftijd gerangschikt, met een opmerking over apps van derden voor WhatsApp.",
+      "fr": "Nouveau : un assistant de configuration qui demande l'\u00e2ge et r\u00e8gle les options en cons\u00e9quence ; des minuteries de d\u00e9verrouillage de 12 et 18 mois, avec des boutons pour relancer ou annuler une minuterie en cours ; une ligne plus claire quand drawbridge est actif mais d\u00e9verrouill\u00e9. Corrig\u00e9 : une nouvelle option activ\u00e9e par d\u00e9faut ne se d\u00e9sactive plus d'elle-m\u00eame apr\u00e8s sa premi\u00e8re apparition, ce qui, sur un t\u00e9l\u00e9phone verrouill\u00e9, avait retir\u00e9 les applications de cette option. Les applications facultatives sont class\u00e9es par \u00e2ge, avec une remarque sur les applications tierces pour WhatsApp."
     }
   },
   "required_apps": [

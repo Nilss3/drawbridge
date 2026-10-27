@@ -21,9 +21,9 @@ which is kept whole on purpose.
 
 | | `main` (the beta) | `dev` |
 |---|---|---|
-| drawbridge | **0.2.30, build 55** | **0.2.31, build 56** |
-| herald | **0.1.23** | **0.1.22** |
-| policy | **141** | **138** |
+| drawbridge | **0.2.35, build 60** | **0.2.35, build 60** |
+| herald | **0.1.23** | **0.1.23** |
+| policy | **152** | **151** |
 | install page | <https://drawbridge-project.pages.dev/install/> | <https://dev.drawbridge-project.pages.dev/install/> |
 | phone | the owner's Nothing Phone (A059) | the Moto G15 |
 
@@ -2470,3 +2470,17 @@ The investigations that used to fill this file — Play Protect, FRP, the QR pat
 the reveal screen that locked phones by accident, five rounds of browser bugs —
 are settled, and their conclusions are either above, in the traps, or in the code
 comment that exists because of them.
+
+**Build 57 (dev only) crashed at start-up; fixed in 58, and the beta never had it.**
+R8 full mode dropped the no-arg constructor of WorkManager's `WorkDatabase_Impl`
+(Room 2.6.1's own keep rule keeps the class, not that constructor), so
+`InitializationProvider` threw `NoSuchMethodException` before any of our code
+ran: no filter, no herald, no app removal. `dpc/proguard-rules.pro` now keeps it.
+**After any dpc release, install the built APK and confirm the process stays up**
+(`adb shell pidof app.drawbridge.dpc`) before publishing it.
+
+**The beta's chatbots switch is still withdrawn (policy 141 and 152).** Bring it
+back in a *later* policy than the one that ships build 60, under a **new** option
+id (dev uses `general-purpose-chatbots`; `chatbots` and `general-chatbots` are
+already in some phones' seen set), because a phone only treats an option as
+arriving when its id is not in that set.

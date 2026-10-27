@@ -67,13 +67,6 @@
                 android:textAppearance="?attr/textAppearanceTitleLarge"
                 android:textIsSelectable="true" />
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingTop="8dp"
-                android:text="@string/lock_key_glyphs"
-                android:textAppearance="?attr/textAppearanceBodySmall" />
-
             <!--
                 Shown only when the configuration screen asked for a timer. It
                 says the period rather than a date on purpose: the countdown
@@ -170,6 +163,24 @@
                 android:textAppearance="?attr/textAppearanceBodyLarge"
                 android:visibility="gone" />
 
+            <!-- Ends a timer somebody started from this screen (the forgotten-code wait). -->
+            <Button
+                android:id="@+id/cancelTimerButton"
+                style="?attr/materialButtonOutlinedStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:visibility="gone" />
+
+            <!-- Starts a timer chosen before the lock over; shown only while one is running. -->
+            <Button
+                android:id="@+id/restartTimerButton"
+                style="?attr/materialButtonOutlinedStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:visibility="gone" />
+
             <!--
                 What this phone is actually set to. The lock screen is the screen
                 a managed phone spends its life on, and until now it said when the
@@ -206,13 +217,6 @@
                 android:fontFamily="monospace"
                 android:hint="@string/lock_challenge_hint"
                 android:inputType="textVisiblePassword" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingTop="8dp"
-                android:text="@string/lock_key_glyphs"
-                android:textAppearance="?attr/textAppearanceBodySmall" />
 
             <LinearLayout
                 android:id="@+id/updateNotice"

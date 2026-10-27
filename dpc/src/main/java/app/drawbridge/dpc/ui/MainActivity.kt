@@ -19,9 +19,11 @@ import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.RadioButton
+import android.widget.RadioGroup
 import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -142,7 +144,7 @@ class MainActivity : AppCompatActivity() {
         // app's name.
         setTitle(R.string.main_title)
 
-        findViewById<View>(R.id.root).applyScreenInsets()
+        findViewById<View>(R.id.screen).applyScreenInsets()
 
         updateNotice = findViewById(R.id.updateNotice)
         permanenceTitle = findViewById(R.id.permanenceTitle)
@@ -188,6 +190,8 @@ class MainActivity : AppCompatActivity() {
             body = getString(R.string.permanence_info),
         )
 
+        bindWizard(savedInstanceState)
+
         findViewById<Button>(R.id.lockButton).setOnClickListener { confirmLock() }
         findViewById<Button>(R.id.updateButton).setOnClickListener {
             startActivity(Intent(this, UpdateActivity::class.java))
@@ -204,6 +208,18 @@ class MainActivity : AppCompatActivity() {
             return
         }
         render()
+
+        // A newcomer is taken through the setup once. "Shown" is written when it
+        // opens rather than when it ends, so a phone that is switched off halfway
+        // does not greet the same parent with it on every launch.
+        if (wizardStep == null && !wizardSettings.shown && parentKey.protectedSince == 0L) {
+            startWizard()
+        }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        wizardStep?.let { outState.putInt(STATE_WIZARD_STEP, it.ordinal) }
     }
 
     /**
@@ -317,7 +333,351 @@ class MainActivity : AppCompatActivity() {
             renderLockTimer()
             renderPolicies()
             renderOptions()
+
+            // The update notice belongs to the plain screen; the wizard has its
+            // own footer and nothing else should sit between its pages.
+            if (wizardStep != null) updateNotice.visibility = View.GONE
         }
+    }
+
+
+    // --- The setup wizard ----------------------------------------------------
+
+    /**
+     * The pages, in order. **They are the sections of this same screen**, shown
+     * one at a time with the others hidden, rather than a second copy of the
+     * controls: every switch, card and dialog in the wizard is the one on the
+     * plain screen, so the two cannot disagree and nothing is maintained twice.
+     * The plain screen is untouched and is what the wizard hands back to.
+     */
+    private enum class Step { WELCOME, AGE, EXPLAIN, OPTIONS, BROWSERS, INSTALLS, OFFLINE, LOCK }
+
+    private val wizardSettings by lazy { WizardSettings(this) }
+
+    /** The page showing, or null when the wizard is closed. */
+    private var wizardStep: Step? = null
+
+    /** Whether the three collapsible bodies were open when the wizard took the screen. */
+    private var bodiesOpenBeforeWizard: List<Boolean>? = null
+
+    private val wizardBackCallback = object : OnBackPressedCallback(false) {
+        override fun handleOnBackPressed() = wizardBack()
+    }
+
+    private fun bindWizard(savedInstanceState: Bundle?) {
+        onBackPressedDispatcher.addCallback(this, wizardBackCallback)
+        findViewById<Button>(R.id.wizardStartButton).setOnClickListener { startWizard() }
+        findViewById<View>(R.id.wizardClose).setOnClickListener { closeWizard() }
+        findViewById<Button>(R.id.wizardBack).setOnClickListener { wizardBack() }
+        findViewById<Button>(R.id.wizardNext).setOnClickListener { wizardNext() }
+        findViewById<Button>(R.id.wizTrialButton).setOnClickListener {
+            permanence.chooseTrial()
+            wizardNext()
+        }
+        findViewById<Button>(R.id.wizPermanentButton).setOnClickListener { confirmPermanence() }
+
+        val ages = mapOf(
+            R.id.wizAgeUnder14 to WizardAge.UNDER_14,
+            R.id.wizAge1416 to WizardAge.AGE_14_16,
+            R.id.wizAge1618 to WizardAge.AGE_16_18,
+            R.id.wizAgeAdult to WizardAge.ADULT,
+        )
+        findViewById<RadioGroup>(R.id.wizAge).setOnCheckedChangeListener { _, id ->
+            val age = ages[id] ?: return@setOnCheckedChangeListener
+            if (age == wizardSettings.age) return@setOnCheckedChangeListener
+            wizardSettings.age = age
+            applyAgePreset(age)
+            updateWizardFooter()
+        }
+
+        val saved = savedInstanceState?.getInt(STATE_WIZARD_STEP, -1) ?: -1
+        if (saved >= 0) showWizard(Step.entries[saved])
+    }
+
+    private fun startWizard() {
+        wizardSettings.shown = true
+        showWizard(Step.WELCOME)
+    }
+
+    private fun closeWizard() {
+        wizardStep = null
+        wizardBackCallback.isEnabled = false
+        applyWizardLayout(null)
+        render()
+    }
+
+    private fun wizardBack() {
+        val index = wizardStep?.ordinal ?: return
+        if (index == 0) closeWizard() else showWizard(Step.entries[index - 1])
+    }
+
+    private fun wizardNext() {
+        val step = wizardStep ?: return
+        when (step) {
+            // The last page is only there when something needs locking.
+            Step.OFFLINE -> lifecycleScope.launch {
+                if (wizardRequiresLocking()) showWizard(Step.LOCK) else closeWizard()
+            }
+            Step.LOCK -> closeWizard()
+            // An age remembered from an earlier run is already ticked, so ticking
+            // it again changes nothing and the listener never applies it. Leaving
+            // the page is where the chosen age has to take effect, new or not.
+            Step.AGE -> {
+                wizardSettings.age?.let { applyAgePreset(it) }
+                showWizard(Step.entries[step.ordinal + 1])
+            }
+            else -> showWizard(Step.entries[step.ordinal + 1])
+        }
+    }
+
+    private fun showWizard(step: Step) {
+        wizardStep = step
+        wizardBackCallback.isEnabled = true
+        applyWizardLayout(step)
+        findViewById<ScrollView>(R.id.root).scrollTo(0, 0)
+    }
+
+    private fun updateWizardFooter() {
+        val step = wizardStep ?: return
+        val next = findViewById<Button>(R.id.wizardNext)
+        // The first page has the close button for a way out, and nothing before it.
+        findViewById<View>(R.id.wizardBack).visibility =
+            if (step == Step.WELCOME) View.GONE else View.VISIBLE
+        // Where the page asks a question the footer cannot answer for the
+        // parent: the first one has its own two buttons, the age page needs an age.
+        next.visibility = when {
+            step == Step.LOCK -> View.GONE
+            step == Step.WELCOME && !permanence.hasChosen -> View.GONE
+            else -> View.VISIBLE
+        }
+        next.isEnabled = step != Step.AGE || wizardSettings.age != null
+        next.setText(R.string.wizard_next)
+        if (step == Step.OFFLINE) {
+            lifecycleScope.launch {
+                if (wizardStep == Step.OFFLINE && !wizardRequiresLocking()) {
+                    next.setText(R.string.wizard_done)
+                }
+            }
+        }
+    }
+
+    /**
+     * Shows [step]'s blocks of the configuration screen and hides the rest, or
+     * puts the plain screen back when [step] is null.
+     */
+    private fun applyWizardLayout(step: Step?) {
+        fun show(id: Int, visible: Boolean) {
+            findViewById<View>(id).visibility = if (visible) View.VISIBLE else View.GONE
+        }
+
+        val on = step != null
+        show(R.id.wizardHeader, on)
+        show(R.id.wizardFooter, on)
+
+        // The three collapsible sections: the wizard shows each one open and
+        // without its header, since the page already names it, and hands them
+        // back as it found them.
+        val bodies = listOf(
+            findViewById<View>(R.id.optionsBody),
+            browserContainer,
+            findViewById<View>(R.id.offlineBody),
+        )
+        val headers = listOf(optionsSection, browsersSection, offlineSection)
+        if (on && bodiesOpenBeforeWizard == null) {
+            bodiesOpenBeforeWizard = bodies.map { it.visibility == View.VISIBLE }
+        }
+        if (on) {
+            bodies.forEach { it.visibility = View.VISIBLE }
+        } else {
+            bodiesOpenBeforeWizard?.let { was ->
+                bodies.forEachIndexed { i, body ->
+                    body.visibility = if (was[i]) View.VISIBLE else View.GONE
+                }
+            }
+            bodiesOpenBeforeWizard = null
+        }
+        headers.forEach { it.visibility = if (on) View.GONE else View.VISIBLE }
+
+        // On the plain screen the timer qualifies the Lock button and sits under
+        // it. The wizard asks for the timer first and then the act, so the button
+        // moves to the end of its box while the wizard has the screen.
+        val lockButton = findViewById<Button>(R.id.lockButton)
+        val lockBox = lockButton.parent as LinearLayout
+        lockBox.removeView(lockButton)
+        lockBox.addView(lockButton, if (on) lockBox.childCount else 0)
+        (lockButton.layoutParams as LinearLayout.LayoutParams).topMargin =
+            if (on) (24 * resources.displayMetrics.density).toInt() else 0
+
+        if (step == null) {
+            for (id in listOf(
+                R.id.wizLanguage, R.id.wizWelcomeImage, R.id.wizWelcomeText,
+                R.id.permanenceNotice, R.id.wizardStartButton, R.id.wizFilter,
+                R.id.wizRestrictions, R.id.wizOptions, R.id.wizBrowsers, R.id.wizInstall,
+                R.id.wizOffline, R.id.wizRule2, R.id.wizLock,
+            )) show(id, true)
+            for (id in listOf(
+                R.id.wizHeading, R.id.wizPermanence, R.id.wizExplainNote, R.id.wizAge,
+                R.id.wizInstallNote, R.id.wizOfflineNote, R.id.wizLockIntro,
+            )) show(id, false)
+            return
+        }
+
+        // Everything off, then the page's own blocks on.
+        for (id in listOf(
+            R.id.wizLanguage, R.id.wizWelcomeImage, R.id.wizWelcomeText,
+            R.id.permanenceNotice, R.id.wizardStartButton, R.id.wizFilter,
+            R.id.wizRestrictions, R.id.wizOptions, R.id.wizBrowsers, R.id.wizInstall,
+            R.id.wizOffline, R.id.wizRule2, R.id.wizLock, R.id.updateNotice,
+            R.id.wizHeading, R.id.wizPermanence, R.id.wizExplainNote, R.id.wizAge,
+            R.id.wizInstallNote, R.id.wizOfflineNote, R.id.wizLockIntro,
+        )) show(id, false)
+
+        val title = findViewById<TextView>(R.id.wizHeadingTitle)
+        val subtitle = findViewById<TextView>(R.id.wizHeadingSubtitle)
+        fun heading(titleRes: Int, subtitleRes: Int? = null) {
+            show(R.id.wizHeading, true)
+            title.setText(titleRes)
+            if (subtitleRes == null) {
+                subtitle.visibility = View.GONE
+            } else {
+                subtitle.setText(subtitleRes)
+                subtitle.visibility = View.VISIBLE
+            }
+        }
+
+        when (step) {
+            Step.WELCOME -> {
+                show(R.id.wizLanguage, true)
+                show(R.id.wizWelcomeImage, true)
+                show(R.id.wizWelcomeText, true)
+                show(R.id.wizPermanence, !permanence.hasChosen)
+            }
+
+            // After the age, because what is worth saying about the lock depends on
+            // it: an adult is told the base filter may be enough, a teenager that
+            // more is strongly recommended, and a child under 14 that this is
+            // probably the wrong device. The base filter's own card follows.
+            Step.EXPLAIN -> {
+                heading(R.string.wizard_explain_title)
+                findViewById<TextView>(R.id.wizExplainNote).setText(
+                    when (wizardSettings.age) {
+                        WizardAge.UNDER_14 -> R.string.wizard_explain_child
+                        WizardAge.AGE_14_16, WizardAge.AGE_16_18 -> R.string.wizard_explain_teen
+                        WizardAge.ADULT, null -> R.string.wizard_explain_adult
+                    },
+                )
+                show(R.id.wizExplainNote, true)
+                show(R.id.wizFilter, true)
+            }
+
+            Step.AGE -> {
+                heading(R.string.wizard_age_title, R.string.wizard_age_subtitle)
+                show(R.id.wizAge, true)
+                val group = findViewById<RadioGroup>(R.id.wizAge)
+                when (wizardSettings.age) {
+                    WizardAge.UNDER_14 -> group.check(R.id.wizAgeUnder14)
+                    WizardAge.AGE_14_16 -> group.check(R.id.wizAge1416)
+                    WizardAge.AGE_16_18 -> group.check(R.id.wizAge1618)
+                    WizardAge.ADULT -> group.check(R.id.wizAgeAdult)
+                    null -> group.clearCheck()
+                }
+            }
+
+            Step.OPTIONS -> {
+                heading(R.string.wizard_options_title)
+                optionsFootnote.visibility = View.GONE
+                show(R.id.wizOptions, true)
+            }
+
+            Step.BROWSERS -> {
+                heading(R.string.wizard_browsers_title)
+                show(R.id.wizBrowsers, true)
+            }
+
+            Step.INSTALLS -> {
+                heading(R.string.wizard_install_title)
+                findViewById<TextView>(R.id.wizInstallNote).setText(R.string.wizard_install_note)
+                show(R.id.wizInstallNote, true)
+                show(R.id.wizInstall, true)
+            }
+
+            Step.OFFLINE -> {
+                heading(R.string.wizard_offline_title)
+                val note = when (wizardSettings.age) {
+                    WizardAge.UNDER_14 -> R.string.wizard_offline_under_14
+                    WizardAge.AGE_14_16 -> R.string.wizard_offline_14_16
+                    else -> null
+                }
+                if (note != null) {
+                    findViewById<TextView>(R.id.wizOfflineNote).setText(note)
+                    show(R.id.wizOfflineNote, true)
+                }
+                show(R.id.wizOffline, true)
+            }
+
+            Step.LOCK -> {
+                heading(R.string.wizard_lock_title)
+                findViewById<TextView>(R.id.wizLockIntro).setText(R.string.wizard_lock_intro)
+                show(R.id.wizLockIntro, true)
+                show(R.id.wizLock, true)
+            }
+        }
+        updateWizardFooter()
+    }
+
+    /**
+     * Presets every control the later pages show from the age picked, then
+     * redraws them. The same writes the controls themselves make, in one pass:
+     * one notification to herald, one sweep for what the new selection
+     * releases, and none of the per-switch toasts.
+     */
+    private fun applyAgePreset(age: WizardAge) {
+        lifecycleScope.launch {
+            withContext(Dispatchers.IO) { policy.ensureLoaded() }
+
+            val enabledNow = enabledOptionIds()
+            var releasedSomething = false
+            for (option in policy.options) {
+                val was = option.id in enabledNow
+                val want = WizardPresets.optionEnabled(age, option.recommendedAge, was)
+                if (want == was) continue
+                policy.setOptionEnabled(option.id, want)
+                if (want) releasedSomething = true
+            }
+            SelectionProvider.notifyChanged(this@MainActivity)
+
+            val browserChoice = WizardPresets.browsers(age)
+            if (browserChoice != browsers.choice) {
+                browsers.choice = browserChoice
+                releasedSomething = true
+            }
+            if (releasedSomething) restoreNewlyAllowed()
+            DnsFilterService.reconcileNow(this@MainActivity)
+
+            installLock.isEnabled = WizardPresets.installLock(age)
+            val mode = WizardPresets.disconnect(age)
+            if (mode != disconnect.mode) {
+                disconnect.mode = mode
+                applyDisconnect()
+            }
+
+            renderOptions()
+            renderBrowsers()
+            renderInstallLock()
+            renderDisconnect()
+            if (wizardStep == Step.OFFLINE) updateWizardFooter()
+        }
+    }
+
+    private suspend fun wizardRequiresLocking(): Boolean {
+        withContext(Dispatchers.IO) { policy.ensureLoaded() }
+        val enabled = enabledOptionIds()
+        return WizardPresets.requiresLocking(
+            allOptionsEnabled = policy.options.all { it.id in enabled },
+            browsers = browsers.choice,
+            installLock = installLock.isEnabled,
+            disconnect = disconnect.mode,
+        )
     }
 
     // --- Trial and permanent mode --------------------------------------------
@@ -388,6 +748,8 @@ class MainActivity : AppCompatActivity() {
         permanence.makePermanent()
         deviceOwner.reapplyIfProtected()
         renderPermanence()
+        // Answering the wizard's first question with "keep it" moves on.
+        if (wizardStep == Step.WELCOME) wizardNext()
     }
 
     // --- The lock timer ------------------------------------------------------
@@ -880,8 +1242,17 @@ class MainActivity : AppCompatActivity() {
 
             // The policy's own words come from the signed document, not from a
             // string resource, so they carry their translations with them.
-            card.findViewById<TextView>(R.id.policyName).text = choice.displayName(language)
-            card.bindOptionalText(R.id.policySubtitle, choice.displaySubtitle(language))
+            // **With one profile, the card is the status rather than a choice**, so
+            // it says what state the phone is in instead of naming the profile:
+            // the base filter is on, and anything further waits for the lock. The
+            // ⓘ keeps the document's own description for the detail.
+            val single = choices.size == 1
+            val title = if (single) getString(R.string.policy_active_title) else choice.displayName(language)
+            card.findViewById<TextView>(R.id.policyName).text = title
+            card.bindOptionalText(
+                R.id.policySubtitle,
+                if (single) getString(R.string.policy_active_summary) else choice.displaySubtitle(language),
+            )
             // The same shield the options carry. It used to be "(+14)" inside the
             // subtitle sentence, spelled three different ways across the
             // translations, which is the one number somebody compares profiles by.
@@ -893,13 +1264,23 @@ class MainActivity : AppCompatActivity() {
             )
             card.bindInfo(
                 R.id.policyInfo,
-                title = choice.displayName(language),
+                title = title,
                 body = choice.displayDescription(language),
             )
-            card.isChecked = choice.id == selected
-
-            card.setOnClickListener {
-                if (choice.id != selected) confirmPolicy(choice)
+            if (single) {
+                // A status, not a choice: no border, no selected tint, nothing to
+                // tap. Drawn flat, with its text on the same left edge as the
+                // headings above and below it.
+                card.isCheckable = false
+                card.isClickable = false
+                card.strokeWidth = 0
+                card.setCardBackgroundColor(android.graphics.Color.TRANSPARENT)
+                card.getChildAt(0).setPaddingRelative(0, card.getChildAt(0).paddingTop, 0, card.getChildAt(0).paddingBottom)
+            } else {
+                card.isChecked = choice.id == selected
+                card.setOnClickListener {
+                    if (choice.id != selected) confirmPolicy(choice)
+                }
             }
             policyContainer.addView(card)
         }
@@ -911,7 +1292,11 @@ class MainActivity : AppCompatActivity() {
         val options = policy.options
         val hasOptions = options.isNotEmpty()
         optionsExplanation.visibility = if (hasOptions) View.VISIBLE else View.GONE
-        optionsFootnote.visibility = if (hasOptions) View.VISIBLE else View.GONE
+        // The footnote belongs to the asterisk an option's name may carry, so it
+        // is there on the wizard's page as well as the plain screen, and only
+        // when some option has the asterisk to explain.
+        optionsFootnote.visibility = if (policy.options.any { it.name.trimEnd().endsWith("*") })
+            View.VISIBLE else View.GONE
         if (!hasOptions) {
             optionContainer.addView(placeholder(R.string.options_none_available))
             optionsSection.setSectionSummary(getString(R.string.options_none_available))
@@ -922,8 +1307,16 @@ class MainActivity : AppCompatActivity() {
         val language = Languages.current()
         val inflater = LayoutInflater.from(this)
 
-        for (option in options) {
+        // Grouped by recommended age, youngest first, an option with no age last.
+        // The shield on each row already says which age, so the groups get a gap
+        // between them and no heading of their own.
+        var previousAge: Int? = null
+        for ((index, option) in options.sortedBy { it.recommendedAge ?: Int.MAX_VALUE }.withIndex()) {
             val row = inflater.inflate(R.layout.item_option, optionContainer, false)
+            if (index > 0 && option.recommendedAge != previousAge) {
+                row.setPadding(row.paddingLeft, row.paddingTop + (12 * resources.displayMetrics.density).toInt(), row.paddingRight, row.paddingBottom)
+            }
+            previousAge = option.recommendedAge
 
             row.findViewById<TextView>(R.id.optionName).text = option.displayName(language)
             row.bindRating(
@@ -1393,6 +1786,7 @@ class MainActivity : AppCompatActivity() {
 
     private companion object {
         const val TAG = "MainActivity"
+        const val STATE_WIZARD_STEP = "wizard_step"
 
         /**
          * A picture for each browser the policy allows.

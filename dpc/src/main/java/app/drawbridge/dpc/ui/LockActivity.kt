@@ -365,11 +365,10 @@ class LockActivity : AppCompatActivity() {
     /**
      * On the challenge: the day this lock lifts without anybody typing anything.
      *
-     * Two sentences rather than one, because the two timers are not the same
-     * news. A period the parent chose before locking is a confirmation; a
+     * The same line for both timers, though they are not the same news. A period the parent chose before locking is a confirmation; a
      * code-forgotten countdown may have been started by whoever was holding the
-     * phone, and a parent who still has their key needs to see that in words
-     * strong enough to act on. It is coloured as an error for the same reason.
+     * phone, and the Cancel button beside the date is how a parent who still has
+     * their key ends it.
      *
      * The keyguard carries the same fact — see
      * [app.drawbridge.dpc.admin.DeviceOwnerManager.updateLockScreenInfo] — so
@@ -377,29 +376,27 @@ class LockActivity : AppCompatActivity() {
      */
     private fun showRunningTimer() {
         val notice = findViewById<TextView>(R.id.timerNotice)
+        val restart = findViewById<Button>(R.id.restartTimerButton)
+        val cancel = findViewById<Button>(R.id.cancelTimerButton)
         if (!lockTimer.isArmed) {
             notice.visibility = View.GONE
+            restart.visibility = View.GONE
+            cancel.visibility = View.GONE
             return
         }
-
         val forgotten = lockTimer.reason == LockTimer.Reason.FORGOTTEN
+        // A timer chosen before the lock can be started over; the one started
+        // from this screen by whoever lost the code can be cancelled, which puts
+        // the lock back to key-only.
+        restart.visibility = if (forgotten) View.GONE else View.VISIBLE
+        cancel.visibility = if (forgotten) View.VISIBLE else View.GONE
+        restart.text = getString(R.string.lock_timer_restart, getString(lockTimer.armedLength.label))
+        restart.setOnClickListener { restartTimer() }
+        cancel.setText(R.string.lock_timer_cancel)
+        cancel.setOnClickListener { cancelTimer() }
         notice.visibility = View.VISIBLE
-        notice.text = getString(
-            if (forgotten) R.string.lock_timer_running_forgotten else R.string.lock_timer_running,
-            formatMoment(lockTimer.expiresAt),
-        )
-        // Resolved off the theme rather than from a colour resource, so the line
-        // follows dark mode like every other themed colour on these screens.
-        notice.setTextColor(
-            MaterialColors.getColor(
-                notice,
-                if (forgotten) {
-                    androidx.appcompat.R.attr.colorError
-                } else {
-                    androidx.appcompat.R.attr.colorPrimary
-                },
-            ),
-        )
+        notice.text = getString(R.string.lock_timer_running, formatMoment(lockTimer.expiresAt))
+        notice.setTextColor(MaterialColors.getColor(notice, androidx.appcompat.R.attr.colorPrimary))
     }
 
     private fun showLockHistory() {
@@ -636,6 +633,33 @@ class LockActivity : AppCompatActivity() {
             .setPositiveButton(R.string.forgot_key_start) { _, _ -> startForgottenKeyTimer() }
             .setNegativeButton(android.R.string.cancel, null)
             .show()
+    }
+
+    /**
+     * Starts the running countdown over with the length it was armed with.
+     *
+     * Not behind the key: it can only push the deadline later, so the worst
+     * anybody holding the phone can do with it is keep it locked longer.
+     */
+    private fun restartTimer() {
+        lockTimer.restart()
+        DeviceOwnerManager(this).updateLockScreenInfo()
+        LockTimerController(this).apply()
+        showRunningTimer()
+    }
+
+    /**
+     * Drops the countdown the forgotten-code door started, leaving a lock that
+     * only the key opens. Not behind the key, for the same reason restarting is
+     * not: it can only make the lock stricter.
+     */
+    private fun cancelTimer() {
+        lockTimer.disarm()
+        DeviceOwnerManager(this).updateLockScreenInfo()
+        // The clock pin goes if no curfew still needs it, and the alarm with it.
+        CurfewController(this).apply()
+        LockTimerController(this).apply()
+        showRunningTimer()
     }
 
     private fun startForgottenKeyTimer() {

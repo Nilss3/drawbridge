@@ -10,6 +10,8 @@
 
     <!-- Mode d'essai et mode définitif. -->
     <string name="permanence_trial_title">Drawbridge en mode d\'essai</string>
+    <string name="policy_active_title">Drawbridge est actif mais déverrouillé</string>
+    <string name="policy_active_summary">Les contenus pour adultes, les réseaux sociaux et les jeux sont tenus à l\'écart, applications et sites web. D\'autres restrictions sont possibles mais nécessitent le verrouillage.</string>
     <string name="permanence_permanent_title">Drawbridge est définitif</string>
     <string name="permanence_action">Rendre définitif</string>
     <string name="permanence_remove_action">Désactiver drawbridge pour le désinstaller</string>
@@ -51,10 +53,10 @@
     <string name="install_lock_description">Après le verrouillage, aucune nouvelle application ne peut être installée. Celles qui se trouvent sur le téléphone à ce moment-là continuent de se mettre à jour normalement.</string>
     <string name="install_lock_info">Avant de verrouiller, faites le tri dans vos applications et ne gardez que celles que vous voulez sur le téléphone. Après le verrouillage, aucune nouvelle application ne sera autorisée. Les mises à jour des applications existantes passent toujours : gardez donc le Play Store pour les mettre à jour.\n\nSi vous ne voulez aucun navigateur, choisissez cette option ci-dessus. Sinon, herald restera installé.\n\nLaissez ceci désactivé en cas de doute. Bloquer une application reste possible plus tard ; un téléphone sur lequel personne ne peut rien installer est un téléphone pour lequel on devra venir vous trouver.</string>
 
-    <string name="options_heading">WhatsApp, Telegram et applications vidéo</string>
+    <string name="options_heading">Outils nuisibles dont vous pourriez quand même avoir besoin en déplacement</string>
     <string name="options_explanation">Lorsqu\'il est déverrouillé, drawbridge autorise tout ce qui suit. Si vous ne voulez pas de certains de ces ‘services’, et à juste titre, interdisez-les et verrouillez drawbridge.</string>
     <string name="options_none_available">Cette politique ne propose rien à activer.</string>
-    <string name="options_footnote">La politique s\'inspire des bonnes pratiques du minimalisme numérique et constitue un bon choix pour tout le monde, adultes compris. Les âges sont une recommandation de pédiatres et de neurologues, et ne concernent que les personnes qui configurent un appareil pour un adolescent.</string>
+    <string name="options_footnote">* Si quelqu\'un veut utiliser WhatsApp sans le chatbot et les chaînes, il existe un moyen simple : passer par Beeper ou Dumberchat, à condition de faire tourner le WhatsApp officiel sur un autre appareil. Cela vaut aussi pour Facebook Messenger. Attention : c\'est contraire aux conditions d\'utilisation de WhatsApp et de Meta, et Meta bannit parfois les comptes qui utilisent des applications tierces.</string>
     <string name="option_change_failed">Cette option ne figure plus dans la politique.</string>
     <string name="option_recommended_age_description">Recommandé à partir de %1$d ans</string>
     <string name="option_various_ages_description">Âges variés</string>
@@ -109,7 +111,6 @@
         <item quantity="one">%d minute</item>
         <item quantity="other">%d minutes</item>
     </plurals>
-    <string name="lock_key_glyphs">Une clé ne contient jamais les lettres O, I ni L. Un caractère rond est un zéro. Si votre écriture est ambiguë, taper O, I ou l fonctionne quand même.</string>
     <string name="lock_reveal_confirm">J\'ai noté ou enregistré la clé, ou je l\'ai oubliée volontairement.</string>
     <string name="lock_reveal_share">Imprimer ou enregistrer la clé</string>
     <string name="lock_reveal_subject">clé drawbridge</string>
@@ -135,7 +136,6 @@
     <string name="lock_confirm_timer">Ce verrouillage prend fin de lui-même après %1$s. Vous recevez toujours une clé et elle fonctionne toujours — la minuterie n\'est que ce qui se passe si personne ne l\'utilise.</string>
     <string name="lock_timer_reveal">Ce téléphone se déverrouille de lui-même %1$s après votre appui sur Terminé, avec ou sans cette clé. D\'ici là, la clé est la seule entrée.</string>
     <string name="lock_timer_running">Se déverrouille de lui-même le %1$s</string>
-    <string name="lock_timer_running_forgotten">Quelqu\'un a indiqué sur ce téléphone que le code était perdu : il se déverrouille donc de lui-même le %1$s. Si vous avez encore le code, déverrouillez puis verrouillez à nouveau pour l\'arrêter.</string>
 
     <string name="lock_timer_hours_2">2 heures</string>
     <string name="lock_timer_hours_4">4 heures</string>
@@ -152,6 +152,10 @@
     <string name="lock_timer_months_2">2 mois</string>
     <string name="lock_timer_months_3">3 mois</string>
     <string name="lock_timer_months_6">6 mois</string>
+    <string name="lock_timer_months_12">12 mois</string>
+    <string name="lock_timer_months_18">18 mois</string>
+    <string name="lock_timer_restart">Relancer la minuterie de déverrouillage de %1$s</string>
+    <string name="lock_timer_cancel">Annuler la minuterie de déverrouillage</string>
 
     <!-- Code oublié, sur un téléphone verrouillé -->
     <string name="forgot_key_title">Code oublié ?</string>
@@ -206,4 +210,34 @@
     <string name="section_collapsed">Réduit</string>
     <string name="section_expanded">Développé</string>
     <string name="restrictions_heading">Restrictions et options supplémentaires</string>
+
+    <!-- The setup wizard -->
+    <string name="wizard_title">Configuration</string>
+    <string name="wizard_close">Fermer la configuration</string>
+    <string name="wizard_start">Lancer l\'assistant de configuration</string>
+    <string name="wizard_back">Retour</string>
+    <string name="wizard_next">Suivant</string>
+    <string name="wizard_done">Terminé</string>
+    <string name="wizard_permanence_question">Voulez-vous essayer drawbridge temporairement ou le garder indéfiniment ?</string>
+    <string name="wizard_try_temporarily">L\'essayer temporairement</string>
+    <string name="wizard_keep_indefinitely">Le garder indéfiniment</string>
+    <string name="wizard_explain_title">Déverrouillé et verrouillé</string>
+    <string name="wizard_explain_adult">Drawbridge a un état déverrouillé et un état verrouillé. Déverrouillé, il tient à l\'écart la pornographie, les jeux d\'argent, les rencontres, la publicité, les compagnons IA et la plupart des jeux. Selon vos besoins, cela peut déjà être assez minimaliste.\n\nLes écrans suivants vous offrent d\'autres options pour restreindre davantage l\'appareil. Elles ne prennent effet que lorsque drawbridge est verrouillé. Pour déverrouiller et modifier les réglages, il faut soit un code, soit attendre la fin d\'une minuterie. La minuterie peut être très longue ou très courte, par exemple pour \u2018passer 4 h sans YouTube\u2019 ou \u2018passer le week-end hors ligne\u2019.</string>
+    <string name="wizard_explain_teen">Drawbridge a un état déverrouillé et un état verrouillé. Déverrouillé, il tient à l\'écart la pornographie, les jeux d\'argent, les rencontres, la publicité, les compagnons IA et la plupart des jeux.\n\nPour les adolescents, nous recommandons FORTEMENT des restrictions supplémentaires, comme proposé dans les pages suivantes. Ces restrictions ne prennent effet que lorsque drawbridge est verrouillé. Pour déverrouiller et modifier les réglages, il faut soit un code, soit attendre la fin d\'une minuterie. La minuterie peut être réglée pour de très longues durées, ce qui restreint l\'appareil pendant de nombreux mois (plus d\'un an) sans souci. Le verrouillage peut être prolongé sans déverrouiller.</string>
+    <string name="wizard_explain_child">Pour un enfant de moins de 14 ans, nous recommandons fortement un vrai téléphone basique. Si, pour une raison quelconque, vous voulez que votre enfant ait un smartphone restreint, poursuivez cet assistant. Vous pouvez aussi envisager de supprimer drawbridge et d\'utiliser temporairement Google Family Link (jusqu\'à 13 ans). Dans ce cas, nous suggérons d\'utiliser notre navigateur herald plutôt que Chrome : herald bloque dans le navigateur tout ce que drawbridge bloque.\n\nDrawbridge a un état déverrouillé et un état verrouillé. Déverrouillé, il tient à l\'écart la pornographie, les jeux d\'argent, les rencontres, la publicité, les compagnons IA et la plupart des jeux. Pour les jeunes adolescents, nous recommandons FORTEMENT des restrictions supplémentaires, comme proposé dans les pages suivantes, notamment limiter les installations d\'applications, aucun navigateur, voire être hors ligne et transformer cet appareil en téléphone basique. Les restrictions ne prennent effet que lorsque drawbridge est verrouillé. Pour déverrouiller et modifier les réglages, il faut soit un code, soit attendre la fin d\'une minuterie. La minuterie peut être réglée pour de très longues durées (plus d\'un an !). Le verrouillage peut être prolongé sans déverrouiller.</string>
+    <string name="wizard_age_title">Quel est l\'âge de l\'utilisateur ?</string>
+    <string name="wizard_age_subtitle">Cela préréglera les paramètres des pages suivantes.</string>
+    <string name="wizard_age_under_14">Moins de 14 ans</string>
+    <string name="wizard_age_14_16">14 à 16 ans</string>
+    <string name="wizard_age_16_18">16 à 18 ans</string>
+    <string name="wizard_age_adult">Adulte</string>
+    <string name="wizard_options_title">Applications facultatives</string>
+    <string name="wizard_browsers_title">Navigateurs</string>
+    <string name="wizard_install_title">Plus aucune installation d\'application</string>
+    <string name="wizard_install_note">Avant de verrouiller, supprimez toutes les applications dont vous n\'avez pas besoin.</string>
+    <string name="wizard_offline_title">Paramètres hors ligne</string>
+    <string name="wizard_offline_under_14">Les moins de 14 ans devraient utiliser un téléphone hors ligne ou presque.</string>
+    <string name="wizard_offline_14_16">Les 14 à 16 ans devraient avoir des limites strictes.</string>
+    <string name="wizard_lock_title">Verrouiller les paramètres</string>
+    <string name="wizard_lock_intro">Vous recevrez un code de déverrouillage. C\'est un code long et unique. Vous pouvez aussi verrouiller les paramètres pour une durée donnée, que vous pouvez prolonger à tout moment. Même avec une minuterie, le code fonctionne, mais vous pouvez oublier le code sans risque.</string>
 </resources>

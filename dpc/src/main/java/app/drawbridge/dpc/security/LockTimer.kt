@@ -56,7 +56,7 @@ class LockTimer(context: Context) {
         context.applicationContext.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
 
     /**
-     * How long a timed lock lasts, from two hours to six months.
+     * How long a timed lock lasts, from two hours to eighteen months.
      *
      * The steps are coarse on purpose. This is not a stopwatch — it is *"a day
      * offline to study", "a weekend", "a week of camping", "two weeks without an
@@ -71,6 +71,9 @@ class LockTimer(context: Context) {
      * this is trying to make, and refusing to offer it does not stop them, it
      * just sends them to *no timer at all*, which is the genuinely open-ended
      * option sitting right beside these.
+     *
+     * Twelve and eighteen months were added later, for a school year and a year
+     * and a half, on the same reasoning.
      *
      * The months are thirty days each. Nobody picking "3 months" is counting to
      * the calendar date, and a length that depends on which months it happens to
@@ -106,6 +109,8 @@ class LockTimer(context: Context) {
         MONTHS_2(60 * DAY, R.string.lock_timer_months_2),
         MONTHS_3(90 * DAY, R.string.lock_timer_months_3),
         MONTHS_6(180 * DAY, R.string.lock_timer_months_6),
+        MONTHS_12(360 * DAY, R.string.lock_timer_months_12),
+        MONTHS_18(540 * DAY, R.string.lock_timer_months_18),
         ;
 
         companion object {
@@ -201,6 +206,21 @@ class LockTimer(context: Context) {
             .putString(KEY_ARMED_LENGTH, length.name)
             .putString(KEY_REASON, reason.name)
             .apply()
+    }
+
+    /**
+     * Starts the running countdown over, with the length it was armed with.
+     *
+     * Only ever *later*: the new deadline is now plus the armed length, which can
+     * never be before the one it replaces, so whoever presses this can lengthen a
+     * lock and never shorten it. The reason is kept, so a countdown a child
+     * started through the code-forgotten door is still described as that.
+     *
+     * Does nothing when no timer is running.
+     */
+    fun restart(now: Long = System.currentTimeMillis()) {
+        val reason = reason ?: return
+        arm(armedLength, reason, now)
     }
 
     /**

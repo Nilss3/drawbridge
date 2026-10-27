@@ -10,6 +10,8 @@
 
     <!-- Proef- en definitieve modus. -->
     <string name="permanence_trial_title">Drawbridge in proefmodus</string>
+    <string name="policy_active_title">Drawbridge is actief maar ontgrendeld</string>
+    <string name="policy_active_summary">Pornografische inhoud, sociale media en games worden buiten gehouden, apps en websites. Verdere beperkingen zijn mogelijk maar vereisen vergrendelen.</string>
     <string name="permanence_permanent_title">Drawbridge is definitief</string>
     <string name="permanence_action">Definitief maken</string>
     <string name="permanence_remove_action">Drawbridge uitschakelen om te verwijderen</string>
@@ -51,10 +53,10 @@
     <string name="install_lock_description">Na de vergrendeling kan geen enkele nieuwe app geïnstalleerd worden. De apps die op dat moment op de telefoon staan blijven gewoon updaten.</string>
     <string name="install_lock_info">Snoei je apps voor je vergrendelt en hou enkel de apps die je op je telefoon wil. Na de vergrendeling worden geen nieuwe apps meer toegelaten. Updates van bestaande apps komen wel door, dus hou de Play Store om bij te werken.\n\nWil je geen browser, kies dan die optie hierboven. Anders blijft herald geïnstalleerd.\n\nLaat dit uit als je twijfelt. Een app blokkeren kan later altijd nog; een telefoon waarop niemand iets kan installeren is een telefoon waarvoor men bij jou moet aankloppen.</string>
 
-    <string name="options_heading">WhatsApp, Telegram en video-apps</string>
+    <string name="options_heading">Schadelijke hulpmiddelen die je onderweg toch nodig kunt hebben</string>
     <string name="options_explanation">drawbridge laat, wanneer het ontgrendeld is, alles hieronder toe. Wil je sommige van deze ‘diensten’ niet, en terecht, verbied ze dan en vergrendel drawbridge.</string>
     <string name="options_none_available">Dit beleid biedt niets om aan te zetten.</string>
-    <string name="options_footnote">Het beleid is geïnspireerd op de beste praktijken uit het digitale minimalisme en is een goede keuze voor iedereen, ook voor volwassenen. De leeftijden zijn een aanbeveling van kinderartsen en neurologen, en zijn enkel relevant voor verzorgers die een toestel instellen voor een tiener.</string>
+    <string name="options_footnote">* Wil iemand WhatsApp gebruiken zonder de chatbot en de kanalen, dan kan dat eenvoudig: via Beeper of Dumberchat, op voorwaarde dat je de gewone WhatsApp op een ander toestel laat draaien. Dit geldt ook voor Facebook Messenger. Let op: dit is in strijd met de gebruiksvoorwaarden van WhatsApp en Meta, en Meta blokkeert soms accounts die apps van derden gebruiken.</string>
     <string name="option_change_failed">Die optie staat niet meer in het beleid.</string>
     <string name="option_recommended_age_description">Aangeraden vanaf %1$d jaar</string>
     <string name="option_various_ages_description">Verschillende leeftijden</string>
@@ -109,7 +111,6 @@
         <item quantity="one">%d minuut</item>
         <item quantity="other">%d minuten</item>
     </plurals>
-    <string name="lock_key_glyphs">Een sleutel bevat nooit de letters O, I of L. Een rond teken is een nul. Schrijf je er een dubbelzinnig op, dan werkt O, I of l intypen alsnog.</string>
     <string name="lock_reveal_confirm">Ik heb de sleutel opgeschreven of opgeslagen, of ze met opzet vergeten.</string>
     <string name="lock_reveal_share">Sleutel afdrukken of bewaren</string>
     <string name="lock_reveal_subject">drawbridge-sleutel</string>
@@ -135,7 +136,6 @@
     <string name="lock_confirm_timer">Deze vergrendeling stopt van zichzelf na %1$s. Je krijgt nog steeds een sleutel en die werkt nog steeds — de timer is enkel wat er gebeurt als niemand hem gebruikt.</string>
     <string name="lock_timer_reveal">Deze telefoon ontgrendelt zichzelf %1$s nadat je op Klaar tikt, met of zonder deze sleutel. Tot dan is de sleutel de enige weg naar binnen.</string>
     <string name="lock_timer_running">Ontgrendelt zichzelf op %1$s</string>
-    <string name="lock_timer_running_forgotten">Iemand heeft op deze telefoon gezegd dat de code kwijt was, dus ontgrendelt ze zichzelf op %1$s. Heb je de code nog, ontgrendel dan en vergrendel opnieuw om dat te stoppen.</string>
 
     <string name="lock_timer_hours_2">2 uur</string>
     <string name="lock_timer_hours_4">4 uur</string>
@@ -152,6 +152,10 @@
     <string name="lock_timer_months_2">2 maanden</string>
     <string name="lock_timer_months_3">3 maanden</string>
     <string name="lock_timer_months_6">6 maanden</string>
+    <string name="lock_timer_months_12">12 maanden</string>
+    <string name="lock_timer_months_18">18 maanden</string>
+    <string name="lock_timer_restart">Ontgrendeltimer van %1$s opnieuw starten</string>
+    <string name="lock_timer_cancel">Ontgrendeltimer annuleren</string>
 
     <!-- Code vergeten, op een vergrendelde telefoon -->
     <string name="forgot_key_title">Code vergeten?</string>
@@ -206,4 +210,34 @@
     <string name="section_collapsed">Ingeklapt</string>
     <string name="section_expanded">Uitgeklapt</string>
     <string name="restrictions_heading">Bijkomende beperkingen en opties</string>
+
+    <!-- The setup wizard -->
+    <string name="wizard_title">Instellen</string>
+    <string name="wizard_close">De installatie sluiten</string>
+    <string name="wizard_start">De installatiehulp starten</string>
+    <string name="wizard_back">Terug</string>
+    <string name="wizard_next">Volgende</string>
+    <string name="wizard_done">Klaar</string>
+    <string name="wizard_permanence_question">Wil je drawbridge tijdelijk uitproberen of voor onbepaalde tijd houden?</string>
+    <string name="wizard_try_temporarily">Tijdelijk uitproberen</string>
+    <string name="wizard_keep_indefinitely">Voor onbepaalde tijd houden</string>
+    <string name="wizard_explain_title">Ontgrendeld en vergrendeld</string>
+    <string name="wizard_explain_adult">Drawbridge heeft een ontgrendelde en een vergrendelde toestand. Ontgrendeld houdt het pornografie, gokken, dating, advertenties, AI-gezelschapsapps en de meeste games buiten. Afhankelijk van je behoeften kan dit minimalistisch genoeg zijn.\n\nDe volgende schermen geven je meer opties om het toestel verder te beperken. Die gaan pas in als drawbridge vergrendeld is. Om te ontgrendelen en wijzigingen aan te brengen heb je een code nodig, of moet je wachten tot een timer afloopt. De timer kan heel lang of heel kort zijn, bijvoorbeeld om \u20184 uur zonder YouTube\u2019 te gaan of \u2018het weekend offline\u2019 door te brengen.</string>
+    <string name="wizard_explain_teen">Drawbridge heeft een ontgrendelde en een vergrendelde toestand. Ontgrendeld houdt het pornografie, gokken, dating, advertenties, AI-gezelschapsapps en de meeste games buiten.\n\nVoor tieners raden we STERK aan om verder te beperken, zoals op de volgende pagina\'s wordt voorgesteld. Die beperkingen gaan pas in als drawbridge vergrendeld is. Om te ontgrendelen en wijzigingen aan te brengen heb je een code nodig, of moet je wachten tot een timer afloopt. De timer kan voor heel lange tijd worden ingesteld, zodat het toestel vele maanden (tot meer dan een jaar) beperkt blijft zonder dat je je zorgen hoeft te maken. De vergrendeling kan worden verlengd zonder te ontgrendelen.</string>
+    <string name="wizard_explain_child">Voor een kind jonger dan 14 jaar raden we een echte dumbphone aan. Wil je toch echt een beperkte smartphone, volg dan verder de instructies in deze wizard. Je kunt ook overwegen drawbridge te verwijderen en tijdelijk Google Family Link te gebruiken (tot 13). Kies je voor Family Link, gebruik dan onze herald browser in plaats van Chrome: herald blokkeert in de browser alles wat drawbridge blokkeert.\n\nDrawbridge heeft een ontgrendelde en een vergrendelde toestand. Ontgrendeld houdt het pornografie, gokken, dating, advertenties, AI-gezelschapsapps en de meeste games buiten. Voor jonge tieners raden we STERK aan om verder te beperken zoals op de volgende pagina\'s wordt voorgesteld, met onder meer het beperken van app-installaties, geen browser, of zelfs offline gaan en van dit toestel een dumbphone maken. De beperkingen gaan pas in als drawbridge vergrendeld is. Om te ontgrendelen en wijzigingen aan te brengen heb je een code nodig, of moet je wachten tot een timer afloopt. De timer kan voor heel lange tijd worden ingesteld (tot meer dan een jaar!). De vergrendeling kan worden verlengd zonder te ontgrendelen.</string>
+    <string name="wizard_age_title">Wat is de leeftijd van de gebruiker?</string>
+    <string name="wizard_age_subtitle">Dit stelt de instellingen op de volgende pagina\'s vooraf in.</string>
+    <string name="wizard_age_under_14">Jonger dan 14</string>
+    <string name="wizard_age_14_16">14 tot 16</string>
+    <string name="wizard_age_16_18">16 tot 18</string>
+    <string name="wizard_age_adult">Volwassen</string>
+    <string name="wizard_options_title">Optionele apps</string>
+    <string name="wizard_browsers_title">Browsers</string>
+    <string name="wizard_install_title">Geen nieuwe apps meer</string>
+    <string name="wizard_install_note">Verwijder voor het vergrendelen alle apps die je niet nodig hebt.</string>
+    <string name="wizard_offline_title">Offline-instellingen</string>
+    <string name="wizard_offline_under_14">Kinderen jonger dan 14 horen een offline of grotendeels offline telefoon te gebruiken.</string>
+    <string name="wizard_offline_14_16">14 tot 16 hoort strikte beperkingen te hebben.</string>
+    <string name="wizard_lock_title">De instellingen vergrendelen</string>
+    <string name="wizard_lock_intro">Je krijgt een code om te ontgrendelen. Het is een lange, unieke code. Je kunt de instellingen ook voor een bepaalde tijd vergrendelen, een tijd die je op elk moment kunt verlengen. Ook met een timer werkt de code, maar het is veilig om de code te vergeten.</string>
 </resources>

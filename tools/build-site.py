@@ -793,7 +793,7 @@ def explainer_pages(lang: str) -> list[dict]:
         2: f'<p>{c["page2"]}</p>',
         3: f'<p>{c["page3"]}</p>',
         4: _app_string("install_lock_info", lang),
-        5: "\n            ".join(options_html),
+        5: "\n            ".join(options_html) + "\n            " + _app_string("options_footnote", lang),
         6: f'<p>{c["page6_lead"]}</p>\n            ' + _app_string("lock_timer_info", lang),
     }
 

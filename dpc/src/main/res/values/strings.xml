@@ -26,6 +26,8 @@
         and a confirmation nobody finishes reading protects nobody.
     -->
     <string name="permanence_trial_title">Drawbridge in trial mode</string>
+    <string name="policy_active_title">Drawbridge is active but unlocked</string>
+    <string name="policy_active_summary">Adult content, social media and games are kept out, apps and websites. Further restrictions are possible but require locking.</string>
     <string name="permanence_permanent_title">Drawbridge is permanent</string>
     <string name="permanence_action">Make it permanent</string>
     <string name="permanence_remove_action">Deactivate drawbridge to uninstall</string>
@@ -88,10 +90,10 @@
     <string name="install_lock_description">After the lock, no new app can be installed. The apps that are on the phone at that moment go on updating as normal.</string>
     <string name="install_lock_info">Before locking, prune down your apps and keep only those you want to have on your phone. After locking, no new apps will be allowed. Updates of existing apps do come through, so keep the Play Store to update.\n\nIf you want no browser, pick that option above. Otherwise, herald will remain installed.\n\nLeave this off if you are not sure. A blocked app can always be blocked later; an app nobody can install is a phone somebody has to come to you about.</string>
 
-    <string name="options_heading">WhatsApp, Telegram and video apps</string>
+    <string name="options_heading">Harmful tools you may still need on the road</string>
     <string name="options_explanation">drawbridge when unlocked allows all of the following. If you don\'t want some of these \u2018services\u2019, and rightfully so, disallow them and lock drawbridge.</string>
     <string name="options_none_available">This policy offers nothing to switch on.</string>
-    <string name="options_footnote">The policy is inspired by best practices in digital minimalism and is a good choice for anyone, including adults. The ages are a recommendation by pediatricians and neurologists, and are only relevant for caretakers setting up a device for a teen.</string>
+    <string name="options_footnote">* If a user wants to use WhatsApp without the chatbot and the channels, there is a simple way to do so: through Beeper or Dumberchat, provided you run the main WhatsApp on another device. This is also true for Facebook messenger. Warning: this is against the terms of service of WhatsApp and Meta, and Meta sometimes bans accounts that use third-party apps.</string>
     <string name="option_change_failed">That option is no longer in the policy.</string>
     <!-- The age used to trail the option's name in running text; it is a shield
          now. The glyph and what a screen reader says about it are separate: the
@@ -193,7 +195,6 @@
         <item quantity="one">%d minute</item>
         <item quantity="other">%d minutes</item>
     </plurals>
-    <string name="lock_key_glyphs">A key never contains the letters O, I or L. A round character is a zero. If you write one down ambiguously, typing O, I or l back still works.</string>
     <string name="lock_reveal_confirm">I have written down or saved the key, or forgot it on purpose.</string>
     <string name="lock_reveal_share">Print or save the key</string>
     <string name="lock_reveal_subject">drawbridge key</string>
@@ -225,7 +226,6 @@
     <string name="lock_confirm_timer">This lock ends by itself after %1$s. You still get a key and it still works — the timer is only what happens if nobody uses it.</string>
     <string name="lock_timer_reveal">This phone unlocks itself %1$s after you tap Done, with or without this key. Until then the key is the only way in.</string>
     <string name="lock_timer_running">Unlocks by itself on %1$s</string>
-    <string name="lock_timer_running_forgotten">Somebody on this phone said the code was lost, so it unlocks by itself on %1$s. If you still have the code, unlock and lock again to stop that.</string>
 
     <string name="lock_timer_hours_2">2 hours</string>
     <string name="lock_timer_hours_4">4 hours</string>
@@ -242,6 +242,10 @@
     <string name="lock_timer_months_2">2 months</string>
     <string name="lock_timer_months_3">3 months</string>
     <string name="lock_timer_months_6">6 months</string>
+    <string name="lock_timer_months_12">12 months</string>
+    <string name="lock_timer_months_18">18 months</string>
+    <string name="lock_timer_restart">Restart unlock timer of %1$s</string>
+    <string name="lock_timer_cancel">Cancel unlock timer</string>
 
     <!-- The code-forgotten door, on a locked phone. -->
     <string name="forgot_key_title">Forgotten the code?</string>
@@ -307,4 +311,34 @@
     <string name="section_collapsed">Collapsed</string>
     <string name="section_expanded">Expanded</string>
     <string name="restrictions_heading">Further restrictions and options</string>
+
+    <!-- The setup wizard -->
+    <string name="wizard_title">Setup</string>
+    <string name="wizard_close">Close the setup</string>
+    <string name="wizard_start">Start the setup wizard</string>
+    <string name="wizard_back">Back</string>
+    <string name="wizard_next">Next</string>
+    <string name="wizard_done">Done</string>
+    <string name="wizard_permanence_question">Do you want to try drawbridge temporarily or keep it indefinitely?</string>
+    <string name="wizard_try_temporarily">Try it temporarily</string>
+    <string name="wizard_keep_indefinitely">Keep it indefinitely</string>
+    <string name="wizard_explain_title">Unlocked and locked</string>
+    <string name="wizard_explain_adult">Drawbridge has an unlocked and a locked state. When unlocked, it keeps out pornography, gambling, dating, ads, AI companions and most games. Depending on your needs, this may be minimalist enough.\n\nThe following screens will give you more options to further restrict the device. These only go into effect when drawbridge is locked. To unlock and make changes you\'ll either need a code or wait for a timer to end. The timer may be very long or very short, for instance to \u2018go 4h without YouTube\u2019 or \u2018spend the weekend offline\u2019.</string>
+    <string name="wizard_explain_teen">Drawbridge has an unlocked and a locked state. When unlocked, it keeps out pornography, gambling, dating, ads, AI companions and most games.\n\nFor teens, we STRONGLY recommend further restrictions, as suggested on the following pages. These restrictions only go into effect when drawbridge is locked. To unlock and make changes you\'ll either need a code or wait for a timer to end. The timer can be set for very long times, restricting the device for many months (to over a year) without worrying. The lock can be prolonged without unlocking.</string>
+    <string name="wizard_explain_child">For a child under 14 we strongly recommend a true dumbphone. If you for some reason want your child to have a restricted smart device, continue this wizard. You may also consider deleting drawbridge and going temporarily with Google Family Link (until 13). If you do so, we suggest using our herald browser instead of Chrome: herald blocks everything drawbridge does, in the browser.\n\nDrawbridge has an unlocked and a locked state. When unlocked, it keeps out pornography, gambling, dating, ads, AI companions and most games. For young teens, we STRONGLY recommend further restrictions as suggested on the following pages, including limiting app installs, no browser, or even being offline and turning this device into a dumbphone. The restrictions only go into effect when drawbridge is locked. To unlock and make changes you\'ll either need a code or wait for a timer to end. The timer can be set for very long times (to over a year!). The lock can be prolonged without unlocking.</string>
+    <string name="wizard_age_title">What is the age of the user?</string>
+    <string name="wizard_age_subtitle">This will preset the settings in the further pages.</string>
+    <string name="wizard_age_under_14">Under 14</string>
+    <string name="wizard_age_14_16">14 to 16</string>
+    <string name="wizard_age_16_18">16 to 18</string>
+    <string name="wizard_age_adult">Adult</string>
+    <string name="wizard_options_title">Optional apps</string>
+    <string name="wizard_browsers_title">Browsers</string>
+    <string name="wizard_install_title">No further app installs</string>
+    <string name="wizard_install_note">Before locking, remove all apps you don\'t need.</string>
+    <string name="wizard_offline_title">Offline settings</string>
+    <string name="wizard_offline_under_14">Under 14s should use an offline or mostly offline phone.</string>
+    <string name="wizard_offline_14_16">14 to 16 should have strict limitations.</string>
+    <string name="wizard_lock_title">Lock down the settings</string>
+    <string name="wizard_lock_intro">You\'ll get a code to unlock. It\'s a long and unique code. You may also choose to lock the settings for a certain amount of time, a time which you can prolong at any moment. Even when a timer is set, the code works, but it\'s safe to forget the code.</string>
 </resources>
