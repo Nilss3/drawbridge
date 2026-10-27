@@ -1,7 +1,7 @@
 {
-  "version": 147,
-  "issued_at": "2026-10-27T12:07:29Z",
-  "comment": "DEV CHANNEL ONLY. WhatsApp is recommended 18+ and carries a footnote on third-party WhatsApp apps; Beeper and DumberChat are always allowed. drawbridge 0.2.33 build 58, herald 0.1.23 unchanged.",
+  "version": 148,
+  "issued_at": "2026-10-27T12:18:54Z",
+  "comment": "DEV CHANNEL ONLY. Beeper and DumberChat, the third-party WhatsApp apps, are outside the DNS filter's tunnel as well as always allowed, so they reach their servers with the WhatsApp switch off. drawbridge 0.2.33 build 58, herald 0.1.23 unchanged.",
   "dns": {
     "upstreams": [
       "94.140.14.15",
@@ -15,7 +15,9 @@
     "excluded_packages": [
       "com.google.android.projection.gearhead",
       "com.whatsapp",
-      "com.whatsapp.w4b"
+      "com.whatsapp.w4b",
+      "com.beeper.android",
+      "com.dumbermini.chat"
     ]
   },
   "blocklists": [

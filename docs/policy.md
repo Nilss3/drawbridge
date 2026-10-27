@@ -327,6 +327,15 @@ when it is on, and hides the app when it is off. Rule 1 survives because **the
 app has no in-app browser** — links open in the chosen browser, which stays
 filtered.
 
+**Beeper and DumberChat are the third and fourth entries, from policy 148 on
+dev.** They are the third-party WhatsApp apps the `whatsapp` option's footnote
+names: they log in as a linked device of a WhatsApp running on another phone,
+so a child gets WhatsApp's chats without its chatbot and channels. They talk to
+WhatsApp's servers themselves, which the filter blocks while the switch is off,
+so the owner chose to leave them outside the tunnel. Whether either shows
+linked pages in an in-app browser has not been checked; rule 1 is the thing to
+look at first if a link ever opens unfiltered from one of them.
+
 **Nothing here weakens the offline mode or a curfew.** Those are the always-on
 VPN's *lockdown* flag, which is a netd rule about every UID on the device rather
 than a routing decision inside the tunnel, and the only documented way out of it
