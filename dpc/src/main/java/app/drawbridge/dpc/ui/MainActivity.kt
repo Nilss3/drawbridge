@@ -419,6 +419,13 @@ class MainActivity : AppCompatActivity() {
                 if (wizardRequiresLocking()) showWizard(Step.LOCK) else closeWizard()
             }
             Step.LOCK -> closeWizard()
+            // An age remembered from an earlier run is already ticked, so ticking
+            // it again changes nothing and the listener never applies it. Leaving
+            // the page is where the chosen age has to take effect, new or not.
+            Step.AGE -> {
+                wizardSettings.age?.let { applyAgePreset(it) }
+                showWizard(Step.entries[step.ordinal + 1])
+            }
             else -> showWizard(Step.entries[step.ordinal + 1])
         }
     }

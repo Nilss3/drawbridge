@@ -1,7 +1,7 @@
 {
-  "version": 148,
-  "issued_at": "2026-10-27T12:18:54Z",
-  "comment": "DEV CHANNEL ONLY. Beeper and DumberChat, the third-party WhatsApp apps, are outside the DNS filter's tunnel as well as always allowed, so they reach their servers with the WhatsApp switch off. drawbridge 0.2.33 build 58, herald 0.1.23 unchanged.",
+  "version": 149,
+  "issued_at": "2026-10-27T12:29:37Z",
+  "comment": "DEV CHANNEL ONLY. drawbridge 0.2.34 build 59: the setup wizard applies a remembered age when you press Next on the age page. Policy 148's WhatsApp footnote, 18+ label and Beeper/DumberChat exclusions stay. herald 0.1.23 unchanged.",
   "dns": {
     "upstreams": [
       "94.140.14.15",
@@ -1111,14 +1111,14 @@
   },
   "app_update": {
     "package_name": "app.drawbridge.dpc",
-    "version_code": 58,
-    "url": "https://dev.drawbridge-project.pages.dev/assets/dpc-3942defd373e6c99.apk",
-    "sha256": "3942defd373e6c997baf11603e11472ae630eb29c3b7cc3c1bcd49e978006a2d",
-    "version_name": "0.2.33",
-    "notes": "Fixed: build 0.2.32 crashed as it started on a fresh install, so the filter never began. Everything in 0.2.32 is still here: a new default-on option no longer switches itself off, the setup wizard, unlock timers with restart and cancel buttons.",
+    "version_code": 59,
+    "url": "https://dev.drawbridge-project.pages.dev/assets/dpc-71713ede9fb11b90.apk",
+    "sha256": "71713ede9fb11b900719a237f66c5ec00466d0992a90022ecd84bd42126aeea9",
+    "version_name": "0.2.34",
+    "notes": "Fixed: in the setup wizard, an age remembered from an earlier run is now applied when you continue from the age page, instead of being ignored. Everything in 0.2.33 is still here.",
     "notes_i18n": {
-      "nl": "Opgelost: versie 0.2.32 stortte bij het opstarten in op een verse installatie, waardoor het filter nooit begon. Alles uit 0.2.32 zit er nog in: een nieuwe standaard-aan-optie schakelt zichzelf niet meer uit, de installatiehulp, ontgrendeltimers met knoppen om te herstarten en te annuleren.",
-      "fr": "Corrig\u00e9 : la version 0.2.32 plantait au d\u00e9marrage sur une installation neuve, si bien que le filtre ne d\u00e9marrait jamais. Tout ce qui \u00e9tait dans la 0.2.32 y est encore : une nouvelle option activ\u00e9e par d\u00e9faut ne se d\u00e9sactive plus d\u2019elle-m\u00eame, l\u2019assistant de configuration, les minuteries de d\u00e9verrouillage avec boutons pour relancer et annuler."
+      "nl": "Opgelost: in de installatiehulp wordt een leeftijd die van een eerdere keer onthouden is nu toegepast wanneer je op de leeftijdspagina verdergaat, in plaats van genegeerd. Alles uit 0.2.33 zit er nog in.",
+      "fr": "Corrig\u00e9 : dans l\u2019assistant de configuration, un \u00e2ge m\u00e9moris\u00e9 d\u2019une fois pr\u00e9c\u00e9dente est d\u00e9sormais appliqu\u00e9 quand on continue depuis la page de l\u2019\u00e2ge, au lieu d\u2019\u00eatre ignor\u00e9. Tout ce qui \u00e9tait dans la 0.2.33 y est encore."
     }
   },
   "required_apps": [
