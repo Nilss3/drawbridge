@@ -394,6 +394,15 @@
                 android:textAppearance="?attr/textAppearanceBodyLarge" />
         </RadioGroup>
         <LinearLayout android:id="@+id/wizOptions" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
+        <TextView
+            android:id="@+id/wizOptionsNote"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="24dp"
+            android:paddingBottom="16dp"
+            android:text="@string/wizard_options_note"
+            android:textAppearance="?attr/textAppearanceBodyLarge"
+            android:visibility="gone" />
         <!--
             **The app questions, together and collapsed.** Three questions about
             what may be on the phone — which services, how much browser, whether

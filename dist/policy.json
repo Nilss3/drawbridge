@@ -1,7 +1,7 @@
 {
-  "version": 152,
+  "version": 156,
   "issued_at": "2026-10-27T13:28:02Z",
-  "comment": "drawbridge 0.2.35 build 60: the setup wizard, unlock timers of 12 and 18 months with restart and cancel buttons, and the fix that a new default-on option no longer switches itself off after it first appears. WhatsApp is recommended 18+ and carries a footnote on third-party WhatsApp apps, which Beeper and DumberChat are allowed to be. Messenger Kids is blocked. herald 0.1.23 as before. The general-purpose chatbots switch stays withdrawn until this build is on the phones.",
+  "comment": "drawbridge 0.2.36 build 61: wizard fixes (trial mode still asks temporary or indefinite; social media named as kept out; optional apps page titled like the plain screen, with the WhatsApp footnote and a note that the age was applied; clearer text for the app-install lock), and the WhatsApp info text explains its 18+. herald unchanged.",
   "dns": {
     "upstreams": [
       "94.140.14.15",
@@ -587,7 +587,7 @@
       "name": "Allow WhatsApp*",
       "subject": "WhatsApp",
       "recommended_age": 18,
-      "description": "WhatsApp carries privacy risks, has toxic social media features and an annoying chatbot. Signal is always allowed on this device, even though as a group chat app with risk of cyberbullying we also recommend 14+ and/or parental guidance. Switching this off does not uninstall the app: it is suspended and hidden, and comes back with all its chats and media intact if you switch it on again. If you would rather it were really gone, uninstall it yourself before locking.",
+      "description": "WhatsApp carries privacy risks. It has channels, which are social media (16+), and a chatbot (18+), hence the 18+ applied here. Signal is always allowed on this device, even though as a group chat app with risk of cyberbullying we also recommend 14+ and/or parental guidance. Switching this off does not uninstall the app: it is suspended and hidden, and comes back with all its chats and media intact if you switch it on again. If you would rather it were really gone, uninstall it yourself before locking.",
       "default_enabled": true,
       "exempt_packages": [
         "com.whatsapp",
@@ -603,8 +603,8 @@
         "fr": "Autoriser WhatsApp*"
       },
       "description_i18n": {
-        "nl": "WhatsApp brengt privacyrisico's mee, heeft toxische socialemediafuncties en een vervelende chatbot. Signal is op dit toestel altijd toegelaten, al raden we ook daar 14+ en/of ouderlijke begeleiding aan: als groepschat-app draagt het een risico op cyberpesten. Dit uitzetten verwijdert de app niet: ze wordt opgeschort en verborgen, en komt met al haar gesprekken en media intact terug zodra je ze weer aanzet. Wil je ze echt kwijt, verwijder ze dan zelf voor je vergrendelt.",
-        "fr": "WhatsApp comporte des risques pour la vie priv\u00e9e, des fonctions de r\u00e9seau social toxiques et un chatbot p\u00e9nible. Signal est toujours autoris\u00e9 sur cet appareil, m\u00eame si nous y recommandons aussi 14+ et/ou un accompagnement parental : en tant qu'application de discussion de groupe, elle comporte un risque de cyberharc\u00e8lement. D\u00e9sactiver cette option ne d\u00e9sinstalle pas l'application : elle est suspendue et masqu\u00e9e, et revient avec toutes ses conversations et tous ses m\u00e9dias intacts si vous la r\u00e9activez. Si vous pr\u00e9f\u00e9rez qu'elle disparaisse vraiment, d\u00e9sinstallez-la vous-m\u00eame avant de verrouiller."
+        "nl": "WhatsApp brengt privacyrisico's mee. Het heeft kanalen, wat sociale media zijn (16+), en een chatbot (18+), vandaar de 18+ die hier geldt. Signal is op dit toestel altijd toegelaten, al raden we ook daar 14+ en/of ouderlijke begeleiding aan: als groepschat-app draagt het een risico op cyberpesten. Dit uitzetten verwijdert de app niet: ze wordt opgeschort en verborgen, en komt met al haar gesprekken en media intact terug zodra je ze weer aanzet. Wil je ze echt kwijt, verwijder ze dan zelf voor je vergrendelt.",
+        "fr": "WhatsApp comporte des risques pour la vie priv\u00e9e. Il a des cha\u00eenes, qui sont des r\u00e9seaux sociaux (16+), et un chatbot (18+), d'o\u00f9 le 18+ appliqu\u00e9 ici. Signal est toujours autoris\u00e9 sur cet appareil, m\u00eame si nous y recommandons aussi 14+ et/ou un accompagnement parental : en tant qu'application de discussion de groupe, elle comporte un risque de cyberharc\u00e8lement. D\u00e9sactiver cette option ne d\u00e9sinstalle pas l'application : elle est suspendue et masqu\u00e9e, et revient avec toutes ses conversations et tous ses m\u00e9dias intacts si vous la r\u00e9activez. Si vous pr\u00e9f\u00e9rez qu'elle disparaisse vraiment, d\u00e9sinstallez-la vous-m\u00eame avant de verrouiller."
       },
       "subject_i18n": {
         "nl": "WhatsApp",
@@ -902,14 +902,14 @@
   },
   "app_update": {
     "package_name": "app.drawbridge.dpc",
-    "version_code": 60,
-    "url": "https://drawbridge-project.pages.dev/assets/dpc-1b2d3e88249ae9f6.apk",
-    "sha256": "1b2d3e88249ae9f60c4cee9aadb29d4e62636471994e64cf0dc4a27d997ce5e7",
-    "version_name": "0.2.35",
-    "notes": "New: a setup wizard that asks for the age and sets the options to match; unlock timers of 12 and 18 months, with buttons to restart or cancel a running timer; a clearer line when drawbridge is active but unlocked. Fixed: a new option that is on by default no longer switches itself off after it first appears, which on a locked phone had taken the option's apps away. The optional apps are listed by age, with a note on third-party WhatsApp apps.",
+    "version_code": 61,
+    "url": "https://drawbridge-project.pages.dev/assets/dpc-81546cbe2b49c525.apk",
+    "sha256": "81546cbe2b49c525080ee392a01b526ea5e78b8af5cd08e8486c3e3122bec62c",
+    "version_name": "0.2.36",
+    "notes": "Changed: the setup wizard asks 'temporary or indefinite' even in trial mode, names social media among what is kept out, titles the optional apps page like the plain screen with the WhatsApp footnote and a note that the age was applied, and describes the app-install lock more clearly. Everything in 0.2.35 is still here.",
     "notes_i18n": {
-      "nl": "Nieuw: een installatiehulp die naar de leeftijd vraagt en de opties daarop afstemt; ontgrendeltimers van 12 en 18 maanden, met knoppen om een lopende timer te herstarten of te annuleren; een duidelijkere regel als drawbridge actief maar ontgrendeld is. Opgelost: een nieuwe optie die standaard aan staat, schakelt zichzelf niet meer uit nadat ze voor het eerst verschijnt, wat op een vergrendelde telefoon de apps van die optie had weggenomen. De optionele apps staan op leeftijd gerangschikt, met een opmerking over apps van derden voor WhatsApp.",
-      "fr": "Nouveau : un assistant de configuration qui demande l'\u00e2ge et r\u00e8gle les options en cons\u00e9quence ; des minuteries de d\u00e9verrouillage de 12 et 18 mois, avec des boutons pour relancer ou annuler une minuterie en cours ; une ligne plus claire quand drawbridge est actif mais d\u00e9verrouill\u00e9. Corrig\u00e9 : une nouvelle option activ\u00e9e par d\u00e9faut ne se d\u00e9sactive plus d'elle-m\u00eame apr\u00e8s sa premi\u00e8re apparition, ce qui, sur un t\u00e9l\u00e9phone verrouill\u00e9, avait retir\u00e9 les applications de cette option. Les applications facultatives sont class\u00e9es par \u00e2ge, avec une remarque sur les applications tierces pour WhatsApp."
+      "nl": "Aangepast: de wizard vraagt ook in proefmodus of je tijdelijk of onbeperkt wilt proberen, noemt sociale media bij wat buiten blijft, geeft de pagina met optionele apps dezelfde titel als het gewone scherm met de WhatsApp-voetnoot en een opmerking dat de leeftijd is toegepast, en beschrijft het blokkeren van nieuwe apps duidelijker. Alles uit 0.2.35 zit er nog in.",
+      "fr": "Modifi\u00e9 : l'assistant demande aussi en mode d'essai si l'on veut essayer temporairement ou garder ind\u00e9finiment, cite les r\u00e9seaux sociaux parmi ce qui est tenu \u00e0 l'\u00e9cart, donne \u00e0 la page des applications facultatives le m\u00eame titre que l'\u00e9cran normal avec la note WhatsApp et un rappel que l'\u00e2ge a \u00e9t\u00e9 appliqu\u00e9, et d\u00e9crit plus clairement le blocage des nouvelles applications. Tout ce qui \u00e9tait dans la 0.2.35 y est encore."
     }
   },
   "required_apps": [
