@@ -2293,7 +2293,7 @@ def generated_tables() -> dict[str, str]:
     # The chatbots switch is described in prose, with its counts taken from the
     # policy; a table would be mostly package ids, as most of these apps have no
     # display name in app-names.json yet.
-    chatbots = next(o for o in policy["options"] if o["id"] == "general-chatbots")
+    chatbots = next(o for o in policy["options"] if o["id"] == "general-purpose-chatbots")
 
     tables = {
         "ai-companions": table(["App", "Play rating (BE)", "Package"], app_rows(companions)),
