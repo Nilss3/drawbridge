@@ -1292,10 +1292,11 @@ class MainActivity : AppCompatActivity() {
         val options = policy.options
         val hasOptions = options.isNotEmpty()
         optionsExplanation.visibility = if (hasOptions) View.VISIBLE else View.GONE
-        // The footnote about where the ages come from stays on the plain screen;
-        // the wizard's page is short enough without it.
-        optionsFootnote.visibility =
-            if (hasOptions && wizardStep == null) View.VISIBLE else View.GONE
+        // The footnote belongs to the asterisk an option's name may carry, so it
+        // is there on the wizard's page as well as the plain screen, and only
+        // when some option has the asterisk to explain.
+        optionsFootnote.visibility = if (policy.options.any { it.name.trimEnd().endsWith("*") })
+            View.VISIBLE else View.GONE
         if (!hasOptions) {
             optionContainer.addView(placeholder(R.string.options_none_available))
             optionsSection.setSectionSummary(getString(R.string.options_none_available))
@@ -1306,8 +1307,16 @@ class MainActivity : AppCompatActivity() {
         val language = Languages.current()
         val inflater = LayoutInflater.from(this)
 
-        for (option in options) {
+        // Grouped by recommended age, youngest first, an option with no age last.
+        // The shield on each row already says which age, so the groups get a gap
+        // between them and no heading of their own.
+        var previousAge: Int? = null
+        for ((index, option) in options.sortedBy { it.recommendedAge ?: Int.MAX_VALUE }.withIndex()) {
             val row = inflater.inflate(R.layout.item_option, optionContainer, false)
+            if (index > 0 && option.recommendedAge != previousAge) {
+                row.setPadding(row.paddingLeft, row.paddingTop + (12 * resources.displayMetrics.density).toInt(), row.paddingRight, row.paddingBottom)
+            }
+            previousAge = option.recommendedAge
 
             row.findViewById<TextView>(R.id.optionName).text = option.displayName(language)
             row.bindRating(

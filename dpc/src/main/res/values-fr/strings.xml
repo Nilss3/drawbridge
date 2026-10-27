@@ -53,10 +53,10 @@
     <string name="install_lock_description">Après le verrouillage, aucune nouvelle application ne peut être installée. Celles qui se trouvent sur le téléphone à ce moment-là continuent de se mettre à jour normalement.</string>
     <string name="install_lock_info">Avant de verrouiller, faites le tri dans vos applications et ne gardez que celles que vous voulez sur le téléphone. Après le verrouillage, aucune nouvelle application ne sera autorisée. Les mises à jour des applications existantes passent toujours : gardez donc le Play Store pour les mettre à jour.\n\nSi vous ne voulez aucun navigateur, choisissez cette option ci-dessus. Sinon, herald restera installé.\n\nLaissez ceci désactivé en cas de doute. Bloquer une application reste possible plus tard ; un téléphone sur lequel personne ne peut rien installer est un téléphone pour lequel on devra venir vous trouver.</string>
 
-    <string name="options_heading">WhatsApp, Telegram et applications vidéo</string>
+    <string name="options_heading">Outils nuisibles dont vous pourriez quand même avoir besoin en déplacement</string>
     <string name="options_explanation">Lorsqu\'il est déverrouillé, drawbridge autorise tout ce qui suit. Si vous ne voulez pas de certains de ces ‘services’, et à juste titre, interdisez-les et verrouillez drawbridge.</string>
     <string name="options_none_available">Cette politique ne propose rien à activer.</string>
-    <string name="options_footnote">La politique s\'inspire des bonnes pratiques du minimalisme numérique et constitue un bon choix pour tout le monde, adultes compris. Les âges sont une recommandation de pédiatres et de neurologues, et ne concernent que les personnes qui configurent un appareil pour un adolescent.</string>
+    <string name="options_footnote">* Si quelqu\'un veut utiliser WhatsApp sans le chatbot et les chaînes, il existe un moyen simple : passer par Beeper ou Dumberchat, à condition de faire tourner le WhatsApp officiel sur un autre appareil. Cela vaut aussi pour Facebook Messenger. Attention : c\'est contraire aux conditions d\'utilisation de WhatsApp et de Meta, et Meta bannit parfois les comptes qui utilisent des applications tierces.</string>
     <string name="option_change_failed">Cette option ne figure plus dans la politique.</string>
     <string name="option_recommended_age_description">Recommandé à partir de %1$d ans</string>
     <string name="option_various_ages_description">Âges variés</string>

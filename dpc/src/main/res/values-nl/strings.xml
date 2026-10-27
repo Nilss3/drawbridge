@@ -53,10 +53,10 @@
     <string name="install_lock_description">Na de vergrendeling kan geen enkele nieuwe app geïnstalleerd worden. De apps die op dat moment op de telefoon staan blijven gewoon updaten.</string>
     <string name="install_lock_info">Snoei je apps voor je vergrendelt en hou enkel de apps die je op je telefoon wil. Na de vergrendeling worden geen nieuwe apps meer toegelaten. Updates van bestaande apps komen wel door, dus hou de Play Store om bij te werken.\n\nWil je geen browser, kies dan die optie hierboven. Anders blijft herald geïnstalleerd.\n\nLaat dit uit als je twijfelt. Een app blokkeren kan later altijd nog; een telefoon waarop niemand iets kan installeren is een telefoon waarvoor men bij jou moet aankloppen.</string>
 
-    <string name="options_heading">WhatsApp, Telegram en video-apps</string>
+    <string name="options_heading">Schadelijke hulpmiddelen die je onderweg toch nodig kunt hebben</string>
     <string name="options_explanation">drawbridge laat, wanneer het ontgrendeld is, alles hieronder toe. Wil je sommige van deze ‘diensten’ niet, en terecht, verbied ze dan en vergrendel drawbridge.</string>
     <string name="options_none_available">Dit beleid biedt niets om aan te zetten.</string>
-    <string name="options_footnote">Het beleid is geïnspireerd op de beste praktijken uit het digitale minimalisme en is een goede keuze voor iedereen, ook voor volwassenen. De leeftijden zijn een aanbeveling van kinderartsen en neurologen, en zijn enkel relevant voor verzorgers die een toestel instellen voor een tiener.</string>
+    <string name="options_footnote">* Wil iemand WhatsApp gebruiken zonder de chatbot en de kanalen, dan kan dat eenvoudig: via Beeper of Dumberchat, op voorwaarde dat je de gewone WhatsApp op een ander toestel laat draaien. Dit geldt ook voor Facebook Messenger. Let op: dit is in strijd met de gebruiksvoorwaarden van WhatsApp en Meta, en Meta blokkeert soms accounts die apps van derden gebruiken.</string>
     <string name="option_change_failed">Die optie staat niet meer in het beleid.</string>
     <string name="option_recommended_age_description">Aangeraden vanaf %1$d jaar</string>
     <string name="option_various_ages_description">Verschillende leeftijden</string>

@@ -1,7 +1,7 @@
 {
-  "version": 150,
-  "issued_at": "2026-10-27T12:45:58Z",
-  "comment": "DEV CHANNEL ONLY. Messenger Kids (com.facebook.talk) is blocked. drawbridge 0.2.34 build 59, herald 0.1.23 unchanged.",
+  "version": 151,
+  "issued_at": "2026-10-27T13:23:48Z",
+  "comment": "DEV CHANNEL ONLY. drawbridge 0.2.35 build 60: the options section is titled 'Harmful tools you may still need on the road', ordered by age, and carries the WhatsApp footnote with a terms-of-service warning; the footnote leaves WhatsApp's info text. herald 0.1.23 unchanged.",
   "dns": {
     "upstreams": [
       "94.140.14.15",
@@ -669,7 +669,7 @@
       "name": "Allow WhatsApp*",
       "subject": "WhatsApp",
       "recommended_age": 18,
-      "description": "WhatsApp carries privacy risks, has toxic social media features and an annoying chatbot. Signal is always allowed on this device, even though as a group chat app with risk of cyberbullying we also recommend 14+ and/or parental guidance. Switching this off does not uninstall the app: it is suspended and hidden, and comes back with all its chats and media intact if you switch it on again. If you would rather it were really gone, uninstall it yourself before locking.\n\n* If a user wants to use WhatsApp without the chatbot and the channels, there is a simple way to do so: through Beeper, Dumberchat, or other third-party apps; provided you run the main WhatsApp on another device. This is also true for Facebook messenger.",
+      "description": "WhatsApp carries privacy risks, has toxic social media features and an annoying chatbot. Signal is always allowed on this device, even though as a group chat app with risk of cyberbullying we also recommend 14+ and/or parental guidance. Switching this off does not uninstall the app: it is suspended and hidden, and comes back with all its chats and media intact if you switch it on again. If you would rather it were really gone, uninstall it yourself before locking.",
       "default_enabled": true,
       "exempt_packages": [
         "com.whatsapp",
@@ -685,8 +685,8 @@
         "fr": "Autoriser WhatsApp*"
       },
       "description_i18n": {
-        "nl": "WhatsApp brengt privacyrisico's mee, heeft toxische socialemediafuncties en een vervelende chatbot. Signal is op dit toestel altijd toegelaten, al raden we ook daar 14+ en/of ouderlijke begeleiding aan: als groepschat-app draagt het een risico op cyberpesten. Dit uitzetten verwijdert de app niet: ze wordt opgeschort en verborgen, en komt met al haar gesprekken en media intact terug zodra je ze weer aanzet. Wil je ze echt kwijt, verwijder ze dan zelf voor je vergrendelt.\n\n* Wil iemand WhatsApp gebruiken zonder de chatbot en de kanalen, dan kan dat eenvoudig: via Beeper, Dumberchat of andere apps van derden, op voorwaarde dat je de gewone WhatsApp op een ander toestel laat draaien. Dit geldt ook voor Facebook Messenger.",
-        "fr": "WhatsApp comporte des risques pour la vie priv\u00e9e, des fonctions de r\u00e9seau social toxiques et un chatbot p\u00e9nible. Signal est toujours autoris\u00e9 sur cet appareil, m\u00eame si nous y recommandons aussi 14+ et/ou un accompagnement parental : en tant qu'application de discussion de groupe, elle comporte un risque de cyberharc\u00e8lement. D\u00e9sactiver cette option ne d\u00e9sinstalle pas l'application : elle est suspendue et masqu\u00e9e, et revient avec toutes ses conversations et tous ses m\u00e9dias intacts si vous la r\u00e9activez. Si vous pr\u00e9f\u00e9rez qu'elle disparaisse vraiment, d\u00e9sinstallez-la vous-m\u00eame avant de verrouiller.\n\n* Si quelqu'un veut utiliser WhatsApp sans le chatbot et les cha\u00eenes, il existe un moyen simple : passer par Beeper, Dumberchat ou d'autres applications tierces, \u00e0 condition de faire tourner le WhatsApp officiel sur un autre appareil. Cela vaut aussi pour Facebook Messenger."
+        "nl": "WhatsApp brengt privacyrisico's mee, heeft toxische socialemediafuncties en een vervelende chatbot. Signal is op dit toestel altijd toegelaten, al raden we ook daar 14+ en/of ouderlijke begeleiding aan: als groepschat-app draagt het een risico op cyberpesten. Dit uitzetten verwijdert de app niet: ze wordt opgeschort en verborgen, en komt met al haar gesprekken en media intact terug zodra je ze weer aanzet. Wil je ze echt kwijt, verwijder ze dan zelf voor je vergrendelt.",
+        "fr": "WhatsApp comporte des risques pour la vie priv\u00e9e, des fonctions de r\u00e9seau social toxiques et un chatbot p\u00e9nible. Signal est toujours autoris\u00e9 sur cet appareil, m\u00eame si nous y recommandons aussi 14+ et/ou un accompagnement parental : en tant qu'application de discussion de groupe, elle comporte un risque de cyberharc\u00e8lement. D\u00e9sactiver cette option ne d\u00e9sinstalle pas l'application : elle est suspendue et masqu\u00e9e, et revient avec toutes ses conversations et tous ses m\u00e9dias intacts si vous la r\u00e9activez. Si vous pr\u00e9f\u00e9rez qu'elle disparaisse vraiment, d\u00e9sinstallez-la vous-m\u00eame avant de verrouiller."
       },
       "subject_i18n": {
         "nl": "WhatsApp",
@@ -1112,14 +1112,14 @@
   },
   "app_update": {
     "package_name": "app.drawbridge.dpc",
-    "version_code": 59,
-    "url": "https://dev.drawbridge-project.pages.dev/assets/dpc-71713ede9fb11b90.apk",
-    "sha256": "71713ede9fb11b900719a237f66c5ec00466d0992a90022ecd84bd42126aeea9",
-    "version_name": "0.2.34",
-    "notes": "Fixed: in the setup wizard, an age remembered from an earlier run is now applied when you continue from the age page, instead of being ignored. Everything in 0.2.33 is still here.",
+    "version_code": 60,
+    "url": "https://dev.drawbridge-project.pages.dev/assets/dpc-8978307a6b5b5b2a.apk",
+    "sha256": "8978307a6b5b5b2a1e76ce2058fb6eaf62ae61ca1d07d5d745545575376402be",
+    "version_name": "0.2.35",
+    "notes": "Changed: the optional apps are now titled 'Harmful tools you may still need on the road', listed by age, and the note about third-party WhatsApp apps sits under the list with a warning about WhatsApp's terms of service. Everything in 0.2.34 is still here.",
     "notes_i18n": {
-      "nl": "Opgelost: in de installatiehulp wordt een leeftijd die van een eerdere keer onthouden is nu toegepast wanneer je op de leeftijdspagina verdergaat, in plaats van genegeerd. Alles uit 0.2.33 zit er nog in.",
-      "fr": "Corrig\u00e9 : dans l\u2019assistant de configuration, un \u00e2ge m\u00e9moris\u00e9 d\u2019une fois pr\u00e9c\u00e9dente est d\u00e9sormais appliqu\u00e9 quand on continue depuis la page de l\u2019\u00e2ge, au lieu d\u2019\u00eatre ignor\u00e9. Tout ce qui \u00e9tait dans la 0.2.33 y est encore."
+      "nl": "Aangepast: de optionele apps heten nu 'Schadelijke hulpmiddelen die je onderweg toch nodig kunt hebben', staan op leeftijd gerangschikt, en de opmerking over apps van derden voor WhatsApp staat onder de lijst met een waarschuwing over de gebruiksvoorwaarden van WhatsApp. Alles uit 0.2.34 zit er nog in.",
+      "fr": "Modifi\u00e9 : les applications facultatives s'intitulent d\u00e9sormais \u00ab Outils nuisibles dont vous pourriez quand m\u00eame avoir besoin en d\u00e9placement \u00bb, sont class\u00e9es par \u00e2ge, et la remarque sur les applications tierces pour WhatsApp figure sous la liste avec un avertissement sur les conditions d'utilisation de WhatsApp. Tout ce qui \u00e9tait dans la 0.2.34 y est encore."
     }
   },
   "required_apps": [

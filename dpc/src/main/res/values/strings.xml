@@ -90,10 +90,10 @@
     <string name="install_lock_description">After the lock, no new app can be installed. The apps that are on the phone at that moment go on updating as normal.</string>
     <string name="install_lock_info">Before locking, prune down your apps and keep only those you want to have on your phone. After locking, no new apps will be allowed. Updates of existing apps do come through, so keep the Play Store to update.\n\nIf you want no browser, pick that option above. Otherwise, herald will remain installed.\n\nLeave this off if you are not sure. A blocked app can always be blocked later; an app nobody can install is a phone somebody has to come to you about.</string>
 
-    <string name="options_heading">WhatsApp, Telegram and video apps</string>
+    <string name="options_heading">Harmful tools you may still need on the road</string>
     <string name="options_explanation">drawbridge when unlocked allows all of the following. If you don\'t want some of these \u2018services\u2019, and rightfully so, disallow them and lock drawbridge.</string>
     <string name="options_none_available">This policy offers nothing to switch on.</string>
-    <string name="options_footnote">The policy is inspired by best practices in digital minimalism and is a good choice for anyone, including adults. The ages are a recommendation by pediatricians and neurologists, and are only relevant for caretakers setting up a device for a teen.</string>
+    <string name="options_footnote">* If a user wants to use WhatsApp without the chatbot and the channels, there is a simple way to do so: through Beeper or Dumberchat, provided you run the main WhatsApp on another device. This is also true for Facebook messenger. Warning: this is against the terms of service of WhatsApp and Meta, and Meta sometimes bans accounts that use third-party apps.</string>
     <string name="option_change_failed">That option is no longer in the policy.</string>
     <!-- The age used to trail the option's name in running text; it is a shield
          now. The glyph and what a screen reader says about it are separate: the
