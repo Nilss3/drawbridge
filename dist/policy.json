@@ -1,7 +1,7 @@
 {
-  "version": 143,
-  "issued_at": "2026-10-27T08:57:48Z",
-  "comment": "Policy 143 (dev): the general-purpose chatbots switch moves to the id general-chatbots, so a phone that already knows the old id receives it as a new, default-on option. Test of the seen-options fix in drawbridge 0.2.32.",
+  "version": 144,
+  "issued_at": "2026-10-27T09:24:43Z",
+  "comment": "DEV CHANNEL ONLY. drawbridge 0.2.33 build 58: build 57 crashed at start-up on a fresh install (the release build had dropped a constructor WorkManager needs), so nothing started; this build keeps it. Policy 143's new general-chatbots id stays. herald 0.1.23 unchanged.",
   "dns": {
     "upstreams": [
       "94.140.14.15",
@@ -1107,14 +1107,14 @@
   },
   "app_update": {
     "package_name": "app.drawbridge.dpc",
-    "version_code": 57,
-    "url": "https://dev.drawbridge-project.pages.dev/assets/dpc-174e2a5a6e4d73ba.apk",
-    "sha256": "174e2a5a6e4d73ba38d648e08d74300230b4e93129c1ecd131daba2aecfdd904",
-    "version_name": "0.2.32",
-    "notes": "New: a new option that is on by default no longer switches itself off after it first appears, which on a locked phone had taken the option's apps away. Everything in 0.2.31 is still here: the setup wizard, unlock timers of 12 and 18 months with restart and cancel buttons, and the clearer unlocked-state line.",
+    "version_code": 58,
+    "url": "https://dev.drawbridge-project.pages.dev/assets/dpc-3942defd373e6c99.apk",
+    "sha256": "3942defd373e6c997baf11603e11472ae630eb29c3b7cc3c1bcd49e978006a2d",
+    "version_name": "0.2.33",
+    "notes": "Fixed: build 0.2.32 crashed as it started on a fresh install, so the filter never began. Everything in 0.2.32 is still here: a new default-on option no longer switches itself off, the setup wizard, unlock timers with restart and cancel buttons.",
     "notes_i18n": {
-      "nl": "Nieuw: een nieuwe optie die standaard aan staat, schakelt zichzelf niet meer uit nadat ze voor het eerst verschijnt, wat op een vergrendelde telefoon de apps van die optie had weggenomen. Alles uit 0.2.31 zit er nog in: de installatiehulp, ontgrendeltimers van 12 en 18 maanden met knoppen om te herstarten en te annuleren, en de duidelijkere regel voor de ontgrendelde toestand.",
-      "fr": "Nouveau : une nouvelle option activ\u00e9e par d\u00e9faut ne se d\u00e9sactive plus d\u2019elle-m\u00eame apr\u00e8s sa premi\u00e8re apparition, ce qui, sur un t\u00e9l\u00e9phone verrouill\u00e9, avait retir\u00e9 les applications de cette option. Tout ce qui \u00e9tait dans la 0.2.31 y est encore : l\u2019assistant de configuration, les minuteries de 12 et 18 mois avec boutons pour relancer et annuler, et la ligne plus claire sur l\u2019\u00e9tat d\u00e9verrouill\u00e9."
+      "nl": "Opgelost: versie 0.2.32 stortte bij het opstarten in op een verse installatie, waardoor het filter nooit begon. Alles uit 0.2.32 zit er nog in: een nieuwe standaard-aan-optie schakelt zichzelf niet meer uit, de installatiehulp, ontgrendeltimers met knoppen om te herstarten en te annuleren.",
+      "fr": "Corrig\u00e9 : la version 0.2.32 plantait au d\u00e9marrage sur une installation neuve, si bien que le filtre ne d\u00e9marrait jamais. Tout ce qui \u00e9tait dans la 0.2.32 y est encore : une nouvelle option activ\u00e9e par d\u00e9faut ne se d\u00e9sactive plus d\u2019elle-m\u00eame, l\u2019assistant de configuration, les minuteries de d\u00e9verrouillage avec boutons pour relancer et annuler."
     }
   },
   "required_apps": [

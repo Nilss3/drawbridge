@@ -21,9 +21,9 @@ which is kept whole on purpose.
 
 | | `main` (the beta) | `dev` |
 |---|---|---|
-| drawbridge | **0.2.30, build 55** | **0.2.32, build 57** |
+| drawbridge | **0.2.30, build 55** | **0.2.33, build 58** |
 | herald | **0.1.23** | **0.1.23** |
-| policy | **141** | **142** |
+| policy | **141** | **144** |
 | install page | <https://drawbridge-project.pages.dev/install/> | <https://dev.drawbridge-project.pages.dev/install/> |
 | phone | the owner's Nothing Phone (A059) | the Moto G15 |
 
@@ -2484,3 +2484,12 @@ The investigations that used to fill this file — Play Protect, FRP, the QR pat
 the reveal screen that locked phones by accident, five rounds of browser bugs —
 are settled, and their conclusions are either above, in the traps, or in the code
 comment that exists because of them.
+
+**Build 57 crashed at start-up (fixed in 58).** R8 full mode dropped the no-arg
+constructor of WorkManager's `WorkDatabase_Impl` (Room 2.6.1's own keep rule
+keeps the class, not that constructor), so `InitializationProvider` threw
+`NoSuchMethodException` before any of our code ran: no filter, no herald, no
+app removal. After any dpc release, check the built APK before publishing it:
+install it on a phone and confirm the process stays up
+(`adb shell pidof app.drawbridge.dpc`), or dump the dex and look for
+`<init>` on `WorkDatabase_Impl`. `dpc/proguard-rules.pro` now keeps it.

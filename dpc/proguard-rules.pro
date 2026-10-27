@@ -25,3 +25,10 @@
 # The device admin receiver is named in the provisioning command and QR payload,
 # so its class name must survive minification exactly.
 -keep class app.drawbridge.dpc.admin.DrawbridgeDeviceAdminReceiver { *; }
+
+# Room (under WorkManager) builds its database with a reflective no-argument
+# constructor. Room 2.6.1's own rule keeps the class but, in R8 full mode, not
+# that constructor, and the app then dies at start-up in InitializationProvider.
+-keepclassmembers class * extends androidx.room.RoomDatabase {
+    <init>();
+}
