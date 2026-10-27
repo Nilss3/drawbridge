@@ -1,7 +1,7 @@
 {
-  "version": 154,
+  "version": 155,
   "issued_at": "2026-10-27T13:23:48Z",
-  "comment": "DEV CHANNEL ONLY. drawbridge 0.2.36 build 61: wizard fixes (trial mode still asks temporary or indefinite; social media named as kept out; optional apps page titled like the plain screen, with the WhatsApp footnote and a note that the age was applied; clearer text for the app-install lock). herald 0.1.23 unchanged.",
+  "comment": "DEV CHANNEL ONLY. Policy 155: the WhatsApp info text explains the 18+ (channels are social media, 16+; the chatbot is 18+). drawbridge 0.2.36 build 61 and herald 0.1.23 unchanged.",
   "dns": {
     "upstreams": [
       "94.140.14.15",
@@ -669,7 +669,7 @@
       "name": "Allow WhatsApp*",
       "subject": "WhatsApp",
       "recommended_age": 18,
-      "description": "WhatsApp carries privacy risks, has toxic social media features and an annoying chatbot. Signal is always allowed on this device, even though as a group chat app with risk of cyberbullying we also recommend 14+ and/or parental guidance. Switching this off does not uninstall the app: it is suspended and hidden, and comes back with all its chats and media intact if you switch it on again. If you would rather it were really gone, uninstall it yourself before locking.",
+      "description": "WhatsApp carries privacy risks. It has channels, which are social media (16+), and a chatbot (18+), hence the 18+ applied here. Signal is always allowed on this device, even though as a group chat app with risk of cyberbullying we also recommend 14+ and/or parental guidance. Switching this off does not uninstall the app: it is suspended and hidden, and comes back with all its chats and media intact if you switch it on again. If you would rather it were really gone, uninstall it yourself before locking.",
       "default_enabled": true,
       "exempt_packages": [
         "com.whatsapp",
@@ -685,8 +685,8 @@
         "fr": "Autoriser WhatsApp*"
       },
       "description_i18n": {
-        "nl": "WhatsApp brengt privacyrisico's mee, heeft toxische socialemediafuncties en een vervelende chatbot. Signal is op dit toestel altijd toegelaten, al raden we ook daar 14+ en/of ouderlijke begeleiding aan: als groepschat-app draagt het een risico op cyberpesten. Dit uitzetten verwijdert de app niet: ze wordt opgeschort en verborgen, en komt met al haar gesprekken en media intact terug zodra je ze weer aanzet. Wil je ze echt kwijt, verwijder ze dan zelf voor je vergrendelt.",
-        "fr": "WhatsApp comporte des risques pour la vie priv\u00e9e, des fonctions de r\u00e9seau social toxiques et un chatbot p\u00e9nible. Signal est toujours autoris\u00e9 sur cet appareil, m\u00eame si nous y recommandons aussi 14+ et/ou un accompagnement parental : en tant qu'application de discussion de groupe, elle comporte un risque de cyberharc\u00e8lement. D\u00e9sactiver cette option ne d\u00e9sinstalle pas l'application : elle est suspendue et masqu\u00e9e, et revient avec toutes ses conversations et tous ses m\u00e9dias intacts si vous la r\u00e9activez. Si vous pr\u00e9f\u00e9rez qu'elle disparaisse vraiment, d\u00e9sinstallez-la vous-m\u00eame avant de verrouiller."
+        "nl": "WhatsApp brengt privacyrisico's mee. Het heeft kanalen, wat sociale media zijn (16+), en een chatbot (18+), vandaar de 18+ die hier geldt. Signal is op dit toestel altijd toegelaten, al raden we ook daar 14+ en/of ouderlijke begeleiding aan: als groepschat-app draagt het een risico op cyberpesten. Dit uitzetten verwijdert de app niet: ze wordt opgeschort en verborgen, en komt met al haar gesprekken en media intact terug zodra je ze weer aanzet. Wil je ze echt kwijt, verwijder ze dan zelf voor je vergrendelt.",
+        "fr": "WhatsApp comporte des risques pour la vie priv\u00e9e. Il a des cha\u00eenes, qui sont des r\u00e9seaux sociaux (16+), et un chatbot (18+), d'o\u00f9 le 18+ appliqu\u00e9 ici. Signal est toujours autoris\u00e9 sur cet appareil, m\u00eame si nous y recommandons aussi 14+ et/ou un accompagnement parental : en tant qu'application de discussion de groupe, elle comporte un risque de cyberharc\u00e8lement. D\u00e9sactiver cette option ne d\u00e9sinstalle pas l'application : elle est suspendue et masqu\u00e9e, et revient avec toutes ses conversations et tous ses m\u00e9dias intacts si vous la r\u00e9activez. Si vous pr\u00e9f\u00e9rez qu'elle disparaisse vraiment, d\u00e9sinstallez-la vous-m\u00eame avant de verrouiller."
       },
       "subject_i18n": {
         "nl": "WhatsApp",
