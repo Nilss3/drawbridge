@@ -13,6 +13,31 @@ claims an endorsement the repository does not document.
 Limits Play enforces: **title 30 characters, short description 80, full
 description 4000.** Counts below are of the text as written.
 
+## On hold — the owner's decision, 2026-10-26
+
+**Nothing here goes to Play Console yet.** Everything is ready: the copy in three
+languages, the icon, the feature graphic, 15 screenshots, and a signed bundle
+from herald 0.1.23.
+
+What stops it is one clause. The descriptions say herald mono blocks
+general-purpose chatbots, which was true against policy 140 and is **not true
+now**: policy 141 withdrew the chatbots option, because the record of which
+options a phone has been offered was written without the selection beside it, so
+a new default-on option read as *off* on every read after the first — taking the
+assistants away from managed phones nobody had touched.
+
+So before this listing is submitted, one of two things has to happen:
+
+- the clause comes out of all three descriptions, and goes back in at a later
+  listing update; or
+- `claude/seen-options-fix` lands, a herald release carries it, and the option
+  returns under a new id in a policy — at which point the clause is true again
+  and nothing here needs editing.
+
+Whichever it is, **check the claim against a device before uploading**, the way
+the streaming and chatbot clauses were checked: open the sites in a standalone
+herald and look for the block page.
+
 ---
 
 ## Title (30)
