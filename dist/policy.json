@@ -1,7 +1,7 @@
 {
-  "version": 142,
-  "issued_at": "2026-10-23T15:55:00Z",
-  "comment": "DEV CHANNEL ONLY. drawbridge 0.2.32 build 57 and herald 0.1.23 (version_code 23, both editions, v0.2.8-dev.15): a default-on option no longer turns itself off after its first appearance. The chatbots option keeps the id it had in 135 and 138, which phones that already took those carry as seen. 142 because the beta holds 141. 511 blocked packages.",
+  "version": 143,
+  "issued_at": "2026-10-27T08:57:48Z",
+  "comment": "Policy 143 (dev): the general-purpose chatbots switch moves to the id general-chatbots, so a phone that already knows the old id receives it as a new, default-on option. Test of the seen-options fix in drawbridge 0.2.32.",
   "dns": {
     "upstreams": [
       "94.140.14.15",
@@ -956,7 +956,7 @@
       }
     },
     {
-      "id": "chatbots",
+      "id": "general-chatbots",
       "name": "Allow general-purpose chatbots",
       "subject": "general-purpose chatbots",
       "recommended_age": 18,
