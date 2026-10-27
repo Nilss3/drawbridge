@@ -1,7 +1,7 @@
 {
-  "version": 151,
+  "version": 154,
   "issued_at": "2026-10-27T13:23:48Z",
-  "comment": "DEV CHANNEL ONLY. drawbridge 0.2.35 build 60: the options section is titled 'Harmful tools you may still need on the road', ordered by age, and carries the WhatsApp footnote with a terms-of-service warning; the footnote leaves WhatsApp's info text. herald 0.1.23 unchanged.",
+  "comment": "DEV CHANNEL ONLY. drawbridge 0.2.36 build 61: wizard fixes (trial mode still asks temporary or indefinite; social media named as kept out; optional apps page titled like the plain screen, with the WhatsApp footnote and a note that the age was applied; clearer text for the app-install lock). herald 0.1.23 unchanged.",
   "dns": {
     "upstreams": [
       "94.140.14.15",
@@ -1112,14 +1112,14 @@
   },
   "app_update": {
     "package_name": "app.drawbridge.dpc",
-    "version_code": 60,
-    "url": "https://dev.drawbridge-project.pages.dev/assets/dpc-8978307a6b5b5b2a.apk",
-    "sha256": "8978307a6b5b5b2a1e76ce2058fb6eaf62ae61ca1d07d5d745545575376402be",
-    "version_name": "0.2.35",
-    "notes": "Changed: the optional apps are now titled 'Harmful tools you may still need on the road', listed by age, and the note about third-party WhatsApp apps sits under the list with a warning about WhatsApp's terms of service. Everything in 0.2.34 is still here.",
+    "version_code": 61,
+    "url": "https://dev.drawbridge-project.pages.dev/assets/dpc-50a624613d6538f0.apk",
+    "sha256": "50a624613d6538f02c1c208311903457d1e7572e7b923890c1bd3088400bb298",
+    "version_name": "0.2.36",
+    "notes": "Changed: the setup wizard asks 'temporary or indefinite' even in trial mode, names social media among what is kept out, titles the optional apps page like the plain screen with the WhatsApp footnote and a note that the age was applied, and describes the app-install lock more clearly. Everything in 0.2.35 is still here.",
     "notes_i18n": {
-      "nl": "Aangepast: de optionele apps heten nu 'Schadelijke hulpmiddelen die je onderweg toch nodig kunt hebben', staan op leeftijd gerangschikt, en de opmerking over apps van derden voor WhatsApp staat onder de lijst met een waarschuwing over de gebruiksvoorwaarden van WhatsApp. Alles uit 0.2.34 zit er nog in.",
-      "fr": "Modifi\u00e9 : les applications facultatives s'intitulent d\u00e9sormais \u00ab Outils nuisibles dont vous pourriez quand m\u00eame avoir besoin en d\u00e9placement \u00bb, sont class\u00e9es par \u00e2ge, et la remarque sur les applications tierces pour WhatsApp figure sous la liste avec un avertissement sur les conditions d'utilisation de WhatsApp. Tout ce qui \u00e9tait dans la 0.2.34 y est encore."
+      "nl": "Aangepast: de wizard vraagt ook in proefmodus of je tijdelijk of onbeperkt wilt proberen, noemt sociale media bij wat buiten blijft, geeft de pagina met optionele apps dezelfde titel als het gewone scherm met de WhatsApp-voetnoot en een opmerking dat de leeftijd is toegepast, en beschrijft het blokkeren van nieuwe apps duidelijker. Alles uit 0.2.35 zit er nog in.",
+      "fr": "Modifi\u00e9 : l'assistant demande aussi en mode d'essai si l'on veut essayer temporairement ou garder ind\u00e9finiment, cite les r\u00e9seaux sociaux parmi ce qui est tenu \u00e0 l'\u00e9cart, donne \u00e0 la page des applications facultatives le m\u00eame titre que l'\u00e9cran normal avec la note WhatsApp et un rappel que l'\u00e2ge a \u00e9t\u00e9 appliqu\u00e9, et d\u00e9crit plus clairement le blocage des nouvelles applications. Tout ce qui \u00e9tait dans la 0.2.35 y est encore."
     }
   },
   "required_apps": [

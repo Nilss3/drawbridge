@@ -447,7 +447,7 @@ class MainActivity : AppCompatActivity() {
         // parent: the first one has its own two buttons, the age page needs an age.
         next.visibility = when {
             step == Step.LOCK -> View.GONE
-            step == Step.WELCOME && !permanence.hasChosen -> View.GONE
+            step == Step.WELCOME && !permanence.isPermanent -> View.GONE
             else -> View.VISIBLE
         }
         next.isEnabled = step != Step.AGE || wizardSettings.age != null
@@ -518,6 +518,7 @@ class MainActivity : AppCompatActivity() {
             for (id in listOf(
                 R.id.wizHeading, R.id.wizPermanence, R.id.wizExplainNote, R.id.wizAge,
                 R.id.wizInstallNote, R.id.wizOfflineNote, R.id.wizLockIntro,
+                R.id.wizOptionsNote,
             )) show(id, false)
             return
         }
@@ -530,6 +531,7 @@ class MainActivity : AppCompatActivity() {
             R.id.wizOffline, R.id.wizRule2, R.id.wizLock, R.id.updateNotice,
             R.id.wizHeading, R.id.wizPermanence, R.id.wizExplainNote, R.id.wizAge,
             R.id.wizInstallNote, R.id.wizOfflineNote, R.id.wizLockIntro,
+            R.id.wizOptionsNote,
         )) show(id, false)
 
         val title = findViewById<TextView>(R.id.wizHeadingTitle)
@@ -550,7 +552,7 @@ class MainActivity : AppCompatActivity() {
                 show(R.id.wizLanguage, true)
                 show(R.id.wizWelcomeImage, true)
                 show(R.id.wizWelcomeText, true)
-                show(R.id.wizPermanence, !permanence.hasChosen)
+                show(R.id.wizPermanence, !permanence.isPermanent)
             }
 
             // After the age, because what is worth saying about the lock depends on
@@ -585,8 +587,8 @@ class MainActivity : AppCompatActivity() {
 
             Step.OPTIONS -> {
                 heading(R.string.wizard_options_title)
-                optionsFootnote.visibility = View.GONE
                 show(R.id.wizOptions, true)
+                show(R.id.wizOptionsNote, true)
             }
 
             Step.BROWSERS -> {
