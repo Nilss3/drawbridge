@@ -1,7 +1,7 @@
 {
-  "version": 160,
+  "version": 162,
   "issued_at": "2026-10-27T13:28:02Z",
-  "comment": "Policy 160: nsfwtelegram.net, which carries porn and AI chatbots, is blocked outright; no switch releases it. drawbridge 0.2.38 build 63 and herald 0.1.23 unchanged.",
+  "comment": "Policy 162: nsfwtelegram.net and bestoftelegram.com, which carry porn and AI companions, are on the AI companions list, so they are blocked outright and no switch releases them. drawbridge 0.2.38 build 63 and herald 0.1.23 unchanged.",
   "dns": {
     "upstreams": [
       "94.140.14.15",
@@ -63,7 +63,7 @@
       "url": "https://raw.githubusercontent.com/Nilss3/drawbridge/main/dist/lists/ai-companions.txt",
       "format": "domains",
       "category": "ai-companions",
-      "sha256": "4705d5a146366bf1099b38b1938a99ec031a012ddb56ff4508e1b7cd6b037ff2"
+      "sha256": "48c25f7c13c7f025c734c0a0a9ed885604f59a6ad8bc70dac709488cb78a778b"
     },
     {
       "id": "dating",
@@ -97,8 +97,7 @@
   "blocked_domains": [
     "whatsapp.com",
     "whatsapp.net",
-    "wa.me",
-    "nsfwtelegram.net"
+    "wa.me"
   ],
   "allowed_domains": [
     "ublockorigin.github.io",

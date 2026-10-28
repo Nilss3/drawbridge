@@ -149,3 +149,7 @@ zingchat.me
 dewy.chat
 bagelchat.ai
 soumichat.com
+
+# Telegram directories that carry porn and AI companions.
+nsfwtelegram.net
+bestoftelegram.com
