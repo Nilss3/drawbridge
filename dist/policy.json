@@ -1,7 +1,7 @@
 {
-  "version": 159,
+  "version": 161,
   "issued_at": "2026-10-27T13:23:48Z",
-  "comment": "DEV CHANNEL ONLY. drawbridge 0.2.38 build 63: the same code as the beta, whose chatbots fragment is gated at build 63 and can take packages off the store-rating whitelist. herald 0.1.23 unchanged.",
+  "comment": "DEV CHANNEL ONLY. Policy 161: nsfwtelegram.net, which carries porn and AI chatbots, is blocked outright; no switch releases it. drawbridge 0.2.38 build 63 and herald 0.1.23 unchanged.",
   "dns": {
     "upstreams": [
       "94.140.14.15",
@@ -97,7 +97,8 @@
   "blocked_domains": [
     "whatsapp.com",
     "whatsapp.net",
-    "wa.me"
+    "wa.me",
+    "nsfwtelegram.net"
   ],
   "allowed_domains": [
     "ublockorigin.github.io",
