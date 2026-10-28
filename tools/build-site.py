@@ -730,7 +730,19 @@ def _policy_document() -> dict:
     import base64
 
     envelope = json.loads((REPO_ROOT / "dist" / "policy.signed.json").read_text())
-    return json.loads(base64.b64decode(envelope["payload"]))
+    return _with_fragments(json.loads(base64.b64decode(envelope["payload"])))
+
+
+def _with_fragments(document: dict) -> dict:
+    """The document as the newest build reads it, `conditional` merged in.
+
+    The site describes the newest build, so an option or a block that lives
+    inside a fragment is as much the policy as one at the top level.
+    """
+    for fragment in document.get("conditional", []):
+        for key in ("blocklists", "options", "blocked_domains", "blocked_packages"):
+            document[key] = list(document.get(key, [])) + fragment.get(key, [])
+    return document
 
 
 def _app_string(name: str, lang: str) -> str:
@@ -1767,7 +1779,7 @@ FAQ = {
             ("h3", "How can I switch off or bypass drawbridge? Other limitations."),
             ("h4", "Limitations"),
             ("p", "Drawbridge has both a network filter and an on-device filter, and is therefore about as watertight as it gets. Even so, there are still websites and apps that will occasionally show something harmful, or that can get around a network filter. Do not hesitate to report it through the <a href='/contact/'>contact form</a>."),
-            ("p", 'The list of AI companions in particular is a best effort, and they will have holes: new apps appear every week, under new names. If you find one we missed, <a href="/contact/">let us know</a>. Adding an app to the policy is easy, and it reaches every phone at its next check.'),
+            ("p", 'The lists of AI companions and AI chatbots in particular are a best effort, and they will have holes: new apps appear every week, under new names. If you find one we missed, <a href="/contact/">let us know</a>. Adding an app to the policy is easy, and it reaches every phone at its next check.'),
             ("p", "A consequence of this filter is that you cannot use VPNs or pick your own DNS (the DNS that is used is encrypted and privacy-focused). You also cannot configure other users, use the private space, or create a guest account. For those same reasons you cannot use parental control apps, not even Google Family Link (which, incidentally, only goes up to 13 anyway). Screen time settings on the device do remain possible. Finally, while locked, you cannot use developer settings."),
             ("h4", "Removing it"),
             ("p", "How you remove drawbridge depends on the mode. In <strong>trial mode</strong>, unlock it, press \"Deactivate drawbridge to uninstall\" on the card at the top of the app, and uninstall it. Nothing on the phone is lost."),
@@ -1789,8 +1801,10 @@ FAQ = {
             ]),
             ("p", 'Drawbridge does not use parental controls at all; it is a device policy controller, the kind used for company phones and kiosks. Unlike parental controls, drawbridge comes out of the box with non-configurable protection (the network filter) that already gives very broad coverage. Social media and harmful games are always blocked, no argument about it. That creates an environment of calm without extra overhead. Be aware that drawbridge alone is not enough as "online guidance for a child". A lot more goes into that, and one best practice remains using the internet on a shared screen, where everyone can see and talk about what is happening (not for private conversations, of course).'),
 
-            ("h2", "Why aren't chatbots blocked?"),
-            ("p", 'Regular chatbots such as ChatGPT, Claude or Gemini can indeed have harmful effects on the brain with excessive use and by replacing cognitively demanding tasks. It is not that addictive mechanisms are deliberately built into them, and, much like search engines, increasingly strict guardrails are appearing for certain kinds of questions. The bigger problem is how pervasive chatbots have become: nearly every website or service (and search engine!) now has some kind of "assistant" you can ask almost anything. If you would rather not use chatbots, you can choose to have no browser and to allow only certain apps.'),
+            ("h2", "Why can chatbots be blocked, and why not all of them?"),
+            ("p", "The biggest risk of chatbots such as ChatGPT, Claude or Gemini is not a quick question: it is the long conversation. Until recently a chatbot remembered little. You asked a few questions and the session ran out. Today they keep a conversation going for weeks and remember you from one chat to the next. That is new, and it is where the real harm lies: emotional dependence, a chatbot that agrees with everything and reinforces what someone already believes, withdrawal from the people around them, and conversations about self-harm and suicide that the chatbot does not end. In the United States, families have gone to court after teenagers took their own lives following long conversations with a chatbot. The makers know this. OpenAI wrote in 2025 that its safeguards work more reliably in short exchanges and can become less reliable as a conversation grows long, and Anthropic only allows adults to use Claude."),
+            ("p", "That is why drawbridge has a toggle, <strong>Allow general-purpose chatbots</strong>, which we recommend from 18. Switching it off blocks the apps and websites of these conversational chatbots: ChatGPT, Claude, Gemini, Copilot, Perplexity, DeepSeek, Le Chat, Poe, Meta AI and the many \"AI chat\" apps built on top of them. AI therapy and coaching apps are included too, because they are built around exactly that long, personal conversation."),
+            ("p", "The short, functional chatbots are not blocked, for obvious reasons: the AI answer in a search engine, the help bot on a web shop, the assistant that summarises a document in Word. They are made for a quick question rather than a relationship, and blocking every one of them would mean blocking half the internet. If you want no new chatbot apps on the phone at all, switch off app installs (see <em>Allowing only certain apps</em> above). Meta AI inside WhatsApp falls under the WhatsApp toggle. Gemini and Copilot are also built into the Google app, Gmail and Office: drawbridge blocks their own apps and websites, but not the assistant inside those other apps. The list of chatbot apps is a best effort: if you find one that slips through, let us know through the <a href='/contact/'>contact form</a>."),
 
             ("h2", "Why does my phone say it is 'managed by my organisation' or by an 'IT admin'?"),
             ("p", "Drawbridge is a device policy controller, and those are normally used for company phones and kiosks. You can ignore these messages."),
@@ -1850,7 +1864,7 @@ FAQ = {
             ("h3", "Hoe kan ik drawbridge uitschakelen of omzeilen? Andere beperkingen."),
             ("h4", "Beperkingen"),
             ("p", "Drawbridge heeft zowel een netwerkfilter als on-device filter en is daarom zo goed als waterdicht. Toch zijn er nog websites en apps die af en toe iets schadelijks zullen tonen of een netwerkfilter kunnen omzeilen. Aarzel niet om dit te melden via het <a href='/nl/contact/'>contactformulier</a>."),
-            ("p", 'Vooral de lijst van AI companions is een zo goed mogelijke poging, en er zullen gaten in zitten: elke week verschijnen er nieuwe apps, onder nieuwe namen. Vind je er een die we gemist hebben, <a href="/nl/contact/">laat het ons weten</a>. Een app toevoegen aan de policy is eenvoudig, en het bereikt elk toestel bij zijn volgende controle.'),
+            ("p", 'Vooral de lijsten van AI companions en AI-chatbots zijn een zo goed mogelijke poging, en er zullen gaten in zitten: elke week verschijnen er nieuwe apps, onder nieuwe namen. Vind je er een die we gemist hebben, <a href="/nl/contact/">laat het ons weten</a>. Een app toevoegen aan de policy is eenvoudig, en het bereikt elk toestel bij zijn volgende controle.'),
             ("p", "Het gevolg van deze filter is dat men geen VPN's kan gebruiken of zelf een DNS kan kiezen (de gekozen DNS is wel versleuteld en privacygericht). Men kan ook geen andere gebruikers configureren, de private space gebruiken of een gastaccount maken. Wegens deze zelfde redenen kan men geen parental control apps gebruiken, zelfs niet Google Family Link (deze laatste is overigens toch maar tot 13 jaar). Schermtijd-instellingen op het toestel blijven wel mogelijk. Tenslotte kan men, wanneer vergrendeld, geen developer settings gebruiken."),
             ("h4", "Verwijderen"),
             ("p", "Hoe je drawbridge verwijdert hangt af van de modus. In de <strong>proefmodus</strong> ontgrendel je het, druk je op \"Drawbridge uitschakelen om te verwijderen\" op de kaart bovenaan de app, en verwijder je het. Er gaat niets verloren op de telefoon."),
@@ -1872,8 +1886,10 @@ FAQ = {
             ]),
             ("p", 'Drawbridge maakt geen gebruik van parental controls maar is een device policy controller, zoals gebruikt voor bedrijfstelefoons en kiosken. In tegenstelling tot parental controls komt drawbridge out-of-the-box met een niet-configureerbare bescherming (de netwerkfilter) die reeds een zeer brede dekking geeft. Sociale media en schadelijke games worden altijd tegengehouden, geen discussie. Dat zorgt voor een omgeving met rust en zonder extra overhead. Besef dat drawbridge alleen niet voldoende is als "begeleiding van een kind online". Daar komt nog veel bij kijken, en bv. een best practice blijft het gebruik van internet op een gedeeld scherm, waar iedereen kan meekijken en discussiëren (niet voor privéconversaties, uiteraard).'),
 
-            ("h2", "Waarom worden chatbots niet geblokkeerd?"),
-            ("p", 'Reguliere chatbots, zoals ChatGPT, Claude of Gemini, kunnen inderdaad schadelijke effecten hebben op het brein bij overmatig gebruik en het vervangen van cognitief zware taken. Het is niet zo dat er opzettelijk verslavende mechanismen ingebouwd zijn, en net zoals met zoekmachines komen er steeds strengere guardrails wat te doen bij sommige soorten vragen. Het grootste probleem is echter de alomtegenwoordigheid van de chatbots: elke website of dienst (en zoekmachine!) heeft tegenwoordig wel een "assistent" waar je eigenlijk gelijk wat aan kan vragen. Indien je geen chatbots wilt gebruiken, dan kan je kiezen om geen browser te hebben en enkel bepaalde apps toe te staan.'),
+            ("h2", "Waarom kunnen chatbots geblokkeerd worden, en waarom niet allemaal?"),
+            ("p", "Het grootste risico van chatbots zoals ChatGPT, Claude of Gemini is niet een snelle vraag, maar het lange gesprek. Tot voor kort onthield een chatbot weinig. Je stelde een paar vragen en dan was de sessie op. Vandaag houden ze een gesprek wekenlang gaande en onthouden ze je van het ene gesprek naar het volgende. Dat is nieuw, en daar zit de echte schade: emotionele afhankelijkheid, een chatbot die met alles akkoord gaat en versterkt wat iemand al denkt, je terugtrekken van de mensen rondom je, en gesprekken over zelfbeschadiging en zelfdoding die de chatbot niet stopzet. In de Verenigde Staten zijn families naar de rechter gestapt nadat tieners een einde aan hun leven maakten na lange gesprekken met een chatbot. De makers weten dat. OpenAI schreef in 2025 dat zijn beveiligingen betrouwbaarder werken in korte uitwisselingen en minder betrouwbaar kunnen worden naarmate een gesprek lang wordt, en Anthropic laat enkel volwassenen Claude gebruiken."),
+            ("p", "Daarom heeft drawbridge een schakelaar, <strong>Algemene chatbots toestaan</strong>, die we aanraden vanaf 18. Zet je die uit, dan worden de apps en websites van deze gespreks-chatbots geblokkeerd: ChatGPT, Claude, Gemini, Copilot, Perplexity, DeepSeek, Le Chat, Poe, Meta AI en de vele \"AI-chat\"-apps die erop gebouwd zijn. Ook AI-apps voor therapie en coaching vallen eronder, omdat ze net rond dat lange, persoonlijke gesprek gebouwd zijn."),
+            ("p", "De korte, functionele chatbots worden om evidente redenen niet geblokkeerd: het AI-antwoord in een zoekmachine, de hulpbot op een webwinkel, de assistent die een document samenvat in Word. Die zijn gemaakt voor een snelle vraag, niet voor een relatie, en ze allemaal blokkeren zou betekenen dat we het halve internet blokkeren. Wil je helemaal geen nieuwe chatbot-apps op het toestel, zet dan het installeren van apps uit (zie <em>Enkel bepaalde apps toestaan</em> hierboven). Meta AI in WhatsApp valt onder de schakelaar voor WhatsApp. Gemini en Copilot zitten ook ingebouwd in de Google-app, Gmail en Office: drawbridge blokkeert hun eigen apps en websites, maar niet de assistent in die andere apps. De lijst van chatbot-apps is een zo goed mogelijke poging: vind je er een die erdoor glipt, laat het ons weten via het <a href='/nl/contact/'>contactformulier</a>."),
 
             ("h2", "Waarom zegt mijn telefoon dat het wordt 'beheerd door mijn organisatie' of door een 'IT-admin'?"),
             ("p", "Drawbridge is een device policy controller, en die worden normaal gebruikt voor bedrijfstelefoons en kiosken. Je mag deze teksten negeren."),
@@ -1933,7 +1949,7 @@ FAQ = {
             ("h3", "Comment désactiver ou contourner drawbridge ? Autres limitations."),
             ("h4", "Limitations"),
             ("p", "Drawbridge combine un filtre réseau et un filtre sur l'appareil, et est donc à peu près aussi étanche que possible. Il reste néanmoins des sites et des applications qui montreront de temps à autre quelque chose de nuisible, ou qui parviennent à contourner un filtre réseau. N'hésitez pas à le signaler via le <a href='/fr/contact/'>formulaire de contact</a>."),
-            ("p", "La liste des compagnons IA en particulier est faite au mieux, et elle aura des trous : de nouvelles applications apparaissent chaque semaine, sous de nouveaux noms. Si vous en trouvez une que nous avons manquée, <a href=\"/fr/contact/\">dites-le-nous</a>. Ajouter une application à la policy est simple, et cela atteint chaque téléphone à sa prochaine vérification."),
+            ("p", "Les listes de compagnons IA et de chatbots IA en particulier sont faites au mieux, et elles auront des trous : de nouvelles applications apparaissent chaque semaine, sous de nouveaux noms. Si vous en trouvez une que nous avons manquée, <a href=\"/fr/contact/\">dites-le-nous</a>. Ajouter une application à la policy est simple, et cela atteint chaque téléphone à sa prochaine vérification."),
             ("p", "La conséquence de ce filtre est que vous ne pouvez pas utiliser de VPN ni choisir vous-même un DNS (le DNS utilisé est chiffré et respectueux de la vie privée). Vous ne pouvez pas non plus configurer d'autres utilisateurs, utiliser l'espace privé ou créer un compte invité. Pour ces mêmes raisons, vous ne pouvez pas utiliser d'applications de contrôle parental, pas même Google Family Link (qui, de toute façon, ne va que jusqu'à 13 ans). Les réglages de temps d'écran sur l'appareil restent possibles. Enfin, une fois verrouillé, vous ne pouvez plus utiliser les options pour développeurs."),
             ("h4", "Retirer drawbridge"),
             ("p", "La façon de retirer drawbridge dépend du mode. En <strong>mode d'essai</strong>, déverrouillez-le, appuyez sur « Désactiver drawbridge pour le désinstaller » sur la carte en haut de l'application, et désinstallez-le. Rien n'est perdu sur le téléphone."),
@@ -1955,8 +1971,10 @@ FAQ = {
             ]),
             ("p", "Drawbridge n'utilise pas de contrôle parental, mais un device policy controller, comme ceux utilisés pour les téléphones d'entreprise et les bornes en libre-service. Contrairement aux contrôles parentaux, drawbridge offre d'emblée une protection non configurable (le filtre réseau) qui couvre déjà un très large périmètre. Les réseaux sociaux et les jeux nuisibles sont toujours bloqués, sans discussion possible. Cela crée un environnement calme, sans charge de gestion supplémentaire. Sachez que drawbridge seul ne suffit pas comme « accompagnement d'un enfant en ligne » : cela demande bien plus, et une bonne pratique reste d'utiliser internet sur un écran partagé, où chacun peut voir et en discuter (pas pour les conversations privées, bien entendu)."),
 
-            ("h2", "Pourquoi les chatbots ne sont-ils pas bloqués ?"),
-            ("p", "Les chatbots classiques, comme ChatGPT, Claude ou Gemini, peuvent effectivement avoir des effets nuisibles sur le cerveau en cas d'usage excessif et lorsqu'ils remplacent des tâches cognitivement exigeantes. Ce n'est pas qu'ils intègrent délibérément des mécanismes addictifs, et, comme pour les moteurs de recherche, des garde-fous de plus en plus stricts apparaissent pour certains types de questions. Le plus gros problème est cependant l'omniprésence des chatbots : presque chaque site ou service (et moteur de recherche !) dispose aujourd'hui d'un « assistant » auquel on peut demander à peu près n'importe quoi. Si vous préférez ne pas utiliser de chatbots, vous pouvez choisir de n'avoir aucun navigateur et de n'autoriser que certaines applications."),
+            ("h2", "Pourquoi les chatbots peuvent-ils être bloqués, et pourquoi pas tous ?"),
+            ("p", "Le plus grand risque des chatbots comme ChatGPT, Claude ou Gemini n'est pas une question rapide, c'est la longue conversation. Jusqu'à récemment, un chatbot retenait peu de choses : on posait quelques questions et la session prenait fin. Aujourd'hui, ils entretiennent une conversation pendant des semaines et se souviennent de vous d'une discussion à l'autre. C'est nouveau, et c'est là que se trouve le vrai danger : la dépendance émotionnelle, un chatbot qui approuve tout et renforce ce que la personne pense déjà, le repli loin de son entourage, et des conversations sur l'automutilation et le suicide que le chatbot n'interrompt pas. Aux États-Unis, des familles ont saisi la justice après que des adolescents ont mis fin à leurs jours à la suite de longues conversations avec un chatbot. Les créateurs le savent. OpenAI a écrit en 2025 que ses protections fonctionnent de façon plus fiable dans les échanges courts et peuvent devenir moins fiables à mesure qu'une conversation s'allonge, et Anthropic réserve Claude aux adultes."),
+            ("p", "C'est pourquoi drawbridge propose un interrupteur, <strong>Autoriser les chatbots généralistes</strong>, que nous recommandons à partir de 18 ans. Le désactiver bloque les applications et les sites de ces chatbots conversationnels : ChatGPT, Claude, Gemini, Copilot, Perplexity, DeepSeek, Le Chat, Poe, Meta AI et les nombreuses applications de « chat IA » construites dessus. Les applications IA de thérapie et de coaching sont incluses aussi, car elles sont conçues précisément autour de cette longue conversation personnelle."),
+            ("p", "Les chatbots courts et fonctionnels ne sont pas bloqués, pour des raisons évidentes : la réponse IA d'un moteur de recherche, le bot d'aide d'une boutique en ligne, l'assistant qui résume un document dans Word. Ils sont faits pour une question rapide plutôt que pour une relation, et les bloquer tous reviendrait à bloquer la moitié d'internet. Si vous ne voulez aucune nouvelle application de chatbot sur le téléphone, désactivez l'installation d'applications (voir <em>N'autoriser que certaines applications</em> plus haut). Meta AI dans WhatsApp relève de l'interrupteur WhatsApp. Gemini et Copilot sont aussi intégrés à l'application Google, à Gmail et à Office : drawbridge bloque leurs propres applications et sites, mais pas l'assistant dans ces autres applications. La liste des applications de chatbot est faite au mieux : si vous en trouvez une qui passe entre les mailles, dites-le-nous via le <a href='/fr/contact/'>formulaire de contact</a>."),
 
             ("h2", "Pourquoi mon téléphone dit-il qu'il est « géré par mon organisation » ou par un « administrateur informatique » ?"),
             ("p", "Drawbridge est un device policy controller, et ceux-ci sont normalement utilisés pour les téléphones d'entreprise et les bornes en libre-service. Vous pouvez ignorer ces messages."),
@@ -2226,7 +2244,7 @@ def generated_tables() -> dict[str, str]:
     A package with no entry falls back to its own id and is printed at build
     time, because a missing name is cosmetic and should not stop a release.
     """
-    policy = json.loads((REPO_ROOT / "dist" / "policy.json").read_text(encoding="utf-8"))
+    policy = _with_fragments(json.loads((REPO_ROOT / "dist" / "policy.json").read_text(encoding="utf-8")))
     catalogue = json.loads((SITE_SRC / "app-names.json").read_text(encoding="utf-8"))
     names = catalogue["names"]
     unknown: list[str] = []
@@ -2284,6 +2302,11 @@ def generated_tables() -> dict[str, str]:
         for title, packages in sorted(grouped.items(), key=lambda kv: kv[0].lower())
     ]
 
+    # The chatbots switch is described in prose, with its counts taken from the
+    # policy; a table would be mostly package ids, as most of these apps have no
+    # display name in app-names.json yet.
+    chatbots = next(o for o in policy["options"] if o["id"] == "general-purpose-chatbots")
+
     tables = {
         "ai-companions": table(["App", "Play rating (BE)", "Package"], app_rows(companions)),
         "whitelist": table(
@@ -2298,6 +2321,8 @@ def generated_tables() -> dict[str, str]:
     tables["count-whitelist"] = str(len(policy["app_ratings"]["allowed_packages"]))
     tables["count-streaming"] = str(len(grouped))
     tables["count-streaming-domains"] = str(len(streaming["allowed_domains"]))
+    tables["count-chatbots"] = str(len(chatbots["exempt_packages"]))
+    tables["count-chatbot-domains"] = str(len(chatbots["allowed_domains"]))
     if unknown:
         print("  no display name for, showing the package id:", ", ".join(sorted(set(unknown))))
     return tables

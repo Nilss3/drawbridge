@@ -243,7 +243,7 @@ without anybody adding it here.
 
 This is a separate high-risk category, not a always game genre. These apps simulate friendship, romance or role-play, often with user-created characters. Age labels are inconsistent and must not be treated as a safety guarantee: most vendors below publish a 17+/18+ rule while some European Play listings show PEGI 3, PEGI 16 or only "Parental guidance."
 
-The list of companion apps is a best effort and
+The list of companion apps, like the list of chatbots behind their own switch, is a best effort and
 will have holes: new ones appear every week under new names. If you find one we missed,
 [let us know](/contact/). Adding an app to the policy is easy, and it
 reaches every phone at its next check.
@@ -322,12 +322,42 @@ FTC 6(b) inquiry: https://www.ftc.gov/news-events/news/press-releases/2025/09/ft
 Character.AI under-18 changes: https://blog.character.ai/an-update-on-changes-to-our-under-18-experience/
 
 
+## General-purpose chatbots: a switch, not a rule
+
+**General-purpose chatbots are not companions, and drawbridge treats them differently.** A
+chatbot such as ChatGPT, Claude, Gemini, Copilot, Perplexity or DeepSeek is not built around
+synthetic friendship or romance, and people use them for homework, translation and work. So they are
+not in the always-blocked categories above. They are one switch on the configuration screen,
+**Allow general-purpose chatbots**, covering {{table:count-chatbots}} apps and {{table:count-chatbot-domains}}
+websites, including the many AI chat apps built on the same models and AI therapy and coaching
+apps.
+
+**The switch is on by default and carries an 18+ shield.** Those two facts are compatible. Leaving it
+on is a decision not to take the large assistants away from a phone that has them; the shield is the
+recommendation for who should have them without supervision. Why not block them outright: blocking
+the large, well-known products tends to push people towards smaller ones, which are less likely to
+have safeguards, and
+the companion apps above, which are the most harmful part of this category, are blocked either way.
+
+**What the risk is.** The risk is not a single answer but the long conversation. These assistants now
+remember you and keep talking, and their makers say they struggle to contain what can follow, from
+emotional dependence to conversations about suicide. If that worries you for a teenager, switch it
+off before locking: the apps are hidden and the websites are blocked.
+
+**Grok is not on this switch.** It is always blocked, with the companion apps, whatever the switch
+says.
+
+**What it does not touch.** Chatbots built into a search engine, on a shop's help page or inside a
+work tool are not affected; this is a switch for chatbot apps and sites, not for every place a
+language model appears.
+
 ## The exceptions: apps allowed above PEGI 3
 
 The rating rule removes anything the store does not rate PEGI 3, which is deliberately blunt and
 would take a pile of ordinary tools with it. These {{table:count-whitelist}} are named as exceptions, one at a
 time. They are tools rather than entertainment: music you already chose, messaging that is not a
-feed, recipes, sport tracking, video calls for school and work, and the general-purpose assistants.
+feed, recipes, sport tracking, and video calls for school and work. (The general-purpose AI
+assistants used to be on this list; they are now a switch of their own, described just above.)
 None of them has an algorithmic feed of strangers' content, which is the line this list is drawn
 on.
 

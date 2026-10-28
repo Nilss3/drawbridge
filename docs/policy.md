@@ -243,6 +243,28 @@ offers nothing — on a locked phone, a tool taken away until somebody spends th
 key. The fragment means the second phone never sees the block at all: **nothing
 changes for somebody who does not update.**
 
+**From build 62 a fragment can carry `blocklists` and `options` too**, so that a
+whole feature — its list, its packages and the switch itself — arrives for the
+builds that can use it and does not exist for the others. This is the answer to
+the other half of the problem below: an option in the top-level `options` reaches
+every build, and one that predates the arrival fix marks the id as seen without
+enabling it, for good. Inside a fragment, an older build never reads the id, so
+when it updates the option arrives as new with its default applied.
+
+```jsonc
+{
+  "min_version_code": 62,
+  "blocklists": [{ "id": "chatbots", "url": "…", "category": "chatbots" }],
+  "blocked_packages": ["com.openai.chatgpt"],
+  "options": [{ "id": "general-purpose-chatbots", "default_enabled": true }]
+}
+```
+
+`tools/policytool.py` and `tools/build-site.py` read fragments as part of the
+document (lists are pinned and rewritten per channel, the site describes the
+option). Raise the gate to the build that introduces the feature, and fold the
+fragment into the base policy once every phone has passed it.
+
 **A fragment can only add.** There is no field here that removes a block, for the
 same reason an option cannot: a way to quietly widen the filter for whoever has
 the newest build is the wrong direction for something nobody can review on the
@@ -326,6 +348,15 @@ The cost is WhatsApp's own lookups going unchecked, and it is small: the
 when it is on, and hides the app when it is off. Rule 1 survives because **the
 app has no in-app browser** — links open in the chosen browser, which stays
 filtered.
+
+**Beeper and DumberChat are the third and fourth entries, from policy 148 on
+dev.** They are the third-party WhatsApp apps the `whatsapp` option's footnote
+names: they log in as a linked device of a WhatsApp running on another phone,
+so a child gets WhatsApp's chats without its chatbot and channels. They talk to
+WhatsApp's servers themselves, which the filter blocks while the switch is off,
+so the owner chose to leave them outside the tunnel. Whether either shows
+linked pages in an in-app browser has not been checked; rule 1 is the thing to
+look at first if a link ever opens unfiltered from one of them.
 
 **Nothing here weakens the offline mode or a curfew.** Those are the always-on
 VPN's *lockdown* flag, which is a netd rule about every UID on the device rather
