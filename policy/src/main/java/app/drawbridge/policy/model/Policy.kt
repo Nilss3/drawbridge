@@ -284,6 +284,11 @@ data class Policy(
             // changes nothing.
             blocklists = (blocklists + matching.flatMap { it.blocklists }).distinctBy { it.id },
             options = (options + matching.flatMap { it.options }).distinctBy { it.id },
+            appRatings = appRatings?.let { ratings ->
+                val dropped = matching.flatMap { it.unallowPackages }.toSet()
+                if (dropped.isEmpty()) ratings
+                else ratings.copy(allowedPackages = ratings.allowedPackages.filterNot { it in dropped })
+            },
         )
     }
 
@@ -601,6 +606,18 @@ data class ConditionalPolicy(
      * fragment, so the block and the switch appear together or not at all.
      */
     val options: List<PolicyOption> = emptyList(),
+
+    /**
+     * Packages taken off `app_ratings.allowed_packages` for builds from
+     * [minVersionCode]. The store-rating whitelist is consulted before every
+     * other rule, so an app a withdrawn option once spared by listing it there
+     * would stay allowed whatever the returning option's switch says. Dropping it
+     * from the whitelist for every build would have older ones remove it, so the
+     * drop is gated like the option it belongs to. Removing from an allowlist is
+     * tightening, which is the direction a fragment may go.
+     */
+    @SerialName("unallow_packages")
+    val unallowPackages: List<String> = emptyList(),
 )
 
 @Serializable

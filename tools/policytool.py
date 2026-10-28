@@ -255,7 +255,9 @@ def check_whitelist_is_coherent(document: dict) -> list[str]:
     is a few dozen names long.
     """
     ratings = document.get("app_ratings") or {}
-    allowed = ratings.get("allowed_packages") or []
+    # What the newest build reads: a fragment may take packages off the whitelist.
+    dropped = {p for f in document.get("conditional", []) for p in f.get("unallow_packages", [])}
+    allowed = [p for p in (ratings.get("allowed_packages") or []) if p not in dropped]
     if not allowed:
         return []
 

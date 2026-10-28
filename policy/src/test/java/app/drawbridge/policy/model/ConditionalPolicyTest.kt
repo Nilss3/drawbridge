@@ -174,4 +174,17 @@ class ConditionalPolicyTest {
         val off = gated.effective(null, emptySet(), versionCode = 62)
         assertFalse("com.openai.chatgpt" in off.exemptPackages)
     }
+
+    @Test
+    fun `a fragment takes packages off the rating whitelist only for builds new enough`() {
+        val doc = Policy(
+            version = 3,
+            appRatings = AppRatings(allowedPackages = listOf("com.keep", "com.openai.chatgpt")),
+            conditional = listOf(
+                ConditionalPolicy(minVersionCode = 62, unallowPackages = listOf("com.openai.chatgpt")),
+            ),
+        )
+        assertEquals(listOf("com.keep", "com.openai.chatgpt"), doc.withConditionals(61).appRatings?.allowedPackages)
+        assertEquals(listOf("com.keep"), doc.withConditionals(62).appRatings?.allowedPackages)
+    }
 }

@@ -1,7 +1,7 @@
 {
-  "version": 157,
+  "version": 159,
   "issued_at": "2026-10-27T13:23:48Z",
-  "comment": "DEV CHANNEL ONLY. drawbridge 0.2.37 build 62: a conditional fragment can now carry options and blocklists, and the general-purpose chatbots switch, its list and its packages move into one for builds 62 and later. Older builds no longer see the switch at all.",
+  "comment": "DEV CHANNEL ONLY. drawbridge 0.2.38 build 63: the same code as the beta, whose chatbots fragment is gated at build 63 and can take packages off the store-rating whitelist. herald 0.1.23 unchanged.",
   "dns": {
     "upstreams": [
       "94.140.14.15",
@@ -902,14 +902,14 @@
   },
   "app_update": {
     "package_name": "app.drawbridge.dpc",
-    "version_code": 62,
-    "url": "https://dev.drawbridge-project.pages.dev/assets/dpc-0f9ea25e7f56b9ae.apk",
-    "sha256": "0f9ea25e7f56b9ae573b555f10790618817154372ca7dbd6dc04f16ac867201e",
-    "version_name": "0.2.37",
-    "notes": "Changed: the chatbots switch now only exists on this version and later, so an older version can no longer be handed it half-working. Nothing changes for you on this version. Everything in 0.2.36 is still here.",
+    "version_code": 63,
+    "url": "https://dev.drawbridge-project.pages.dev/assets/dpc-4406b5c11535115a.apk",
+    "sha256": "4406b5c11535115acf8ba84c0291d94ac8e6839b8c91b95378f05b1a2c501ef9",
+    "version_name": "0.2.38",
+    "notes": "Changed: the chatbots switch now only exists on version 0.2.38 and later, and a fragment of the policy can also take apps off the store-rating whitelist for those versions. Nothing else changes. Everything in 0.2.37 is still here.",
     "notes_i18n": {
-      "nl": "Aangepast: de chatbotschakelaar bestaat nu alleen in deze versie en nieuwer, zodat een oudere versie hem niet meer half werkend krijgt. Voor jou verandert er niets in deze versie. Alles uit 0.2.36 zit er nog in.",
-      "fr": "Modifi\u00e9 : l'interrupteur des chatbots n'existe plus que dans cette version et les suivantes, afin qu'une version plus ancienne ne le re\u00e7oive plus \u00e0 moiti\u00e9 fonctionnel. Rien ne change pour vous dans cette version. Tout ce qui \u00e9tait dans la 0.2.36 y est encore."
+      "nl": "Aangepast: de chatbotschakelaar bestaat nu alleen in versie 0.2.38 en nieuwer, en een deel van het beleid kan voor die versies ook apps van de witte lijst voor winkelleeftijden halen. Verder verandert er niets. Alles uit 0.2.37 zit er nog in.",
+      "fr": "Modifi\u00e9 : l'interrupteur des chatbots n'existe plus que dans la version 0.2.38 et les suivantes, et un fragment de la politique peut aussi retirer des applications de la liste blanche des notes du magasin pour ces versions. Rien d'autre ne change. Tout ce qui \u00e9tait dans la 0.2.37 y est encore."
     }
   },
   "required_apps": [
@@ -1012,8 +1012,8 @@
   },
   "conditional": [
     {
-      "min_version_code": 62,
-      "comment": "The general-purpose chatbots switch with everything it governs: its list, its packages and the option itself. Only drawbridge 0.2.37 (build 62) and later read it, so an older build is never offered a switch it would mark as seen without enabling.",
+      "min_version_code": 63,
+      "comment": "The general-purpose chatbots switch with everything it governs: its list, its packages and the option itself. Only drawbridge 0.2.38 (build 63) and later read it, so an older build is never offered a switch it would mark as seen without enabling.",
       "blocklists": [
         {
           "id": "chatbots",
