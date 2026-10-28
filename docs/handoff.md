@@ -2042,8 +2042,8 @@ closed from the other side by removing anything the store does not rate PEGI 3.
 Three of its tables are generated from the signed policy and the ratings cache
 rather than typed: the AI companion apps removed by name, the tools allowed above
 PEGI 3, and the streaming services the one switch governs. **Regenerate them when
-those lists change** — they are in `site-src/block-list.md` as plain markdown,
-so nothing will tell you they have drifted.
+those lists change** — they were in `site-src/block-list.md`, which was removed
+with the /why-blocked/ page on 2026-10-28.
 
 What is left of item 11 is trial and permanent mode, and only that — see the
 narrowed entry above.

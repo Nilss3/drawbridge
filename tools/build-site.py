@@ -113,13 +113,7 @@ def render_page(
     lang_switch_targets: dict[str, str] | None = None,
     scripts: str = "",
 ) -> str:
-    """path is the page's own path relative to its language root, e.g. '', 'faq/', 'install/'.
-
-    why-blocked/ is a single English-only page (no point translating ~200
-    cited rows into languages nobody has reviewed the legal claims in), so
-    every language's nav links to the same canonical /why-blocked/ URL
-    rather than a per-language prefix that would not exist.
-    """
+    """path is the page's own path relative to its language root, e.g. '', 'faq/', 'install/'."""
     prefix = lang_prefix(lang)
     nav = NAV[lang]
 
@@ -234,7 +228,6 @@ HOME = {
             "“Can't I have a device for just Spotify?”",
         ],
         cta_primary="Get started",
-        cta_secondary="See what's blocked, and why",
         partner_text="Drawbridge was co-developed by <a href='https://www.kidsunplugged.be'>Kids Unplugged</a> and takes into account the advice of its medical board as well as the best practices from other parents organisations.",
         partner_logo_alt="Kids Unplugged Belgium",
         how_h2="How it works",
@@ -299,7 +292,6 @@ HOME = {
             "“Kan ik geen toestel krijgen voor alleen Spotify?”",
         ],
         cta_primary="Aan de slag",
-        cta_secondary="Bekijk wat geblokkeerd wordt, en waarom",
         partner_text="Drawbridge werd mee ontwikkeld door <a href='https://www.kidsunplugged.be'>Kids Unplugged</a> en houdt rekening met het advies van haar medische raad en met de beste praktijken van andere ouderverenigingen.",
         partner_logo_alt="Kids Unplugged Belgium",
         how_h2="Hoe het werkt",
@@ -364,7 +356,6 @@ HOME = {
             "« Je ne peux pas avoir un appareil juste pour Spotify ? »",
         ],
         cta_primary="Commencer",
-        cta_secondary="Voir ce qui est bloqué, et pourquoi",
         partner_text="Drawbridge a été co-développé avec <a href='https://www.kidsunplugged.be'>Kids Unplugged</a> et tient compte des conseils de son conseil médical ainsi que des meilleures pratiques d'autres associations de parents.",
         partner_logo_alt="Kids Unplugged Belgium",
         how_h2="Comment ça marche",
@@ -881,7 +872,6 @@ def render_home(lang: str) -> str:
     prefix = lang_prefix(lang)
     install_href = f"{prefix}/install/"
     faq_href = f"{prefix}/faq/"
-    why_href = f"{prefix}/why-blocked/"
 
     herald_bullets_html = "\n".join(f"<li>{item}</li>" for item in c["herald_bullets"])
     mono_bullets_html = "\n".join(f"<li>{item}</li>" for item in c["mono_bullets"])
@@ -942,7 +932,6 @@ def render_home(lang: str) -> str:
       <p>{c['browser_teaser']}</p>
       <div class="btn-row">
         <a class="btn btn--primary" href="{install_href}">{c['cta_primary']}</a>
-        <a class="btn btn--ghost" href="{why_href}">{c['cta_secondary']}</a>
       </div>
     </div>
   </section>
@@ -1118,7 +1107,7 @@ INSTALL = {
         installer_h2="Install from your browser",
         installer_intro="This installs drawbridge onto the phone plugged into this computer. Nothing is uploaded anywhere: the app is served from this site and goes straight down the cable.",
         fallback='If your browser cannot do it, the same install is one command from a copy of the repository, <code>tools/provision-adb.sh</code>, which installs both apps and makes drawbridge the owner of the phone. It is documented in <a href="https://github.com/Nilss3/drawbridge/blob/main/docs/provisioning.md">provisioning.md</a>.',
-        see_more='Read the <a href="{faq}">Q&amp;A</a> for what\'s blocked and why, or see the <a href="{why}">full sourced breakdown</a>.',
+        see_more='Read the <a href="{faq}">Q&amp;A</a> for what\'s blocked and why.',
     ),
     "nl": dict(
         title="Installeren · drawbridge",
@@ -1194,7 +1183,7 @@ INSTALL = {
         installer_h2="Installeren vanuit je browser",
         installer_intro="Dit installeert drawbridge op de telefoon die aan deze computer hangt. Er wordt niets geüpload: de app komt van deze site en gaat rechtstreeks door de kabel.",
         fallback='Kan je browser het niet, dan is dezelfde installatie één commando vanuit een kopie van de repository, <code>tools/provision-adb.sh</code>, dat beide apps installeert en drawbridge de eigenaar van de telefoon maakt. De uitleg staat in <a href="https://github.com/Nilss3/drawbridge/blob/main/docs/provisioning.md">provisioning.md</a>.',
-        see_more='Lees de <a href="{faq}">Q&amp;A</a> voor wat er geblokkeerd wordt en waarom, of bekijk het <a href="{why}">volledige, onderbouwde overzicht</a>.',
+        see_more='Lees de <a href="{faq}">Q&amp;A</a> voor wat er geblokkeerd wordt en waarom.',
     ),
     "fr": dict(
         title="Installation · drawbridge",
@@ -1270,7 +1259,7 @@ INSTALL = {
         installer_h2="Installer depuis votre navigateur",
         installer_intro="Ceci installe drawbridge sur le téléphone relié à cet ordinateur. Rien n'est téléversé où que ce soit : l'application vient de ce site et passe directement par le câble.",
         fallback='Si votre navigateur ne le peut pas, la même installation tient en une seule commande depuis une copie du dépôt, <code>tools/provision-adb.sh</code>, qui installe les deux applications et fait de drawbridge le propriétaire du téléphone. Tout est expliqué dans <a href="https://github.com/Nilss3/drawbridge/blob/main/docs/provisioning.md">provisioning.md</a>.',
-        see_more='Consultez la <a href="{faq}">Q&amp;A</a> pour savoir ce qui est bloqué et pourquoi, ou voir le <a href="{why}">détail complet sourcé</a>.',
+        see_more='Consultez la <a href="{faq}">Q&amp;A</a> pour savoir ce qui est bloqué et pourquoi.',
     ),
 }
 
@@ -1513,7 +1502,6 @@ def render_install(lang: str, apk: dict) -> str:
     t = INSTALLER[lang]
     prefix = lang_prefix(lang)
     faq_href = f"{prefix}/faq/"
-    why_href = f"{prefix}/why-blocked/"
 
     labels = c["flow_labels"]
     keys = ("new", "used", "update")
@@ -1616,7 +1604,7 @@ def render_install(lang: str, apk: dict) -> str:
       <p class="footnote">{t['source_note']}</p>
       <p class="footnote">{c['fallback']}</p>
 
-      <p>{c['see_more'].format(faq=faq_href, why=why_href)}</p>
+      <p>{c['see_more'].format(faq=faq_href)}</p>
     </div>
   </section>
 """
@@ -1736,7 +1724,7 @@ FAQ = {
             ("p", "Anyone with a drawbridge device makes a clear choice: not to carry the harmful internet in a trouser pocket or a handbag, but to keep it to a laptop or a desktop. Some social media genuinely are useful: Reddit and Discord have strong communities where moderation is sometimes strict, but a lot of extremely gory content and toxic comments remain available too. Either way, there is no reason at all to carry that around in your pocket."),
 
             ("h2", "Which apps and websites are kept out?"),
-            ("p", 'To protect your wellbeing and your device, drawbridge keeps out the following categories: porn, gambling, scams, algorithmic social media, AI companions, games, and dating. Some messenger apps are treated as social media: Facebook Messenger (always blocked), WhatsApp and Telegram (optional, and yours to switch off). Video streaming and YouTube can be switched off separately as well, see below. Note that as a rule every app without a PEGI rating of "all ages" is removed, though some tools are allowed (Strava, for instance). More information on <a href="/why-blocked/">this page</a>.'),
+            ("p", 'To protect your wellbeing and your device, drawbridge keeps out the following categories: porn, gambling, scams, algorithmic social media, AI companions, games, and dating. Some messenger apps are treated as social media: Facebook Messenger (always blocked), WhatsApp and Telegram (optional, and yours to switch off). Video streaming and YouTube can be switched off separately as well, see below. Note that as a rule every app without a PEGI rating of "all ages" is removed, though some tools are allowed (Strava, for instance).'),
             ("p", "Every other website and app works normally: tools, office, weather, banking, public transport, school, work, and so on. Most messengers work too: Signal, Threema, Briar, Session. Private mobile communication is, after all, one of the main purposes of a smartphone."),
 
             ("h2", "What are trial mode and permanent mode?"),
@@ -1821,7 +1809,7 @@ FAQ = {
             ("p", "Wie een toestel met drawbridge heeft, maakt de duidelijke keuze om het schadelijke internet niet mee te nemen in de broekzak of handtas, maar het te beperken tot een laptop of desktop. Inderdaad zijn sommige social media nuttig: Reddit en Discord hebben een sterke communitywerking waar soms streng gemodereerd wordt, maar er blijft ook veel extreem gore content beschikbaar en toxische commentaren. In elk geval is er geen enkele reden waarom je die moet meedragen in je zak."),
 
             ("h2", "Welke apps en websites worden tegengehouden?"),
-            ("p", 'Voor het beschermen van je welzijn en je toestel, houdt drawbridge de volgende categorieën tegen: porno, gokken, oplichterij, algoritmische social media, AI companions, games, en dating. Sommige messenger apps worden beschouwd als social media: Facebook Messenger (altijd geblokkeerd), WhatsApp en Telegram (optioneel uit te zetten). Videostreaming en YouTube kan men ook apart uitzetten, zie verder. Let op: over het algemeen worden alle apps verwijderd die geen PEGI rating "alle leeftijden" hebben, maar bepaalde tools hebben we toegestaan (zoals Strava). Meer informatie op <a href="/why-blocked/">deze pagina</a> (in het Engels).'),
+            ("p", 'Voor het beschermen van je welzijn en je toestel, houdt drawbridge de volgende categorieën tegen: porno, gokken, oplichterij, algoritmische social media, AI companions, games, en dating. Sommige messenger apps worden beschouwd als social media: Facebook Messenger (altijd geblokkeerd), WhatsApp en Telegram (optioneel uit te zetten). Videostreaming en YouTube kan men ook apart uitzetten, zie verder. Let op: over het algemeen worden alle apps verwijderd die geen PEGI rating "alle leeftijden" hebben, maar bepaalde tools hebben we toegestaan (zoals Strava).'),
             ("p", "Alle andere websites en apps werken gewoon: tools, office, weerbericht, banking, publiek transport, school, werk, etc. Ook werken de meeste messengers: Signal, Threema, Briar, Session. Private mobiele communicatie is namelijk een hoofddoel van een smartphone."),
 
             ("h2", "Wat zijn de proefmodus en de definitieve modus?"),
@@ -1906,7 +1894,7 @@ FAQ = {
             ("p", "Qui possède un appareil avec drawbridge fait un choix clair : ne pas emporter l'internet nuisible dans sa poche ou son sac, mais le réserver à un ordinateur portable ou de bureau. Certains réseaux sociaux sont effectivement utiles : Reddit et Discord ont une vie communautaire forte, parfois strictement modérée, mais il y reste aussi beaucoup de contenu extrêmement violent et de commentaires toxiques. Dans tous les cas, rien ne justifie de transporter cela dans sa poche."),
 
             ("h2", "Quelles applications et quels sites sont tenus à l'écart ?"),
-            ("p", 'Pour protéger votre bien-être et votre appareil, drawbridge tient à l\'écart les catégories suivantes : pornographie, jeux d\'argent, arnaques, réseaux sociaux algorithmiques, compagnons IA, jeux, et rencontres. Certaines messageries sont considérées comme des réseaux sociaux : Facebook Messenger (toujours bloqué), WhatsApp et Telegram (optionnels, c\'est vous qui les désactivez). Le streaming vidéo et YouTube peuvent aussi être désactivés séparément, voir plus loin. Notez qu\'en règle générale toute application dépourvue de la classification PEGI « tous âges » est supprimée, même si certains outils restent autorisés (Strava, par exemple). Plus d\'informations sur <a href="/why-blocked/">cette page</a> (en anglais).'),
+            ("p", 'Pour protéger votre bien-être et votre appareil, drawbridge tient à l\'écart les catégories suivantes : pornographie, jeux d\'argent, arnaques, réseaux sociaux algorithmiques, compagnons IA, jeux, et rencontres. Certaines messageries sont considérées comme des réseaux sociaux : Facebook Messenger (toujours bloqué), WhatsApp et Telegram (optionnels, c\'est vous qui les désactivez). Le streaming vidéo et YouTube peuvent aussi être désactivés séparément, voir plus loin. Notez qu\'en règle générale toute application dépourvue de la classification PEGI « tous âges » est supprimée, même si certains outils restent autorisés (Strava, par exemple).'),
             ("p", "Tous les autres sites et applications fonctionnent normalement : outils, bureautique, météo, banque, transports en commun, école, travail, etc. La plupart des messageries fonctionnent aussi : Signal, Threema, Briar, Session. La communication mobile privée est en effet l'un des buts premiers d'un smartphone."),
 
             ("h2", "Que sont le mode d\'essai et le mode définitif ?"),
@@ -2013,87 +2001,6 @@ def render_faq(lang: str) -> str:
   </section>
 """
     return render_page(lang=lang, path="faq/", title=c["title"], description=c["description"], body=body)
-
-
-# ---------------------------------------------------------------------------
-# Why-blocked. The full cited list is English only, deliberately — around 200
-# rows of legal and clinical claims across jurisdictions, not something to
-# machine-translate without review, and expected to keep evolving rather than
-# settle into something worth maintaining in three languages. See
-# convert_blocklist.py for the markdown → HTML conversion.
-#
-# Dutch and French get a short summary page at the same path instead, ending
-# in a link to the English original. That exists because the homepage and
-# install page both link here with a language prefix: without these pages
-# those links 404, which is worse than a summary that admits its own limits.
-# ---------------------------------------------------------------------------
-
-WHY_TITLE = "The blocklist and the why · drawbridge"
-WHY_DESCRIPTION = "The evidence behind every category and app drawbridge blocks: official ratings, independent reviews, regulator findings and cited research."
-
-# The summary, in every language. One source of truth: it opens the English
-# blocklist page and *is* the Dutch and French pages, so it cannot be allowed
-# to drift between the two.
-WHY_INTRO = {
-    "en": [
-        'This page is written and kept up to date by a large language model, because the list it describes moves faster than anyone wants to hand-write. Every claim below is meant to carry a source you can check, and if you find one that does not, that is a mistake worth reporting. It also means the prose has more em-dashes in it than a person would use, for which we apologise.',
-        'Drawbridge blocks seven categories: pornography, gambling, ads and trackers (which also covers malware, phishing and scam domains), algorithmic social media, AI companions, all games, and dating. Everything else keeps working normally: tools, office software, weather, banking, public transport, school and work. The list is not configurable, and that is the point, because any setting you can change yourself is also a setting you can argue about.',
-        "The pornography, gambling, ads and tracker categories come from large public blocklists maintained by others (Block List Project and HaGeZi), refreshed daily. The social media, AI companion, dating and game lists are drawbridge's own, and every entry on them rests on public sources: official age ratings (PEGI, ESRB), independent reviews such as Common Sense Media, regulator findings from bodies like the Belgian Gaming Commission, the European Commission and Australia's eSafety Commissioner, and guidance from medical and child-psychiatric organisations such as AACAP, the APA and the WHO. The pattern that recurs most: the store's age label often sits years below what independent reviewers advise, and says nothing at all about chat with strangers or paid random rewards.",
-        'No blocklist is ever finished, so the gaps are closed from the other side as well: an app is removed unless the store rates it <strong>PEGI 3</strong> (or the local equivalent), whatever any list does or does not say about it. That single rule catches the app nobody has written down yet. The exceptions are named one by one, and they are tools rather than entertainment: the music, messaging, recipe, sport and assistant apps listed at the end of this page.',
-    ],
-    "nl": [
-        'Deze pagina wordt geschreven en bijgehouden door een taalmodel, omdat de lijst die ze beschrijft sneller verandert dan iemand met de hand kan bijhouden. Elke bewering hieronder hoort een bron te hebben die je zelf kan nakijken; vind je er een zonder, dan is dat een fout die het melden waard is. Het betekent ook dat er meer gedachtestreepjes in de tekst staan dan een mens zou gebruiken, waarvoor onze excuses.',
-        'Drawbridge houdt zeven categorieën tegen: pornografie, gokken, advertenties en trackers (waaronder ook malware, phishing en oplichterij), algoritmische social media, AI companions, alle games, en dating. Al de rest blijft gewoon werken: gereedschap, kantoorsoftware, weerbericht, bankieren, openbaar vervoer, school en werk. De lijst is niet configureerbaar: dat is precies het punt, want elke instelling die je zelf kan aanpassen is er ook één waarover discussie mogelijk is.',
-        'De categorieën pornografie, gokken, advertenties en trackers komen uit grote publieke blocklists die door anderen worden onderhouden (Block List Project en HaGeZi) en dagelijks worden ververst. De lijsten voor social media, AI companions, dating en games zijn die van drawbridge zelf, en elke keuze daarop steunt op openbare bronnen: officiële leeftijdslabels (PEGI, ESRB), onafhankelijke beoordelingen zoals Common Sense Media, uitspraken van toezichthouders zoals de Belgische Kansspelcommissie, de Europese Commissie en de Australische eSafety Commissioner, en richtlijnen van medische en kinderpsychiatrische organisaties zoals AACAP, de APA en de WHO. Wat daarbij het vaakst terugkomt: het officiële leeftijdslabel in de winkel ligt vaak jaren lager dan wat onafhankelijke beoordelaars aanraden, en het label zegt bovendien niets over chatfuncties met vreemden of over betaalde willekeurige beloningen.',
-        'Geen enkele blocklist is ooit af, dus de gaten worden ook van de andere kant gedicht: een app wordt verwijderd tenzij de winkel ze <strong>PEGI 3</strong> geeft (of het lokale equivalent), wat een lijst er ook over zegt. Die ene regel vangt net de app op die nog niemand heeft opgeschreven. De uitzonderingen worden stuk voor stuk benoemd, en het zijn werktuigen eerder dan vermaak: de muziek-, berichten-, recepten-, sport- en assistent-apps die achteraan deze pagina staan.',
-    ],
-    "fr": [
-        "Cette page est rédigée et tenue à jour par un modèle de langage, car la liste qu'elle décrit évolue plus vite que ce que l'on peut écrire à la main. Chaque affirmation ci-dessous est censée s'appuyer sur une source vérifiable ; si vous en trouvez une qui n'en a pas, cela vaut la peine de le signaler. Cela veut dire aussi que le texte contient plus de tirets cadratins qu'une personne n'en emploierait, ce dont nous nous excusons.",
-        "Drawbridge bloque sept catégories : la pornographie, les jeux d'argent, la publicité et les traceurs (ce qui couvre aussi les domaines de logiciels malveillants, d'hameçonnage et d'arnaque), les réseaux sociaux algorithmiques, les compagnons IA, tous les jeux, et les rencontres. Tout le reste continue de fonctionner normalement : outils, bureautique, météo, banque, transports en commun, école et travail. La liste n'est pas configurable, et c'est précisément l'intérêt : tout réglage que l'on peut modifier soi-même est aussi un réglage dont on peut débattre.",
-        "Les catégories pornographie, jeux d'argent, publicité et traceurs proviennent de grandes listes de blocage publiques maintenues par des tiers (Block List Project et HaGeZi), actualisées quotidiennement. Les listes des réseaux sociaux, des compagnons IA, des rencontres et des jeux sont propres à drawbridge, et chacune de leurs entrées s'appuie sur des sources publiques : les classifications officielles par âge (PEGI, ESRB), des évaluations indépendantes comme Common Sense Media, des décisions de régulateurs comme la Commission belge des jeux de hasard, la Commission européenne et l'eSafety Commissioner australien, ainsi que les recommandations d'organisations médicales et pédopsychiatriques comme l'AACAP, l'APA et l'OMS. Le constat qui revient le plus souvent : l'âge affiché sur la boutique est souvent inférieur de plusieurs années à ce que recommandent les évaluateurs indépendants, et il ne dit rien des fonctions de discussion avec des inconnus ni des récompenses aléatoires payantes.",
-        "Aucune liste de blocage n'est jamais complète, si bien que les trous sont aussi comblés par l'autre bout : une application est supprimée à moins que la boutique ne la classe <strong>PEGI 3</strong> (ou l'équivalent local), quoi qu'en dise ou n'en dise aucune liste. Cette seule règle attrape l'application que personne n'a encore répertoriée. Les exceptions sont nommées une par une, et ce sont des outils plutôt que des divertissements : les applications de musique, de messagerie, de cuisine, de sport et d'assistance listées en fin de page.",
-    ],
-}
-
-# Page chrome for the standalone Dutch and French summary pages. English has
-# no entry here: its /why-blocked/ is the full cited document, not a summary.
-WHY_SUMMARY = {
-    "nl": dict(
-        title="Wat wordt geblokkeerd, en waarom · drawbridge",
-        description="Een korte samenvatting van wat drawbridge tegenhoudt en op welke basis, met een link naar de volledige lijst met bronnen.",
-        h1="Wat wordt geblokkeerd, en waarom",
-        cta="Lees de volledige lijst met alle bronnen (Engels)",
-    ),
-    "fr": dict(
-        title="Ce qui est bloqué, et pourquoi · drawbridge",
-        description="Un résumé de ce que drawbridge bloque et sur quelles bases, avec un lien vers la liste complète et ses sources.",
-        h1="Ce qui est bloqué, et pourquoi",
-        cta="Lire la liste complète avec toutes les sources (en anglais)",
-    ),
-}
-
-
-def render_why_summary(lang: str) -> str:
-    c = WHY_SUMMARY[lang]
-    paragraphs = "\n      ".join(f"<p>{p}</p>" for p in WHY_INTRO[lang])
-    body = f"""
-  <section class="section">
-    <div class="wrap">
-      <h1>{c['h1']}</h1>
-      {paragraphs}
-      <div class="btn-row">
-        <a class="btn btn--primary" href="/why-blocked/">{c['cta']}</a>
-      </div>
-    </div>
-  </section>
-"""
-    return render_page(
-        lang=lang,
-        path="why-blocked/",
-        title=c["title"],
-        description=c["description"],
-        body=body,
-    )
 
 
 # ---------------------------------------------------------------------------
@@ -2229,103 +2136,6 @@ def render_contact_result(lang: str, outcome: str) -> str:
         lang=lang, path=f"contact/{outcome}/", title=c[outcome + "_title"],
         description=c["description"], body=body,
     )
-
-
-def generated_tables() -> dict[str, str]:
-    """The blocklist page's three package tables, built from the signed policy.
-
-    They used to be pasted into `site-src/block-list.md` by hand, and drifted
-    twice in one day: the whitelist table said 33 apps while the policy allowed
-    49, so sixteen apps were permitted on phones and missing from the page that
-    documents what is permitted. Rows now come from `dist/policy.json`, so the
-    page cannot claim a different set from the one devices enforce.
-
-    Names come from `site-src/app-names.json`, which the policy has no room for.
-    A package with no entry falls back to its own id and is printed at build
-    time, because a missing name is cosmetic and should not stop a release.
-    """
-    policy = _with_fragments(json.loads((REPO_ROOT / "dist" / "policy.json").read_text(encoding="utf-8")))
-    catalogue = json.loads((SITE_SRC / "app-names.json").read_text(encoding="utf-8"))
-    names = catalogue["names"]
-    unknown: list[str] = []
-
-    def described(package: str) -> tuple[str, str]:
-        entry = names.get(package)
-        if entry is None:
-            unknown.append(package)
-            return package, "not in the store cache"
-        return entry["title"], entry["rating"]
-
-    def table(headers: list[str], rows: list[list[str]]) -> str:
-        head = "".join(f"<th>{html.escape(h)}</th>" for h in headers)
-        body = "\n".join(
-            "<tr>" + "".join(f"<td>{c}</td>" for c in row) + "</tr>" for row in rows
-        )
-        return (
-            '<div class="table-wrap"><table>\n<thead><tr>'
-            + head
-            + "</tr></thead>\n<tbody>\n"
-            + body
-            + "\n</tbody>\n</table></div>"
-        )
-
-    def app_rows(packages: list[str]) -> list[list[str]]:
-        described_rows = [(described(p), p) for p in packages]
-        described_rows.sort(key=lambda r: r[0][0].lower())
-        return [
-            [html.escape(title), html.escape(rating), f"<code>{html.escape(p)}</code>"]
-            for (title, rating), p in described_rows
-        ]
-
-    # **The one grouping the policy cannot supply.** `blocked_packages` is a flat
-    # list with no categories, so which of them are AI companions is a judgement
-    # kept in app-names.json. What can be checked is that every package claimed
-    # there is still blocked, and it is: a page saying drawbridge removes an app
-    # it no longer removes would be worse than no page.
-    companions = catalogue["ai_companions"]
-    stale = [p for p in companions if p not in policy["blocked_packages"]]
-    if stale:
-        raise SystemExit(
-            "app-names.json lists these as blocked AI companions, but the policy "
-            "no longer blocks them: " + ", ".join(stale)
-        )
-
-    streaming = next(o for o in policy["options"] if o["id"] == "streaming")
-    grouped: dict[str, list[str]] = {}
-    for package in streaming["exempt_packages"]:
-        grouped.setdefault(described(package)[0], []).append(package)
-    streaming_rows = [
-        [
-            html.escape(title),
-            ", ".join(f"<code>{html.escape(p)}</code>" for p in sorted(packages)),
-        ]
-        for title, packages in sorted(grouped.items(), key=lambda kv: kv[0].lower())
-    ]
-
-    # The chatbots switch is described in prose, with its counts taken from the
-    # policy; a table would be mostly package ids, as most of these apps have no
-    # display name in app-names.json yet.
-    chatbots = next(o for o in policy["options"] if o["id"] == "general-purpose-chatbots")
-
-    tables = {
-        "ai-companions": table(["App", "Play rating (BE)", "Package"], app_rows(companions)),
-        "whitelist": table(
-            ["App", "Play rating (BE)", "Package"],
-            app_rows(policy["app_ratings"]["allowed_packages"]),
-        ),
-        "streaming": table(["Service", "Package(s)"], streaming_rows),
-    }
-    # The prose around each table quotes its size, so the numbers come from the
-    # same place the rows do rather than from somebody remembering to edit them.
-    tables["count-companions"] = str(len(companions))
-    tables["count-whitelist"] = str(len(policy["app_ratings"]["allowed_packages"]))
-    tables["count-streaming"] = str(len(grouped))
-    tables["count-streaming-domains"] = str(len(streaming["allowed_domains"]))
-    tables["count-chatbots"] = str(len(chatbots["exempt_packages"]))
-    tables["count-chatbot-domains"] = str(len(chatbots["allowed_domains"]))
-    if unknown:
-        print("  no display name for, showing the package id:", ", ".join(sorted(set(unknown))))
-    return tables
 
 
 # ---------------------------------------------------------------------------
@@ -2563,27 +2373,6 @@ def render_privacy(lang: str) -> str:
     )
 
 
-def render_why_blocked(content_fragment: str) -> str:
-    paragraphs = "\n      ".join(f"<p>{p}</p>" for p in WHY_INTRO["en"])
-    body = f"""
-  <section class="section">
-    <div class="wrap wrap--wide">
-      <h1>The blocklist and the why</h1>
-      {paragraphs}
-      <p class="footnote">This page grows as the list does; treat it as a reference rather than something finished.</p>
-{content_fragment}
-    </div>
-  </section>
-"""
-    return render_page(
-        lang="en",
-        path="why-blocked/",
-        title=WHY_TITLE,
-        description=WHY_DESCRIPTION,
-        body=body,
-    )
-
-
 # ---------------------------------------------------------------------------
 # Build
 # ---------------------------------------------------------------------------
@@ -2703,12 +2492,6 @@ def build_all() -> None:
             else:
                 item.unlink()
 
-    import sys
-    sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
-    import convert_blocklist  # tools/convert_blocklist.py
-    why_fragment = convert_blocklist.build_fragment(generated_tables())
-    write(SITE_OUT / "why-blocked" / "index.html", render_why_blocked(why_fragment))
-
     apk = stage_installer_assets(checked)
 
     for lang in LANGUAGES:
@@ -2718,8 +2501,6 @@ def build_all() -> None:
         write(base / "install" / "usb" / "index.html", render_usb_redirect(lang))
         write(base / "faq" / "index.html", render_faq(lang))
         write(base / "privacy" / "index.html", render_privacy(lang))
-        if lang in WHY_SUMMARY:
-            write(base / "why-blocked" / "index.html", render_why_summary(lang))
         write(base / "contact" / "index.html", render_contact(lang))
         for outcome in ("sent", "failed"):
             write(base / "contact" / outcome / "index.html", render_contact_result(lang, outcome))

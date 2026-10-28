@@ -103,8 +103,7 @@ the rule in [handoff](handoff.md#where-it-stands).
 `tools/build-site.py` builds the second from the first. `site/` is what
 Cloudflare Pages serves and is committed; do not edit it by hand.
 
-- `site-src/block-list.md` — the human-readable account of what is blocked
-- `site-src/app-names.json` — display names for the generated tables
+- `site-src/app-names.json` — display names, read by `tools/refresh-app-names.py`
 - `site-src/installer/` — the WebUSB installer (`adb.js`, `installer.js`)
 - `site-src/channel.txt` — which channel this branch builds
 - `site/assets/dpc-<digest16>.apk` — the DPC binary the install page hands out,
@@ -163,10 +162,10 @@ not. See [policy](policy.md#pinned-and-unpinned-lists), and note that
 
 ### And the page a reader sees
 
-`site-src/block-list.md` is the human-facing account. `tools/convert_blocklist.py`
-turns it into `site/why-blocked/`; the tables beside it are generated from
-`dist/policy.json` at site-build time, which is what
-`tools/refresh-app-names.py` keeps readable.
+There is none. The `/why-blocked/` page and its generator were removed on
+2026-10-28: it was a list of apps and domains describing a rule-shaped policy
+(all games are blocked, not just the listed ones), and too much to maintain.
+The FAQ says what is blocked.
 
 ---
 
