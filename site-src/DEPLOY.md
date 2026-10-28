@@ -5,7 +5,7 @@ never the files under `site/` directly. After any change:
 
 ```bash
 python3 tools/build-site.py
-git add site site-src tools/build-site.py tools/convert_blocklist.py
+git add site site-src tools/build-site.py
 git commit -m "site: ..."
 git push
 ```
@@ -56,12 +56,7 @@ that's expected, not a bug.
   lives on `/install/` itself, below the three-situation guide, instead of on a
   page of its own. `/install/usb/` is a redirect kept for the links already
   handed out.
-- **why-blocked/ in Dutch and French.** Deliberately English-only — see the
-  comment above `WHY_TITLE` in `tools/build-site.py`. Around 200 rows of cited
-  legal and clinical claims across jurisdictions is not something to
-  machine-translate without review, and the content is expected to keep
-  growing rather than settle into something worth maintaining in three
-  languages.
+- ~~**why-blocked/ in Dutch and French.**~~ **Gone on 2026-10-28**, with the page itself.
 - ~~**A night variant of the hero illustration.**~~ **Closed on 2026-08-19**, by
   removing the need for one. The hero is now `art/scene-dusk.webp` — the same
   master drawbridge's own welcome screen uses — and it is a sunset, warm enough
@@ -78,8 +73,8 @@ organisations". That began as "made by pediatricians and neurologists", which
 was not true of anything in this repo, then carried an asterisked "official
 sources to come" for a while, and is now stated plainly.
 
-What actually backs it today is [the blocklist page](https://github.com/Nilss3/drawbridge/blob/main/site-src/block-list.md):
-around 200 entries citing AACAP, the APA, WHO, Ofcom, the European
+What backed it until 2026-10-28 was the blocklist page (`site-src/block-list.md`, removed with the
+/why-blocked/ page; see git history): around 200 entries citing AACAP, the APA, WHO, Ofcom, the European
 Commission, eSafety, Mozilla, Common Sense Media, Internet Matters, NSPCC,
 Child Focus and Mediawijs. That is a real evidence base for the *categories*
 being blocked.
