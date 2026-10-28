@@ -279,6 +279,11 @@ data class Policy(
         return copy(
             blockedDomains = (blockedDomains + matching.flatMap { it.blockedDomains }).distinct(),
             blockedPackages = (blockedPackages + matching.flatMap { it.blockedPackages }).distinct(),
+            // By id, so that applying the same fragments twice (the manager
+            // merges them once for the baseline and [effective] merges again)
+            // changes nothing.
+            blocklists = (blocklists + matching.flatMap { it.blocklists }).distinctBy { it.id },
+            options = (options + matching.flatMap { it.options }).distinctBy { it.id },
         )
     }
 
@@ -577,6 +582,25 @@ data class ConditionalPolicy(
 
     @SerialName("blocked_packages")
     val blockedPackages: List<String> = emptyList(),
+
+    /**
+     * Blocklists that exist only for the options in [options]. A build below
+     * [minVersionCode] never downloads them.
+     */
+    val blocklists: List<BlocklistSource> = emptyList(),
+
+    /**
+     * Options only builds from [minVersionCode] are offered.
+     *
+     * **This is what keeps an old build from being handed a switch it cannot
+     * place.** An option in the top-level list reaches every build: one that
+     * predates the option's fix marks its id as seen without enabling it, and
+     * that decision is then permanent. Here the older build never reads the id
+     * at all, so when it does update the option arrives as new, with its
+     * default applied. The option's blocklists and packages belong in this same
+     * fragment, so the block and the switch appear together or not at all.
+     */
+    val options: List<PolicyOption> = emptyList(),
 )
 
 @Serializable

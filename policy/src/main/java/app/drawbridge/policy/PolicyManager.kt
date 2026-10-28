@@ -142,7 +142,10 @@ class PolicyManager private constructor(
                 if (policyUpdated) store.install(verified)
 
                 val active = if (policyUpdated) verified.policy else _policy.value
-                val blocklistChanged = store.syncBlocklists(active.blocklists, downloader)
+                val blocklistChanged = store.syncBlocklists(
+                    active.withConditionals(conditionalVersionCode()).blocklists,
+                    downloader,
+                )
 
                 // **Recorded before the policy is applied, not after.** Applying
                 // is what publishes the new document, and a collector reacting
@@ -341,7 +344,12 @@ class PolicyManager private constructor(
         store.writeState(next)
     }
 
-    private fun applyPolicy(published: Policy) {
+    private fun applyPolicy(document: Policy) {
+        // The fragments this build understands are part of what the document
+        // *offers*, so they are merged before anything asks which options exist
+        // or which of them have been seen. A fragment for a newer build is never
+        // read here, which is what keeps its option from being marked offered.
+        val published = document.withConditionals(conditionalVersionCode())
         baseline = published
         val (profileId, _) = selection()
         val enabled = resolvedOptionIds()

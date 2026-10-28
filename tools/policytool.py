@@ -78,6 +78,27 @@ def cmd_genkey(args: argparse.Namespace) -> None:
     print("device is stuck on its current policy until it is re-provisioned.")
 
 
+def all_blocklists(document: dict) -> list[dict]:
+    """Every blocklist the document names, the ones inside `conditional` too.
+
+    A fragment's lists are rewritten, pinned and fetched like any other: they
+    are served from this repo on the same branch and drift the same way, and a
+    check that only read the top level would sign a hash nobody had computed.
+    """
+    found = list(document.get("blocklists", []))
+    for fragment in document.get("conditional", []):
+        found.extend(fragment.get("blocklists", []))
+    return found
+
+
+def all_options(document: dict) -> list[dict]:
+    """Every option the document offers, the ones inside `conditional` too."""
+    found = list(document.get("options", []))
+    for fragment in document.get("conditional", []):
+        found.extend(fragment.get("options", []))
+    return found
+
+
 LOCAL_LIST_URL_BASE = "https://raw.githubusercontent.com/Nilss3/drawbridge/"
 
 # The branches a signed policy may name. A list URL is rewritten to whichever of
@@ -131,7 +152,7 @@ def rewrite_local_list_urls(document: dict) -> None:
     if channel is None:
         return
 
-    for source in document.get("blocklists", []):
+    for source in all_blocklists(document):
         path = local_list_path(source.get("url", ""))
         if path is None:
             continue
@@ -150,7 +171,7 @@ def pin_local_lists(document: dict) -> None:
     """
     import hashlib
 
-    for source in document.get("blocklists", []):
+    for source in all_blocklists(document):
         path = local_list_path(source.get("url", ""))
         if path is None:
             continue
@@ -178,7 +199,7 @@ def check_options_mirror_lists(document: dict) -> list[str]:
     — those domains live inside the social list, mixed in with everything else.
     """
     by_category: dict[str, list[str]] = {}
-    for source in document.get("blocklists", []):
+    for source in all_blocklists(document):
         path = local_list_path(source.get("url", ""))
         category = source.get("category")
         if path is None or not category:
@@ -194,7 +215,7 @@ def check_options_mirror_lists(document: dict) -> list[str]:
         by_category.setdefault(category, []).extend(entries)
 
     problems = []
-    for option in document.get("options", []):
+    for option in all_options(document):
         wanted = by_category.get(option.get("id"))
         if not wanted:
             continue
@@ -251,7 +272,7 @@ def check_whitelist_is_coherent(document: dict) -> list[str]:
         )
 
     governed: dict[str, str] = {}
-    for option in document.get("options", []):
+    for option in all_options(document):
         for package in option.get("exempt_packages", []) + option.get("allowed_packages", []):
             governed.setdefault(package, option.get("id", "?"))
     captured = sorted(p for p in allowed if p in governed)
@@ -320,7 +341,7 @@ def check_urls_resolve(document: dict, *, published: bool = False) -> list[str]:
         return False, "unreachable"
 
     targets: list[tuple[str, str, bool]] = []  # (label, url, fatal)
-    for source in document.get("blocklists", []):
+    for source in all_blocklists(document):
         url = source.get("url", "")
         own = local_list_path(url) is not None
         targets.append((f"blocklist {source.get('id')!r}", url, published or not own))

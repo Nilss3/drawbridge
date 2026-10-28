@@ -730,7 +730,19 @@ def _policy_document() -> dict:
     import base64
 
     envelope = json.loads((REPO_ROOT / "dist" / "policy.signed.json").read_text())
-    return json.loads(base64.b64decode(envelope["payload"]))
+    return _with_fragments(json.loads(base64.b64decode(envelope["payload"])))
+
+
+def _with_fragments(document: dict) -> dict:
+    """The document as the newest build reads it, `conditional` merged in.
+
+    The site describes the newest build, so an option or a block that lives
+    inside a fragment is as much the policy as one at the top level.
+    """
+    for fragment in document.get("conditional", []):
+        for key in ("blocklists", "options", "blocked_domains", "blocked_packages"):
+            document[key] = list(document.get(key, [])) + fragment.get(key, [])
+    return document
 
 
 def _app_string(name: str, lang: str) -> str:
@@ -2232,7 +2244,7 @@ def generated_tables() -> dict[str, str]:
     A package with no entry falls back to its own id and is printed at build
     time, because a missing name is cosmetic and should not stop a release.
     """
-    policy = json.loads((REPO_ROOT / "dist" / "policy.json").read_text(encoding="utf-8"))
+    policy = _with_fragments(json.loads((REPO_ROOT / "dist" / "policy.json").read_text(encoding="utf-8")))
     catalogue = json.loads((SITE_SRC / "app-names.json").read_text(encoding="utf-8"))
     names = catalogue["names"]
     unknown: list[str] = []

@@ -118,4 +118,60 @@ class ConditionalPolicyTest {
         assertEquals(1, parsed.conditional.size)
         assertEquals(53, parsed.conditional.single().minVersionCode)
     }
+
+    // --- A fragment that carries the option itself ----------------------------
+
+    private val gated = Policy(
+        version = 2,
+        options = listOf(PolicyOption(id = "streaming", name = "Streaming")),
+        conditional = listOf(
+            ConditionalPolicy(
+                minVersionCode = 62,
+                blockedPackages = listOf("com.openai.chatgpt"),
+                blocklists = listOf(
+                    BlocklistSource(id = "chatbots", url = "https://example.invalid/chatbots.txt"),
+                ),
+                options = listOf(
+                    PolicyOption(
+                        id = "general-purpose-chatbots",
+                        name = "Allow general-purpose chatbots",
+                        defaultEnabled = true,
+                        exemptPackages = listOf("com.openai.chatgpt"),
+                    ),
+                ),
+            ),
+        ),
+    )
+
+    /** The whole point: an older build is never offered the switch, so it cannot mark it seen. */
+    @Test
+    fun `a build too old never sees the option or its list`() {
+        val old = gated.withConditionals(61)
+        assertEquals(listOf("streaming"), old.options.map { it.id })
+        assertTrue(old.blocklists.isEmpty())
+        assertEquals(setOf("streaming"), old.offeredOptionIds())
+    }
+
+    @Test
+    fun `a build new enough is offered the option and its list`() {
+        val current = gated.withConditionals(62)
+        assertEquals(listOf("streaming", "general-purpose-chatbots"), current.options.map { it.id })
+        assertEquals(listOf("chatbots"), current.blocklists.map { it.id })
+        assertTrue("com.openai.chatgpt" in current.blockedPackages)
+    }
+
+    /** The manager merges once for the baseline and [Policy.effective] merges again. */
+    @Test
+    fun `applying the fragments twice changes nothing`() {
+        val once = gated.withConditionals(62)
+        assertEquals(once, once.withConditionals(62))
+    }
+
+    @Test
+    fun `the gated option releases its packages when it is on`() {
+        val on = gated.effective(null, setOf("general-purpose-chatbots"), versionCode = 62)
+        assertTrue("com.openai.chatgpt" in on.exemptPackages)
+        val off = gated.effective(null, emptySet(), versionCode = 62)
+        assertFalse("com.openai.chatgpt" in off.exemptPackages)
+    }
 }

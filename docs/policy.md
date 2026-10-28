@@ -243,6 +243,28 @@ offers nothing — on a locked phone, a tool taken away until somebody spends th
 key. The fragment means the second phone never sees the block at all: **nothing
 changes for somebody who does not update.**
 
+**From build 62 a fragment can carry `blocklists` and `options` too**, so that a
+whole feature — its list, its packages and the switch itself — arrives for the
+builds that can use it and does not exist for the others. This is the answer to
+the other half of the problem below: an option in the top-level `options` reaches
+every build, and one that predates the arrival fix marks the id as seen without
+enabling it, for good. Inside a fragment, an older build never reads the id, so
+when it updates the option arrives as new with its default applied.
+
+```jsonc
+{
+  "min_version_code": 62,
+  "blocklists": [{ "id": "chatbots", "url": "…", "category": "chatbots" }],
+  "blocked_packages": ["com.openai.chatgpt"],
+  "options": [{ "id": "general-purpose-chatbots", "default_enabled": true }]
+}
+```
+
+`tools/policytool.py` and `tools/build-site.py` read fragments as part of the
+document (lists are pinned and rewritten per channel, the site describes the
+option). Raise the gate to the build that introduces the feature, and fold the
+fragment into the base policy once every phone has passed it.
+
 **A fragment can only add.** There is no field here that removes a block, for the
 same reason an option cannot: a way to quietly widen the filter for whoever has
 the newest build is the wrong direction for something nobody can review on the
