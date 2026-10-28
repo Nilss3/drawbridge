@@ -1,0 +1,15 @@
+# drawbridge — adult sites the public list misses
+#
+# Always on, no option behind it, pinned by SHA-256 in dist/policy.json.
+#
+# The `adult` source is the Block List Project's porn.txt, maintained by others
+# and downloaded at refresh time. This file sits beside it for what that list
+# does not carry, so a site can be blocked the day it is found rather than the
+# day somebody upstream adds it. It adds to the public list and never replaces it.
+#
+# Add a domain here only once it has been opened and shown to carry porn; say
+# what it is on the line above, so the next reader need not fetch it again.
+
+# Telegram directories that carry porn and AI companions.
+nsfwtelegram.net
+bestoftelegram.com
