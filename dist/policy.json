@@ -1,7 +1,7 @@
 {
-  "version": 158,
+  "version": 160,
   "issued_at": "2026-10-27T13:28:02Z",
-  "comment": "drawbridge 0.2.38 build 63: the general-purpose chatbots switch returns, under the new id general-purpose-chatbots, on by default and recommended from 18. It lives in a conditional fragment for build 63 and later, so an older build is never offered it. herald unchanged.",
+  "comment": "Policy 160: nsfwtelegram.net, which carries porn and AI chatbots, is blocked outright; no switch releases it. drawbridge 0.2.38 build 63 and herald 0.1.23 unchanged.",
   "dns": {
     "upstreams": [
       "94.140.14.15",
@@ -97,7 +97,8 @@
   "blocked_domains": [
     "whatsapp.com",
     "whatsapp.net",
-    "wa.me"
+    "wa.me",
+    "nsfwtelegram.net"
   ],
   "allowed_domains": [
     "ublockorigin.github.io",
