@@ -71,8 +71,6 @@ object HeraldCard {
                   body { background: #1c1b22; color: #fbfbfe; }
                   .card { background: #2b2a33 !important; }
                   .host { background: #42414d !important; }
-                  .credit.day { display: none; }
-                  .credit.night { display: block; }
                 }
                 .card {
                   background: #fff; border-radius: 16px; overflow: hidden;
@@ -87,6 +85,11 @@ object HeraldCard {
                    credit follows whichever photo the browser picked. */
                 .credit { margin: 0; padding: 6px 12px 0; font-size: .7rem; opacity: .6; }
                 .credit.night { display: none; }
+                /* After the base rule above: equal specificity, so order decides. */
+                @media (prefers-color-scheme: dark) {
+                  .credit.day { display: none; }
+                  .credit.night { display: block; }
+                }
                 .body { padding: 18px 28px 32px; }
                 h1 { font-size: 1.25rem; margin: 0 0 12px; }
                 p { margin: 0 0 16px; line-height: 1.5; opacity: .85; }
