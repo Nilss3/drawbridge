@@ -15,28 +15,39 @@ description 4000.** Counts below are of the text as written.
 
 ## On hold — the owner's decision, 2026-10-26
 
-**Nothing here goes to Play Console yet.** Everything is ready: the copy in three
-languages, the icon, the feature graphic, 15 screenshots, and a signed bundle
-from herald 0.1.23.
+**Nothing here goes to Play Console yet.** The copy exists in three languages,
+along with the icon, the feature graphic and 15 screenshots. What is not ready
+is the bundle: it was built from herald 0.1.23, and the current build is 0.1.24.
 
-What stops it is one clause. The descriptions say herald mono blocks
-general-purpose chatbots, which was true against policy 140 and is **not true
-now**: policy 141 withdrew the chatbots option, because the record of which
-options a phone has been offered was written without the selection beside it, so
-a new default-on option read as *off* on every read after the first — taking the
-assistants away from managed phones nobody had touched.
+### The chatbots clause, and where each language stands
 
-So before this listing is submitted, one of two things has to happen:
+The descriptions said herald mono blocks general-purpose chatbots. That was true
+against policy 140 and is **not true of any build a buyer could install today**.
 
-- the clause comes out of all three descriptions, and goes back in at a later
-  listing update; or
-- `claude/seen-options-fix` lands, a herald release carries it, and the option
-  returns under a new id in a policy — at which point the clause is true again
-  and nothing here needs editing.
+Policy 167 still carries the chatbots list, its packages and its switch, but
+inside a `conditional` fragment gated on `min_version_code: 63` — drawbridge
+0.2.38 and later, where the switch is still in beta. A standalone herald has no
+drawbridge to ask, so `conditionalVersionCode()` falls back to
+`config.ownVersionCode` (`policy/.../PolicyManager.kt`), and herald never sets
+it: it is **0**. 0 < 63, the fragment is never merged, and chatgpt.com,
+claude.ai and gemini.google.com load. The AI companion and roleplay list is
+unconditional, so that half of the sentence stands on its own.
 
-Whichever it is, **check the claim against a device before uploading**, the way
-the streaming and chatbot clauses were checked: open the sites in a standalone
-herald and look for the block page.
+- **Dutch**: corrected, 2026-10-30. The clause is out.
+- **English and French**: still claim it. They have to be corrected before
+  either is submitted, or the listing contradicts itself language by language.
+
+The clause goes back in at a later listing update, once the switch leaves beta
+and applies to a herald with nobody to ask. **Check it against a device then**,
+the way the streaming and chatbot clauses were checked: open the sites in a
+standalone herald and look for the block page.
+
+### The screenshots are a build behind
+
+herald 0.1.24 replaced the block page's AI-generated scene with two Pexels
+photographs, so `mono-*-3-refused.png` shows a page that no longer exists. When
+those three are retaken, their row in the AI asset declaration below flips from
+yes to no.
 
 ---
 
@@ -145,26 +156,26 @@ For herald mono the answer is **label**, and three assets carry it:
 
     Herald mono is een minimalistische, trage browser met een ingebouwde
     inhoudsblokkering, voor mensen die merken dat ze te veel surfen. Het kan je
-    enige browser zijn: het voegt wrijving toe aan het surfen zonder de
-    kernfunctionaliteit weg te nemen die je in het dagelijks leven nodig hebt.
+    enige browser zijn: het voegt frictie toe aan het surfen zonder de
+    functionaliteit weg te nemen die men nodig heeft.
 
-    Het maakt surfen trager met een adempauze vóór elke pagina, trager scrollen,
-    geen tabbladen (één ding tegelijk), en pagina's die standaard in zwart-wit
-    verschijnen (monochroom, vandaar de naam).
+    Deze browser zorgt voor trager surfen: een adempauze vóór elke pagina, trager
+    scrollen, geen tabbladen (één ding tegelijk), en pagina's die standaard in
+    zwart-wit verschijnen (monochroom, vandaar de naam 'mono').
 
     Net als de gewone herald-browser blokkeert herald mono verslavende inhoud:
     pornografie, gokken, games, reclame, datingplatformen, social media,
-    videostreaming, algemene chatbots en AI-gezelschaps- en rollenspelchatsites.
+    AI-gezelschaps- en rollenspelchatsites en videostreaming.
 
-    Het is gratis en open source, en gebouwd op de Firefox-motor van Mozilla.
-    Herald en herald mono zijn de begeleidende browsers van het
-    drawbridge-project, FOSS-software om van je Android-toestel een
-    minimalistische telefoon of dumbphone te maken. We maken de browsers
-    afzonderlijk beschikbaar.
+    Herald mono is gratis, open source, en gebouwd op de Firefox-engine van Mozilla.
+    Herald en herald mono zijn de begeleidende browsers van het drawbridge-project,
+    FOSS-software om van je Android-toestel een minimalistische telefoon of
+    dumbphone te maken. We maken de browsers afzonderlijk beschikbaar.
 
-    De herald-browsers zijn privacybewust. Er is geen account. Het blokkeren
+    De herald-browsers respecteren de privacy. Er is geen account. Inhoudsfiltering
     gebeurt op het toestel zelf. Er is geen telemetrie, geen analytics, geen
     reclame, geen crashrapportage.
+
 ---
 
 ## French (fr-FR)
