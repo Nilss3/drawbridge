@@ -1,7 +1,7 @@
 {
-  "version": 165,
+  "version": 166,
   "issued_at": "2026-10-27T13:23:48Z",
-  "comment": "DEV CHANNEL ONLY. Policy 165: a list of our own for adult sites the public one misses, adult-extra, beside the Block List Project's. nsfwtelegram.net and bestoftelegram.com move there from the AI companions list. drawbridge 0.2.38 build 63 and herald 0.1.23 unchanged.",
+  "comment": "DEV CHANNEL ONLY. Policy 166 pins herald 0.1.24 and herald mono 0.1.24 at v0.2.8-dev.16: links to other apps ask first, and the block page is photographs. drawbridge 0.2.38 build 63 unchanged.",
   "dns": {
     "upstreams": [
       "94.140.14.15",
@@ -922,16 +922,16 @@
   "required_apps": [
     {
       "package_name": "app.drawbridge.herald",
-      "version_code": 23,
-      "url": "https://github.com/Nilss3/drawbridge/releases/download/v0.2.8-dev.15/herald-arm64-v8a-release.apk",
-      "sha256": "ee3df9bc25025e60c3bf0efb63b44386b1c0ff7d7cd6b5b8b7da2ff3eef64b93",
+      "version_code": 24,
+      "url": "https://github.com/Nilss3/drawbridge/releases/download/v0.2.8-dev.16/herald-arm64-v8a-release.apk",
+      "sha256": "c60467a240d02c868ea45709caaf1add51fbf0b75be7748f9533f41c4eaad6da",
       "abi": "arm64-v8a"
     },
     {
       "package_name": "app.drawbridge.heraldmono",
-      "version_code": 23,
-      "url": "https://github.com/Nilss3/drawbridge/releases/download/v0.2.8-dev.15/herald-mono-arm64-v8a-release.apk",
-      "sha256": "4f0167633038e0f61f43776d875ced20ecccb6e2ee2ffe1fb225715c8ead1cea",
+      "version_code": 24,
+      "url": "https://github.com/Nilss3/drawbridge/releases/download/v0.2.8-dev.16/herald-mono-arm64-v8a-release.apk",
+      "sha256": "207896ca9bd1484c4c3bf9e98f36953269fe98122650c0605db79b6214036e67",
       "abi": "arm64-v8a"
     }
   ],
