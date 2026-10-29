@@ -19,10 +19,12 @@ description 4000.** Counts below are of the text as written.
 along with the icon, the feature graphic and 15 screenshots. What is not ready
 is the bundle: it was built from herald 0.1.23, and the current build is 0.1.24.
 
-### The chatbots clause, and where each language stands
+### The chatbots clause: the copy stays, the build has to catch up
 
-The descriptions said herald mono blocks general-purpose chatbots. That was true
-against policy 140 and is **not true of any build a buyer could install today**.
+The descriptions say herald mono blocks general-purpose chatbots. **The owner's
+decision, 2026-10-30, is that the claim stays** — so it is the build that has to
+make it true before this listing is submitted, and right now no installable
+build does.
 
 Policy 167 still carries the chatbots list, its packages and its switch, but
 inside a `conditional` fragment gated on `min_version_code: 63` — drawbridge
@@ -33,14 +35,22 @@ it: it is **0**. 0 < 63, the fragment is never merged, and chatgpt.com,
 claude.ai and gemini.google.com load. The AI companion and roleplay list is
 unconditional, so that half of the sentence stands on its own.
 
-- **Dutch**: corrected, 2026-10-30. The clause is out.
-- **English and French**: still claim it. They have to be corrected before
-  either is submitted, or the listing contradicts itself language by language.
+The gate exists for drawbridge's benefit — an older build must not mark an
+option as seen that it cannot offer — and a browser with nobody to ask has no
+such problem. Reading `0` for "no selection" makes the standalone browser the
+*most permissive* reader of a conditional fragment, which is backwards from
+`optionsOffWithoutSelection`, where no answer means every option off. Judging
+those fragments against `Int.MAX_VALUE` when no selection answers would line the
+two rules up: a standalone herald then takes everything the document offers and
+every switch off, which is the reading the listing describes. That is a herald
+change plus a release, and it is the open item here.
 
-The clause goes back in at a later listing update, once the switch leaves beta
-and applies to a herald with nobody to ask. **Check it against a device then**,
-the way the streaming and chatbot clauses were checked: open the sites in a
-standalone herald and look for the block page.
+**Check it against a device before submitting**, the way the streaming and
+chatbot clauses were checked: open the sites in a standalone herald and look for
+the block page.
+
+One loose end in the copy itself: the Dutch, as the owner last revised it, does
+not list the chatbots while the English and French do.
 
 ### The screenshots are a build behind
 
