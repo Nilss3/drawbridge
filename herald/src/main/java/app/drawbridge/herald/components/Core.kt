@@ -32,6 +32,7 @@ import mozilla.components.feature.session.HistoryDelegate
 import mozilla.components.feature.sitepermissions.OnDiskSitePermissionsStorage
 import mozilla.components.lib.dataprotect.SecureAbove22Preferences
 import mozilla.components.service.sync.logins.DefaultLoginValidationDelegate
+import mozilla.components.feature.app.links.AppLinksInterceptor
 import mozilla.components.service.sync.logins.GeckoLoginStorageDelegate
 import mozilla.components.service.sync.logins.SyncableLoginsStorage
 import app.drawbridge.herald.media.MediaSessionService
@@ -50,7 +51,7 @@ class Core(
         EngineProvider.createEngine(
             context,
             DefaultSettings(
-                requestInterceptor = HeraldRequestInterceptor(context),
+                requestInterceptor = HeraldRequestInterceptor(context) { appLinksInterceptor },
                 remoteDebuggingEnabled = false,
                 trackingProtectionPolicy = TrackingProtectionPolicy.recommended(),
                 historyTrackingDelegate = HistoryDelegate(lazyHistoryStorage),
@@ -65,6 +66,12 @@ class Core(
                 preferredColorScheme = context.preferredColorScheme,
             ),
         ).also { wireLoginStorage() }
+    }
+
+    // Only for non-web schemes; web links stay in herald (launchInApp = false).
+    // Lazy and by lambda because it needs the store, which needs the engine.
+    private val appLinksInterceptor by lazy {
+        AppLinksInterceptor(context, launchInApp = { false }, store = store)
     }
 
     val client: Client by lazy { EngineProvider.createClient(context) }

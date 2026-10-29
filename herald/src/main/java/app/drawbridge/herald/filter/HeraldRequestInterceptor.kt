@@ -20,7 +20,10 @@ import mozilla.components.concept.engine.request.RequestInterceptor
  * are handled by the bundled web extension in [BlocklistExtension]. Together the
  * two cover everything the browser loads.
  */
-class HeraldRequestInterceptor(private val context: Context) : RequestInterceptor {
+class HeraldRequestInterceptor(
+    private val context: Context,
+    private val appLinks: () -> RequestInterceptor,
+) : RequestInterceptor {
 
     private val policy by lazy { HeraldPolicy.manager(context) }
 
@@ -37,7 +40,14 @@ class HeraldRequestInterceptor(private val context: Context) : RequestIntercepto
         if (!uri.startsWith("http://", ignoreCase = true) &&
             !uri.startsWith("https://", ignoreCase = true)
         ) {
-            return null
+            // tel:, mailto:, intent:, whatsapp:, a bank's own scheme. The engine
+            // takes a single interceptor, so without this hand-over the app-links
+            // feature never sees these and they die as "address not understood".
+            // Web links are never handed over (see BrowserFragment).
+            return appLinks().onLoadRequest(
+                engineSession, uri, lastUri, hasUserGesture, isSameDomain,
+                isRedirect, isDirectNavigation, isSubframeRequest,
+            )
         }
 
         if (!policy.isUrlBlocked(uri)) {

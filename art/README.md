@@ -15,8 +15,10 @@ memory is the difference between an answer and a guess.
 | `drawbridge-icon.webp` | AI-generated |
 | `herald-icon.webp` | AI-generated |
 | `herald-mono-icon.webp` | AI-generated |
-| `scene-day.webp`, `scene-night.webp`, `scene-spring.webp` | AI-generated — herald's block page |
-| `scene-dusk.webp` | AI-generated. Retired: it was drawbridge's hero until the Van Gogh replaced it, and is kept only because `scene-day` and `scene-night` are still in use |
+| `scene-day.webp` | **Not AI.** Photo by Girish Nayyar (Tower Bridge, London), from Pexels, free to use; cropped to 16:9. Herald's block page in light mode, credited under the photo |
+| `scene-night.webp` | **Not AI.** Photo by Max Avans (the Palace Bridge, St Petersburg, name taken from the file name `pexels-maxavans-5146463`), from Pexels, free to use; cropped to 16:9. Herald's block page in dark mode, credited under the photo |
+| `scene-spring.webp` | AI-generated. Not used by anything |
+| `scene-dusk.webp` | AI-generated. Retired: it was drawbridge's hero until the Van Gogh replaced it, and is kept in `art/` and feeds nothing |
 | `website-howitworks.webp` | AI-generated, on the evidence of its own style — correct this line if that is wrong |
 | `hero-langlois.webp` | **Not AI.** Vincent van Gogh, *The Langlois Bridge at Arles*, 1888. Public domain, and credited as such on the website in all three languages |
 

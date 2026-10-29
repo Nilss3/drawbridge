@@ -76,7 +76,7 @@ icon "$art/drawbridge-icon.webp"  "$repo/dpc/src/main/res"
 icon "$art/herald-icon.webp"      "$repo/herald/src/main/res" trim-corners
 icon "$art/herald-mono-icon.webp" "$repo/herald/src/mono/res" trim-corners
 
-# The two scenes are the same place at two times of day.
+# The two scenes are two photographs, one for each colour scheme (Pexels; see art/README.md).
 #
 # herald's block page carries **both** and lets the page's own
 # prefers-color-scheme query choose, so the picture turns with the card under it
