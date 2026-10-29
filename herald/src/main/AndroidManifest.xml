@@ -9,6 +9,13 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <!--
+        Handing tel:, intent:, whatsapp: and a bank's own scheme to the app that
+        owns it means asking Android who that is, and on API 30+ the answer is
+        empty for any app not declared here. The schemes are not ours to list
+        (every bank has its own), so see all packages, as drawbridge does.
+    -->
+    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES" />
 
     <!--
         Reads which policy and which options the parent chose, from drawbridge.

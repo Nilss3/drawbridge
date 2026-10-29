@@ -71,6 +71,8 @@ object HeraldCard {
                   body { background: #1c1b22; color: #fbfbfe; }
                   .card { background: #2b2a33 !important; }
                   .host { background: #42414d !important; }
+                  .credit.day { display: none; }
+                  .credit.night { display: block; }
                 }
                 .card {
                   background: #fff; border-radius: 16px; overflow: hidden;
@@ -81,7 +83,11 @@ object HeraldCard {
                    it: at a phone's width a 64px icon reads as an error, and
                    neither of these pages is an error. */
                 .scene { display: block; width: 100%; height: auto; }
-                .body { padding: 24px 28px 32px; }
+                /* Pexels asks for nothing, but the photographers are named. The
+                   credit follows whichever photo the browser picked. */
+                .credit { margin: 0; padding: 6px 12px 0; font-size: .7rem; opacity: .6; }
+                .credit.night { display: none; }
+                .body { padding: 18px 28px 32px; }
                 h1 { font-size: 1.25rem; margin: 0 0 12px; }
                 p { margin: 0 0 16px; line-height: 1.5; opacity: .85; }
                 .host {
@@ -106,6 +112,8 @@ object HeraldCard {
                           media="(prefers-color-scheme: dark)">
                   <img class="scene" alt="" src="${scene(context, R.raw.blocked_scene_day)}">
                 </picture>
+                <p class="credit day">Photo by Girish Nayyar</p>
+                <p class="credit night">Photo by Max Avans</p>
                 <div class="body">
                   <h1>${title.escapeHtml()}</h1>
                   <p>${message.escapeHtml()}</p>
