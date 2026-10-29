@@ -44,18 +44,28 @@ PACKAGE = "app.drawbridge.dpc"
 TOP_SAFE, BOTTOM_SAFE = 250, 2280      # below the action bar, above the gesture bar
 PAD_TOP, PAD_BOTTOM = 24, 6            # air above the heading; almost none below the end
 STEP_PX, STOPS = 240, 46               # see the note on STEP_PX below
-SECTIONS = ["policy", "disconnect", "browser", "installs", "options", "locking"]
+# The screen's own order, with the number and name each section keeps on the
+# site (EXPLAINER_SECTIONS in tools/build-site.py). The configuration screen was
+# regrouped in build 54 and no longer runs in the order the site's pages do, so
+# the files are named by what they show, not by where they came on the screen.
+SECTIONS = [(1, "policy"), (5, "options"), (3, "browser"),
+            (4, "installs"), (2, "disconnect"), (6, "locking")]
 
-# The headings that begin each section, per language, in page order. They are
+# The headings that begin each section, per language, in *screen* order. They are
 # literals rather than resource lookups because this walks a *screen*, and what
 # is on the screen is the translated string.
 HEADINGS = {
-    "en": ["Policy", "Disconnect philosophy", "Browser policy",
-           "App installs", "Options", "Lock drawbridge"],
-    "nl": ["Beleid", "Verbindingsfilosofie", "Browserbeleid",
-           "App-installaties", "Opties", "drawbridge vergrendelen"],
-    "fr": ["Politique", "Philosophie de déconnexion", "Politique de navigateur",
-           "Installation d'applications", "Options", "Verrouiller drawbridge"],
+    "en": ["Base web and app filter",
+           "Harmful tools you may still need on the road", "Browsers",
+           "No further app installs", "Offline phone", "Lock drawbridge"],
+    "nl": ["Basisfilter voor web en apps",
+           "Schadelijke hulpmiddelen die je onderweg toch nodig kunt hebben",
+           "Browsers", "Geen verdere app-installaties", "Offline telefoon",
+           "drawbridge vergrendelen"],
+    "fr": ["Filtre de base web et applications",
+           "Outils nuisibles dont vous pourriez quand même avoir besoin en déplacement",
+           "Navigateurs", "Plus aucune installation d'application",
+           "Téléphone hors ligne", "Verrouiller drawbridge"],
 }
 
 # STEP_PX has to be smaller than the narrowest window a section can be caught
@@ -86,6 +96,31 @@ def bounds(path: pathlib.Path, wanted: list[str]) -> dict[str, tuple[int, int]]:
     return found
 
 
+def expand_collapsed(heads: list[str], work: pathlib.Path) -> None:
+    """Opens the three collapsible sections (harmful tools, browsers, offline).
+
+    The configuration screen collapses them behind a chevron, and a collapsed
+    section is a heading and one line -- it explains nothing. Whether one is
+    open is not in the accessibility tree, so it is judged by height: an open
+    section runs past 450px before the next heading, a closed one does not.
+    """
+    wanted = [(heads[1], heads[2]), (heads[2], heads[3]), (heads[4], heads[5])]
+    for head, following in wanted:
+        for _ in range(40):
+            adb("shell", "uiautomator", "dump", "/sdcard/e-x.xml")
+            adb("pull", "/sdcard/e-x.xml", str(work / "x.xml"))
+            found = bounds(work / "x.xml", [head, following])
+            if head in found and following in found:
+                break
+            adb("shell", "input", "swipe", "540", "1800", "540", "1100", "500")
+            time.sleep(1.2)
+        else:
+            raise SystemExit(f"Could not find {head!r} to expand it.")
+        if found[following][0] - found[head][0] < 450:
+            adb("shell", "input", "tap", "540", str((found[head][0] + found[head][1]) // 2))
+            time.sleep(2)
+
+
 def main() -> int:
     if len(sys.argv) != 2 or sys.argv[1] not in HEADINGS:
         print(f"usage: {sys.argv[0]} {{{'|'.join(HEADINGS)}}}", file=sys.stderr)
@@ -100,6 +135,10 @@ def main() -> int:
     adb("shell", "am", "start", "-n", f"{PACKAGE}/.ui.MainActivity")
     time.sleep(6)
 
+    for _ in range(12):
+        adb("shell", "input", "swipe", "540", "600", "540", "2100", "200")
+    time.sleep(2)
+    expand_collapsed(heads, work)
     for _ in range(12):
         adb("shell", "input", "swipe", "540", "600", "540", "2100", "200")
     time.sleep(2)
@@ -142,7 +181,7 @@ def main() -> int:
         adb("shell", "input", "swipe", "540", "1800", "540", str(1800 - STEP_PX), "900")
 
     missing = [h for h in heads if h not in best]
-    for number, (head, section) in enumerate(zip(heads, SECTIONS), start=1):
+    for head, (number, section) in zip(heads, SECTIONS):
         if head in best:
             src, top, span = best[head]
             y = max(0, top - PAD_TOP)
