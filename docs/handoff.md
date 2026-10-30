@@ -225,12 +225,32 @@ Two consequences follow, and both are lived with rather than fixed:
   cable is the route: `tools/provision-adb.sh`, or the WebUSB installer page,
   which is what a tester actually uses.
 
-**The routes out**, neither taken: appeal through Google's Play Protect form
-(<https://support.google.com/googleplay/android-developer/contact/protectappeals>),
-or rename the package — mechanically cheap now (`dpcApplicationId` is a Gradle
-property, the permission and provider authority are placeholders, herald needs no
-rebuild) and a **one-way door**, because Device Owner binds permanently to the
-package name. A rename might buy years or days and nothing here tells you which.
+**The routes out**, one tried and one not:
+
+**The appeal was filed** through Google's Play Protect form
+(<https://support.google.com/googleplay/android-developer/contact/protectappeals>)
+and **produced no response at all** — not a refusal, nothing. So it is spent as a
+repeat and only worth filing again with something new in it. The strongest new
+thing is already in this document: the probe table above isolates the verdict to
+the package *name*, with the code, the key and the device held constant. A
+published app on the same developer account would be the other.
+
+**Renaming the package** is the untried one, and it is **not** as cheap as this
+file used to claim. `dpcApplicationId` is a Gradle property and the DPC derives
+its permission and provider authority from it, so the DPC side is one flag. But
+**herald looks the authority up by its literal name** —
+`DrawbridgeSelection.AUTHORITY`, plus the `<queries>` entry in its manifest, plus
+the `uses-permission` naming `app.drawbridge.permission.READ_SELECTION` — so a
+real rename is a herald change and a herald release too, which matters while
+herald mono sits in Play review carrying those constants. `dpc/build.gradle.kts`
+says as much next to the placeholder: "herald looks this authority up by its
+literal name, so the default must not move."
+
+And it stays a **one-way door**, because Device Owner binds permanently to the
+package name: every phone already provisioned keeps the old package forever and
+cannot be moved to the new one without a factory reset. A rename buys QR
+provisioning for phones not yet set up, at the price of splitting the fleet. It
+might buy years or days and nothing here tells you which.
 
 **The cable stays available**, which is the other half of why this is survivable:
 USB debugging follows the *lock* rather than the protection, so a parent holding
