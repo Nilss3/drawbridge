@@ -481,11 +481,22 @@ the first one built carried all four of GeckoView's ABIs at 287 MB. The ABI list
 now also appears as `ndk.abiFilters`, switched on for `bundle*` tasks only,
 because AGP refuses to accept `abiFilters` and `splits` together.
 
-At upload, choose **"use existing app signing key"** and export
-`drawbridge-release.jks` with PEPK. Letting Google generate one would break the
-`app.drawbridge.permission.READ_SELECTION` link between the two apps, which is
-declared at `signature` level: the Play copy of herald would run fine alone and
-silently fail to read the parent's settings on a managed phone.
+**Before the first release exists**, not while creating it: Test and release →
+Setup → App integrity → App signing, choose **"use existing app signing key"**,
+and export `drawbridge-release.jks` with PEPK. Play App Signing defaults to
+generating its own key and applies that default the moment a first release is
+created, after which our key is demoted to an upload key and the published app
+carries a certificate that is not ours.
+
+Which would break the `app.drawbridge.permission.READ_SELECTION` link between
+the two apps, declared at `signature` level: the Play copy of herald would
+install cleanly, run fine alone, and silently fail to read the parent's settings
+on a managed phone. A browser that looks like it works and ignores the policy.
+
+Check the fingerprint before continuing —
+`F6:62:A8:01:C0:36:A8:CF:EB:6B:6E:02:04:EB:C9:E1:D7:22:20:43:65:B8:C0:D7:61:D2:8B:FD:EE:0F:EA:D3`
+— and stop on anything else. The keystore has no backup, so a wrong key here is
+not something a rebuild fixes.
 
 ## The feature graphic
 
