@@ -162,4 +162,26 @@ class SelectionSourceTest {
             PolicyManager.resolveOptionIds(allOnByDefault, owner, null, nothingStored),
         )
     }
+
+    @Test
+    fun `with no drawbridge to answer, herald applies every version-gated fragment`() {
+        // The fragment is gated so an old drawbridge is not shown a switch it cannot
+        // honour. With none installed there is no switch, and every option reads as off.
+        assertEquals(Int.MAX_VALUE, PolicyManager.conditionalVersionCode(heraldConfig, null))
+    }
+
+    @Test
+    fun `a drawbridge too old to publish its build still applies no fragment`() {
+        val old = SelectionSource.Selection(profileId = null, optionIds = null)
+        assertEquals(0, PolicyManager.conditionalVersionCode(heraldConfig, old))
+
+        val build63 = old.copy(ownerVersionCode = 63)
+        assertEquals(63, PolicyManager.conditionalVersionCode(heraldConfig, build63))
+    }
+
+    @Test
+    fun `an app that owns its selection judges fragments by its own build`() {
+        val owner = PolicyConfig(optionsOffWithoutSelection = true, ownVersionCode = 63)
+        assertEquals(63, PolicyManager.conditionalVersionCode(owner, null))
+    }
 }

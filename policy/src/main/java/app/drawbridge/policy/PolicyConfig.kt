@@ -29,11 +29,12 @@ data class PolicyConfig(
      * [SelectionSource.Selection.ownerVersionCode] instead, because a fragment
      * gated on drawbridge 53 means nothing measured against herald's numbering.
      *
-     * Zero, the default, means no conditional fragment ever applies. That is the
-     * right resting state for a standalone browser and for any caller that has
-     * not thought about it: a fragment only ever *adds* a block, so ignoring one
-     * filters less rather than more, and less is what a device with no drawbridge
-     * on it is entitled to.
+     * Zero, the default, means no conditional fragment ever applies: the resting
+     * state for a caller that has not thought about it, since a fragment only ever
+     * *adds* a block. It is not what the standalone browser does, though: with no
+     * drawbridge to answer, [optionsOffWithoutSelection] makes every fragment
+     * apply, because a fragment's gate protects an old drawbridge and there is
+     * none.
      */
     val ownVersionCode: Int = 0,
 

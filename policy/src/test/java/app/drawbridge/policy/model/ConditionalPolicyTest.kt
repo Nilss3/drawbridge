@@ -87,9 +87,10 @@ class ConditionalPolicyTest {
     }
 
     /**
-     * Zero is the resting state for a caller that has not thought about it — a
-     * standalone browser with no drawbridge to ask. A fragment only ever adds a
-     * block, so ignoring one filters less rather than more.
+     * Zero is the resting state for a caller that has not thought about it, or for
+     * a drawbridge too old to publish its build. A fragment only ever adds a block,
+     * so ignoring one filters less rather than more. (The standalone browser does
+     * not use zero; see `SelectionSourceTest`.)
      */
     @Test
     fun `version zero applies nothing`() {
