@@ -333,7 +333,7 @@ developer account can draw more scrutiny than a precedent protects against.
 
 Google does not take the justification's word for it: the form also wants a
 video of the feature that needs the permission. Recorded 2026-10-30, and
-reproducible with `tools/qap-demo/record.sh` — 38 seconds, no narration, three
+reproducible with `tools/play-demos/record.sh query-all-packages` — 38 seconds, no narration, three
 taps:
 
 1. `tel:` → **"Open this link in Phone app?"** → the dialer opens on the number.
@@ -342,7 +342,7 @@ taps:
 3. `whatsapp:` → nothing happens. No installed app owns that scheme on the
    device, so no prompt appears and nothing is guessed at.
 
-The page being tapped is `tools/qap-demo/index.html`, which names the package and
+The page being tapped is `tools/play-demos/query-all-packages/index.html`, which names the package and
 says what each link demonstrates, so the video explains itself without a
 voice-over or a title card.
 
@@ -360,7 +360,7 @@ One thing to know before a reviewer opens it: **it plays, but it does not
 scrub.** Cloudflare Pages answers no byte-range request on this project — not
 for this file and not for the DPC sitting next to it — so a browser never marks
 the video seekable and dragging the scrubber returns to the start. The index was
-moved to the front of the file anyway (`tools/qap-demo/faststart.py`), which is
+moved to the front of the file anyway (`tools/play-demos/faststart.py`), which is
 the half of the problem that was ours to fix; the other half is the host's and
 would take a Worker in front of the asset to change. For 38 seconds that play on
 the first press, that is not worth a Worker.

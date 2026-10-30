@@ -13,7 +13,7 @@ So the index moves to the front, which is the same fix `ffmpeg -movflags
 and only the offsets inside `moov` are rewritten, because every chunk has just
 moved further down the file by the size of the index now sitting above it.
 
-    python3 tools/qap-demo/faststart.py video.mp4
+    python3 tools/play-demos/faststart.py video.mp4
 """
 
 from __future__ import annotations
