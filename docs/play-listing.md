@@ -389,10 +389,16 @@ and nothing about the shipped app.
 ## The other two Play asks about: the foreground service types
 
 herald declares two foreground service types, and targeting Android 14 means
-declaring them again in Console, under App content. Play wants four things per
-type: the use case picked from its list, a description of the feature, what
-happens to the user if the system defers or interrupts the work, and — the part
-that costs an afternoon — **a video of each one**.
+declaring them again in Console, under App content. Play's help page describes four things per
+type: a use case, a description of the feature, what happens to the user if the
+system defers or interrupts the work, and a video. **The form asks for two.** A
+checkbox, and a link to the video — no free text anywhere, not even behind the
+*Other* boxes, as of 2026-10-30.
+
+Which puts the whole justification inside the video, so each demo page states
+the package and the permission on screen and narrates its own steps. The prose
+below is kept anyway: the QUERY_ALL_PACKAGES form does take text, and a review
+that comes back with questions will want sentences rather than a checkbox.
 
 Both are real, and the system says so rather than just the manifest. With a
 download running, `dumpsys activity services` reports the download service as
@@ -403,12 +409,12 @@ Play checks them in.
 
 ### FOREGROUND_SERVICE_DATA_SYNC — downloading a file
 
-Use case: **Network processing → Other**, with the download described in the
-box it opens. Play's help page calls this row "Network transfer: Upload or
-download", but the form in Console offers only *Backing up, restoring* and
-*Other* under Network processing, so a browser download lands in Other —
-in that group, not under *Other tasks*, and nothing under Local processing
-applies because herald transcodes, imports and exports nothing. Video:
+Use case: **Network processing → Other**. Play's help page calls this row
+"Network transfer: Upload or download", but the form in Console offers only
+*Backing up, restoring* and *Other* under Network processing, so a browser
+download lands in Other — in that group, not under *Other tasks*, and nothing
+under Local processing applies because herald transcodes, imports and exports
+nothing. Video:
 <https://drawbridge-project.pages.dev/assets/play/herald-mono-data-sync.mp4>
 
 > herald mono is a web browser. When someone taps a link to a file, the browser
@@ -438,8 +444,10 @@ recommends anyway.
 
 ### FOREGROUND_SERVICE_MEDIA_PLAYBACK — audio from a page
 
-Use case: **Media playback**, "continue audio or video playback from the
-background". Video:
+Use case: **Media playback**, and that box only. The form also offers *Show
+picture in picture*, which would be a claim about a feature herald does not
+have: there is no `PictureInPictureFeature`, no `enterPictureInPicture` call and
+no `supportsPictureInPicture` in the manifest. Video:
 <https://drawbridge-project.pages.dev/assets/play/herald-mono-media-playback.mp4>
 
 > herald mono is a web browser. When someone presses play on audio or video on a
