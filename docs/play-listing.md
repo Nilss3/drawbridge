@@ -18,11 +18,38 @@ description 4000.** Counts below are of the text as written.
 The copy is final in three languages and all three now make the same claims.
 What is left is mechanical, and neither item is a wording question.
 
-### The bundle has to be rebuilt
+### The bundle: 0.1.26, and why it is not 0.1.25
 
-`dist/release/herald-mono-0.1.23-release.aab` is three releases old. The
-listing's claims are true of **herald 0.1.25** (`v0.2.28`) and of no build
-before it, so that is the build that has to be uploaded.
+`dist/release/herald-mono-0.1.26-release.aab` is the upload. The published
+0.1.25 could not be, for a reason the emulator found rather than the code:
+
+**A fresh install ran on policy 141.** `policy/.../default-policy.json`, the
+signed copy compiled into every APK, was still the document from 23 October —
+and of every policy in this repository's history, 141 is the one whose own
+comment begins "the chatbots option and its blocklist are withdrawn". A phone
+installing from Play would have run the single document that takes away the
+thing the description promises, until its first poll replaced it. Settings said
+`Policy version 141, last updated never`; one tap on *Check for updates* moved
+it to 169 and every chatbot site blocked.
+
+The window was not seconds. `PolicyWorker.schedule` enqueues periodic work at
+`POLL_HOURS = 3` and nothing asked at startup, so WorkManager could defer the
+first run by the whole interval.
+
+Two changes, both in 0.1.26:
+
+- the bundled copy is refreshed to the signed 169, which is the `cp` step
+  `docs/policy.md` calls "not optional" and which 0.1.25 skipped;
+- `HeraldApplication` asks once when `lastSuccessMillis` is still zero — one
+  request per install, not one per launch, and the same field settings reads to
+  say "last updated never".
+
+**0.1.26 exists only here until a release carries it.** Policy 169 pins herald
+0.1.25 at the `v0.2.28` URLs, which is correct for the bundled copy (it must
+name yesterday's build, so `availableSelfUpdate` never offers a phone something
+older than itself) but means GitHub and Play would ship different binaries
+under different numbers. Cut `v0.2.29` with both editions and sign the policy
+that pins them, so the two channels agree.
 
 ### The screenshots, and the one number in them that is stale
 

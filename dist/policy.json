@@ -1,7 +1,7 @@
 {
-  "version": 169,
-  "issued_at": "2026-10-27T13:28:02Z",
-  "comment": "Policy 169 pins herald 0.1.25 and herald mono 0.1.25 at v0.2.28: standalone herald now blocks the general-purpose chatbots too. drawbridge 0.2.38 build 63 unchanged.",
+  "version": 170,
+  "issued_at": "2026-10-30T10:44:58Z",
+  "comment": "Policy 170 pins herald 0.1.26 and herald mono 0.1.26 at v0.2.29: the copy compiled into the APK is this document's predecessor rather than 141, and a fresh install asks for an update at once instead of waiting for the three-hour poll. drawbridge 0.2.38 build 63 unchanged.",
   "dns": {
     "upstreams": [
       "94.140.14.15",
@@ -922,16 +922,16 @@
   "required_apps": [
     {
       "package_name": "app.drawbridge.herald",
-      "version_code": 25,
-      "url": "https://github.com/Nilss3/drawbridge/releases/download/v0.2.28/herald-arm64-v8a-release.apk",
-      "sha256": "b9f7ebf16f70c4ec9b1411e9fa778a599661fc31a9c9b59c50dc99e7c2b38484",
+      "version_code": 26,
+      "url": "https://github.com/Nilss3/drawbridge/releases/download/v0.2.29/herald-arm64-v8a-release.apk",
+      "sha256": "cafc5336c5b0fef6ae0c0f33ba5ee1b2c0085942a37fc26396b825059b37a2b0",
       "abi": "arm64-v8a"
     },
     {
       "package_name": "app.drawbridge.heraldmono",
-      "version_code": 25,
-      "url": "https://github.com/Nilss3/drawbridge/releases/download/v0.2.28/herald-mono-arm64-v8a-release.apk",
-      "sha256": "f51462edd21d038e28a0fa6caaf259d9e9e1793c9bff8e3c0f0c408c04dcfc34",
+      "version_code": 26,
+      "url": "https://github.com/Nilss3/drawbridge/releases/download/v0.2.29/herald-mono-arm64-v8a-release.apk",
+      "sha256": "39d6e5f6d6babcefd51d385792066102bae66317306f7e63e70dde7db9fbc74f",
       "abi": "arm64-v8a"
     }
   ],

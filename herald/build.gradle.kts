@@ -65,8 +65,8 @@ android {
         applicationId = "app.drawbridge.herald"
         minSdk = 28
         targetSdk = 36
-        versionCode = 25
-        versionName = "0.1.25"
+        versionCode = 26
+        versionName = "0.1.26"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
