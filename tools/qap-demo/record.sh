@@ -76,3 +76,7 @@ $ADB shell pkill -INT screenrecord || true
 wait $REC 2>/dev/null || true
 sleep 3
 $ADB pull /sdcard/qap.mp4 "$OUT"
+
+# screenrecord puts the index after the frames, which a browser reads as "not
+# seekable" when the host will not serve byte ranges — and ours does not.
+python3 -I "$DIR/faststart.py" "$OUT"
