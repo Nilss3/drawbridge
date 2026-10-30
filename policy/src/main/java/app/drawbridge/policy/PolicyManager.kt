@@ -321,9 +321,18 @@ class PolicyManager private constructor(
      * drawbridge 53 means nothing measured against herald's numbering, and the
      * two apps disagreeing about what is blocked is the failure `SelectionSource`
      * exists to prevent.
+     *
+     * **No drawbridge at all is the one case where every fragment applies.** A
+     * fragment is gated on the build so that an *old drawbridge* is never shown a
+     * switch it cannot honour; with no drawbridge there is no switch to show, and
+     * [PolicyConfig.optionsOffWithoutSelection] already reads every option as off.
+     * Applying nothing there left the standalone browser the one place the
+     * chatbots list never reached. An answer that carries no build (a drawbridge
+     * too old to publish it) still reads as zero, because that drawbridge's DNS
+     * layer is the one that cannot block them.
      */
     private fun conditionalVersionCode(): Int =
-        config.selectionSource?.read()?.ownerVersionCode ?: config.ownVersionCode
+        conditionalVersionCode(config, config.selectionSource?.read())
 
     /**
      * Records that this document's options have now been offered to the device.
@@ -431,6 +440,16 @@ class PolicyManager private constructor(
             instance ?: synchronized(this) {
                 instance ?: PolicyManager(context, config).also { instance = it }
             }
+
+        /** [conditionalVersionCode], with the selection already read. */
+        internal fun conditionalVersionCode(
+            config: PolicyConfig,
+            external: SelectionSource.Selection?,
+        ): Int {
+            if (config.selectionSource == null) return config.ownVersionCode
+            if (external == null && config.optionsOffWithoutSelection) return Int.MAX_VALUE
+            return external?.ownerVersionCode ?: config.ownVersionCode
+        }
 
         /**
          * [resolvedOptionIds] without the manager around it, so the rule can be
