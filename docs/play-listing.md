@@ -356,6 +356,15 @@ and that URL is what the form takes. Nothing on the site links to it. It sits in
 is published, rather than leaving a hand-copied file behind to drift out of step
 with the build it claims to show.
 
+One thing to know before a reviewer opens it: **it plays, but it does not
+scrub.** Cloudflare Pages answers no byte-range request on this project — not
+for this file and not for the DPC sitting next to it — so a browser never marks
+the video seekable and dragging the scrubber returns to the start. The index was
+moved to the front of the file anyway (`tools/qap-demo/faststart.py`), which is
+the half of the problem that was ours to fix; the other half is the host's and
+would take a Worker in front of the asset to change. For 38 seconds that play on
+the first press, that is not worth a Worker.
+
 The three taps together are the justification restated as something watchable:
 the permission is the question *who owns this scheme*, the prompt naming an app
 is that answer shown to the user, and the third link is what the answer looks
