@@ -403,7 +403,12 @@ Play checks them in.
 
 ### FOREGROUND_SERVICE_DATA_SYNC — downloading a file
 
-Use case: **Network transfer: Upload or download**. Video:
+Use case: **Network processing → Other**, with the download described in the
+box it opens. Play's help page calls this row "Network transfer: Upload or
+download", but the form in Console offers only *Backing up, restoring* and
+*Other* under Network processing, so a browser download lands in Other —
+in that group, not under *Other tasks*, and nothing under Local processing
+applies because herald transcodes, imports and exports nothing. Video:
 <https://drawbridge-project.pages.dev/assets/play/herald-mono-data-sync.mp4>
 
 > herald mono is a web browser. When someone taps a link to a file, the browser
