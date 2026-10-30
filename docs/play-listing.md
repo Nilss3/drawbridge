@@ -197,28 +197,29 @@ For herald mono the answer is **label**, and three assets carry it:
 ### Full description
 
     Herald mono est un navigateur minimaliste et lent, doté d'un bloqueur de
-    contenu intégré, pour les personnes qui constatent qu'elles naviguent trop.
-    Il peut être votre seul et unique navigateur : il ajoute de la friction à la
-    navigation sans retirer les fonctions essentielles dont vous pouvez avoir
-    besoin au quotidien.
+    contenu intégré, pour les personnes qui constatent qu'elles naviguent trop. Il
+    peut être votre seul et unique navigateur : il ajoute de la friction à la
+    navigation sans retirer les fonctions dont on a besoin.
 
-    Il ralentit la navigation par une pause de respiration avant chaque page, un
-    défilement plus lent, l'absence d'onglets (une seule chose à la fois), et des
-    pages affichées par défaut en noir et blanc (monochrome, d'où le nom).
+    Ce navigateur ralentit la navigation : une pause de respiration avant chaque
+    page, un défilement plus lent, l'absence d'onglets (une seule chose à la fois),
+    et des pages affichées par défaut en noir et blanc (monochrome, d'où le nom
+    « mono »).
 
     Comme le navigateur herald ordinaire, herald mono bloque les contenus
-    addictifs : sites pornographiques, jeux d'argent, jeux, publicités, sites de
-    rencontre, réseaux sociaux, vidéo en streaming, chatbots généralistes et
-    sites de compagnons IA et de jeu de rôle conversationnel.
+    addictifs : sites pornographiques, jeux d'argent, jeux, publicités, sites de
+    rencontre, réseaux sociaux, chatbots généralistes, sites de compagnons IA et de
+    jeu de rôle conversationnel, et vidéo en streaming.
 
-    Il est gratuit et open source, et repose sur le moteur Firefox de Mozilla.
-    Herald et herald mono sont les navigateurs compagnons du projet drawbridge,
-    un logiciel libre qui transforme votre appareil Android en téléphone
-    minimaliste. Nous proposons les navigateurs séparément.
+    Herald mono est gratuit, open source, et repose sur le moteur Firefox de
+    Mozilla. Herald et herald mono sont les navigateurs compagnons du projet
+    drawbridge, un logiciel libre qui transforme votre appareil Android en
+    téléphone minimaliste ou dumbphone. Nous proposons les navigateurs séparément.
 
     Les navigateurs herald respectent la vie privée. Il n'y a aucun compte. Le
-    blocage se fait sur l'appareil même. Il n'y a ni télémétrie, ni analytique,
-    ni publicité, ni rapport de plantage.
+    filtrage du contenu se fait sur l'appareil même. Il n'y a ni télémétrie, ni
+    analytique, ni publicité, ni rapport de plantage.
+
 ---
 
 ## Building the bundle
