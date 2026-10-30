@@ -467,6 +467,32 @@ then the browser leaving the screen, then the notification's pause button being
 used — and then the page again, where the clock has advanced while the browser
 was away and stopped exactly where the notification stopped it.
 
+## Distributing everywhere, and the one claim that travels badly
+
+The listing goes to every country Play serves. Nothing in herald is a legal
+problem anywhere: it filters rather than circumvents, it collects nothing, and
+the countries where a filtering browser would be a sensitive import — the
+sanctioned ones, and mainland China — are not countries Play distributes to in
+the first place.
+
+**What does not travel is the description's "blocked by default".** The strength
+of the filtering depends on hosts being reachable: `raw.githubusercontent.com`,
+`blocklistproject.github.io` and `big.oisd.nl`. On a network where those are
+blocked or merely unreliable, `PolicyStore.syncBlocklists` skips the sources it
+cannot fetch — by design, so one dead list does not take the others down with it
+— and the browser falls back to what shipped inside the APK: the 281-line seed in
+`default-blocklist.txt`, the signed document's 437 blocked packages, and its
+three inline domains. That is real filtering, and it is a long way short of the
+hundreds of thousands of domains the full lists carry.
+
+Nothing reports this. The phone does not say it is filtering on a seed, and a
+parent has no way to tell a working install from a hobbled one.
+
+It is a network property rather than a country property, so the places it bites
+are school and corporate networks, ISPs that block GitHub, and travellers — not
+a line on Play's country list. Worth knowing before somebody reports that "the
+blocking stopped working" from a hotel wifi.
+
 ## Building the bundle
 
 ```bash
