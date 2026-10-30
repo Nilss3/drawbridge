@@ -329,6 +329,32 @@ above. The honest risk, written down rather than discovered later: Firefox and
 DuckDuckGo are long-established listings, and a first submission from a new
 developer account can draw more scrutiny than a precedent protects against.
 
+### The video the form asks for
+
+Google does not take the justification's word for it: the form also wants a
+video of the feature that needs the permission. Recorded 2026-10-30, and
+reproducible with `tools/qap-demo/record.sh` — 38 seconds, no narration, three
+taps:
+
+1. `tel:` → **"Open this link in Phone app?"** → the dialer opens on the number.
+2. `mailto:` → **"Open this link in Gmail app?"** → Cancel, because the prompt is
+   the evidence and the mail app is not.
+3. `whatsapp:` → nothing happens. No installed app owns that scheme on the
+   device, so no prompt appears and nothing is guessed at.
+
+The page being tapped is `tools/qap-demo/index.html`, which names the package and
+says what each link demonstrates, so the video explains itself without a
+voice-over or a title card. Upload it unlisted; the form takes a link.
+
+The three taps together are the justification restated as something watchable:
+the permission is the question *who owns this scheme*, the prompt naming an app
+is that answer shown to the user, and the third link is what the answer looks
+like when it comes back empty.
+
+It is recorded on the emulator rather than on a provisioned phone, deliberately.
+A drawbridge phone has had most of these handoff targets removed, so the one
+device where the feature is hardest to film is the managed one.
+
 The alternative, if Google ever refuses it: `<queries>` entries for the schemes
 that can be named, and `startActivity` with a caught `ActivityNotFoundException`
 for the rest — launching another app never needed this permission, only
