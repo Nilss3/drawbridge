@@ -13,51 +13,52 @@ claims an endorsement the repository does not document.
 Limits Play enforces: **title 30 characters, short description 80, full
 description 4000.** Counts below are of the text as written.
 
-## On hold — the owner's decision, 2026-10-26
+## Before this is submitted, 2026-10-30
 
-**Nothing here goes to Play Console yet.** The copy exists in three languages,
-along with the icon, the feature graphic and 15 screenshots. What is not ready
-is the bundle: it was built from herald 0.1.23, and the current build is 0.1.24.
+The copy is final in three languages and all three now make the same claims.
+What is left is mechanical, and neither item is a wording question.
 
-### The chatbots clause: the copy stays, the build has to catch up
+### The bundle has to be rebuilt
 
-The descriptions say herald mono blocks general-purpose chatbots. **The owner's
-decision, 2026-10-30, is that the claim stays** — so it is the build that has to
-make it true before this listing is submitted, and right now no installable
-build does.
+`dist/release/herald-mono-0.1.23-release.aab` is three releases old. The
+listing's claims are true of **herald 0.1.25** (`v0.2.28`) and of no build
+before it, so that is the build that has to be uploaded.
 
-Policy 167 still carries the chatbots list, its packages and its switch, but
-inside a `conditional` fragment gated on `min_version_code: 63` — drawbridge
-0.2.38 and later, where the switch is still in beta. A standalone herald has no
-drawbridge to ask, so `conditionalVersionCode()` falls back to
-`config.ownVersionCode` (`policy/.../PolicyManager.kt`), and herald never sets
-it: it is **0**. 0 < 63, the fragment is never merged, and chatgpt.com,
-claude.ai and gemini.google.com load. The AI companion and roleplay list is
-unconditional, so that half of the sentence stands on its own.
+### The screenshots are two builds behind
 
-The gate exists for drawbridge's benefit — an older build must not mark an
-option as seen that it cannot offer — and a browser with nobody to ask has no
-such problem. Reading `0` for "no selection" makes the standalone browser the
-*most permissive* reader of a conditional fragment, which is backwards from
-`optionsOffWithoutSelection`, where no answer means every option off. Judging
-those fragments against `Int.MAX_VALUE` when no selection answers would line the
-two rules up: a standalone herald then takes everything the document offers and
-every switch off, which is the reading the listing describes. That is a herald
-change plus a release, and it is the open item here.
+They were taken against 0.1.23. herald 0.1.24 replaced the block page's
+AI-generated scene with two Pexels photographs, so `mono-*-3-refused.png` shows
+a page that no longer exists. When those three are retaken, their row in the AI
+asset declaration below flips from yes to no — the photographs are not
+AI-generated, and `art/README.md` records who took them.
 
-**Check it against a device before submitting**, the way the streaming and
-chatbot clauses were checked: open the sites in a standalone herald and look for
-the block page.
+### Why the chatbots clause is now true, and was not before
 
-One loose end in the copy itself: the Dutch, as the owner last revised it, does
-not list the chatbots while the English and French do.
+All three descriptions say herald mono blocks general-purpose chatbots. Until
+herald 0.1.25 that was false in exactly the place it mattered — a browser with
+no drawbridge beside it, which is every copy installed from Play.
 
-### The screenshots are a build behind
+Policy 169 keeps the chatbots list, its packages and its switch in a
+`conditional` fragment gated on `min_version_code: 63`, so that an older
+drawbridge is never offered a switch it cannot honour. A standalone herald was
+reading `0` for "nobody to ask", which made the browser with no parent the one
+place the fragment never applied: the list it most needed never reached it.
+`conditionalVersionCode` now answers `Int.MAX_VALUE` when a selection source
+exists and nothing answers it, which lines the rule up with
+`optionsOffWithoutSelection`: take everything the document offers, enable none
+of it. A managed phone is untouched, because drawbridge's own version code still
+decides there.
 
-herald 0.1.24 replaced the block page's AI-generated scene with two Pexels
-photographs, so `mono-*-3-refused.png` shows a page that no longer exists. When
-those three are retaken, their row in the AI asset declaration below flips from
-yes to no.
+**The claim is checked on a device before submission**, which is the standard
+this file holds claims to, and reading the code is not that standard. The check:
+install the published 0.1.25 mono APK, hash-checked against the release's own
+`SHA256SUMS`, on a device with no drawbridge present, and open chatgpt.com,
+claude.ai and gemini.google.com. Two controls make the result unambiguous —
+character.ai, from a list that was never gated, must block too, or the filter
+has not loaded and the run proves nothing; and en.wikipedia.org must load. The
+distinction to watch is the block page against GeckoView's "Address Not Found",
+which is what *not* blocking looks like on a network that does not resolve those
+hosts.
 
 ---
 
@@ -174,8 +175,8 @@ For herald mono the answer is **label**, and three assets carry it:
     zwart-wit verschijnen (monochroom, vandaar de naam 'mono').
 
     Net als de gewone herald-browser blokkeert herald mono verslavende inhoud:
-    pornografie, gokken, games, reclame, datingplatformen, social media,
-    AI-gezelschaps- en rollenspelchatsites en videostreaming.
+    pornografie, gokken, games, reclame, datingplatformen, social media, algemene
+    chatbots, AI-gezelschaps- en rollenspelchatsites en videostreaming.
 
     Herald mono is gratis, open source, en gebouwd op de Firefox-engine van Mozilla.
     Herald en herald mono zijn de begeleidende browsers van het drawbridge-project,
