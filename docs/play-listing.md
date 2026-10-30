@@ -44,12 +44,12 @@ Two changes, both in 0.1.26:
   request per install, not one per launch, and the same field settings reads to
   say "last updated never".
 
-**0.1.26 exists only here until a release carries it.** Policy 169 pins herald
-0.1.25 at the `v0.2.28` URLs, which is correct for the bundled copy (it must
-name yesterday's build, so `availableSelfUpdate` never offers a phone something
-older than itself) but means GitHub and Play would ship different binaries
-under different numbers. Cut `v0.2.29` with both editions and sign the policy
-that pins them, so the two channels agree.
+**GitHub and Play carry the same binary.** `v0.2.29` publishes both editions of
+0.1.26, and policy 170 pins them by hash; the APK in that release is byte for
+byte the one the fresh-install test ran (`39d6e5f6…`), and the bundle here is
+built from the same tree. The copy compiled into 0.1.26 is 169, one document
+behind 170 by design — it must name yesterday's build, so `availableSelfUpdate`
+never offers a phone something older than itself.
 
 ### The screenshots, and the one number in them that is stale
 
