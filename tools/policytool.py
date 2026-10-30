@@ -319,12 +319,39 @@ def check_urls_resolve(document: dict, *, published: bool = False) -> list[str]:
     silently getting less than the document promises. `published=True` makes
     them all fatal, which is what the health check wants.
 
+    **A 200 is not proof the file is there.** drawbridge-project.pages.dev
+    answers every unknown path with the homepage, status 200, so a missing APK
+    looked exactly like a present one here until 2026-10-30 — this function
+    cheerfully reported "every URL resolves" about an APK that had not been
+    deployed yet. So anything the policy pins by checksum is now checked for
+    being a ZIP: an APK starts `PK\x03\x04`, and a page of HTML does not.
+
     Use --skip-url-check to sign offline.
     """
     import urllib.error
     import urllib.request
 
-    def reachable(url: str) -> tuple[bool, str]:
+    def reachable(url: str, *, expect_apk: bool = False) -> tuple[bool, str]:
+        if expect_apk:
+            # Read the first four bytes rather than trusting the status line.
+            # A host that serves its homepage for unknown paths returns 200 and
+            # some HTML, which is indistinguishable from success until you look.
+            try:
+                request = urllib.request.Request(
+                    url,
+                    method="GET",
+                    headers={"User-Agent": "drawbridge-policytool", "Range": "bytes=0-3"},
+                )
+                with urllib.request.urlopen(request, timeout=30) as response:
+                    head = response.read(4)
+                if head.startswith(b"PK\x03\x04"):
+                    return True, "apk"
+                return False, f"200 but not an APK (starts {head!r})"
+            except urllib.error.HTTPError as e:
+                return False, str(e.code)
+            except Exception as e:
+                return False, type(e).__name__
+
         # HEAD first; some hosts refuse it, so fall back to a ranged GET
         # rather than pulling a 200k-line blocklist just to see a status.
         for method, headers in (("HEAD", {}), ("GET", {"Range": "bytes=0-0"})):
@@ -342,21 +369,21 @@ def check_urls_resolve(document: dict, *, published: bool = False) -> list[str]:
                 return False, type(e).__name__
         return False, "unreachable"
 
-    targets: list[tuple[str, str, bool]] = []  # (label, url, fatal)
+    targets: list[tuple[str, str, bool, bool]] = []  # (label, url, fatal, is_apk)
     for source in all_blocklists(document):
         url = source.get("url", "")
         own = local_list_path(url) is not None
-        targets.append((f"blocklist {source.get('id')!r}", url, published or not own))
+        targets.append((f"blocklist {source.get('id')!r}", url, published or not own, False))
     for app in document.get("required_apps", []):
         targets.append((f"required_app {app.get('package_name')} ({app.get('abi')})",
-                        app.get("url", ""), published))
+                        app.get("url", ""), published, True))
     if document.get("app_update"):
-        targets.append(("app_update", document["app_update"].get("url", ""), published))
+        targets.append(("app_update", document["app_update"].get("url", ""), published, True))
 
     failures: list[str] = []
     warnings: list[str] = []
-    for label, url, fatal in targets:
-        ok, detail = reachable(url)
+    for label, url, fatal, is_apk in targets:
+        ok, detail = reachable(url, expect_apk=is_apk)
         if ok:
             continue
         message = f"{label}: {detail} for {url}"

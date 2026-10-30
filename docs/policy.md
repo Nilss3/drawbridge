@@ -718,6 +718,15 @@ No private key, no new signature, no file rewritten — safe to run on a schedul
 and **monthly is about right**, since what it catches is upstream restructuring
 and that happens on nobody's timetable.
 
+**A 200 was not proof of anything, and for a while that check was theatre.**
+`drawbridge-project.pages.dev` answers every unknown path with the homepage and
+status 200 — so a pinned APK that had never been deployed looked exactly like one
+that had, and on 2026-10-30 this check reported "every URL this policy names
+resolves" about a file that did not exist. Anything the policy pins by checksum
+is now read four bytes deep: an APK begins `PK\x03\x04` and a page of HTML does
+not. The same host serves the DPC to every phone being provisioned, which is
+what made the blind spot worth closing rather than noting.
+
 It applies a **stricter rule than signing does**, deliberately. The two warnings
 above exist because the documented order writes the policy before pushing the
 commit and uploading the assets. A *published* policy has no such excuse: every
