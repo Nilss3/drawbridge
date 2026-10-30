@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>herald mono — downloading a file</title>
+<style>
+  :root { color-scheme: light; }
+  body { margin:0; padding:20px 18px; background:#fff; color:#111;
+         font:16px/1.45 -apple-system, Roboto, system-ui, sans-serif; }
+  h1 { font-size:22px; margin:0 0 2px; font-weight:600; }
+  p.pkg { margin:0 0 10px; font-size:13px; color:#666; font-family:ui-monospace,monospace; }
+  p.lede { margin:0 0 22px; font-size:14px; color:#333; }
+  a.row { display:block; padding:18px; margin:0 0 14px; border:2px solid #111;
+          border-radius:10px; text-decoration:none; color:#111; }
+  a.row b { display:block; font-size:18px; font-weight:600; }
+  a.row span { display:block; margin-top:3px; font-size:13px; color:#555; }
+  ol { margin:0; padding-left:20px; font-size:14px; color:#333; }
+  li { margin-bottom:6px; }
+  footer { margin-top:20px; font-size:12px; color:#666; }
+</style>
+</head>
+<body>
+  <h1>Downloading a file</h1>
+  <p class="pkg">app.drawbridge.heraldmono &middot; FOREGROUND_SERVICE_DATA_SYNC</p>
+  <p class="lede">The download starts because the user taps it, and nothing
+  else starts one. While it runs, herald holds a foreground service so the
+  transfer survives the browser going to the background, and posts the
+  notification that shows its progress.</p>
+
+  <a class="row" href="herald-sample-file.bin" download>
+    <b>Download the sample file</b>
+    <span>12 MB &mdash; deliberately slow, so the progress is visible</span>
+  </a>
+
+  <ol>
+    <li>Tap the link above.</li>
+    <li>Confirm the download.</li>
+    <li>The notification shows it running, then finished.</li>
+    <li>The file is in herald's own Downloads list.</li>
+  </ol>
+
+  <footer>Without the service, a download would be killed the moment the
+  browser stopped being the app on screen.</footer>
+</body>
+</html>

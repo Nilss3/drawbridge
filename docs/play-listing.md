@@ -386,6 +386,74 @@ hiding this one after the day it stops being true. `tools:` attributes are
 stripped from the merged manifest, so the suppression changes the lint result
 and nothing about the shipped app.
 
+## The other two Play asks about: the foreground service types
+
+herald declares two foreground service types, and targeting Android 14 means
+declaring them again in Console, under App content. Play wants four things per
+type: the use case picked from its list, a description of the feature, what
+happens to the user if the system defers or interrupts the work, and — the part
+that costs an afternoon — **a video of each one**.
+
+Both are real, and the system says so rather than just the manifest. With a
+download running, `dumpsys activity services` reports the download service as
+`isForeground=true types=0x00000001`, which is `FOREGROUND_SERVICE_TYPE_DATA_SYNC`;
+with page audio playing it reports the media service as `types=0x00000002`,
+`MEDIA_PLAYBACK`. Declared, requested, and actually used, which is the order
+Play checks them in.
+
+### FOREGROUND_SERVICE_DATA_SYNC — downloading a file
+
+Use case: **Network transfer: Upload or download**. Video:
+<https://drawbridge-project.pages.dev/assets/play/herald-mono-data-sync.mp4>
+
+> herald mono is a web browser. When someone taps a link to a file, the browser
+> downloads it and shows the progress in a notification. The service runs for
+> the length of that transfer and no longer, and only ever because the user
+> started it: nothing downloads on its own, and the app performs no background
+> synchronisation of any kind.
+
+Deferred: the file the user asked for does not arrive, with nothing to explain
+why except a notification that never moves. Interrupted: the partly written file
+is discarded and the transfer starts again from zero — on a metered connection,
+the same data paid for twice.
+
+The video shows the download being tapped, confirmed, and then **the browser
+being sent off screen**, because surviving that is the whole reason the service
+exists. It ends in herald's own Downloads list, with the file in it.
+
+One honest note for the form: Google's own FAQ steers this case elsewhere — "we
+recommend using the user-initiated data transfer job instead of the dataSync
+foreground service type" for network transfers at explicit user request. herald
+downloads through Mozilla's `AbstractFetchDownloadService`, which uses dataSync,
+so dataSync is what is declared. Targeting SDK 36 also brings the Android 15 cap:
+six hours of dataSync per 24, after which `Service.onTimeout` fires. A file
+download measured in seconds is nowhere near that, and the service starts from a
+tap while the app is in the foreground, which is the position the documentation
+recommends anyway.
+
+### FOREGROUND_SERVICE_MEDIA_PLAYBACK — audio from a page
+
+Use case: **Media playback**, "continue audio or video playback from the
+background". Video:
+<https://drawbridge-project.pages.dev/assets/play/herald-mono-media-playback.mp4>
+
+> herald mono is a web browser. When someone presses play on audio or video on a
+> page, playback continues if they leave the browser, with play and pause
+> controls in the notification. Playback only ever begins from a user action on
+> the page — the browser starts no media by itself.
+
+Deferred: sound cannot continue once the browser leaves the screen, so it stops
+mid-sentence every time the user switches apps or locks the phone. Interrupted:
+playback ends and the controls vanish, and the user has to find the page again
+and their place in it.
+
+Play's stated qualifier is the one worth reading twice: "Playback must be
+user-initiated; any automatic soundtracks that play when you open an app do not
+qualify." The demo page therefore plays nothing on load. The video shows a press,
+then the browser leaving the screen, then the notification's pause button being
+used — and then the page again, where the clock has advanced while the browser
+was away and stopped exactly where the notification stopped it.
+
 ## Building the bundle
 
 ```bash

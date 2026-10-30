@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>herald mono — media playback</title>
+<style>
+  :root { color-scheme: light; }
+  body { margin:0; padding:20px 18px; background:#fff; color:#111;
+         font:16px/1.45 -apple-system, Roboto, system-ui, sans-serif; }
+  h1 { font-size:22px; margin:0 0 2px; font-weight:600; }
+  p.pkg { margin:0 0 10px; font-size:13px; color:#666; font-family:ui-monospace,monospace; }
+  p.lede { margin:0 0 20px; font-size:14px; color:#333; }
+  button { display:block; width:100%; padding:20px; margin:0 0 16px;
+           border:2px solid #111; border-radius:10px; background:#fff; color:#111;
+           font:600 20px/1 inherit; }
+  button:disabled { opacity:.4; }
+  .clock { border:2px solid #111; border-radius:10px; padding:16px 18px; margin-bottom:16px; }
+  .clock b { display:block; font-size:40px; font-variant-numeric:tabular-nums; font-weight:600; }
+  .clock span { display:block; margin-top:4px; font-size:13px; color:#555; }
+  footer { margin-top:18px; font-size:12px; color:#666; }
+</style>
+</head>
+<body>
+  <h1>Playing audio from a page</h1>
+  <p class="pkg">app.drawbridge.heraldmono &middot; FOREGROUND_SERVICE_MEDIA_PLAYBACK</p>
+  <p class="lede">Playback starts because the user presses play, and never on
+  its own. Leaving herald does not stop it: the clock below keeps counting while
+  the browser is off screen, and the notification carries the controls.</p>
+
+  <button id="play">Play the recording</button>
+
+  <div class="clock">
+    <b id="elapsed">0:00</b>
+    <span id="state">stopped &mdash; nothing is playing</span>
+  </div>
+
+  <footer>Without the service, the sound would stop the moment the browser
+  stopped being the app on screen.</footer>
+
+<audio id="audio" src="herald-sample-audio.wav" preload="auto"></audio>
+<script>
+  const audio = document.getElementById("audio");
+  const elapsed = document.getElementById("elapsed");
+  const state = document.getElementById("state");
+  const button = document.getElementById("play");
+
+  // What the notification shows while herald is in the background.
+  if ("mediaSession" in navigator) {
+    navigator.mediaSession.metadata = new MediaMetadata({
+      title: "Example recording",
+      artist: "herald mono demo page",
+    });
+  }
+
+  button.addEventListener("click", () => {
+    audio.play();
+    button.disabled = true;
+    button.textContent = "Playing";
+  });
+
+  audio.addEventListener("timeupdate", () => {
+    const s = Math.floor(audio.currentTime);
+    elapsed.textContent = `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
+  });
+  audio.addEventListener("playing", () => state.textContent = "playing");
+  audio.addEventListener("pause", () => state.textContent = "paused from the notification");
+</script>
+</body>
+</html>
