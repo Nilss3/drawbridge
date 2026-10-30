@@ -255,6 +255,50 @@ For herald mono the answer is **label**, and two assets carry it:
 
 ---
 
+## Release notes ("What's new")
+
+Play takes **500 characters** per language, shown on the listing and in the
+updates list. This is a first release, so there is no changelog to write: a
+user reading it has never had the app, and "fixed a stale bundled policy" would
+mean nothing to them. It says what the app is instead, and every line of it is
+a claim checked against the build — the same rule as the descriptions above.
+
+### English (416)
+
+    First release on Google Play.
+
+    herald mono is a slow, monochrome browser with a built-in content blocker: a breathing pause before every page, slower scrolling, no tabs, and pages in black and white.
+
+    Adult sites, gambling, games, ads, dating, social media, general-purpose chatbots, AI companion chat and video streaming are blocked by default.
+
+    No account, no telemetry. The filtering happens on the device itself.
+
+### Dutch (425)
+
+    Eerste versie in Google Play.
+
+    herald mono is een trage, monochrome browser met een ingebouwde inhoudsblokkering: een adempauze vóór elke pagina, trager scrollen, geen tabbladen, en pagina's in zwart-wit.
+
+    Pornografie, gokken, games, reclame, dating, social media, algemene chatbots, AI-gezelschapschats en videostreaming worden standaard geblokkeerd.
+
+    Geen account, geen telemetrie. Het filteren gebeurt op het toestel zelf.
+
+### French (482)
+
+    Première version sur Google Play.
+
+    herald mono est un navigateur lent et monochrome doté d'un bloqueur de contenu intégré : une pause de respiration avant chaque page, un défilement plus lent, aucun onglet, et des pages en noir et blanc.
+
+    Sites pornographiques, jeux d'argent, jeux, publicités, rencontres, réseaux sociaux, chatbots généralistes, compagnons IA et vidéo en streaming sont bloqués par défaut.
+
+    Aucun compte, aucune télémétrie. Le filtrage se fait sur l'appareil même.
+
+**At the next update this becomes a changelog**, and the first one has something
+to say: 0.1.26 is the build where a fresh install stops running on the policy
+compiled into it months earlier.
+
+---
+
 ## The permission Play asks about: QUERY_ALL_PACKAGES
 
 herald's manifest declares `android.permission.QUERY_ALL_PACKAGES`, added in
