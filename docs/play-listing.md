@@ -228,6 +228,48 @@ For herald mono the answer is **label**, and two assets carry it:
 
 ---
 
+## The permission Play asks about: QUERY_ALL_PACKAGES
+
+herald's manifest declares `android.permission.QUERY_ALL_PACKAGES`, added in
+0.1.24 so that handing a `tel:`, `intent:`, `whatsapp:` or a bank's own scheme
+to the app that owns it can first ask Android who that is. On API 30 and later
+that answer is empty for any app not declared, and the schemes are not ours to
+enumerate — every bank has its own.
+
+**Play restricts it**, so the listing needs the **Permissions Declaration Form**
+in Console. The policy
+(<https://support.google.com/googleplay/android-developer/answer/10158779>) says
+"Permitted uses include device search, antivirus apps, file managers, and
+browsers", and herald is a browser. It also sets conditions a strict reading
+would have us fail: a "core purpose to search for all apps on the device", a
+justification for why "a less intrusive method of app visibility" will not do,
+and core functionality "prominently documented and promoted in the app's
+description".
+
+What settles it is what shipping browsers do. **Firefox for Android declares the
+same permission with the same lint suppression and no `<queries>` block at all**
+(`mobile/android/fenix/app/src/main/AndroidManifest.xml`), and **DuckDuckGo does
+the same**, its `<queries>` holding one unrelated intent for voice search.
+Neither promotes app-searching in its store description. The word the category
+turns on is *browsers*.
+
+So the form is answered as a browser, and the justification is the handoff
+above. The honest risk, written down rather than discovered later: Firefox and
+DuckDuckGo are long-established listings, and a first submission from a new
+developer account can draw more scrutiny than a precedent protects against.
+
+The alternative, if Google ever refuses it: `<queries>` entries for the schemes
+that can be named, and `startActivity` with a caught `ActivityNotFoundException`
+for the rest — launching another app never needed this permission, only
+*resolving* does. The cost is the prompt, which could no longer say "Open in
+WhatsApp?" and would have to show the bare URL.
+
+**The suppression is `tools:ignore` on the line itself, not a lint baseline.**
+A baseline would have buried the other 37 warnings with it, and would keep
+hiding this one after the day it stops being true. `tools:` attributes are
+stripped from the merged manifest, so the suppression changes the lint result
+and nothing about the shipped app.
+
 ## Building the bundle
 
 ```bash
