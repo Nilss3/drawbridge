@@ -24,13 +24,18 @@ What is left is mechanical, and neither item is a wording question.
 listing's claims are true of **herald 0.1.25** (`v0.2.28`) and of no build
 before it, so that is the build that has to be uploaded.
 
-### The screenshots are two builds behind
+### The screenshots, and the one number in them that is stale
 
-They were taken against 0.1.23. herald 0.1.24 replaced the block page's
-AI-generated scene with two Pexels photographs, so `mono-*-3-refused.png` shows
-a page that no longer exists. When those three are retaken, their row in the AI
-asset declaration below flips from yes to no — the photographs are not
-AI-generated, and `art/README.md` records who took them.
+The three refused shots were retaken on 2026-10-29 (`bd2e115`), so they show the
+block page as it is now: Tower Bridge, photographed by Girish Nayyar, credited
+under the picture. **That flips their row in the AI asset declaration below from
+yes to no** — the scene they used to show was generated, this one is not.
+
+The other four per language are from 0.1.23 and still show screens 0.1.25 has,
+with one exception worth knowing about before upload: the settings shot reads
+**"Policy version 137"**, and the current document is 169. Nothing rejects a
+listing over it, but it is a checkable number in a public image, and retaking
+that one shot in three languages is a few minutes once an emulator is up.
 
 ### Why the chatbots clause is now true, and was not before
 
@@ -143,13 +148,13 @@ it was written with a model, and not about editing in the ordinary sense:
 resizing, greyscaling and compositing a generated master do not change the
 answer, and do not create one either.
 
-For herald mono the answer is **label**, and three assets carry it:
+For herald mono the answer is **label**, and two assets carry it:
 
 | Asset | Declared | Why |
 |---|---|---|
 | App icon | yes | `art/herald-mono-icon.webp` is AI-generated |
 | Feature graphic | yes | composed from that same master |
-| `mono-*-3-refused.png` | yes | shows a block-page scene, also AI-generated |
+| `mono-*-3-refused.png` | no | **Changed 2026-10-29.** The block page's generated scene was replaced by a Pexels photograph, credited on the page itself |
 | The other 14 screenshots | no | the app's own interface, and photographs from Wikipedia |
 
 `art/README.md` records where every master came from, including the one that is
