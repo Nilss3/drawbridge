@@ -344,7 +344,17 @@ taps:
 
 The page being tapped is `tools/qap-demo/index.html`, which names the package and
 says what each link demonstrates, so the video explains itself without a
-voice-over or a title card. Upload it unlisted; the form takes a link.
+voice-over or a title card.
+
+It is published from this project's own site rather than YouTube:
+
+<https://drawbridge-project.pages.dev/assets/play/herald-mono-query-all-packages.mp4>
+
+and that URL is what the form takes. Nothing on the site links to it. It sits in
+`site/assets/`, the one directory `build-site.py` does not clear, and
+`record.sh` writes straight into that directory — so re-recording replaces what
+is published, rather than leaving a hand-copied file behind to drift out of step
+with the build it claims to show.
 
 The three taps together are the justification restated as something watchable:
 the permission is the question *who owns this scheme*, the prompt naming an app

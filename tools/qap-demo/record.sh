@@ -9,11 +9,17 @@
 # The taps are hard-coded screen coordinates against that resolution; the two
 # dialog buttons are found by label instead, so their position can drift.
 #
+# The take lands in site/assets/ and is published from there, so re-running this
+# is how the video is updated rather than a copy somebody makes by hand:
+# site/assets/ is the one directory build-site.py does not clear, which is also
+# the one place a stale file can sit unnoticed.
+#
 #   ./tools/qap-demo/record.sh [output.mp4]
 #
 set -e
 DIR="${0:A:h}"
-OUT="${1:-$DIR/herald-mono-query-all-packages.mp4}"
+OUT="${1:-${DIR:h:h}/site/assets/play/herald-mono-query-all-packages.mp4}"
+mkdir -p "${OUT:h}"
 ADB="${ADB:-$HOME/Library/Android/sdk/platform-tools/adb}"
 PKG=app.drawbridge.heraldmono
 PORT=8099
