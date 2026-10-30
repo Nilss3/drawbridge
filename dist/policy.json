@@ -1,7 +1,7 @@
 {
-  "version": 170,
+  "version": 171,
   "issued_at": "2026-10-30T10:44:58Z",
-  "comment": "Policy 170 pins herald 0.1.26 and herald mono 0.1.26 at v0.2.29: the copy compiled into the APK is this document's predecessor rather than 141, and a fresh install asks for an update at once instead of waiting for the three-hour poll. drawbridge 0.2.38 build 63 unchanged.",
+  "comment": "Policy 171 pins drawbridge 0.2.39 build 64: the same DPC code as build 63 with a newer document compiled into it, so a phone provisioned from now on starts on 170 rather than on the 158 that build 63 carried, instead of waiting out its first poll. herald 0.1.26 and herald mono 0.1.26 unchanged at v0.2.29.",
   "dns": {
     "upstreams": [
       "94.140.14.15",
@@ -909,14 +909,14 @@
   },
   "app_update": {
     "package_name": "app.drawbridge.dpc",
-    "version_code": 63,
-    "url": "https://drawbridge-project.pages.dev/assets/dpc-5b16b1c2878f1df9.apk",
-    "sha256": "5b16b1c2878f1df9419fc54ad6176a074ae27de38001d18b25072db9a3f95e31",
-    "version_name": "0.2.38",
-    "notes": "New: a switch for general-purpose chatbots (ChatGPT, Claude, Gemini and the like), on by default and recommended from 18. It only exists on this version and later. Everything in 0.2.37 is still here.",
+    "version_code": 64,
+    "url": "https://drawbridge-project.pages.dev/assets/dpc-e9212fcab8a24017.apk",
+    "sha256": "e9212fcab8a24017c18b9d70981b6fc9be815c4668378b83710546a9d1944238",
+    "version_name": "0.2.39",
+    "notes": "Housekeeping. A phone set up from now on starts from a newer list; on a phone already running, nothing changes.",
     "notes_i18n": {
-      "nl": "Nieuw: een schakelaar voor algemene chatbots (ChatGPT, Claude, Gemini en dergelijke), standaard aan en aanbevolen vanaf 18. Hij bestaat alleen in deze versie en nieuwer. Alles uit 0.2.37 zit er nog in.",
-      "fr": "Nouveau : un interrupteur pour les chatbots g\u00e9n\u00e9ralistes (ChatGPT, Claude, Gemini et autres), activ\u00e9 par d\u00e9faut et recommand\u00e9 \u00e0 partir de 18 ans. Il n'existe que dans cette version et les suivantes. Tout ce qui \u00e9tait dans la 0.2.37 y est encore."
+      "nl": "Onderhoud. Een toestel dat vanaf nu wordt ingesteld, begint met een nieuwere lijst; op een toestel dat al draait, verandert er niets.",
+      "fr": "Maintenance. Un t\u00e9l\u00e9phone configur\u00e9 \u00e0 partir de maintenant d\u00e9marre avec une liste plus r\u00e9cente ; sur un t\u00e9l\u00e9phone d\u00e9j\u00e0 en service, rien ne change."
     }
   },
   "required_apps": [
