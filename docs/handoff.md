@@ -1356,7 +1356,13 @@ Remember `site/` is generated: edit `site-src/` and `tools/build-site.py`, run
 `python3 tools/build-site.py`, and commit what it writes. Hand-edited HTML in
 `site/` is overwritten without warning.
 
-### 14. Filter tethered traffic, by pinning Private DNS to Mullvad
+### 14. Filter tethered traffic, by pinning Private DNS to the upstream resolver
+
+**Updated 2026-11-02:** written when the upstream was Mullvad, which retired its
+public encrypted DNS that day. The pin would now be `family.adguard-dns.com`, the
+encrypted upstream since policy 172, and what it buys is narrower: AdGuard DNS
+Family blocks ads, trackers, malware and adult content, not gambling or social
+media. The rest of the entry stands as written.
 
 **Measured by the owner on 2026-09-12: a device on the phone's hotspot is not
 filtered at all.** It gets the phone's connection raw.
@@ -1373,8 +1379,8 @@ phone as their DNS server, and the phone's tethering proxy resolves through the
 system resolver — which is where Private DNS lives. A Device Owner can pin it:
 `setGlobalPrivateDnsModeSpecifiedHost`, the sibling of the
 `setGlobalPrivateDnsModeOpportunistic` call `normalisePrivateDns` already makes.
-Pin it at **`all.dns.mullvad.net`**, which this project already uses as its
-encrypted upstream, and a tethered device resolves through the same filtering
+Pin it at **`all.dns.mullvad.net`** (now **`family.adguard-dns.com`**; see the
+note above), which this project already uses as its encrypted upstream, and a tethered device resolves through the same filtering
 resolver the phone does instead of through the carrier's.
 
 **What that buys and what it does not.** It buys Mullvad's own blocking — ads,
@@ -1601,8 +1607,9 @@ not support calls* — which is WhatsApp reporting that it could not establish t
 **Fixed on 2026-09-20 by taking WhatsApp out of the tunnel.** The beta phone
 polled policy 118 and calls work. Kept in full below rather than deleted, because
 two things in it are load bearing — the Mullvad tier table, which is the only
-written record of what the upstream refuses and is needed by anything that ever
-moves off `all`, and the reasoning below, which is weaker than a closed item
+written record of what the upstream refused while it was Mullvad (the upstream
+moved off Mullvad entirely on 2026-11-02, to AdGuard DNS Family, which does not
+block social media), and the reasoning below, which is weaker than a closed item
 usually implies.
 
 **Closed as fixed, not as explained, and the distinction is real.** Excluding the
@@ -1741,7 +1748,10 @@ Instagram's media CDN — their main domains stay blocked, so neither app works,
 but it is a real widening. **And either way the upstream has to move from `all`
 to `family`**, or Mullvad refuses the names whatever the document says. Before
 that move, check `social.txt` covers everything Mullvad's social list does, or
-switching will open something.
+switching will open something. **Overtaken on 2026-11-02:** Mullvad retired its
+public DNS and the upstream became AdGuard DNS Family, which does not block social
+media, so this constraint is gone and `social.txt` is the only thing refusing
+Meta's names now.
 
 The test that tells the two apart is still available and is only worth running if
 the exclusion works and somebody wants the narrower fix: put WhatsApp back in the

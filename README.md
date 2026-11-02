@@ -170,7 +170,7 @@ locking again, which re-takes the set. See
   **Blocking a port does not help either, and 853 is ours.** The measured sockets
   were all on 443 — the same port as every other web request on the phone — so
   there is no port to close that is not the internet. And 853 is DNS-over-TLS,
-  which is what drawbridge's own upstream uses (`tls://all.dns.mullvad.net`);
+  which is what drawbridge's own upstream uses (`tls://family.adguard-dns.com`);
   closing it would break the encrypted resolver and fall back to plain DNS. The
   bypasses that *are* port-shaped are already covered: all `:53` is routed into
   drawbridge's resolver wherever it is addressed, and public DoT/DoH resolvers are

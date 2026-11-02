@@ -17,7 +17,7 @@ hold, which is what makes replaying an old, permissive policy fail.
 {
   "version": 2,
   "dns": {
-    "encrypted_upstream": "tls://all.dns.mullvad.net",
+    "encrypted_upstream": "tls://family.adguard-dns.com",
     "upstreams": ["94.140.14.15", "94.140.15.16"],
     "enforce_safe_search": true,
     "strip_https_records": true,
@@ -51,7 +51,7 @@ hold, which is what makes replaying an old, permissive policy fail.
 
 | Field | Effect |
 |---|---|
-| `dns.encrypted_upstream` | Where queries actually go, over DNS-over-TLS. Encrypts the hop, so the local network cannot read the lookups or forge answers. Mullvad's `all` profile also blocks adult, gambling, social, ads and trackers at their end. |
+| `dns.encrypted_upstream` | Where queries actually go, over DNS-over-TLS. Encrypts the hop, so the local network cannot read the lookups or forge answers. Since policy 172 it is AdGuard DNS Family, the same resolver as the plain fallback, which blocks ads, trackers and adult content at its end; gambling and social are left to drawbridge's own lists. Until then it was Mullvad's `all` profile, which also blocked gambling and social, and which Mullvad retired on 2026-11-02. |
 | `dns.upstreams` | Plain-DNS fallback. Bootstraps the encrypted upstream's hostname and takes over if it is unreachable — keep it a *filtering* resolver so the failure mode is a narrower filter, not an open one. |
 | `dns.excluded_packages` | Apps left outside the tunnel, **and therefore outside the filter**. For apps an always-on VPN stops working; see below before adding one. Defaults to Android Auto alone, so **a document that sets the field has to repeat it** or the default is dropped. |
 | `blocklists` | Domain lists downloaded and compiled on device. `format` is `hosts` or `domains`; Adblock-style `\|\|domain^` lines are tolerated in either. |
@@ -447,7 +447,7 @@ diff rather than a second policy that can drift out of step:
       "name": "Schoolwork only",
       "description": "Only approved apps stay installed.",
       "allowed_packages": ["app.drawbridge.herald", "com.google.android.calculator"],
-      "dns": { "upstreams": ["94.140.14.15"], "encrypted_upstream": "tls://all.dns.mullvad.net" }
+      "dns": { "upstreams": ["94.140.14.15"], "encrypted_upstream": "tls://family.adguard-dns.com" }
     }
   ]
 }
