@@ -1,7 +1,7 @@
 {
-  "version": 171,
-  "issued_at": "2026-10-30T10:44:58Z",
-  "comment": "Policy 171 pins drawbridge 0.2.39 build 64: the same DPC code as build 63 with a newer document compiled into it, so a phone provisioned from now on starts on 170 rather than on the 158 that build 63 carried, instead of waiting out its first poll. herald 0.1.26 and herald mono 0.1.26 unchanged at v0.2.29.",
+  "version": 172,
+  "issued_at": "2026-11-02T12:00:00Z",
+  "comment": "BETA. Mullvad retires its public encrypted DNS on 2026-11-02, so encrypted_upstream moves from tls://all.dns.mullvad.net to tls://family.adguard-dns.com: AdGuard DNS Family, the same filtering resolver the plain-DNS fallback (94.140.14.15/94.140.15.16) already uses. It blocks ads, trackers and adult content; gambling and social, which Mullvad's all profile also blocked, stay covered by drawbridge's own lists. Nothing else changes from 171. 437 blocked packages.",
   "dns": {
     "upstreams": [
       "94.140.14.15",
@@ -11,7 +11,7 @@
     "strip_https_records": true,
     "block_encrypted_dns": true,
     "blocked_response_ttl_seconds": 60,
-    "encrypted_upstream": "tls://all.dns.mullvad.net",
+    "encrypted_upstream": "tls://family.adguard-dns.com",
     "excluded_packages": [
       "com.google.android.projection.gearhead",
       "com.whatsapp",
