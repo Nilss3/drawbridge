@@ -1,7 +1,7 @@
 {
-  "version": 168,
-  "issued_at": "2026-10-27T13:23:48Z",
-  "comment": "DEV CHANNEL ONLY. Policy 168 pins herald 0.1.25 and herald mono 0.1.25 at v0.2.8-dev.17: standalone herald now blocks the general-purpose chatbots too. drawbridge 0.2.38 build 63 unchanged.",
+  "version": 173,
+  "issued_at": "2026-11-02T12:00:00Z",
+  "comment": "DEV CHANNEL ONLY. Mullvad retires its public encrypted DNS on 2026-11-02, so encrypted_upstream moves from tls://all.dns.mullvad.net to tls://family.adguard-dns.com: AdGuard DNS Family, the same filtering resolver the plain-DNS fallback (94.140.14.15/94.140.15.16) already uses. It blocks ads, trackers and adult content; gambling and social, which Mullvad's all profile also blocked, stay covered by drawbridge's own lists. Nothing else changes from 168. 437 blocked packages.",
   "dns": {
     "upstreams": [
       "94.140.14.15",
@@ -11,7 +11,7 @@
     "strip_https_records": true,
     "block_encrypted_dns": true,
     "blocked_response_ttl_seconds": 60,
-    "encrypted_upstream": "tls://all.dns.mullvad.net",
+    "encrypted_upstream": "tls://family.adguard-dns.com",
     "excluded_packages": [
       "com.google.android.projection.gearhead",
       "com.whatsapp",
