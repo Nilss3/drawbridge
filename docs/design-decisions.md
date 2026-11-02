@@ -296,8 +296,19 @@ reports.
 
 ## The encrypted upstream uses DoT, not DoH
 
-The upstream resolver is reached over DNS-over-TLS (`tls://all.dns.mullvad.net`),
-not DNS-over-HTTPS, despite DoH being the more obvious choice.
+The upstream resolver is reached over DNS-over-TLS (`tls://family.adguard-dns.com`
+since policy 172; `tls://all.dns.mullvad.net` before it), not DNS-over-HTTPS,
+despite DoH being the more obvious choice.
+
+**The resolver changed on 2026-11-02 and the choice of protocol did not.** Mullvad
+retired its public encrypted DNS that day. AdGuard DNS Family took its place: it is
+the resolver the plain-DNS fallback (`94.140.14.15`, `94.140.15.16`) already was, so
+the encrypted path and the fallback now filter alike. It blocks ads, trackers and
+adult content upstream; Mullvad's `all` also blocked gambling and social, which are
+left to drawbridge's own lists (checked against the gambling list and `social.txt`
+before the move). The reasoning below was measured against Mullvad, whose DoH
+endpoint was the one that refused HTTP/1.1; AdGuard's answers HTTP/1.1, but DoT
+needs nothing either way, so there was no reason to move.
 
 Mullvad's DoH endpoint **only accepts HTTP/2** — verified: an HTTP/1.1 request is
 closed without a response, an HTTP/2 request returns 200. Android's built-in
@@ -760,8 +771,8 @@ stops being interesting — because **it does not tell the two hypotheses apart,
 and it is worth being explicit about why.** An excluded app is outside the VPN
 entirely, so it does not merely stop seeing a tunnel: its lookups go to the
 underlying network's resolver instead of to the one this tunnel hands out, which
-takes it out of reach of the blocklists *and* of `all.dns.mullvad.net` at the
-same stroke. Both explanations therefore predict exactly what was observed.
+takes it out of reach of the blocklists *and* of the upstream, then
+`all.dns.mullvad.net`, at the same stroke. Both explanations therefore predict exactly what was observed.
 
 **The 5G asymmetry remains the only evidence that chooses**, and it is
 circumstantial: a refused name cannot explain a phone that will not *ring*. That
@@ -769,7 +780,9 @@ is enough to act on and not enough to call measured. The experiment that would
 discriminate is still unrun and is written down in the handoff — put WhatsApp
 back in the tunnel, move the upstream to `family.dns.mullvad.net`, release the
 Meta hosts a call needs — and it is only worth running if somebody wants the
-narrower fix back.
+narrower fix back. **Half of it happened by itself on 2026-11-02:** the upstream
+moved to AdGuard DNS Family, which does not block social media, so the upstream no
+longer refuses Meta's names and only `social.txt` does.
 
 **What is given up is smaller than Android Auto's, for once.** The `whatsapp`
 option already releases `whatsapp.com`, `whatsapp.net` and `wa.me` when it is on
