@@ -467,6 +467,71 @@ then the browser leaving the screen, then the notification's pause button being
 used — and then the page again, where the clock has advanced while the browser
 was away and stopped exactly where the notification stopped it.
 
+## Play signed it with its own key, and what that costs
+
+**Google generated the app signing key.** The certificates downloaded from
+Console on 2026-11-10 are all self-signed `CN=Android, OU=Android, O=Google
+Inc., L=Mountain View, ST=California, C=US`, created 2026-10-23 — the day the
+app entry was made, before any bundle was uploaded — and valid for thirty years:
+
+| file | algorithm | SHA-256 |
+|---|---|---|
+| `deployment_cert.der` | RSA 4096 | `3eded70fe4ee47a4782e4986f334a87e6261180b9a6f86885653149ccbc8fe98` |
+| `hybrid_classical_cert.der` | RSA 4096 | `18b2f61bd42a7ad4a440918b4dcb97d4d99a05c556c522007d1ce23c703c8025` |
+| `hybrid_pqc_cert.der` | ML-DSA-65 | `0286f7a85863f245462b8626b78e0ebc042a68dc6ef304de3376a6199636f62c` |
+
+None of them is ours. `drawbridge-release.jks`
+(`f662a801c036a8cfeb6b6e0204ebc9e1d722204365b8c0d761d28bfdee0fead3`) is now the
+**upload** key only: we sign what we send Google, and Google signs what reaches
+phones. That cannot be undone for this listing.
+
+### Three consequences, in the order they will be met
+
+**1. The Play build can never read the parent's settings.**
+`app.drawbridge.permission.READ_SELECTION` is declared `signature`, so it is
+granted only to apps carrying drawbridge's certificate. The Play copy carries
+Google's. `DrawbridgeSelection` catches the refusal and logs it at debug, so a
+Play copy on a managed phone looks like a browser with no drawbridge on the
+phone at all: it filters on the document's defaults and ignores every option the
+parent set. That direction is the safe one — standalone reads options as off,
+and off means blocked — but a parent who *allowed* something will find it still
+blocked and nothing will explain why.
+
+**2. The two editions cannot replace each other.** They share the package name
+`app.drawbridge.heraldmono` and have different signers, so Android refuses to
+update either with the other. Whichever lands first owns the name.
+
+**3. Installing from Play on a managed phone sets a trap for later.**
+`AppInstaller.installMissingRequiredApps` filters on
+`versionCode > versionCodeOf(packageName)`, so while the policy pins the version
+Play happens to be at, drawbridge leaves it alone and nothing looks wrong. The
+day the pin advances, drawbridge starts trying: ~230 MB downloaded to the cache,
+checksum verified, session committed, and the platform refuses it on signature.
+`InstallOutcome` only gives special treatment to `ABORTED` and `BLOCKED`, so
+nothing remembers the refusal — and `UpdateWorker` polls every three hours.
+
+Not yet observed in the field, and worth confirming on a test phone before
+treating the download cost as fact. The signature refusal itself is not in
+doubt.
+
+### What to do about it
+
+Nothing retroactive: the key is Google's for the life of this listing. The
+options worth weighing, none taken yet —
+
+- **Treat Play as the standalone channel and say so**, which the description
+  half does already ("We make the browsers separately available"). Cheapest, and
+  leaves consequence 3 lying in the road.
+- **Have herald notice.** It holds `QUERY_ALL_PACKAGES`, so it can tell "no
+  drawbridge here" from "drawbridge is here and I cannot read it", which is
+  exactly the state that is currently silent. A line on the settings screen
+  would turn an invisible fault into a sentence.
+- **Let drawbridge resolve it.** As Device Owner it can uninstall the Play copy
+  and install the pinned one; today it only compares version codes and never
+  considers that the package it is looking at might be a different app.
+- **A separate applicationId for the Play edition**, which removes the collision
+  outright and costs a second listing.
+
 ## Distributing everywhere, and the one claim that travels badly
 
 The listing goes to every country Play serves. Nothing in herald is a legal
