@@ -7,6 +7,8 @@ import android.content.Intent
 import android.content.pm.PackageInstaller
 import android.content.pm.PackageManager
 import android.util.Log
+import app.drawbridge.dpc.DrawbridgeApplication
+import app.drawbridge.dpc.update.UpdateWorker
 
 /**
  * Receives the result of a silent uninstall.
@@ -35,6 +37,7 @@ class PackageRemovalReceiver : BroadcastReceiver() {
                     fallBack(context, packageName, "survived its uninstall")
                 } else {
                     Log.i(TAG, "Uninstalled $packageName")
+                    installOursIfRequired(context, packageName)
                 }
 
             PackageInstaller.STATUS_PENDING_USER_ACTION ->
@@ -83,6 +86,30 @@ class PackageRemovalReceiver : BroadcastReceiver() {
         }
         Log.w(TAG, "$packageName $what; hiding or suspending it instead")
         blocker.hideOrSuspend(packageName)
+    }
+
+    /**
+     * Puts our copy back when what just left was an app the policy *requires*.
+     *
+     * That happens when [app.drawbridge.dpc.update.AppInstaller] removes a copy
+     * signed by another key — herald installed from Play, in practice. Between
+     * that removal and this call the phone has no browser at all, so the install
+     * cannot wait for the next three-hour poll.
+     *
+     * **Requested rather than scheduled, so it ignores the metered-network
+     * rule.** That rule exists to keep a 230 MB download off somebody's data
+     * plan, and it is the right default — but the replacement was only started
+     * in a pass where installing was already permitted moments earlier, and a
+     * phone left with no browser at all is the worse outcome of the two.
+     *
+     * Harmless for every other uninstall: an app the policy does not require
+     * returns here immediately.
+     */
+    private fun installOursIfRequired(context: Context, packageName: String) {
+        val policy = DrawbridgeApplication.policy(context).policy.value
+        if (policy.requiredApps.none { it.packageName == packageName }) return
+        Log.i(TAG, "$packageName is a required app; installing our copy now")
+        UpdateWorker.runNow(context)
     }
 
     private fun isInstalled(context: Context, packageName: String): Boolean = try {

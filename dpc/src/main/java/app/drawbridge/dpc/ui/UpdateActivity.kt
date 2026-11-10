@@ -156,6 +156,9 @@ class UpdateActivity : AppCompatActivity() {
             when (val result = installer.installSelfUpdate()) {
                 is AppInstaller.Result.Started -> Unit // The receiver has the rest.
                 is AppInstaller.Result.UpToDate -> render()
+                // Only required apps are ever replaced, and drawbridge is not
+                // one of its own required apps: it cannot reach this screen.
+                is AppInstaller.Result.Replacing -> Unit
                 is AppInstaller.Result.Failed -> {
                     // A failure this early is the download or the checksum, not
                     // the phone refusing the package.

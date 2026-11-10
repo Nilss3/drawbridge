@@ -1,5 +1,6 @@
 package app.drawbridge.dpc.update
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageInstaller
 import android.content.pm.PackageManager
@@ -9,6 +10,7 @@ import app.drawbridge.dpc.DrawbridgeApplication
 import app.drawbridge.dpc.admin.DeviceOwnerManager
 import app.drawbridge.dpc.apps.BrowserSettings
 import app.drawbridge.dpc.apps.InstallLockSettings
+import app.drawbridge.dpc.apps.PackageRemovalReceiver
 import app.drawbridge.policy.model.AppUpdate
 import app.drawbridge.policy.net.Downloader
 import kotlinx.coroutines.Dispatchers
@@ -36,8 +38,18 @@ class AppInstaller(context: Context) {
     sealed interface Result {
         data object UpToDate : Result
         data object Started : Result
+
+        /**
+         * A copy signed by another key was removed; ours installs when the
+         * platform reports the removal. Not a failure, so the worker does not
+         * retry on it — [PackageRemovalReceiver] carries it on from there.
+         */
+        data object Replacing : Result
         data class Failed(val reason: String) : Result
     }
+
+    /** Whether an installed package carries drawbridge's signature, or anyone's. */
+    private enum class Signer { OURS, FOREIGN, ABSENT }
 
     /**
      * The update the signed policy names for drawbridge itself, or null when
@@ -105,10 +117,40 @@ class AppInstaller(context: Context) {
             .filterNot {
                 it.packageName in policy.browserPackages && it.packageName !in allowedBrowsers
             }
-            .filter { it.versionCode > versionCodeOf(it.packageName) }
-            .associate { required ->
-                Log.i(TAG, "Installing required app ${required.packageName}")
-                required.packageName to install(required)
+            // **A copy signed by somebody else is replaced whatever its
+            // version code says.** herald mono is on Play, Play signs with its
+            // own key, and `app.drawbridge.permission.READ_SELECTION` is
+            // declared at `signature` level — so a parent who installs the
+            // browser from Play ends up with one that can never be granted it.
+            // It reads every option as off and ignores what the parent chose,
+            // and nothing on the phone says so.
+            //
+            // The version code cannot see this: Play serves the same build
+            // number we pin, so the comparison below finds nothing to do and
+            // the phone looks correct. Hence asking who signed it.
+            //
+            // **This destroys that copy's bookmarks, history and saved
+            // passwords**, because `uninstall` is called without
+            // `DELETE_KEEP_DATA` and the package name has to come free. Chosen
+            // deliberately on 2026-11-10: a browser that quietly disregards the
+            // parent's settings is the worse failure. The install page on the
+            // site warns before anybody gets there.
+            .map { it to signerOf(it.packageName) }
+            .filter { (required, signer) ->
+                signer == Signer.FOREIGN ||
+                    required.versionCode > versionCodeOf(required.packageName)
+            }
+            .associate { (required, signer) ->
+                required.packageName to when (signer) {
+                    Signer.FOREIGN -> {
+                        Log.i(TAG, "Replacing ${required.packageName}: signed by another key")
+                        replaceForeignCopy(required)
+                    }
+                    else -> {
+                        Log.i(TAG, "Installing required app ${required.packageName}")
+                        install(required)
+                    }
+                }
             }
     }
 
@@ -140,6 +182,58 @@ class AppInstaller(context: Context) {
     } catch (e: Exception) {
         // Not installed — for a required app, exactly the case to act on.
         0
+    }
+
+    /**
+     * Who signed the installed [packageName], as far as this matters here:
+     * whether an update of ours could ever replace it, and whether a
+     * `signature`-level permission of ours could ever be granted to it.
+     *
+     * `checkSignatures` answers both at once, which is why it is asked rather
+     * than reading certificates out and comparing them by hand.
+     *
+     * **Only an explicit mismatch counts as foreign.** Everything else — not
+     * installed, or a verdict this has no business interpreting — reads as
+     * [Signer.ABSENT] and leads nowhere, because the action on the other side of
+     * this answer uninstalls an app and takes its data with it.
+     */
+    private fun signerOf(packageName: String): Signer =
+        when (appContext.packageManager.checkSignatures(appContext.packageName, packageName)) {
+            PackageManager.SIGNATURE_MATCH -> Signer.OURS
+            PackageManager.SIGNATURE_NO_MATCH,
+            PackageManager.SIGNATURE_SECOND_NOT_SIGNED,
+            -> Signer.FOREIGN
+            else -> Signer.ABSENT
+        }
+
+    /**
+     * Removes a copy of a required app that another key signed, so that ours can
+     * take the name.
+     *
+     * Two passes rather than one, because an uninstall is a session whose verdict
+     * arrives by broadcast: this starts it, and [PackageRemovalReceiver] starts
+     * the install once the platform confirms the package is gone. Downloading
+     * first instead would mean holding 230 MB in the cache across a reboot for no
+     * gain.
+     *
+     * **It only ever runs in a pass where installing was already allowed** — the
+     * metered-network check in [UpdateWorker] sits above this — so the phone is
+     * never left browserless by a rule that would have refused the replacement
+     * anyway.
+     *
+     * No `DELETE_KEEP_DATA`: keeping the data would also keep the package
+     * installed for the user, which is the one thing that has to change.
+     */
+    @SuppressLint("MissingPermission")
+    private fun replaceForeignCopy(update: AppUpdate): Result = try {
+        appContext.packageManager.packageInstaller.uninstall(
+            update.packageName,
+            PackageRemovalReceiver.pendingIntent(appContext, update.packageName).intentSender,
+        )
+        Result.Replacing
+    } catch (e: Exception) {
+        Log.e(TAG, "Could not remove the foreign copy of ${update.packageName}", e)
+        Result.Failed(e.message ?: e.javaClass.simpleName)
     }
 
     /**
