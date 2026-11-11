@@ -23,23 +23,33 @@ for you.
    it in the three contact pages. The site key is public: it names the widget
    and nothing else.
 
-   **Only `drawbridge-project.org` is an authorised hostname.** Checked in a
-   browser the same day: on `drawbridge-project.org` the widget draws its
-   "Verify you are human" box, and on `drawbridge-project.pages.dev` it draws a
-   grey "Unable to connect" box and logs `Error: 110200`, which Cloudflare
-   documents as *Domain not authorized — add current domain in Hostname
-   Management*.
+   **Authorised hostnames: `drawbridge-project.org` and
+   `drawbridge-project.pages.dev`.** They were not, at first: the widget was
+   created for the domain alone, and the Pages host drew a grey "Unable to
+   connect" box with `Error: 110200` — *Domain not authorized*. That mattered
+   because the Worker accepts posts from a `drawbridge-project` Pages host too,
+   so a visitor arriving by the preview URL met a widget that could not
+   challenge them in front of a backend that would have let them through.
+   Fixed on 2026-11-11 and checked in a browser on both hosts.
 
-   That matters because the Worker accepts posts from a `drawbridge-project`
-   Pages host as well as from the domain, so the two halves currently disagree
-   about where this form may live. Either add the Pages host under *Turnstile →
-   the widget → Hostname Management*, or accept that the form only works on the
-   real domain. Nothing in this repository can do it.
+   **`localhost` and `127.0.0.1` were on the list and are not any more.** The
+   widget had been created with them. Cloudflare's own integration guidance is
+   that a production allowlist must never include them: with the site key being
+   public, anyone can serve a page from their own machine and have the challenge
+   accept its hostname. What kept that from mattering here is the Worker's
+   Origin check, which is a second lock and not a reason to leave the first one
+   open. The cost is that the form cannot be exercised from a local build — it
+   could not be anyway, since the Worker refuses any origin but these two.
 
-   What is *not* done here, and cannot be: the **secret key**, which goes in as
-   a Worker secret in step 3. Until it is set, every message is refused —
-   `passedTurnstile` returns false with no secret to check against, which is the
-   right way round for a check to fail.
+   To manage this without the dashboard:
+
+   ```bash
+   npx wrangler turnstile widget list
+   npx wrangler turnstile widget update <sitekey> --domains host-a,host-b
+   ```
+
+   `--domains` **replaces** the list rather than adding to it.
+
 3. **Deploy and set the secrets**, from this folder, logged in to the account
    that owns the domain:
 
