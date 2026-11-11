@@ -84,16 +84,10 @@
     <string name="update_available_named">Deze telefoon draait %1$s. Versie %2$s is beschikbaar.</string>
     <string name="update_notes_heading">Wat er veranderd is</string>
     <string name="update_none">Deze telefoon draait %1$s, de nieuwste versie die het beleid noemt.</string>
-    <string name="update_why_blocked">Om drawbridge bij te werken moet je Play Protect pauzeren, als dat van toepassing is. Google\'s Play Protect laat de installatie van device policy controllers (zoals drawbridge) niet toe als die niet via enterprise-partners verloopt. Klik om de instellingen van Play Protect te openen en pauzeer het, voor je op de updateknop drukt. Zie de schermafbeeldingen voor meer details.</string>
-    <string name="update_shot_1">Tik in Play Protect op het tandwiel in de bovenhoek.</string>
-    <string name="update_shot_2">Zet “Apps scannen met Play Protect” uit.</string>
-    <string name="update_shot_3">Kies “Pauzeren”, niet “Uitschakelen”.</string>
-    <string name="update_open_play_protect">Play Protect openen</string>
     <string name="update_install">De update installeren</string>
-    <string name="update_no_play_protect">Play Protect kon hier niet geopend worden. Je vindt het in de Play Store, onder je profielfoto.</string>
     <string name="update_result_started">Bezig met downloaden en installeren. Dit scherm zegt het wanneer het klaar is.</string>
     <string name="update_result_installed">Build %1$d is geïnstalleerd.</string>
-    <string name="update_result_blocked">De telefoon heeft de update geweigerd, en zo ziet het eruit als Play Protect hem blokkeert. Pauzeer Play Protect en probeer opnieuw.</string>
+    <string name="update_result_blocked">De telefoon heeft de update geweigerd. Probeer het later opnieuw.</string>
     <string name="update_result_failed">De update is niet geïnstalleerd: %1$s</string>
     <string name="lock_screen_info">drawbridge beschermt</string>
     <string name="lock_screen_info_locked">drawbridge vergrendeld sinds %1$s</string>

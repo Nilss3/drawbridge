@@ -195,6 +195,17 @@ the phone — is why the warning moved ahead of the cable, in the install pages 
 
 ## The way in is adb, and Play Protect is why
 
+> **Updates no longer need Play Protect paused, as of 2026-11-11.** After the
+> owner's appeal to Google, drawbridge updated itself from the Update screen on a
+> Nothing phone (A059) with Play Protect on — 0.2.39 build 64, installed by
+> `app.drawbridge.dpc` itself — and reinstalling that same build over adb was
+> logged by Finsky as `Enforced verdict for app.drawbridge.dpc:
+> VERIFICATION_ALLOW`. The Update screen's pause instructions, button and
+> screenshots were removed on dev the same day, to be tested there before main.
+> Provisioning over the cable was never affected; only updates were. What
+> follows is the history of the block, kept because it is what anybody will need
+> if it comes back.
+
 **`app.drawbridge.dpc` cannot be installed on a certified Android device by any
 route Google controls.** This is the single largest constraint on the project and
 it is not a bug in this code.
@@ -216,7 +227,8 @@ name, at install, device-wide.**
 Two consequences follow, and both are lived with rather than fixed:
 
 - **drawbridge cannot update itself *unattended*.** The Update screen exists,
-  explains why, and asks the parent to pause Play Protect for a minute — and
+  explained why, and asked the parent to pause Play Protect for a minute (until
+  2026-11-11, see above) — and
   that route works: the owner took the beta from build 18 to build 41 with it
   on 2026-08-19, no cable involved. What is still missing is an update that
   needs nobody at the phone. See

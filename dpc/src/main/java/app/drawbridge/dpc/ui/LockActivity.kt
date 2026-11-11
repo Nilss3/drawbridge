@@ -260,8 +260,8 @@ class LockActivity : AppCompatActivity() {
      * Offers the update from behind the lock, which is the whole point of having
      * it here.
      *
-     * drawbridge can no longer install its own updates — Play Protect refuses
-     * them, see [UpdateActivity] — so someone has to press a button. That
+     * Updates are installed by hand, see [UpdateActivity], so someone has to
+     * press a button. That
      * someone is a parent holding a phone that is, in the normal case, locked.
      * If the only route were the configuration screen they would have to unlock
      * first, which discards their key and mints a new one to write down: a

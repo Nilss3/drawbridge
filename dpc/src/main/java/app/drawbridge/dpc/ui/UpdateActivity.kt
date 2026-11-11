@@ -1,9 +1,7 @@
 package app.drawbridge.dpc.ui
 
-import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
-import android.provider.Settings
 import android.view.View
 import android.widget.Button
 import android.widget.TextView
@@ -17,17 +15,15 @@ import app.drawbridge.policy.model.AppUpdate
 import kotlinx.coroutines.launch
 
 /**
- * Updating drawbridge, by hand, with the reason it cannot happen by itself.
+ * Updating drawbridge, by hand: the version on offer, what it changes, and one
+ * button.
  *
- * drawbridge installed its own updates silently until 2026-08-10. Play Protect
- * refuses that install on any phone with a Google account, and five rounds of
- * experiment — every install-related permission, the install session, and
- * finally the package name — established that nothing in the APK changes its
- * mind. Only a differently-named build got through, which is not a fix.
- *
- * So the update became something the parent starts, on a screen that explains
- * the one step they have to take first. That is worse than a silent update and
- * better than a phone that never receives a fix again; see docs/handoff.md.
+ * **Play Protect no longer has to be paused first, as of 2026-11-11.** From
+ * 2026-08-10 it refused every update of `app.drawbridge.dpc`, so this screen
+ * explained how to pause it, with three screenshots and a button into its
+ * settings. On 2026-11-11 an update went through on a Nothing phone with Play
+ * Protect on, after an appeal to Google, and a reinstall over adb was logged as
+ * `VERIFICATION_ALLOW`. The walk went the same day; see docs/handoff.md.
  *
  * **Reachable while the phone is locked**, deliberately. A locked phone is the
  * normal state, and unlocking to reach this screen would cost the parent their
@@ -66,7 +62,6 @@ class UpdateActivity : AppCompatActivity() {
         notesHeading = findViewById(R.id.updateNotesHeading)
         notes = findViewById(R.id.updateNotes)
 
-        findViewById<Button>(R.id.playProtectButton).setOnClickListener { openPlayProtect() }
         installButton.setOnClickListener { install() }
     }
 
@@ -111,13 +106,9 @@ class UpdateActivity : AppCompatActivity() {
      * What the release says about itself, when it says anything.
      *
      * **An update somebody has to press a button for is one they are owed a
-     * reason for.** Play Protect means drawbridge cannot install its own
-     * updates, so every version that reaches a phone does so because a parent
-     * read this screen and chose to act — and until now the only thing it told
-     * them was that a larger number existed. That is a poor bargain to offer
-     * somebody, and it is the reason this is drawn above the two buttons rather
-     * than below the Play Protect walk: it is an input to the decision, not a
-     * footnote to it.
+     * reason for.** Every version reaches a phone because a parent read this
+     * screen and chose to act, so it is drawn above the button: an input to the
+     * decision, not a footnote to it.
      *
      * Heading and body go together, so a document with no notes shows neither
      * rather than a heading over nothing.
@@ -166,31 +157,4 @@ class UpdateActivity : AppCompatActivity() {
         }
     }
 
-    /**
-     * Best effort, in descending order of usefulness. Play services has had a
-     * settings screen for this under several names across versions, so a
-     * hard-coded action would break silently on the builds that lack it —
-     * falling back to the Play Store lands the parent where the written steps
-     * start, and Settings is better than nothing.
-     */
-    private fun openPlayProtect() {
-        val candidates = listOfNotNull(
-            Intent(PLAY_PROTECT_SETTINGS),
-            packageManager.getLaunchIntentForPackage(PLAY_STORE),
-            Intent(Settings.ACTION_SECURITY_SETTINGS),
-        )
-
-        val intent = candidates.firstOrNull { it.resolveActivity(packageManager) != null }
-        if (intent == null) {
-            status.visibility = View.VISIBLE
-            status.setText(R.string.update_no_play_protect)
-            return
-        }
-        startActivity(intent)
-    }
-
-    private companion object {
-        const val PLAY_PROTECT_SETTINGS = "com.google.android.gms.settings.VERIFY_APPS_SETTINGS"
-        const val PLAY_STORE = "com.android.vending"
-    }
 }
