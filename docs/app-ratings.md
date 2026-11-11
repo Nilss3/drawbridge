@@ -224,8 +224,9 @@ Both lists live in the **signed policy**, not in the app:
 document rather than only on the device — see below.
 
 Keeping them in the document means a threshold can move with a policy re-sign
-rather than an APK update — which matters, because a build cannot be pushed to a
-phone unaided (Play Protect refuses the DPC). It also lets the region be set per
+rather than an APK update — which matters, because a policy reaches every phone
+by itself while a build needs a parent to start it from the Update screen (and
+until 2026-11-11 needed Play Protect paused as well). It also lets the region be set per
 deployment: the rule is PEGI-shaped, and a phone whose store answers in ESRB
 labels needs different ids rather than different code.
 

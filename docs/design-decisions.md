@@ -2466,9 +2466,13 @@ never called from anywhere. That sentence is now gone rather than made true.
 
 ### USB debugging
 
-**The reason is that a cable is the only delivery channel this project has.**
-Play Protect refuses to install `app.drawbridge.dpc`, so drawbridge cannot update
-itself and cannot be provisioned by QR; what works is `tools/provision-adb.sh`.
+**The reason was that a cable was the only delivery channel this project had.**
+From August 2026 Play Protect refused to install `app.drawbridge.dpc`, so
+drawbridge could not update itself and could not be provisioned by QR; what
+worked was `tools/provision-adb.sh`. *Since 2026-11-11 Play Protect allows
+drawbridge's updates, so a locked phone can be fixed from its Update screen; the
+cable remains the recovery route when drawbridge itself is broken, and the
+reasoning below still holds for that case. See handoff.*
 Applying this restriction for the life of the device would mean the cable is
 available exactly once, before the first lock — and a phone in the field could
 then never be fixed at all. Every bug found after deployment would be permanent.

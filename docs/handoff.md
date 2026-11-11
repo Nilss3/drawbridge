@@ -193,22 +193,65 @@ the phone — is why the warning moved ahead of the cable, in the install pages 
 
 ---
 
-## The way in is adb, and Play Protect is why
+## The way in is adb, and Play Protect was why
 
-> **Updates no longer need Play Protect paused, as of 2026-11-11.** After the
-> owner's appeal to Google, drawbridge updated itself from the Update screen on a
-> Nothing phone (A059) with Play Protect on — 0.2.39 build 64, installed by
-> `app.drawbridge.dpc` itself — and reinstalling that same build over adb was
-> logged by Finsky as `Enforced verdict for app.drawbridge.dpc:
-> VERIFICATION_ALLOW`. The Update screen's pause instructions, button and
-> screenshots were removed on dev the same day, to be tested there before main.
-> Provisioning over the cable was never affected; only updates were. What
-> follows is the history of the block, kept because it is what anybody will need
-> if it comes back.
+**Status on 2026-11-11: Play Protect allows drawbridge's updates. Whether it
+allows a first install is untested.** Read this before anything below, which is
+the history of the block and was written as though it were permanent.
 
-**`app.drawbridge.dpc` cannot be installed on a certified Android device by any
-route Google controls.** This is the single largest constraint on the project and
-it is not a bug in this code.
+**What is verified.** After the owner's appeal to Google, two installs of
+`app.drawbridge.dpc` went through on a Nothing phone (A059) with Play Protect on:
+
+- **drawbridge's own update**, 0.2.39 build 64, started from the Update screen
+  and installed by `app.drawbridge.dpc` itself — the `PackageInstaller` route
+  that from 2026-08-10 worked only with Play Protect paused;
+- **a reinstall of that same build over adb**, with `verifier_verify_adb_installs`
+  at its default, which Finsky logged as `Scan finished for app.drawbridge.dpc
+  with verdict 0` and `Enforced verdict for app.drawbridge.dpc:
+  VERIFICATION_ALLOW`.
+
+Both are updates of a package the phone already had. That is exactly the case
+that used to fail, so the Update screen no longer asks for Play Protect to be
+paused (removed on dev the same day, to be tested there before main).
+
+**What is not verified: a first install** of `app.drawbridge.dpc` on a phone that
+has never had it, with Play Protect on. That is what the August table below
+measured and what QR provisioning needs. The verdict was attached to the package
+name and the adb reinstall now passes, so it probably passes too — but nothing
+here has shown it, and the next fresh provisioning is the cheap place to find
+out: leave `verifier_verify_adb_installs` alone and see whether the install is
+refused.
+
+**What follows from that, consequence by consequence:**
+
+- **Updates.** Manual, from the Update screen, and they no longer need Play
+  Protect paused. Updating **unattended** is no longer ruled out by Play Protect
+  — it is switched off: `UpdateWorker` stopped installing drawbridge's own update
+  on 2026-08-10 because every attempt was refused, and only logs that one is
+  waiting. Bringing it back is now a decision about whether a parent should
+  approve each update, not a constraint.
+- **Provisioning over the cable** always worked and still does. It never got
+  past Play Protect on its own: `tools/provision-adb.sh` and the WebUSB
+  installer turn `verifier_verify_adb_installs` off for the install and restore
+  it afterwards. If first installs now pass, that step becomes unnecessary
+  rather than wrong.
+- **QR provisioning** was closed by the block and then also by the owner's
+  decision that its audience is empty (see the standing items). The first reason
+  may be gone; the second stands until somebody reopens it, and a QR test still
+  needs a real certified phone — see the traps below.
+- **The cable is a route, not the only channel.** It stays the provisioning
+  route because it is what is built and tested, and it stays the recovery route
+  for a locked phone, below.
+
+### The block, August to November 2026
+
+What follows was true from 2026-08-06 until the appeal, and is kept because it
+is what anybody will need if the verdict returns.
+
+**`app.drawbridge.dpc` could not be installed on a certified Android device by any
+route Google controls** — without stepping around the verifier, as the cable
+installers do. It was the single largest constraint on the project, and it was
+not a bug in this code.
 
 The controlled test, on a freshly reset G15 with **zero Google accounts**, no
 device owner and no device admins, minutes apart over adb:
@@ -218,35 +261,33 @@ device owner and no device admins, minutes apart over adb:
 | `app.drawbridge.dpc` | `INSTALL_FAILED_VERIFICATION_FAILURE`, Play Protect dialog |
 | `app.drawbridge.probe` — same code, same signing key, different `applicationId` | **installs silently, and provisions by QR** |
 
-`logcat` names the refuser: `com.android.vending/…finsky.protectdialogs.activity.PlayProtectDialogsActivity`.
-That one table excludes everything else — not the code, not the key (the probe
-shares it), not the device, not leftover state, not the account (there is none),
-and not being a DPC (the probe is one). **Play Protect refuses this package by
+`logcat` named the refuser: `com.android.vending/…finsky.protectdialogs.activity.PlayProtectDialogsActivity`.
+That one table excluded everything else — not the code, not the key (the probe
+shares it), not the device, not leftover state, not the account (there was none),
+and not being a DPC (the probe is one). **Play Protect refused this package by
 name, at install, device-wide.**
 
-Two consequences follow, and both are lived with rather than fixed:
+Two consequences followed, and both were lived with rather than fixed:
 
-- **drawbridge cannot update itself *unattended*.** The Update screen exists,
-  explained why, and asked the parent to pause Play Protect for a minute (until
-  2026-11-11, see above) — and
-  that route works: the owner took the beta from build 18 to build 41 with it
-  on 2026-08-19, no cable involved. What is still missing is an update that
-  needs nobody at the phone. See
-  [next step 1](#1-get-drawbridge-able-to-update-itself-again).
-- **QR provisioning is closed**, because the wizard cannot install the DPC. The
-  cable is the route: `tools/provision-adb.sh`, or the WebUSB installer page,
-  which is what a tester actually uses.
+- **drawbridge could not update itself *unattended*.** The Update screen
+  explained why and asked the parent to pause Play Protect for a minute — and
+  that route worked: the owner took the beta from build 18 to build 41 with it
+  on 2026-08-19, no cable involved. See
+  [item 1](#1-get-drawbridge-able-to-update-itself-again).
+- **QR provisioning was closed**, because the wizard could not install the DPC.
+  The cable was the route: `tools/provision-adb.sh`, or the WebUSB installer
+  page, which is what a tester actually uses.
 
-**The routes out**, neither taken: appeal through Google's Play Protect form
-(<https://support.google.com/googleplay/android-developer/contact/protectappeals>),
-or rename the package — mechanically cheap now (`dpcApplicationId` is a Gradle
-property, the permission and provider authority are placeholders, herald needs no
-rebuild) and a **one-way door**, because Device Owner binds permanently to the
-package name. A rename might buy years or days and nothing here tells you which.
+**The routes out** were an appeal through Google's Play Protect form
+(<https://support.google.com/googleplay/android-developer/contact/protectappeals>)
+— the one that was taken, and that appears to have worked — or renaming the
+package: mechanically cheap (`dpcApplicationId` is a Gradle property, the
+permission and provider authority are placeholders, herald needs no rebuild) and
+a **one-way door**, because Device Owner binds permanently to the package name.
 
-**The cable stays available**, which is the other half of why this is survivable:
-USB debugging follows the *lock* rather than the protection, so a parent holding
-the key can always unlock and put a build on the phone. See
+**The cable stays available as the recovery route**, block or no block: USB
+debugging follows the *lock* rather than the protection, so a parent holding the
+key can always unlock and put a build on the phone. See
 `DeviceOwnerManager.restrictionsFor`.
 
 ---
@@ -760,7 +801,7 @@ is on it is genuinely on it.
 | **Closed as answered** | 2 and 2a — FRP was tested and does not hold |
 | **Closed as won't do** | 5 (F-Droid) |
 | **Closed as built, then reopened** | **17** — the chatbots toggle: cancelled 2026-09-28, built anyway on 2026-10-18 (policy 135 on dev, 136 on the beta branch) |
-| **Closed as not ours to fix** | 1 — Play Protect, on Google-certified phones |
+| **Closed as not ours to fix** | 1 — Play Protect, on Google-certified phones; **updates allowed again since 2026-11-11**, first installs untested |
 | **Closed as done enough** | 12b, 12c, 12g — the app is in public beta |
 
 **What replaces item 2 is worth stating in one line, because everything else
@@ -774,6 +815,15 @@ only thing that actually prevents a reset, and only while locked.
 rather than seven.
 
 ### 1. ~~Get drawbridge able to update itself again~~ — closed 2026-09-08, not ours to fix
+
+> **Superseded 2026-11-11: Play Protect now allows drawbridge's updates**, after
+> the owner's appeal — see [the status at the top of the Play Protect
+> section](#the-way-in-is-adb-and-play-protect-was-why). What this entry calls
+> permanent — every release unable to reach a locked phone, the instruction not
+> to ship a build that assumes this is solved — no longer holds for updates.
+> Unattended updates are switched off in `UpdateWorker`, not blocked; turning
+> them back on is the open decision. The entry is kept as written, for the case
+> where the verdict returns.
 
 **Closed by the owner as a known limitation of Google-certified phones.** The
 evidence below is unchanged and still worth reading, because it is what anybody
@@ -805,7 +855,7 @@ than on `protectedSince`, so a parent with the key can unlock, re-enable USB
 debugging, run `tools/provision-adb.sh --update` and lock again — and it gives
 nothing away, since whoever holds the key can already remove drawbridge entirely
 from the configuration screen. See
-[the cable is now repeatable](#the-way-in-is-adb-and-play-protect-is-why).
+[the cable is now repeatable](#the-way-in-is-adb-and-play-protect-was-why).
 **Corrected 2026-08-12**; this entry called the trade undecided for two days
 after it was decided and shipped.
 
@@ -2077,7 +2127,10 @@ narrowed entry above.
 ### Standing items, unchanged
 
 - ~~**The QR is blocked on certified hardware**~~ — **closed 2026-09-08, won't
-  do for now.** The mechanism is unchanged and worth keeping: it is the Play
+  do for now.** *Since 2026-11-11 Play Protect allows drawbridge's updates;
+  whether it allows the first install that QR needs is untested — see [the
+  status](#the-way-in-is-adb-and-play-protect-was-why). The owner's reasoning
+  below stands on its own either way.* The mechanism was: it is the Play
   Protect PHA classification on the package name, not the DPC allowlist — the two
   show different warning text — so QR provisioning could only ever work on a
   handset with no Play Protect, which means a de-Googled one.
@@ -2383,10 +2436,10 @@ route is `dpm set-device-owner`, which is the same call on any AOSP build, so
 
 *What disappears, in a good way.* **The Play Protect problem is a Play problem.**
 GrapheneOS has no Play services, so nothing refuses `app.drawbridge.dpc` at
-install and nothing blocks a `PackageInstaller` self-update. The single largest
-constraint on this project — see [the way in is adb](#the-way-in-is-adb-and-play-protect-is-why)
-— is a Google Play behaviour, and it is absent there. Unattended updates would
-work on GrapheneOS today.
+install and nothing blocks a `PackageInstaller` self-update. What was the single
+largest constraint on this project until the appeal of 2026-11 — see [the way in
+is adb](#the-way-in-is-adb-and-play-protect-was-why) — is a Google Play
+behaviour, and it is absent there whatever Google decides.
 
 *What would silently stop working, and this is the one to warn people about.*
 **The store rule needs the Play Store.** `StoreCatalogue` fetches

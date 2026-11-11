@@ -83,12 +83,13 @@ class UpdateWorker(
             }
         }
 
-        // drawbridge does *not* install its own update here any more, and that is
-        // a concession rather than a design. Play Protect refuses it on any
-        // phone with a Google account -- five rounds of experiment moved the
-        // manifest, the permissions, the install session and finally the package
-        // name, and only the rename got through, which is not a fix. Retrying
-        // silently every three hours only fails silently every three hours.
+        // drawbridge does *not* install its own update here, and that began as a
+        // concession rather than a design: from 2026-08-10 Play Protect refused
+        // it on any phone with a Google account, and retrying silently every
+        // three hours only failed silently every three hours. Since 2026-11-11,
+        // after an appeal, Play Protect allows the update, so this is now a
+        // choice — the parent starts it from the Update screen — and turning it
+        // back on is open. See docs/handoff.md.
         //
         // herald above is untouched: its installs are not refused, and a phone
         // with no browser is a different order of problem.

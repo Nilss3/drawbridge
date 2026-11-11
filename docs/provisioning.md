@@ -19,8 +19,9 @@ sign back in**, and the parent keeps their photos, messages and apps.
 > it is the change the owner will actually notice. Say so before they start.
 
 **There is one way in, and it is a cable.** Android's QR provisioning was
-supported until 2026-08-10 and has been retired: Play Protect refuses to install
-the DPC, so the QR path was already dead on any Google-certified handset, and on
+supported until 2026-08-10 and has been retired: Play Protect refused to install
+the DPC (it allows drawbridge's updates since 2026-11-11; a first install with
+Play Protect on is untested), so the QR path was dead on any Google-certified handset, and on
 a de-Googled one the owner's judgement was that anybody running LineageOS or
 /e/OS will have no difficulty with a USB install. Keeping a second path alive for
 that audience was not worth the documentation, the payload tool and the printed
@@ -88,10 +89,12 @@ adb install herald-arm64-v8a-release.apk
 adb shell dpm set-device-owner app.drawbridge.dpc/app.drawbridge.dpc.admin.DrawbridgeDeviceAdminReceiver
 ```
 
-**On a Google-certified handset the first one fails.** Play Protect refuses
-`app.drawbridge.dpc` by name, with `INSTALL_FAILED_VERIFICATION_FAILURE`, on a
-device with no account signed in and nothing else installed. See
-[handoff](handoff.md).
+**On a Google-certified handset the first one failed, from August to November
+2026.** Play Protect refused `app.drawbridge.dpc` by name, with
+`INSTALL_FAILED_VERIFICATION_FAILURE`, on a device with no account signed in and
+nothing else installed. Since an appeal it allows drawbridge's updates
+(2026-11-11); whether this first install now passes is untested, so the lever
+below is still part of the procedure. See [handoff](handoff.md).
 
 adb has one lever that nothing on the phone itself does:
 
