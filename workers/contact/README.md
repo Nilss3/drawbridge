@@ -18,10 +18,16 @@ for you.
    that `info@` forwards to is listed under *Destination addresses* as
    **Verified**. That verified address is what `CONTACT_TO` will be. (Email
    Routing was switched on 2026-10-18; its MX, SPF and DKIM records are live.)
-2. **Turnstile:** *Turnstile → Add widget*, mode **Managed**, hostnames
-   `drawbridge-project.org` and `drawbridge-project.pages.dev`. Copy the
-   **site key** into `TURNSTILE_SITE_KEY` in `tools/build-site.py` and rebuild
-   the site. The **secret key** is for step 3.
+2. **Turnstile:** done on 2026-11-11. The widget is mode **Managed** on
+   hostnames `drawbridge-project.org` and `drawbridge-project.pages.dev`, and
+   its **site key** is in `TURNSTILE_SITE_KEY` in `tools/build-site.py`, which
+   puts it in the three contact pages. The site key is public: it names the
+   widget and nothing else.
+
+   What is *not* done here, and cannot be: the **secret key**, which goes in as
+   a Worker secret in step 3. Until it is set, every message is refused —
+   `passedTurnstile` returns false with no secret to check against, which is the
+   right way round for a check to fail.
 3. **Deploy and set the secrets**, from this folder, logged in to the account
    that owns the domain:
 

@@ -2015,9 +2015,14 @@ def render_faq(lang: str) -> str:
 CONTACT_ENDPOINT = "https://drawbridge-project.org/api/contact"
 
 # The *site* key of the Turnstile widget: public by design, it only names the
-# widget. The secret key is a Worker secret. Empty until the widget exists, and
-# the build says so; see workers/contact/README.md.
-TURNSTILE_SITE_KEY = ""
+# widget, and it is in every page that carries the form. The secret key is a
+# Worker secret and appears nowhere here; see workers/contact/README.md.
+#
+# The widget is registered for drawbridge-project.org and
+# drawbridge-project.pages.dev, so a page served from anywhere else — a local
+# build, a fork's preview — renders the box and fails the challenge. That is the
+# widget doing its job, not a broken build.
+TURNSTILE_SITE_KEY = "0x4AAAAAAF9LKwbIXdgS01hq"
 
 CONTACT_NAV = {"en": "Contact", "nl": "Contact", "fr": "Contact"}
 

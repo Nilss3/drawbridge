@@ -73,13 +73,24 @@ function redirect(origin, lang, outcome) {
 }
 
 async function passedTurnstile(secret, token, ip) {
-  if (!secret || typeof token !== "string" || token === "") return false;
+  // A real token is a few hundred characters. Anything far past that is not one,
+  // and sending it on would only ask Cloudflare to parse somebody's upload.
+  if (!secret || typeof token !== "string" || token === "" || token.length > 2048) {
+    return false;
+  }
   const body = new FormData();
   body.append("secret", secret);
   body.append("response", token);
   if (ip) body.append("remoteip", ip);
   try {
-    const answer = await fetch(SITEVERIFY, { method: "POST", body });
+    // Without a deadline this waits as long as the platform allows, and a
+    // visitor watches a form that has neither sent nor refused.
+    const answer = await fetch(SITEVERIFY, {
+      method: "POST",
+      body,
+      signal: AbortSignal.timeout(10_000),
+    });
+    if (!answer.ok) return false;
     const outcome = await answer.json();
     return outcome.success === true;
   } catch {
