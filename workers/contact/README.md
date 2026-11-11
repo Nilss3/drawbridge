@@ -18,11 +18,23 @@ for you.
    that `info@` forwards to is listed under *Destination addresses* as
    **Verified**. That verified address is what `CONTACT_TO` will be. (Email
    Routing was switched on 2026-10-18; its MX, SPF and DKIM records are live.)
-2. **Turnstile:** done on 2026-11-11. The widget is mode **Managed** on
-   hostnames `drawbridge-project.org` and `drawbridge-project.pages.dev`, and
-   its **site key** is in `TURNSTILE_SITE_KEY` in `tools/build-site.py`, which
-   puts it in the three contact pages. The site key is public: it names the
-   widget and nothing else.
+2. **Turnstile:** done on 2026-11-11. The widget is mode **Managed** and its
+   **site key** is in `TURNSTILE_SITE_KEY` in `tools/build-site.py`, which puts
+   it in the three contact pages. The site key is public: it names the widget
+   and nothing else.
+
+   **Only `drawbridge-project.org` is an authorised hostname.** Checked in a
+   browser the same day: on `drawbridge-project.org` the widget draws its
+   "Verify you are human" box, and on `drawbridge-project.pages.dev` it draws a
+   grey "Unable to connect" box and logs `Error: 110200`, which Cloudflare
+   documents as *Domain not authorized — add current domain in Hostname
+   Management*.
+
+   That matters because the Worker accepts posts from a `drawbridge-project`
+   Pages host as well as from the domain, so the two halves currently disagree
+   about where this form may live. Either add the Pages host under *Turnstile →
+   the widget → Hostname Management*, or accept that the form only works on the
+   real domain. Nothing in this repository can do it.
 
    What is *not* done here, and cannot be: the **secret key**, which goes in as
    a Worker secret in step 3. Until it is set, every message is refused —
