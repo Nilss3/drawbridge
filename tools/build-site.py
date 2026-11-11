@@ -2037,7 +2037,6 @@ CONTACT = {
         app_hint="The name, or a Play Store or web link",
         email="Your email address (optional, only if you would like an answer)",
         send="Send",
-        privacy="Your message is emailed to the people behind drawbridge and goes nowhere else. The check against bots is Cloudflare Turnstile, from the company that already hosts this site.",
         sent_title="Message sent · drawbridge",
         sent_h1="Thank you",
         sent_p="Your message is on its way. If you left an address, we will answer when we can.",
@@ -2056,7 +2055,6 @@ CONTACT = {
         app_hint="De naam, of een link naar de Play Store of de website",
         email="Je e-mailadres (optioneel, enkel als je een antwoord wilt)",
         send="Versturen",
-        privacy="Je bericht wordt per e-mail bezorgd aan de mensen achter drawbridge en gaat nergens anders heen. De controle tegen bots is Cloudflare Turnstile, van het bedrijf dat deze site al host.",
         sent_title="Bericht verstuurd · drawbridge",
         sent_h1="Bedankt",
         sent_p="Je bericht is onderweg. Heb je een adres achtergelaten, dan antwoorden we zodra we kunnen.",
@@ -2075,7 +2073,6 @@ CONTACT = {
         app_hint="Le nom, ou un lien vers le Play Store ou le site",
         email="Votre adresse e-mail (facultatif, seulement si vous souhaitez une réponse)",
         send="Envoyer",
-        privacy="Votre message est envoyé par e-mail aux personnes derrière drawbridge et nulle part ailleurs. La vérification anti-robots est Cloudflare Turnstile, de l'entreprise qui héberge déjà ce site.",
         sent_title="Message envoyé · drawbridge",
         sent_h1="Merci",
         sent_p="Votre message est en route. Si vous avez laissé une adresse, nous répondrons dès que possible.",
@@ -2116,7 +2113,6 @@ def render_contact(lang: str) -> str:
           <button class="btn btn--primary" type="submit">{c['send']}</button>
         </div>
       </form>
-      <p class="contact-privacy">{c['privacy']}</p>
     </div>
   </section>
 """

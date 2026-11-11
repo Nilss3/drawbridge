@@ -807,4 +807,3 @@ td:first-child, th:first-child { white-space: nowrap; }
 /* The honeypot: out of sight and out of the tab order, so only a script that
    fills in every field it finds will fill this one in. */
 .contact-hp { position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden; }
-.contact-privacy { color: var(--ink-soft); font-size: 0.92rem; max-width: 640px; }
