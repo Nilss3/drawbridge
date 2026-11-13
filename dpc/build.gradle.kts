@@ -131,8 +131,8 @@ android {
                 .map { "$it.selection" }
                 .getOrElse("app.drawbridge.dpc.selection")
         targetSdk = 36
-        versionCode = 65
-        versionName = "0.2.40"
+        versionCode = 66
+        versionName = "0.2.41"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
