@@ -1,7 +1,7 @@
 {
-  "version": 177,
-  "issued_at": "2026-11-13T13:05:00Z",
-  "comment": "DEV CHANNEL ONLY. drawbridge 0.2.43 build 68: the same code as builds 65 to 67, released to see the periodic update check install it with nobody touching the phone. Nothing else changes from 176.",
+  "version": 178,
+  "issued_at": "2026-11-13T13:40:00Z",
+  "comment": "DEV CHANNEL ONLY. drawbridge 0.2.44 build 69: an update drawbridge could not install by itself raises a notification once per version, opening the Update screen. Replaces 68 before any phone took it; the periodic check is still what is being watched. Nothing else changes from 177.",
   "dns": {
     "upstreams": [
       "94.140.14.15",
@@ -909,14 +909,14 @@
   },
   "app_update": {
     "package_name": "app.drawbridge.dpc",
-    "version_code": 68,
-    "url": "https://dev.drawbridge-project.pages.dev/assets/dpc-1f6c3b1b705b6bf0.apk",
-    "sha256": "1f6c3b1b705b6bf0866585885127a4e68c929dea818c3c8949e0cd9e7f7f5dab",
-    "version_name": "0.2.43",
-    "notes": "Nothing changes for you: drawbridge installs this update by itself. Everything in 0.2.42 is still here.",
+    "version_code": 69,
+    "url": "https://dev.drawbridge-project.pages.dev/assets/dpc-b297ff34821cc140.apk",
+    "sha256": "b297ff34821cc140513e8a3ad7da7fad078e4d70a40b645540cbf1d039fc127f",
+    "version_name": "0.2.44",
+    "notes": "New: if an update cannot install by itself, a notification says so and takes you to the Update screen. Everything in 0.2.42 is still here.",
     "notes_i18n": {
-      "nl": "Voor jou verandert er niets: drawbridge installeert deze update zelf. Alles uit 0.2.42 zit er nog in.",
-      "fr": "Rien ne change pour vous : drawbridge installe cette mise \u00e0 jour tout seul. Tout ce qui \u00e9tait dans la 0.2.42 y est encore."
+      "nl": "Nieuw: als een update zichzelf niet kan installeren, meldt een melding dat en brengt ze je naar het updatescherm. Alles uit 0.2.42 zit er nog in.",
+      "fr": "Nouveau : si une mise \u00e0 jour ne peut pas s'installer toute seule, une notification le signale et vous m\u00e8ne \u00e0 l'\u00e9cran de mise \u00e0 jour. Tout ce qui \u00e9tait dans la 0.2.42 y est encore."
     }
   },
   "required_apps": [
