@@ -1,7 +1,7 @@
 {
-  "version": 178,
+  "version": 179,
   "issued_at": "2026-11-13T13:40:00Z",
-  "comment": "DEV CHANNEL ONLY. drawbridge 0.2.44 build 69: an update drawbridge could not install by itself raises a notification once per version, opening the Update screen. Replaces 68 before any phone took it; the periodic check is still what is being watched. Nothing else changes from 177.",
+  "comment": "DEV CHANNEL ONLY. drawbridge 0.2.44 build 69: an update drawbridge could not install by itself raises a notification once per version, opening the Update screen. Replaces 68 before any phone took it (179: Dutch note reworded); the periodic check is still what is being watched. Nothing else changes from 177.",
   "dns": {
     "upstreams": [
       "94.140.14.15",
@@ -915,7 +915,7 @@
     "version_name": "0.2.44",
     "notes": "New: if an update cannot install by itself, a notification says so and takes you to the Update screen. Everything in 0.2.42 is still here.",
     "notes_i18n": {
-      "nl": "Nieuw: als een update zichzelf niet kan installeren, meldt een melding dat en brengt ze je naar het updatescherm. Alles uit 0.2.42 zit er nog in.",
+      "nl": "Nieuw: kan een update zichzelf niet installeren, dan krijg je een melding die je naar het updatescherm brengt. Alles uit 0.2.42 zit er nog in.",
       "fr": "Nouveau : si une mise \u00e0 jour ne peut pas s'installer toute seule, une notification le signale et vous m\u00e8ne \u00e0 l'\u00e9cran de mise \u00e0 jour. Tout ce qui \u00e9tait dans la 0.2.42 y est encore."
     }
   },
