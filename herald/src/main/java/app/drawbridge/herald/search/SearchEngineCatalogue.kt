@@ -116,6 +116,15 @@ object SearchEngineCatalogue {
         }.forEach { engine ->
             store.dispatch(SearchAction.HideSearchEngineAction(engine.id))
         }
+
+        // And the way back. Hiding used to be one-way because the list only ever
+        // shrank; since an option can hide an engine while it is off (Google,
+        // while chatbots are off), switching it on has to put the engine back.
+        store.state.search.hiddenSearchEngines.filter { engine ->
+            engine.name.normalised() in wanted || engine.id.normalised() in wanted
+        }.forEach { engine ->
+            store.dispatch(SearchAction.ShowSearchEngineAction(engine.id))
+        }
     }
 
     /**

@@ -19,6 +19,7 @@ from __future__ import annotations
 import argparse
 import base64
 import json
+import re
 import pathlib
 import subprocess
 import sys
@@ -230,6 +231,48 @@ def check_options_mirror_lists(document: dict) -> list[str]:
     return problems
 
 
+# What a fragment may take away from the browser, and the option field that
+# gives each one back. Matched verbatim (search engines case-insensitively).
+BROWSER_RESTRICTIONS = {
+    "blocked_url_patterns": "exempt_url_patterns",
+    "hidden_search_engines": "exempt_search_engines",
+    "host_rewrites": "exempt_host_rewrites",
+    "withheld_browser_packages": "exempt_browser_packages",
+}
+
+
+def check_fragment_restrictions_released(document: dict) -> list[str]:
+    """Every browser restriction a fragment adds must be one its option can lift.
+
+    The chatbots switch takes Google Search, Copilot in Bing, DuckDuckGo's AI
+    answers and the other browsers away while it is off — each in a fragment
+    field, each given back by an `exempt_*` field on the option. A pattern
+    edited in one place and not the other leaves a block no switch releases,
+    and on a locked phone nothing would say so. Patterns must also compile:
+    herald drops one that does not, silently.
+    """
+    problems = []
+    for fragment in document.get("conditional", []):
+        options = fragment.get("options", [])
+        for field, exempt in BROWSER_RESTRICTIONS.items():
+            restricted = fragment.get(field) or {}
+            entries = list(restricted.keys()) if isinstance(restricted, dict) else list(restricted)
+            released = {e.lower() for o in options for e in o.get(exempt, [])}
+            orphans = [e for e in entries if e.lower() not in released]
+            if orphans:
+                problems.append(
+                    f"fragment {fragment.get('min_version_code')}: {field} has "
+                    f"{len(orphans)} entr(y/ies) no option's {exempt} releases: "
+                    + ", ".join(orphans[:3])
+                )
+        for pattern in fragment.get("blocked_url_patterns", []):
+            try:
+                re.compile(pattern)
+            except re.error as e:
+                problems.append(f"blocked_url_patterns: {pattern!r} does not compile: {e}")
+    return problems
+
+
 def check_whitelist_is_coherent(document: dict) -> list[str]:
     """`app_ratings.allowed_packages` must not quietly undo a decision.
 
@@ -378,7 +421,11 @@ def cmd_sign(args: argparse.Namespace) -> None:
     rewrite_local_list_urls(document)
     pin_local_lists(document)
 
-    mismatches = check_options_mirror_lists(document) + check_whitelist_is_coherent(document)
+    mismatches = (
+        check_options_mirror_lists(document)
+        + check_whitelist_is_coherent(document)
+        + check_fragment_restrictions_released(document)
+    )
     if mismatches:
         sys.exit("Refusing to sign:\n  " + "\n  ".join(mismatches))
 

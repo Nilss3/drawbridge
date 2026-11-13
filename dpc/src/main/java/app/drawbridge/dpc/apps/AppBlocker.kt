@@ -1120,8 +1120,21 @@ class AppBlocker(context: Context) {
             // refuses one that names a package an option governs, which would
             // leave the parent's switch moving and changing nothing.
             policy.appRatings?.isAlwaysAllowed(packageName) == true ||
-            packageName in NEVER_TOUCH ||
+            (packageName in NEVER_TOUCH && !isNamedForBlocking(packageName, policy)) ||
             NEVER_TOUCH_PREFIXES.any { packageName.startsWith(it) }
+
+    /**
+     * **A [NEVER_TOUCH] package the policy names outright, and only from
+     * [BLOCKABLE_BY_NAME].** NEVER_TOUCH exists to keep the *heuristics* off
+     * packages a phone cannot do without — the Google app handles `https://`
+     * links, and the rule that removes stray browsers must never take it. A
+     * document naming it in `blocked_packages` is a different thing: the Google
+     * app is where the assistant gesture, "Hey Google" and Circle to Search
+     * live, and the chatbots switch has to be able to close them. Hidden, not
+     * uninstalled, because it is a system app; the switch brings it back.
+     */
+    private fun isNamedForBlocking(packageName: String, policy: Policy): Boolean =
+        packageName in BLOCKABLE_BY_NAME && packageName in policy.blockedPackages
 
     private fun isEveryBrowserAllowed(): Boolean =
         BrowserSettings(appContext).choice == BrowserSettings.Choice.ALL
@@ -1322,6 +1335,9 @@ class AppBlocker(context: Context) {
             "com.google.android.webview",
             "com.android.webview",
         )
+
+        /** The [NEVER_TOUCH] packages a document may still block by name. */
+        private val BLOCKABLE_BY_NAME = setOf("com.google.android.googlequicksearchbox")
 
         /** Launchers, keyboards and system UI variants differ per OEM. */
         private val NEVER_TOUCH_PREFIXES = listOf(

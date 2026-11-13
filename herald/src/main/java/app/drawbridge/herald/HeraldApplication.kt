@@ -110,7 +110,7 @@ class HeraldApplication : Application() {
             .first()
 
         policy.policy.collect { current ->
-            SearchEngineCatalogue.apply(components, current.browser.searchEngines)
+            SearchEngineCatalogue.apply(components, current.browser.visibleSearchEngines)
             SearchEngineSelection.applyPolicyDefault(
                 this,
                 components,

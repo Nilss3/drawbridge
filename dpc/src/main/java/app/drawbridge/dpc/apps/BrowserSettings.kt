@@ -85,10 +85,17 @@ class BrowserSettings(context: Context) {
          * A pure function of its two inputs, like [AppBlocker.actsNow] and
          * [AppBlocker.restorable], because it decides what gets uninstalled.
          */
-        fun allowedBrowsers(policy: Policy, choice: Choice): Set<String> = when (choice) {
-            Choice.ALL -> policy.browserPackages
-            Choice.MONO_ONLY -> policy.browserPackages.intersect(setOf(MONO_PACKAGE))
-            Choice.NONE -> emptySet()
+        fun allowedBrowsers(policy: Policy, choice: Choice): Set<String> {
+            // A withheld browser is one an option has taken away while it is
+            // off — every browser but herald, while chatbots are off. It stays
+            // in `browserPackages`, so the blocker treats it like a browser this
+            // choice left out: removed at the lock, back when the option is on.
+            val available = policy.browserPackages - policy.withheldBrowserPackages.toSet()
+            return when (choice) {
+                Choice.ALL -> available
+                Choice.MONO_ONLY -> available.intersect(setOf(MONO_PACKAGE))
+                Choice.NONE -> emptySet()
+            }
         }
 
         /**

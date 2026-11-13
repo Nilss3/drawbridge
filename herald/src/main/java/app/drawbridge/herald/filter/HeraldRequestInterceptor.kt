@@ -58,6 +58,13 @@ class HeraldRequestInterceptor(
             // content with a page nobody asked for.
             if (isSubframeRequest) return null
 
+            // A host the policy swaps for another — DuckDuckGo for its AI-free
+            // twin while chatbots are off. Before the rest, because the new host
+            // comes back through here and they then apply to it. See [HostRewrite].
+            HostRewrite.redirected(uri, policy.policy.value.browser.hostRewrites)?.let {
+                return RequestInterceptor.InterceptionResponse.Url(it)
+            }
+
             // Shorts first, because it changes the path and SafeSearch only ever
             // looks at a query string — the two cannot both want the same URL.
             // A Short becomes the same video in the ordinary player, and the
