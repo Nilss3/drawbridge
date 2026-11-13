@@ -14,8 +14,17 @@
         owns it means asking Android who that is, and on API 30+ the answer is
         empty for any app not declared here. The schemes are not ours to list
         (every bank has its own), so see all packages, as drawbridge does.
+
+        Play restricts this permission and names browsers a permitted use, so a
+        listing that carries it needs the Permissions Declaration Form. Firefox
+        and DuckDuckGo both ship on Play with this exact line and this exact
+        suppression; see docs/play-listing.md for what the form has to say.
+
+        The suppression is on the line rather than in a lint baseline, so the
+        day this permission stops being needed, lint has nothing to hide behind.
     -->
-    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES" />
+    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES"
+        tools:ignore="QueryAllPackagesPermission" />
 
     <!--
         Reads which policy and which options the parent chose, from drawbridge.

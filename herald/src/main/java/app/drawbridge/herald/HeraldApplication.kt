@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import mozilla.components.browser.state.action.SystemAction
 import mozilla.components.browser.state.state.searchEngines
 import mozilla.components.lib.state.ext.flow
@@ -57,6 +58,22 @@ class HeraldApplication : Application() {
         }
         applicationScope.launch { applyPolicySearchEngine(policy) }
         PolicyWorker.schedule(this)
+
+        // Until the first poll lands, the browser runs on the copy compiled into
+        // the APK, and WorkManager may defer a periodic job's first run for the
+        // whole three-hour interval. That copy is as old as the build, so a
+        // phone on its first afternoon can block less than the identical phone
+        // beside it that has been running a week — and what it blocks less of is
+        // whatever the document gained since the build was cut.
+        //
+        // Asked only when nothing has ever been fetched, so this is one request
+        // per install and not one per launch: `lastSuccessMillis` is the same
+        // field settings reads to say "last updated never".
+        applicationScope.launch {
+            // applicationScope is Main; readState() touches disk.
+            val fetched = withContext(Dispatchers.IO) { policy.state().lastSuccessMillis }
+            if (fetched <= 0L) PolicyWorker.refreshNow(this@HeraldApplication)
+        }
 
         // A parent switching an option in drawbridge expects the browser to obey
         // before they hand the phone back, not at tomorrow's poll. Costs nothing

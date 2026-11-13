@@ -1,7 +1,7 @@
 {
-  "version": 179,
-  "issued_at": "2026-11-13T13:40:00Z",
-  "comment": "DEV CHANNEL ONLY. drawbridge 0.2.44 build 69: an update drawbridge could not install by itself raises a notification once per version, opening the Update screen. Replaces 68 before any phone took it (179: Dutch note reworded); the periodic check is still what is being watched. Nothing else changes from 177.",
+  "version": 180,
+  "issued_at": "2026-11-13T19:00:00Z",
+  "comment": "DEV CHANNEL ONLY. drawbridge 0.2.45 build 70 and herald 0.1.27 (v0.2.8-dev.18): with chatbots off, herald blocks Google Search and Copilot in Bing, hides Google from its engines and sends DuckDuckGo to noai.duckduckgo.com; drawbridge withholds every browser but herald and herald mono and hides the Google app. herald 0.1.27 also carries main's 0.1.26 first-run fetch. The periodic self-update check now watches for 70.",
   "dns": {
     "upstreams": [
       "94.140.14.15",
@@ -909,29 +909,29 @@
   },
   "app_update": {
     "package_name": "app.drawbridge.dpc",
-    "version_code": 69,
-    "url": "https://dev.drawbridge-project.pages.dev/assets/dpc-b297ff34821cc140.apk",
-    "sha256": "b297ff34821cc140513e8a3ad7da7fad078e4d70a40b645540cbf1d039fc127f",
-    "version_name": "0.2.44",
-    "notes": "New: if an update cannot install by itself, a notification says so and takes you to the Update screen. Everything in 0.2.42 is still here.",
+    "version_code": 70,
+    "url": "https://dev.drawbridge-project.pages.dev/assets/dpc-a0b0964f3a78bbe5.apk",
+    "sha256": "a0b0964f3a78bbe50787d4fc6783d5b63d454db79371509ac22f70285d36412c",
+    "version_name": "0.2.45",
+    "notes": "New: with the chatbots switch off, Google Search, Copilot in Bing, the Google app and browsers other than herald are blocked. Everything in 0.2.44 is still here.",
     "notes_i18n": {
-      "nl": "Nieuw: kan een update zichzelf niet installeren, dan krijg je een melding die je naar het updatescherm brengt. Alles uit 0.2.42 zit er nog in.",
-      "fr": "Nouveau : si une mise \u00e0 jour ne peut pas s'installer toute seule, une notification le signale et vous m\u00e8ne \u00e0 l'\u00e9cran de mise \u00e0 jour. Tout ce qui \u00e9tait dans la 0.2.42 y est encore."
+      "nl": "Nieuw: staat de chatbots-schakelaar uit, dan worden Google Zoeken, Copilot in Bing, de Google-app en andere browsers dan herald geblokkeerd. Alles uit 0.2.44 zit er nog in.",
+      "fr": "Nouveau : quand l'interrupteur des chatbots est coup\u00e9, Google Recherche, Copilot dans Bing, l'application Google et les navigateurs autres que herald sont bloqu\u00e9s. Tout ce qui \u00e9tait dans la 0.2.44 y est encore."
     }
   },
   "required_apps": [
     {
       "package_name": "app.drawbridge.herald",
-      "version_code": 25,
-      "url": "https://github.com/Nilss3/drawbridge/releases/download/v0.2.8-dev.17/herald-arm64-v8a-release.apk",
-      "sha256": "41d2cbbaf9b7bf3d8e993bb26ee4291025d5ff928823ea5b58d74ec984d4460a",
+      "version_code": 27,
+      "url": "https://github.com/Nilss3/drawbridge/releases/download/v0.2.8-dev.18/herald-arm64-v8a-release.apk",
+      "sha256": "33faa117f362ab4e205f5687722e121e2d6f10de5c330a023b496e2cc89c3f6f",
       "abi": "arm64-v8a"
     },
     {
       "package_name": "app.drawbridge.heraldmono",
-      "version_code": 25,
-      "url": "https://github.com/Nilss3/drawbridge/releases/download/v0.2.8-dev.17/herald-mono-arm64-v8a-release.apk",
-      "sha256": "d2000ab8e585de249b7ea31480bfb09ecf9f876e398c8a6650549e17bb3558b2",
+      "version_code": 27,
+      "url": "https://github.com/Nilss3/drawbridge/releases/download/v0.2.8-dev.18/herald-mono-arm64-v8a-release.apk",
+      "sha256": "73f78ad0cb9e09732ae3cdbc17f65e19dc9be3a7021732b3173305b151a47362",
       "abi": "arm64-v8a"
     }
   ],
@@ -1020,14 +1020,14 @@
   "conditional": [
     {
       "min_version_code": 63,
-      "comment": "The general-purpose chatbots switch with everything it governs: its list, its packages and the option itself. Only drawbridge 0.2.38 (build 63) and later read it, so an older build is never offered a switch it would mark as seen without enabling.",
+      "comment": "The general-purpose chatbots switch with everything it governs: its list, its packages and the option itself. Only drawbridge 0.2.38 (build 63) and later read it, so an older build is never offered a switch it would mark as seen without enabling. From drawbridge 0.2.45 and herald 0.1.27 the switch also governs the browser: off, herald refuses Google Search and Copilot in Bing, hides Google from its engines, sends DuckDuckGo to noai.duckduckgo.com, every browser but herald is withheld, and the Google app (assistant, Hey Google, Circle to Search) is hidden. Older builds ignore these fields.",
       "blocklists": [
         {
           "id": "chatbots",
           "url": "https://raw.githubusercontent.com/Nilss3/drawbridge/dev/dist/lists/chatbots.txt",
           "format": "domains",
           "category": "chatbots",
-          "sha256": "43b89d2cab78a64adb3fc18b6f7309c265dc6872eeb1b1b82c8b5eff6e429b8b"
+          "sha256": "3bcc9515068d07f0cc0e62fcd3f68ce581c66b6ee48ef94471fa9a7f6325d366"
         }
       ],
       "blocked_packages": [
@@ -1105,7 +1105,8 @@
         "me.proton.android.lumo",
         "newway.open.chatgpt.ai.chat.bot.free",
         "starnest.aichat.aichatbot.assistant",
-        "tech.butterfly.app"
+        "tech.butterfly.app",
+        "com.google.android.googlequicksearchbox"
       ],
       "options": [
         {
@@ -1113,7 +1114,7 @@
           "name": "Allow general-purpose chatbots",
           "subject": "general-purpose chatbots",
           "recommended_age": 18,
-          "description": "ChatGPT, Claude, Gemini and other chatbots which are able to keep long conversations and have been shown to have harmful addictive effects, and can even entertain suicidal thoughts. This toggle does not include Grok: Grok is always blocked.",
+          "description": "ChatGPT, Claude, Gemini and other chatbots which are able to keep long conversations and have been shown to have harmful addictive effects, and can even entertain suicidal thoughts. Off, this also blocks Google Search (Gemini is built into it) and Copilot in Bing, switches DuckDuckGo to its version without AI, turns off the Google app and with it the phone's assistant, and leaves herald as the only browser. This toggle does not include Grok: Grok is always blocked.",
           "default_enabled": true,
           "exempt_packages": [
             "com.openai.chatgpt",
@@ -1190,7 +1191,8 @@
             "com.capitalx.blissfully",
             "com.cyrano.cyrano",
             "app.reflection.reflection",
-            "io.mondayhero.sageai"
+            "io.mondayhero.sageai",
+            "com.google.android.googlequicksearchbox"
           ],
           "allowed_domains": [
             "chatgpt.com",
@@ -1228,14 +1230,52 @@
             "fr": "Autoriser les chatbots g\u00e9n\u00e9ralistes"
           },
           "description_i18n": {
-            "nl": "ChatGPT, Claude, Gemini en andere chatbots die lange gesprekken kunnen voeren, waarvan is aangetoond dat ze schadelijke, verslavende effecten hebben en die zelfs zelfmoordgedachten kunnen onderhouden. Deze schakelaar geldt niet voor Grok: Grok wordt altijd geblokkeerd.",
-            "fr": "ChatGPT, Claude, Gemini et d'autres chatbots capables d'entretenir de longues conversations, dont il a \u00e9t\u00e9 montr\u00e9 qu'ils ont des effets addictifs nocifs et qu'ils peuvent m\u00eame entretenir des pens\u00e9es suicidaires. Cet interrupteur n'inclut pas Grok : Grok est toujours bloqu\u00e9."
+            "nl": "ChatGPT, Claude, Gemini en andere chatbots die lange gesprekken kunnen voeren, waarvan is aangetoond dat ze schadelijke, verslavende effecten hebben en die zelfs zelfmoordgedachten kunnen onderhouden. Uitgeschakeld blokkeert dit ook Google Zoeken (Gemini zit erin ingebouwd) en Copilot in Bing, gebruikt DuckDuckGo zijn versie zonder AI, wordt de Google-app en daarmee de assistent van de telefoon uitgeschakeld, en blijft herald de enige browser. Deze schakelaar geldt niet voor Grok: Grok wordt altijd geblokkeerd.",
+            "fr": "ChatGPT, Claude, Gemini et d'autres chatbots capables d'entretenir de longues conversations, dont il a \u00e9t\u00e9 montr\u00e9 qu'ils ont des effets addictifs nocifs et qu'ils peuvent m\u00eame entretenir des pens\u00e9es suicidaires. D\u00e9sactiv\u00e9, il bloque aussi la recherche Google (Gemini y est int\u00e9gr\u00e9) et Copilot dans Bing, fait passer DuckDuckGo \u00e0 sa version sans IA, d\u00e9sactive l'application Google et avec elle l'assistant du t\u00e9l\u00e9phone, et ne laisse que herald comme navigateur. Cet interrupteur n'inclut pas Grok : Grok est toujours bloqu\u00e9."
           },
           "subject_i18n": {
             "nl": "algemene chatbots",
             "fr": "chatbots g\u00e9n\u00e9ralistes"
-          }
+          },
+          "exempt_url_patterns": [
+            "^https?://(www\\.)?google\\.[a-z]{2,3}(\\.[a-z]{2})?(/((search|webhp)([/?#]|$)|[?#]|$)|[?#]|$)",
+            "^https?://(www\\.)?bing\\.com/(chat|copilotsearch|copilot)([/?#]|$)",
+            "^https?://(www\\.)?bing\\.com/search\\?([^#]*&)?showconv=1"
+          ],
+          "exempt_search_engines": [
+            "Google"
+          ],
+          "exempt_host_rewrites": [
+            "duckduckgo.com"
+          ],
+          "exempt_browser_packages": [
+            "com.android.chrome",
+            "org.mozilla.focus",
+            "com.vivaldi.browser",
+            "ai.perplexity.comet",
+            "mark.via.gp",
+            "app.vanadium.browser"
+          ]
         }
+      ],
+      "blocked_url_patterns": [
+        "^https?://(www\\.)?google\\.[a-z]{2,3}(\\.[a-z]{2})?(/((search|webhp)([/?#]|$)|[?#]|$)|[?#]|$)",
+        "^https?://(www\\.)?bing\\.com/(chat|copilotsearch|copilot)([/?#]|$)",
+        "^https?://(www\\.)?bing\\.com/search\\?([^#]*&)?showconv=1"
+      ],
+      "hidden_search_engines": [
+        "Google"
+      ],
+      "host_rewrites": {
+        "duckduckgo.com": "noai.duckduckgo.com"
+      },
+      "withheld_browser_packages": [
+        "com.android.chrome",
+        "org.mozilla.focus",
+        "com.vivaldi.browser",
+        "ai.perplexity.comet",
+        "mark.via.gp",
+        "app.vanadium.browser"
       ]
     }
   ]
