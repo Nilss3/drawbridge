@@ -215,8 +215,15 @@ Both are updates of a package the phone already had. That is exactly the case
 that used to fail, so the Update screen no longer asks for Play Protect to be
 paused (removed on dev the same day, to be tested there before main).
 
-**A first install passed too, on 2026-11-13**, by QR on the factory-reset Moto
-G15: the setup wizard downloaded drawbridge 0.2.38 (63) from the dev site with
+**A first install over the cable passed too, on 2026-11-13**, on the same
+factory-reset G15 with `verifier_verify_adb_installs` unset (the platform
+default, verify) — `tools/provision-adb.sh --keep-verifier`, drawbridge 0.2.38
+(63). Finsky: `Scan finished for app.drawbridge.dpc … with verdict 0`,
+`Enforced verdict … VERIFICATION_ALLOW`, server `response=0`, then Device Owner
+granted as usual. The script still pauses the verifier by default; whether to
+drop that is open.
+
+**And by QR, the same morning**, on that phone: the setup wizard downloaded drawbridge 0.2.38 (63) from the dev site with
 Play Protect at its defaults and no cable step, and installed it. That is the
 case the August table below measured as refused. One install on one phone —
 but it was the phone that refused it then.
@@ -827,7 +834,7 @@ is on it is genuinely on it.
 | **Closed as answered** | 2 and 2a — FRP was tested and does not hold |
 | **Closed as won't do** | 5 (F-Droid) |
 | **Closed as built, then reopened** | **17** — the chatbots toggle: cancelled 2026-09-28, built anyway on 2026-10-18 (policy 135 on dev, 136 on the beta branch) |
-| **Closed as not ours to fix** | 1 — Play Protect, on Google-certified phones; **updates allowed again since 2026-11-11**, a first install by QR since 2026-11-13 |
+| **Closed as not ours to fix** | 1 — Play Protect, on Google-certified phones; **updates allowed again since 2026-11-11**, first installs (QR and cable) since 2026-11-13 |
 | **Closed as done enough** | 12b, 12c, 12g — the app is in public beta |
 
 **What replaces item 2 is worth stating in one line, because everything else
