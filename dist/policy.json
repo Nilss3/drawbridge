@@ -1,7 +1,7 @@
 {
-  "version": 175,
-  "issued_at": "2026-11-13T13:00:00Z",
-  "comment": "DEV CHANNEL ONLY. drawbridge 0.2.41 build 66: the same code as build 65, released so that 65 can be seen updating itself unattended. Nothing else changes from 174.",
+  "version": 176,
+  "issued_at": "2026-11-13T12:50:00Z",
+  "comment": "DEV CHANNEL ONLY. drawbridge 0.2.42 build 67: the same code as builds 65 and 66, released so that 66 can be seen updating itself unattended (66 itself was installed from the button before the worker was due). Nothing else changes from 175.",
   "dns": {
     "upstreams": [
       "94.140.14.15",
@@ -909,14 +909,14 @@
   },
   "app_update": {
     "package_name": "app.drawbridge.dpc",
-    "version_code": 66,
-    "url": "https://dev.drawbridge-project.pages.dev/assets/dpc-175a032fad2b663b.apk",
-    "sha256": "175a032fad2b663b3b0067978caf9ec37697d0046e8025f8fada2691b5215b0a",
-    "version_name": "0.2.41",
-    "notes": "Nothing changes for you: this is the first update drawbridge installs by itself. Everything in 0.2.40 is still here.",
+    "version_code": 67,
+    "url": "https://dev.drawbridge-project.pages.dev/assets/dpc-eddff122ddb886ad.apk",
+    "sha256": "eddff122ddb886ad65aaa8334a0cf5beb660ad9133781be08810f0b3344a9087",
+    "version_name": "0.2.42",
+    "notes": "Nothing changes for you: this is the first update drawbridge installs by itself. Everything in 0.2.41 is still here.",
     "notes_i18n": {
-      "nl": "Voor jou verandert er niets: dit is de eerste update die drawbridge zelf installeert. Alles uit 0.2.40 zit er nog in.",
-      "fr": "Rien ne change pour vous : c'est la premi\u00e8re mise \u00e0 jour que drawbridge installe tout seul. Tout ce qui \u00e9tait dans la 0.2.40 y est encore."
+      "nl": "Voor jou verandert er niets: dit is de eerste update die drawbridge zelf installeert. Alles uit 0.2.41 zit er nog in.",
+      "fr": "Rien ne change pour vous : c'est la premi\u00e8re mise \u00e0 jour que drawbridge installe tout seul. Tout ce qui \u00e9tait dans la 0.2.41 y est encore."
     }
   },
   "required_apps": [
