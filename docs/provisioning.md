@@ -93,8 +93,10 @@ adb shell dpm set-device-owner app.drawbridge.dpc/app.drawbridge.dpc.admin.Drawb
 2026.** Play Protect refused `app.drawbridge.dpc` by name, with
 `INSTALL_FAILED_VERIFICATION_FAILURE`, on a device with no account signed in and
 nothing else installed. Since an appeal it allows drawbridge's updates
-(2026-11-11); whether this first install now passes is untested, so the lever
-below is still part of the procedure. See [handoff](handoff.md).
+(2026-11-11), and on 2026-11-13 it allowed a first install on the Moto G15 —
+from the QR setup wizard, not over adb. One phone and a different route, so the
+lever below stays part of the procedure until a cable install without it has
+been seen to pass. See [handoff](handoff.md).
 
 adb has one lever that nothing on the phone itself does:
 

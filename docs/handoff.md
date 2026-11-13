@@ -195,9 +195,10 @@ the phone — is why the warning moved ahead of the cable, in the install pages 
 
 ## The way in is adb, and Play Protect was why
 
-**Status on 2026-11-11: Play Protect allows drawbridge's updates. Whether it
-allows a first install is untested.** Read this before anything below, which is
-the history of the block and was written as though it were permanent.
+**Status on 2026-11-13: Play Protect allows drawbridge's updates, and allowed a
+first install from the setup wizard. QR provisioning still does not complete on
+the Moto G15 — for a different reason.** Read this before anything below, which
+is the history of the block and was written as though it were permanent.
 
 **What is verified.** After the owner's appeal to Google, two installs of
 `app.drawbridge.dpc` went through on a Nothing phone (A059) with Play Protect on:
@@ -214,13 +215,37 @@ Both are updates of a package the phone already had. That is exactly the case
 that used to fail, so the Update screen no longer asks for Play Protect to be
 paused (removed on dev the same day, to be tested there before main).
 
-**What is not verified: a first install** of `app.drawbridge.dpc` on a phone that
-has never had it, with Play Protect on. That is what the August table below
-measured and what QR provisioning needs. The verdict was attached to the package
-name and the adb reinstall now passes, so it probably passes too — but nothing
-here has shown it, and the next fresh provisioning is the cheap place to find
-out: leave `verifier_verify_adb_installs` alone and see whether the install is
-refused.
+**A first install passed too, on 2026-11-13**, by QR on the factory-reset Moto
+G15: the setup wizard downloaded drawbridge 0.2.38 (63) from the dev site with
+Play Protect at its defaults and no cable step, and installed it. That is the
+case the August table below measured as refused. One install on one phone —
+but it was the phone that refused it then.
+
+**The QR provisioning itself did not complete**, and that is not Play Protect.
+drawbridge's provisioning record (Diagnostics, photographed off the phone):
+
+```
+10:07:06  setup=0  GET_PROVISIONING_MODE -> fully managed device
+10:07:11  setup=0  onEnabled
+10:07:11  setup=0  fetchPolicyAndRequiredApps
+10:07:27  setup=0  ADMIN_POLICY_COMPLIANCE -> RESULT_OK
+          (then only process restarts, still setup=0 two hours later)
+```
+
+drawbridge did everything asked of it and enforced nothing during the wizard.
+After the compliance answer the wizard **dropped straight to the home screen**
+— no further steps, no setup card in recents — and never finished:
+`user_setup_complete` and `device_provisioned` both stayed 0, so Settings closed
+on launch, home and recents did nothing, and the only way out was a factory
+reset from recovery. `onProfileProvisioningComplete` **never arrived**, which
+fits: on current Android it is sent when the wizard finalizes, and it never did.
+
+This is the second G15 QR run to end in setup=0 (the first, 2026-08-07, was
+blamed on drawbridge enforcing inside the wizard — since deferred, and this run
+shows that was not the whole story). The likeliest cause is Motorola's setup
+wizard. **Not proven:** the same QR was never run on another make, and the owner
+decided not to — a failed run costs a factory reset and leaves a phone with no
+Settings, which is reason enough to keep QR closed.
 
 **What follows from that, consequence by consequence:**
 
@@ -236,9 +261,10 @@ refused.
   it afterwards. If first installs now pass, that step becomes unnecessary
   rather than wrong.
 - **QR provisioning** was closed by the block and then also by the owner's
-  decision that its audience is empty (see the standing items). The first reason
-  may be gone; the second stands until somebody reopens it, and a QR test still
-  needs a real certified phone — see the traps below.
+  decision that its audience is empty (see the standing items). The block is
+  gone; the decision stands, and now has a third reason beside it — on the G15
+  the wizard never finishes, leaving a phone with no Settings until it is wiped.
+  Not to be reopened without testing on several makes.
 - **The cable is a route, not the only channel.** It stays the provisioning
   route because it is what is built and tested, and it stays the recovery route
   for a locked phone, below.
@@ -801,7 +827,7 @@ is on it is genuinely on it.
 | **Closed as answered** | 2 and 2a — FRP was tested and does not hold |
 | **Closed as won't do** | 5 (F-Droid) |
 | **Closed as built, then reopened** | **17** — the chatbots toggle: cancelled 2026-09-28, built anyway on 2026-10-18 (policy 135 on dev, 136 on the beta branch) |
-| **Closed as not ours to fix** | 1 — Play Protect, on Google-certified phones; **updates allowed again since 2026-11-11**, first installs untested |
+| **Closed as not ours to fix** | 1 — Play Protect, on Google-certified phones; **updates allowed again since 2026-11-11**, a first install by QR since 2026-11-13 |
 | **Closed as done enough** | 12b, 12c, 12g — the app is in public beta |
 
 **What replaces item 2 is worth stating in one line, because everything else
@@ -2127,8 +2153,9 @@ narrowed entry above.
 ### Standing items, unchanged
 
 - ~~**The QR is blocked on certified hardware**~~ — **closed 2026-09-08, won't
-  do for now.** *Since 2026-11-11 Play Protect allows drawbridge's updates;
-  whether it allows the first install that QR needs is untested — see [the
+  do for now.** *Since 2026-11-13 Play Protect is no longer the obstacle — it
+  allowed a first install by QR — but the G15's setup wizard then never
+  finished, and the owner judged the path too risky to pursue; see [the
   status](#the-way-in-is-adb-and-play-protect-was-why). The owner's reasoning
   below stands on its own either way.* The mechanism was: it is the Play
   Protect PHA classification on the package name, not the DPC allowlist — the two
