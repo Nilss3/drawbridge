@@ -862,6 +862,10 @@ class AppBlocker(context: Context) {
         // switched off while com.google.android.apps.youtube.music had gone, and
         // nothing on the device could distinguish "hide refused" from "uninstall
         // removed the update and left the factory build".
+        if (packageName in SUSPEND_FIRST) {
+            Log.i(TAG, "Removing $packageName by suspending it")
+            return suspend(packageName).takeUnless { it == Action.FAILED } ?: hideOrSuspend(packageName)
+        }
         Log.i(TAG, "Removing $packageName by ${if (hide) "hiding" else "uninstalling"} it")
         return if (hide) hideOrSuspend(packageName) else uninstall(packageName)
     }
@@ -1338,6 +1342,18 @@ class AppBlocker(context: Context) {
 
         /** The [NEVER_TOUCH] packages a document may still block by name. */
         private val BLOCKABLE_BY_NAME = setOf("com.google.android.googlequicksearchbox")
+
+        /**
+         * Packages taken out of use by suspending rather than hiding. **Found on
+         * the owner's Moto G15 on 2026-11-13**: hiding the Google app made the
+         * platform drop it as the voice-interaction service, and un-hiding it
+         * did not bring that back — the assistant role still named Google, so
+         * nothing re-bound it, and the assistant stayed gone after chatbots were
+         * switched on again until the role was reassigned by hand. A suspended
+         * package keeps its role and its setting, and the hide ladder remains
+         * the fallback if suspension is refused.
+         */
+        private val SUSPEND_FIRST = setOf("com.google.android.googlequicksearchbox")
 
         /** Launchers, keyboards and system UI variants differ per OEM. */
         private val NEVER_TOUCH_PREFIXES = listOf(

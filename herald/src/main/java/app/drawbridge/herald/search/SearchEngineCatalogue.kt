@@ -94,10 +94,15 @@ object SearchEngineCatalogue {
 
         val store = components.core.store
         val present = store.state.search.searchEngines
+        // A hidden engine is still there, and the step at the bottom puts it
+        // back. Counting only the visible ones added a second Google the first
+        // time chatbots were switched back on: herald's own, beside the bundled
+        // one it then un-hid.
+        val known = present + store.state.search.hiddenSearchEngines
 
         ADDABLE.filter { addable ->
             addable.name.normalised() in wanted &&
-                present.none { it.name.normalised() == addable.name.normalised() }
+                known.none { it.name.normalised() == addable.name.normalised() }
         }.forEach { addable ->
             components.useCases.searchUseCases.addSearchEngine(
                 SearchEngine(
@@ -124,6 +129,20 @@ object SearchEngineCatalogue {
             engine.name.normalised() in wanted || engine.id.normalised() in wanted
         }.forEach { engine ->
             store.dispatch(SearchAction.ShowSearchEngineAction(engine.id))
+        }
+
+        // Phones that already took the duplicate: drop herald's own copy of any
+        // engine the catalogue also ships, so the bundled one stays. Read from
+        // [known] rather than the store, because the dispatches above have not
+        // necessarily landed yet.
+        val addableIds = ADDABLE.map { it.id }.toSet()
+        known.filter { engine ->
+            engine.id in addableIds &&
+                known.any { other ->
+                    other.id !in addableIds && other.name.normalised() == engine.name.normalised()
+                }
+        }.forEach { duplicate ->
+            components.useCases.searchUseCases.removeSearchEngine(duplicate)
         }
     }
 
