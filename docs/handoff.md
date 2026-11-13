@@ -223,6 +223,18 @@ default, verify) — `tools/provision-adb.sh --keep-verifier`, drawbridge 0.2.38
 granted as usual. The script still pauses the verifier by default; whether to
 drop that is open.
 
+**Unattended self-update is back, and verified once (2026-11-13).** From
+drawbridge 0.2.40 (build 65) `UpdateWorker` installs drawbridge's own update
+again, once per version (a version it has handed to the installer is not handed
+over again; the Update screen's button still is). On the G15, with Play Protect
+on: 66 → 67 with nobody touching the phone — the filter service started after a
+reboot at 13:49:30, its `UpdateWorker.runNow` fetched policy 176, and 67 was
+installed at 13:49:42; no Update screen was opened. Two things this did not
+show: the *periodic* trigger (WorkManager will not run a periodic job early —
+`cmd jobscheduler run -f` just reschedules it — so that one is only seen by
+waiting up to three hours), and a refused install, where the once-per-version
+rule is what stops the August retry loop.
+
 **And by QR, the same morning**, on that phone: the setup wizard downloaded drawbridge 0.2.38 (63) from the dev site with
 Play Protect at its defaults and no cable step, and installed it. That is the
 case the August table below measured as refused. One install on one phone —
@@ -256,12 +268,11 @@ Settings, which is reason enough to keep QR closed.
 
 **What follows from that, consequence by consequence:**
 
-- **Updates.** Manual, from the Update screen, and they no longer need Play
-  Protect paused. Updating **unattended** is no longer ruled out by Play Protect
-  — it is switched off: `UpdateWorker` stopped installing drawbridge's own update
-  on 2026-08-10 because every attempt was refused, and only logs that one is
-  waiting. Bringing it back is now a decision about whether a parent should
-  approve each update, not a constraint.
+- **Updates.** Unattended again from 0.2.40 (build 65, dev): `UpdateWorker`
+  installs drawbridge's own update once per version, and the Update screen
+  remains as a manual route that no longer needs Play Protect paused. From
+  2026-08-10 until then the worker only logged that an update was waiting,
+  because every attempt was refused.
 - **Provisioning over the cable** always worked and still does. It never got
   past Play Protect on its own: `tools/provision-adb.sh` and the WebUSB
   installer turn `verifier_verify_adb_installs` off for the install and restore
