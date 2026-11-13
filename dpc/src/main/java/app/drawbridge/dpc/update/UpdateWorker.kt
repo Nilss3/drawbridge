@@ -83,22 +83,48 @@ class UpdateWorker(
             }
         }
 
-        // drawbridge does *not* install its own update here, and that began as a
-        // concession rather than a design: from 2026-08-10 Play Protect refused
-        // it on any phone with a Google account, and retrying silently every
-        // three hours only failed silently every three hours. Since 2026-11-11,
-        // after an appeal, Play Protect allows the update, so this is now a
-        // choice — the parent starts it from the Update screen — and turning it
-        // back on is open. See docs/handoff.md.
+        // drawbridge installs its own update here again, unattended, from
+        // 0.2.40. From 2026-08-10 to 2026-11 it could not: Play Protect refused
+        // the install on any phone with a Google account, so this only logged
+        // that an update was waiting and the parent started it from the Update
+        // screen with Play Protect paused. After the appeal Play Protect allows
+        // it (verified 2026-11-11 and 2026-11-13; see docs/handoff.md), and an
+        // update somebody has to remember to press is an update most phones
+        // never get.
         //
-        // herald above is untouched: its installs are not refused, and a phone
-        // with no browser is a different order of problem.
-        installer.availableSelfUpdate()?.let { update ->
-            Log.i(
-                TAG,
-                "drawbridge ${update.versionCode} is available; " +
-                    "waiting for the parent to start it from the app",
-            )
+        // **Once per version, automatically.** A refusal surfaces only in
+        // InstallResultReceiver, after this worker has returned, so it cannot
+        // feed a retry here — and retrying a refused install every three hours
+        // is what was switched off in August. A version this worker has handed
+        // to the installer is not handed over again; the Update screen's button
+        // still is, for a parent who wants to try. A failure *before* the
+        // commit — no network, a bad checksum — never reached the installer and
+        // is retried on the next poll.
+        //
+        // Last, after the browsers, because a successful install replaces this
+        // process.
+        if (canInstall) {
+            installer.availableSelfUpdate()?.let { update ->
+                val attempts = selfUpdateAttempts(applicationContext)
+                if (attempts.getInt(KEY_ATTEMPTED_VERSION, 0) >= update.versionCode) {
+                    Log.i(
+                        TAG,
+                        "drawbridge ${update.versionCode} was already tried unattended; " +
+                            "leaving it to the Update screen",
+                    )
+                } else {
+                    InstallOutcome(applicationContext).clear()
+                    when (val result = installer.installSelfUpdate()) {
+                        is AppInstaller.Result.Started -> {
+                            attempts.edit().putInt(KEY_ATTEMPTED_VERSION, update.versionCode).commit()
+                            Log.i(TAG, "Installing drawbridge ${update.versionCode} unattended")
+                        }
+                        is AppInstaller.Result.Failed ->
+                            Log.e(TAG, "drawbridge ${update.versionCode} not installed: ${result.reason}")
+                        is AppInstaller.Result.UpToDate -> Unit
+                    }
+                }
+            }
         }
 
         val failed = required.values.any { it is AppInstaller.Result.Failed }
@@ -119,6 +145,12 @@ class UpdateWorker(
 
         /** Marks a run the parent asked for, as opposed to the daily poll. */
         private const val KEY_REQUESTED = "requested"
+
+        private const val ATTEMPTS_PREFS = "drawbridge_self_update"
+        private const val KEY_ATTEMPTED_VERSION = "attempted_version"
+
+        private fun selfUpdateAttempts(context: Context) =
+            context.getSharedPreferences(ATTEMPTS_PREFS, Context.MODE_PRIVATE)
 
         /**
          * Three hours, not a day.

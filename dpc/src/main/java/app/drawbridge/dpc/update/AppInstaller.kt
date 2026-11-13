@@ -50,9 +50,9 @@ class AppInstaller(context: Context) {
      * rounds of experiment established that nothing in the APK moves it. A
      * silent retry every three hours just fails every three hours.
      *
-     * So updating is something the parent starts, and this is what tells the
-     * screens there is something to start. See [installSelfUpdate] and
-     * docs/handoff.md.
+     * So updating became something the parent starts. Since the Play Protect
+     * appeal (2026-11) [UpdateWorker] starts it again too, once per version.
+     * See [installSelfUpdate] and docs/handoff.md.
      */
     fun availableSelfUpdate(): AppUpdate? {
         val update = DrawbridgeApplication.policy(appContext).policy.value.appUpdate ?: return null
@@ -62,10 +62,8 @@ class AppInstaller(context: Context) {
     }
 
     /**
-     * Installs what [availableSelfUpdate] found, on the parent's say-so.
-     *
-     * Expected to fail while Play Protect is on, and the screen that calls this
-     * says so before the parent presses anything.
+     * Installs what [availableSelfUpdate] found — from the Update screen, or
+     * unattended from [UpdateWorker].
      */
     suspend fun installSelfUpdate(): Result = withContext(Dispatchers.IO) {
         val update = availableSelfUpdate() ?: return@withContext Result.UpToDate

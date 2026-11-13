@@ -1,7 +1,7 @@
 {
-  "version": 173,
-  "issued_at": "2026-11-02T12:00:00Z",
-  "comment": "DEV CHANNEL ONLY. Mullvad retires its public encrypted DNS on 2026-11-02, so encrypted_upstream moves from tls://all.dns.mullvad.net to tls://family.adguard-dns.com: AdGuard DNS Family, the same filtering resolver the plain-DNS fallback (94.140.14.15/94.140.15.16) already uses. It blocks ads, trackers and adult content; gambling and social, which Mullvad's all profile also blocked, stay covered by drawbridge's own lists. Nothing else changes from 168. 437 blocked packages.",
+  "version": 174,
+  "issued_at": "2026-11-13T12:10:00Z",
+  "comment": "DEV CHANNEL ONLY. drawbridge 0.2.40 build 65: installs its own updates again, unattended, once per version, now that Play Protect allows them. The first of two test builds; 66 follows to see 65 update itself. Nothing else changes from 173.",
   "dns": {
     "upstreams": [
       "94.140.14.15",
@@ -909,14 +909,14 @@
   },
   "app_update": {
     "package_name": "app.drawbridge.dpc",
-    "version_code": 63,
-    "url": "https://dev.drawbridge-project.pages.dev/assets/dpc-4406b5c11535115a.apk",
-    "sha256": "4406b5c11535115acf8ba84c0291d94ac8e6839b8c91b95378f05b1a2c501ef9",
-    "version_name": "0.2.38",
-    "notes": "Changed: the chatbots switch now only exists on version 0.2.38 and later, and a fragment of the policy can also take apps off the store-rating whitelist for those versions. Nothing else changes. Everything in 0.2.37 is still here.",
+    "version_code": 65,
+    "url": "https://dev.drawbridge-project.pages.dev/assets/dpc-8d4a81fdfa733ef5.apk",
+    "sha256": "8d4a81fdfa733ef509c29efaeb0ef5896e66a2ef85cd023d143ca94ce918fa1d",
+    "version_name": "0.2.40",
+    "notes": "New: drawbridge now installs its own updates, without anyone pressing a button. This is the last update you start yourself. Everything in 0.2.38 is still here.",
     "notes_i18n": {
-      "nl": "Aangepast: de chatbotschakelaar bestaat nu alleen in versie 0.2.38 en nieuwer, en een deel van het beleid kan voor die versies ook apps van de witte lijst voor winkelleeftijden halen. Verder verandert er niets. Alles uit 0.2.37 zit er nog in.",
-      "fr": "Modifi\u00e9 : l'interrupteur des chatbots n'existe plus que dans la version 0.2.38 et les suivantes, et un fragment de la politique peut aussi retirer des applications de la liste blanche des notes du magasin pour ces versions. Rien d'autre ne change. Tout ce qui \u00e9tait dans la 0.2.37 y est encore."
+      "nl": "Nieuw: drawbridge installeert zijn eigen updates nu zelf, zonder dat iemand op een knop hoeft te drukken. Dit is de laatste update die je zelf start. Alles uit 0.2.38 zit er nog in.",
+      "fr": "Nouveau : drawbridge installe d\u00e9sormais ses propres mises \u00e0 jour, sans que personne n'ait \u00e0 appuyer sur un bouton. C'est la derni\u00e8re mise \u00e0 jour que vous lancez vous-m\u00eame. Tout ce qui \u00e9tait dans la 0.2.38 y est encore."
     }
   },
   "required_apps": [
