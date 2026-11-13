@@ -104,14 +104,19 @@ class UpdateWorker(
         // Last, after the browsers, because a successful install replaces this
         // process.
         if (canInstall) {
-            installer.availableSelfUpdate()?.let { update ->
+            val waiting = installer.availableSelfUpdate()
+            if (waiting == null) UpdateNotifier.cancel(applicationContext)
+            waiting?.let { update ->
                 val attempts = selfUpdateAttempts(applicationContext)
                 if (attempts.getInt(KEY_ATTEMPTED_VERSION, 0) >= update.versionCode) {
+                    // Tried, and still not running: the parent has to start it,
+                    // and has to be told so somewhere they will see.
                     Log.i(
                         TAG,
                         "drawbridge ${update.versionCode} was already tried unattended; " +
                             "leaving it to the Update screen",
                     )
+                    UpdateNotifier.notifyWaiting(applicationContext, update)
                 } else {
                     InstallOutcome(applicationContext).clear()
                     when (val result = installer.installSelfUpdate()) {

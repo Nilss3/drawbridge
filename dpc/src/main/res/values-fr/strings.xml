@@ -235,4 +235,8 @@
     <string name="wizard_offline_14_16">Les 14 à 16 ans devraient avoir des limites strictes.</string>
     <string name="wizard_lock_title">Verrouiller les paramètres</string>
     <string name="wizard_lock_intro">Vous recevrez un code de déverrouillage. C\'est un code long et unique. Vous pouvez aussi verrouiller les paramètres pour une durée donnée, que vous pouvez prolonger à tout moment. Même avec une minuterie, le code fonctionne, mais vous pouvez oublier le code sans risque.</string>
+    <string name="update_waiting_title">Une mise à jour de drawbridge attend</string>
+    <string name="update_waiting_body">drawbridge n\'a pas pu l\'installer tout seul. Touchez pour l\'installer depuis l\'écran de mise à jour.</string>
+    <string name="update_channel_name">Mises à jour de drawbridge</string>
+    <string name="update_channel_description">Seulement quand une mise à jour n\'a pas pu s\'installer toute seule.</string>
 </resources>

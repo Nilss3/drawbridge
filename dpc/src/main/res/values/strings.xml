@@ -318,4 +318,8 @@
     <string name="wizard_offline_14_16">14 to 16 should have strict limitations.</string>
     <string name="wizard_lock_title">Lock down the settings</string>
     <string name="wizard_lock_intro">You\'ll get a code to unlock. It\'s a long and unique code. You may also choose to lock the settings for a certain amount of time, a time which you can prolong at any moment. Even when a timer is set, the code works, but it\'s safe to forget the code.</string>
+    <string name="update_waiting_title">A drawbridge update is waiting</string>
+    <string name="update_waiting_body">drawbridge could not install it by itself. Tap to install it from the Update screen.</string>
+    <string name="update_channel_name">drawbridge updates</string>
+    <string name="update_channel_description">Only when an update could not install by itself.</string>
 </resources>

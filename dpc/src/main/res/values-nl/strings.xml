@@ -235,4 +235,8 @@
     <string name="wizard_offline_14_16">14 tot 16 hoort strikte beperkingen te hebben.</string>
     <string name="wizard_lock_title">De instellingen vergrendelen</string>
     <string name="wizard_lock_intro">Je krijgt een code om te ontgrendelen. Het is een lange, unieke code. Je kunt de instellingen ook voor een bepaalde tijd vergrendelen, een tijd die je op elk moment kunt verlengen. Ook met een timer werkt de code, maar het is veilig om de code te vergeten.</string>
+    <string name="update_waiting_title">Er wacht een update van drawbridge</string>
+    <string name="update_waiting_body">drawbridge kon hem niet zelf installeren. Tik om hem te installeren vanuit het updatescherm.</string>
+    <string name="update_channel_name">Updates van drawbridge</string>
+    <string name="update_channel_description">Alleen als een update zichzelf niet kon installeren.</string>
 </resources>
