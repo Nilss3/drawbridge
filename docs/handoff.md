@@ -228,7 +228,8 @@ drawbridge 0.2.40 (build 65) `UpdateWorker` installs drawbridge's own update
 again, once per version (a version it has handed to the installer is not handed
 over again; the Update screen's button still is). On the G15, with Play Protect
 on: 66 → 67 with nobody touching the phone — the filter service started after a
-reboot at 13:49:30, its `UpdateWorker.runNow` fetched policy 176, and 67 was
+reboot at 13:49:30 (ten minutes after boot: it waits for the first unlock, which
+came late; the owner confirmed, and nothing on the phone is usable before it), its `UpdateWorker.runNow` fetched policy 176, and 67 was
 installed at 13:49:42; no Update screen was opened. Two things this did not
 show: the *periodic* trigger (WorkManager will not run a periodic job early —
 `cmd jobscheduler run -f` just reschedules it — so that one is only seen by
