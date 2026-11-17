@@ -1496,6 +1496,46 @@ the chosen resolver needs an exception carved for it.
 
 ### 17. A toggle for general-purpose chatbots — cancelled 2026-09-28, then built
 
+**Widened 2026-11-13 to 11-17 (dev, drawbridge 0.2.45–0.2.48, herald
+0.1.27–0.1.29, policies 180–183), and watched working on the Moto in both
+directions on 2026-11-17.** Off, the switch now also: blocks Google Search
+(any country domain, `/search`, `/webhp`, the bare homepage) and Copilot in Bing
+(`/chat`, `/copilot`, `/copilotsearch`, `showconv=1`) in herald by URL; hides
+Google from herald's engines; rewrites `duckduckgo.com` to
+`noai.duckduckgo.com`; withholds every browser but herald and herald mono
+(`withheld_browser_packages`, removed at the lock like a narrowed browser
+choice); and **suspends** the Google app and the Assistant shell
+(`com.google.android.apps.googleassistant`). On, all of it comes back,
+including the power-button assistant. The policy model gained the fragment
+fields and matching `exempt_*` option fields; `policytool.py sign` refuses a
+fragment restriction no option releases.
+
+Three things found on the way, each worth knowing before touching this again:
+
+- **Suspend, never hide, an assistant.** Hiding the Google app made Android drop
+  it as the voice-interaction service, and un-hiding did not bring it back —
+  the ASSISTANT role still named Google, so nothing re-bound it. Recovered by
+  hand with `cmd role remove-role-holder` / `add-role-holder`, or Settings →
+  Default apps → Digital assistant → None → Google. `AppBlocker.SUSPEND_FIRST`
+  is the list; suspended, the gesture answers "Google is not available".
+- **herald listed Google twice** after the switch came back on: it looked for
+  an existing engine among the *visible* ones only, added its own, then un-hid
+  the bundled one. `SearchEngineCatalogue` now counts hidden engines and drops
+  its own copy where the bundled one exists.
+- **A blocklist change froze the switches into the policy — the real reason
+  the Google app survived build 71's lock.** `PolicyManager.refresh` re-applied
+  `_policy.value`, the *effective* policy, when only a list had changed;
+  switches only add exemptions, so whatever was on at that moment stayed
+  exempt after it was switched off, until a new document replaced the baseline.
+  It now re-applies the document (`reapplyDocument`), with a regression test
+  in `AppBlockerGoogleAppTest`. **It applied to every option and to herald**,
+  and it is on `main` too until the beta takes this library.
+
+Diagnostics has an *assistant apps* section (`AppBlocker.explain`) that says,
+per package, what drawbridge sees and would do. It is how the freeze was found
+without a cable on a locked phone.
+
+
 **Reversed: the switch exists.** "Allow AI chatbots" (18+, default on) went in as
 policy 135 on dev, signed 2026-10-22, with `dist/lists/chatbots.txt` (29 hosts)
 and 75 packages behind it; the same content is policy 136 on the beta's branch
