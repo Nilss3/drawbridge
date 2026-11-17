@@ -1,7 +1,7 @@
 {
-  "version": 182,
-  "issued_at": "2026-11-17T10:00:00Z",
-  "comment": "DEV CHANNEL ONLY. drawbridge 0.2.47 build 72: Diagnostics explains, for the Google app and the Assistant shell, what drawbridge sees and decides, because build 71's lock sweep passed the Google app over on the Moto without a word. The chatbots switch now also covers com.google.android.apps.googleassistant, suspended like the Google app. herald stays at 0.1.28.",
+  "version": 183,
+  "issued_at": "2026-11-17T11:00:00Z",
+  "comment": "DEV CHANNEL ONLY. drawbridge 0.2.48 build 73 and herald 0.1.29 (v0.2.8-dev.20): a blocklist change no longer freezes the switches that were on at that moment into the policy. That is why chatbots switched off on the Moto left the Google app exempt until a new policy arrived. Diagnostics keeps its assistant-apps lines.",
   "dns": {
     "upstreams": [
       "94.140.14.15",
@@ -909,29 +909,29 @@
   },
   "app_update": {
     "package_name": "app.drawbridge.dpc",
-    "version_code": 72,
-    "url": "https://dev.drawbridge-project.pages.dev/assets/dpc-3fb4cff6d096ea47.apk",
-    "sha256": "3fb4cff6d096ea473d235635c4378089b1b52fb8de356f1f54b4993209b3793d",
-    "version_name": "0.2.47",
-    "notes": "For testing: Diagnostics shows how drawbridge treats the Google assistant apps. Everything in 0.2.46 is still here.",
+    "version_code": 73,
+    "url": "https://dev.drawbridge-project.pages.dev/assets/dpc-74426de62453b0af.apk",
+    "sha256": "74426de62453b0af78ba781504bfa255d54156bff5f6337c3a9b5b4b649cbdf5",
+    "version_name": "0.2.48",
+    "notes": "Fixed: switching an option off now always takes effect, even after the block lists have been updated. Everything in 0.2.47 is still here.",
     "notes_i18n": {
-      "nl": "Om te testen: Diagnostics toont hoe drawbridge de Google-assistent-apps behandelt. Alles uit 0.2.46 zit er nog in.",
-      "fr": "Pour les tests : Diagnostics montre comment drawbridge traite les applications d'assistant Google. Tout ce qui \u00e9tait dans la 0.2.46 y est encore."
+      "nl": "Opgelost: een optie uitzetten werkt nu altijd, ook nadat de blokkeerlijsten zijn bijgewerkt. Alles uit 0.2.47 zit er nog in.",
+      "fr": "Corrig\u00e9 : d\u00e9sactiver une option prend d\u00e9sormais toujours effet, m\u00eame apr\u00e8s une mise \u00e0 jour des listes de blocage. Tout ce qui \u00e9tait dans la 0.2.47 y est encore."
     }
   },
   "required_apps": [
     {
       "package_name": "app.drawbridge.herald",
-      "version_code": 28,
-      "url": "https://github.com/Nilss3/drawbridge/releases/download/v0.2.8-dev.19/herald-arm64-v8a-release.apk",
-      "sha256": "ad3b6519d735b6a1dcc14a213fd9457e85776c3a9ea45e260c6ae8e10dbadf2a",
+      "version_code": 29,
+      "url": "https://github.com/Nilss3/drawbridge/releases/download/v0.2.8-dev.20/herald-arm64-v8a-release.apk",
+      "sha256": "9e452cb4410955b8a7eee3f499b576810ad5bd7dbe18cb59ad99f55be7c0d076",
       "abi": "arm64-v8a"
     },
     {
       "package_name": "app.drawbridge.heraldmono",
-      "version_code": 28,
-      "url": "https://github.com/Nilss3/drawbridge/releases/download/v0.2.8-dev.19/herald-mono-arm64-v8a-release.apk",
-      "sha256": "f64a10ef8fae9b60630abab4cce1e16424f359599374d6ddfed4753343bc83c9",
+      "version_code": 29,
+      "url": "https://github.com/Nilss3/drawbridge/releases/download/v0.2.8-dev.20/herald-mono-arm64-v8a-release.apk",
+      "sha256": "0a46f9378b1cf84843971e13ddee1a9b3130bafac65b21797404a5e856e2d3c9",
       "abi": "arm64-v8a"
     }
   ],

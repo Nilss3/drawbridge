@@ -77,12 +77,31 @@ class AppBlockerGoogleAppTest {
             manager.setOptionEnabled(CHATBOTS, false)
         }
         val policy = manager.policy.value
-        println("enabled=${manager.enabledOptionIds} exempt has G=${GOOGLE in policy.exemptPackages} blocked has G=${GOOGLE in policy.blockedPackages}")
-        println("standings G=${blocker.standings()[GOOGLE]}")
+        assertTrue(GOOGLE !in policy.exemptPackages)
+        assertEquals(AppBlocker.Standing.PRESENT, blocker.standings()[GOOGLE])
         ParentKey(context).commit(ParentKey.generateKey())
         val swept = blocker.sweep()
-        println("sweep=$swept")
         assertEquals(AppBlocker.Action.SUSPENDED, swept[GOOGLE])
+    }
+
+    /**
+     * The Moto's actual failure: chatbots on, a blocklist changes and the policy
+     * is re-applied, chatbots off. Re-applying used to feed the *effective*
+     * policy back in, which froze the switch's exemptions into the baseline.
+     */
+    @Test
+    fun `a blocklist change while chatbots are on does not freeze the exemption`() {
+        val manager = DrawbridgeApplication.policy(context)
+        runBlocking { manager.setOptionEnabled(CHATBOTS, true) }
+        manager.reapplyDocument()
+        runBlocking { manager.setOptionEnabled(CHATBOTS, false) }
+
+        assertTrue(
+            "switching chatbots off must take the Google app's exemption with it",
+            GOOGLE !in manager.policy.value.exemptPackages,
+        )
+        ParentKey(context).commit(ParentKey.generateKey())
+        assertEquals(AppBlocker.Action.SUSPENDED, blocker.evaluate(GOOGLE))
     }
 
     private companion object {
