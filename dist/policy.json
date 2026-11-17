@@ -1,7 +1,7 @@
 {
-  "version": 181,
-  "issued_at": "2026-11-13T22:30:00Z",
-  "comment": "DEV CHANNEL ONLY. drawbridge 0.2.46 build 71 and herald 0.1.28 (v0.2.8-dev.19): the Google app is suspended rather than hidden while chatbots are off, because hiding it lost the assistant for good on the Moto; herald no longer shows Google twice after chatbots are switched back on, and removes the duplicate where it already did. Everything else as in 180.",
+  "version": 182,
+  "issued_at": "2026-11-17T10:00:00Z",
+  "comment": "DEV CHANNEL ONLY. drawbridge 0.2.47 build 72: Diagnostics explains, for the Google app and the Assistant shell, what drawbridge sees and decides, because build 71's lock sweep passed the Google app over on the Moto without a word. The chatbots switch now also covers com.google.android.apps.googleassistant, suspended like the Google app. herald stays at 0.1.28.",
   "dns": {
     "upstreams": [
       "94.140.14.15",
@@ -909,14 +909,14 @@
   },
   "app_update": {
     "package_name": "app.drawbridge.dpc",
-    "version_code": 71,
-    "url": "https://dev.drawbridge-project.pages.dev/assets/dpc-b8527e164bf2feac.apk",
-    "sha256": "b8527e164bf2feac84f72ef410c98f38f526b301629b1c0e90bfba8d21089b27",
-    "version_name": "0.2.46",
-    "notes": "Fixed: switching chatbots back on now gives the Google assistant back. Everything in 0.2.45 is still here.",
+    "version_code": 72,
+    "url": "https://dev.drawbridge-project.pages.dev/assets/dpc-3fb4cff6d096ea47.apk",
+    "sha256": "3fb4cff6d096ea473d235635c4378089b1b52fb8de356f1f54b4993209b3793d",
+    "version_name": "0.2.47",
+    "notes": "For testing: Diagnostics shows how drawbridge treats the Google assistant apps. Everything in 0.2.46 is still here.",
     "notes_i18n": {
-      "nl": "Opgelost: zet je chatbots weer aan, dan krijg je de Google Assistent terug. Alles uit 0.2.45 zit er nog in.",
-      "fr": "Corrig\u00e9 : quand on r\u00e9active les chatbots, l'assistant Google revient. Tout ce qui \u00e9tait dans la 0.2.45 y est encore."
+      "nl": "Om te testen: Diagnostics toont hoe drawbridge de Google-assistent-apps behandelt. Alles uit 0.2.46 zit er nog in.",
+      "fr": "Pour les tests : Diagnostics montre comment drawbridge traite les applications d'assistant Google. Tout ce qui \u00e9tait dans la 0.2.46 y est encore."
     }
   },
   "required_apps": [
@@ -1106,7 +1106,8 @@
         "newway.open.chatgpt.ai.chat.bot.free",
         "starnest.aichat.aichatbot.assistant",
         "tech.butterfly.app",
-        "com.google.android.googlequicksearchbox"
+        "com.google.android.googlequicksearchbox",
+        "com.google.android.apps.googleassistant"
       ],
       "options": [
         {
@@ -1192,7 +1193,8 @@
             "com.cyrano.cyrano",
             "app.reflection.reflection",
             "io.mondayhero.sageai",
-            "com.google.android.googlequicksearchbox"
+            "com.google.android.googlequicksearchbox",
+            "com.google.android.apps.googleassistant"
           ],
           "allowed_domains": [
             "chatgpt.com",
