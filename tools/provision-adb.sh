@@ -36,8 +36,15 @@
 # hands USB debugging back, then run this. A locked phone has no adb and is
 # deliberately unreachable.
 #
+# --keep-verifier leaves `verifier_verify_adb_installs` alone, so the installs
+# go past Play Protect exactly as an ordinary adb install would. Since the
+# appeal (2026-11) Play Protect allows drawbridge's updates and a first install
+# from the QR wizard; this is how to find out whether the cable still needs the
+# window at all. If the install is refused, run again without it.
+#
 # Usage:  tools/provision-adb.sh [--serial SERIAL] [--abi ABI] [--no-herald]
 #                                [--mono] [--dir DIR] [--update] [--dry-run]
+#                                [--keep-verifier]
 #
 set -euo pipefail
 
@@ -48,6 +55,7 @@ install_mono=0
 apk_dir=""
 dry_run=0
 update_only=0
+keep_verifier=0
 
 while [ $# -gt 0 ]; do
     case "$1" in
@@ -58,7 +66,8 @@ while [ $# -gt 0 ]; do
         --mono)       install_mono=1; shift ;;
         --update)     update_only=1; shift ;;
         --dry-run)    dry_run=1; shift ;;
-        -h|--help)    sed -n '2,39p' "${BASH_SOURCE[0]}" | sed 's/^# \?//'; exit 0 ;;
+        --keep-verifier) keep_verifier=1; shift ;;
+        -h|--help)    sed -n '2,47p' "${BASH_SOURCE[0]}" | sed 's/^# \?//'; exit 0 ;;
         *)            echo "unknown argument: $1" >&2; exit 2 ;;
     esac
 done
@@ -233,6 +242,9 @@ restore_verifier() {
     fi
     return "${status}"
 }
+if [ "${keep_verifier}" = 1 ]; then
+    echo "Leaving adb install verification as it is (${original}); Play Protect sees these installs."
+else
 trap restore_verifier EXIT
 # An interrupt during the ~230 MB herald push is the likely way out of this
 # script, and it must not be the way a phone keeps a disabled verifier. Exiting
@@ -241,6 +253,7 @@ trap 'exit 130' INT TERM
 
 echo "Pausing adb install verification (was: ${original})"
 run adb shell settings put global verifier_verify_adb_installs 0
+fi
 
 echo "Installing drawbridge…"
 run adb install -r "${dpc_apk}"
@@ -257,9 +270,11 @@ fi
 # Restore before granting Device Owner rather than after. Nothing below needs
 # the verifier off, and the shorter the window the smaller the claim this script
 # has to make about it.
-restore_verifier
-trap - EXIT
-[ "${verifier_restored}" = 1 ] || exit 1
+if [ "${keep_verifier}" = 0 ]; then
+    restore_verifier
+    trap - EXIT
+    [ "${verifier_restored}" = 1 ] || exit 1
+fi
 
 if [ "${update_only}" = 1 ]; then
     if [ "${dry_run}" = 1 ]; then

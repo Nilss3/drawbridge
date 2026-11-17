@@ -683,6 +683,43 @@ class AppBlocker(context: Context) {
      * Allowlist mode is deliberately not covered — it would list every ordinary
      * app on the phone and bury the handful of lines worth reading.
      */
+    /**
+     * Everything [evaluate] would weigh about one package, as a line for the
+     * diagnostics screen. **Added on 2026-11-17**, after the Moto's lock sweep
+     * passed over the Google app without a word while a unit test against the
+     * same document and the same switch history suspended it: the answer had to
+     * be read off the phone, and a locked phone has no cable.
+     */
+    fun explain(packageName: String): String {
+        val policy = DrawbridgeApplication.policy(appContext).policy.value
+        val allowedBrowsers = allowedBrowsers(policy)
+        val known = isKnown(packageName)
+        val visible = runCatching {
+            packageManager.getInstalledApplications(0).any { it.packageName == packageName }
+        }.getOrDefault(false)
+        if (!known) return "not on this phone"
+        val reasons = buildList {
+            if (packageName in allowedBrowsers) add("allowed browser")
+            if (packageName in policy.exemptPackages) add("exempt")
+            if (policy.appRatings?.isAlwaysAllowed(packageName) == true) add("whitelisted")
+            if (packageName in NEVER_TOUCH && !isNamedForBlocking(packageName, policy)) add("never-touch")
+            if (NEVER_TOUCH_PREFIXES.any { packageName.startsWith(it) }) add("never-touch prefix")
+        }
+        val removal = runCatching {
+            reasonToRemove(packageName, policy, isBrowser(packageName), outsideTheInstalledSet(packageName))
+        }.getOrNull()
+        return listOf(
+            "visible=$visible",
+            "hidden=${runCatching { isHidden(packageName) }.getOrDefault(false)}",
+            "suspended=${runCatching { isSuspended(packageName) }.getOrDefault(false)}",
+            "blocked=${packageName in policy.blockedPackages}",
+            "protected=${reasons.ifEmpty { listOf("no") }.joinToString("+")}",
+            "remove=${removal?.let { "${it.reason}${if (it.waitsForLock) " (at lock)" else ""}" } ?: "no"}",
+            "locked=${parentKey.isLocked}",
+            "options=${DrawbridgeApplication.policy(appContext).enabledOptionIds.sorted().joinToString(",")}",
+        ).joinToString(" ")
+    }
+
     fun standings(): Map<String, Standing> {
         val policy = DrawbridgeApplication.policy(appContext).policy.value
 
@@ -862,6 +899,10 @@ class AppBlocker(context: Context) {
         // switched off while com.google.android.apps.youtube.music had gone, and
         // nothing on the device could distinguish "hide refused" from "uninstall
         // removed the update and left the factory build".
+        if (packageName in SUSPEND_FIRST) {
+            Log.i(TAG, "Removing $packageName by suspending it")
+            return suspend(packageName).takeUnless { it == Action.FAILED } ?: hideOrSuspend(packageName)
+        }
         Log.i(TAG, "Removing $packageName by ${if (hide) "hiding" else "uninstalling"} it")
         return if (hide) hideOrSuspend(packageName) else uninstall(packageName)
     }
@@ -1120,8 +1161,21 @@ class AppBlocker(context: Context) {
             // refuses one that names a package an option governs, which would
             // leave the parent's switch moving and changing nothing.
             policy.appRatings?.isAlwaysAllowed(packageName) == true ||
-            packageName in NEVER_TOUCH ||
+            (packageName in NEVER_TOUCH && !isNamedForBlocking(packageName, policy)) ||
             NEVER_TOUCH_PREFIXES.any { packageName.startsWith(it) }
+
+    /**
+     * **A [NEVER_TOUCH] package the policy names outright, and only from
+     * [BLOCKABLE_BY_NAME].** NEVER_TOUCH exists to keep the *heuristics* off
+     * packages a phone cannot do without — the Google app handles `https://`
+     * links, and the rule that removes stray browsers must never take it. A
+     * document naming it in `blocked_packages` is a different thing: the Google
+     * app is where the assistant gesture, "Hey Google" and Circle to Search
+     * live, and the chatbots switch has to be able to close them. Hidden, not
+     * uninstalled, because it is a system app; the switch brings it back.
+     */
+    private fun isNamedForBlocking(packageName: String, policy: Policy): Boolean =
+        packageName in BLOCKABLE_BY_NAME && packageName in policy.blockedPackages
 
     private fun isEveryBrowserAllowed(): Boolean =
         BrowserSettings(appContext).choice == BrowserSettings.Choice.ALL
@@ -1321,6 +1375,27 @@ class AppBlocker(context: Context) {
             "com.google.android.googlequicksearchbox",
             "com.google.android.webview",
             "com.android.webview",
+        )
+
+        /** The [NEVER_TOUCH] packages a document may still block by name. */
+        private val BLOCKABLE_BY_NAME = setOf("com.google.android.googlequicksearchbox")
+
+        /**
+         * Packages taken out of use by suspending rather than hiding. **Found on
+         * the owner's Moto G15 on 2026-11-13**: hiding the Google app made the
+         * platform drop it as the voice-interaction service, and un-hiding it
+         * did not bring that back — the assistant role still named Google, so
+         * nothing re-bound it, and the assistant stayed gone after chatbots were
+         * switched on again until the role was reassigned by hand. A suspended
+         * package keeps its role and its setting, and the hide ladder remains
+         * the fallback if suspension is refused.
+         */
+        val SUSPEND_FIRST = setOf(
+            "com.google.android.googlequicksearchbox",
+            // The Gemini / Assistant shell, a system app on the Moto beside the
+            // Google app. Suspended for the same reason: it can hold the
+            // assistant role, and hiding a role holder loses the role.
+            "com.google.android.apps.googleassistant",
         )
 
         /** Launchers, keyboards and system UI variants differ per OEM. */

@@ -5,10 +5,16 @@
 # (policytool.py sign refuses when the two disagree).
 #
 # The line is the long conversation, not AI as such. These are the services where
-# a chat with memory goes on for weeks. Search engines' AI answers, help bots on
-# shops and assistants embedded in work tools are deliberately absent, and so are
-# the parent domains: gemini.google.com and copilot.microsoft.com are their own
-# hosts, so google.com, microsoft365.com and Office on the web keep working.
+# a chat with memory goes on for weeks. Help bots on shops and assistants
+# embedded in work tools are deliberately absent, and so are the parent domains:
+# gemini.google.com and copilot.microsoft.com are their own hosts, so google.com,
+# microsoft365.com and Office on the web keep working at the DNS layer.
+#
+# Search is handled in herald rather than here, because DNS can only refuse a
+# whole host and www.google.com also serves reCAPTCHA to half the web. From
+# 2026-11 the same switch, while off, has herald refuse Google Search (Gemini is
+# built into it) and Copilot in Bing by URL, and send DuckDuckGo to
+# noai.duckduckgo.com — see the chatbots fragment in policy.json.
 #
 # Every host was resolved and loaded on 2026-10-18 and answers with its chatbot.
 # Grok is not here: it is on ai-companions.txt, always blocked.

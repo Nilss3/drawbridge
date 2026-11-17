@@ -256,6 +256,9 @@ class DiagnosticsActivity : AppCompatActivity() {
             val usable = standings.filterValues { it == AppBlocker.Standing.PRESENT }.keys
             appendLine("still usable:      ${if (usable.isEmpty()) "(none)" else usable.size}")
             usable.forEach { appendLine("  $it") }
+            appendLine("assistant apps:")
+            val blocker = AppBlocker(this@DiagnosticsActivity)
+            AppBlocker.SUSPEND_FIRST.forEach { appendLine("  $it: ${blocker.explain(it)}") }
             appendLine()
             appendLine("restrictions in force:")
             val restrictions = deviceOwner.activeRestrictions()

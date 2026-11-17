@@ -141,7 +141,15 @@ class PolicyManager private constructor(
                 val policyUpdated = verified.policy.version > currentVersion
                 if (policyUpdated) store.install(verified)
 
-                val active = if (policyUpdated) verified.policy else _policy.value
+                // **The document, never the effective policy.** `_policy.value`
+                // has the profile and the switches already applied, and switches
+                // only ever add exemptions, so re-applying it after a blocklist
+                // change froze whatever was switched on at that moment into the
+                // baseline. Found on the Moto on 2026-11-17: chatbots switched on
+                // for a test, an upstream list rotated overnight, and switching
+                // chatbots off again left the Google app exempt until the next
+                // policy version replaced the document.
+                val active = if (policyUpdated) verified.policy else baseline
                 val blocklistChanged = store.syncBlocklists(
                     active.withConditionals(conditionalVersionCode()).blocklists,
                     downloader,
@@ -167,8 +175,10 @@ class PolicyManager private constructor(
                     ),
                 )
 
-                if (policyUpdated || blocklistChanged) {
-                    applyPolicy(active)
+                if (policyUpdated) {
+                    applyPolicy(verified.policy)
+                } else if (blocklistChanged) {
+                    reapplyDocument()
                 }
                 RefreshOutcome.Success(
                     policyUpdated = policyUpdated,
@@ -352,6 +362,15 @@ class PolicyManager private constructor(
         if (next == state) return
         store.writeState(next)
     }
+
+    /**
+     * Applies the current document again — after a blocklist changed under it,
+     * say — with the selection as it stands now. Public for the regression test
+     * of 2026-11-17 (see `refresh`); it takes no lock, so callers hold
+     * [refreshMutex] or are a test.
+     */
+    @androidx.annotation.VisibleForTesting
+    fun reapplyDocument() = applyPolicy(baseline)
 
     private fun applyPolicy(document: Policy) {
         // The fragments this build understands are part of what the document

@@ -69,6 +69,17 @@ data class Policy(
     val allowedBrowserPackages: List<String> = emptyList(),
 
     /**
+     * Browsers in [browserPackages] that are nonetheless not allowed: still
+     * *sanctioned* — the app blocker treats them exactly like a browser the
+     * parent's browser choice left out, removed at the lock and given back when
+     * this list stops naming them — but not available. Filled by a conditional
+     * fragment and emptied by an option, which is how a switch can take the
+     * other browsers away while it is off. See [PolicyOption.exemptBrowserPackages].
+     */
+    @SerialName("withheld_browser_packages")
+    val withheldBrowserPackages: List<String> = emptyList(),
+
+    /**
      * When set, app control flips from "remove what is listed" to "remove what
      * is not listed": any *user-installed* package outside this list is removed.
      *
@@ -284,6 +295,15 @@ data class Policy(
             // changes nothing.
             blocklists = (blocklists + matching.flatMap { it.blocklists }).distinctBy { it.id },
             options = (options + matching.flatMap { it.options }).distinctBy { it.id },
+            withheldBrowserPackages =
+                (withheldBrowserPackages + matching.flatMap { it.withheldBrowserPackages }).distinct(),
+            browser = browser.copy(
+                blockedUrlPatterns =
+                    (browser.blockedUrlPatterns + matching.flatMap { it.blockedUrlPatterns }).distinct(),
+                hiddenSearchEngines =
+                    (browser.hiddenSearchEngines + matching.flatMap { it.hiddenSearchEngines }).distinct(),
+                hostRewrites = matching.fold(browser.hostRewrites) { acc, it -> acc + it.hostRewrites },
+            ),
             appRatings = appRatings?.let { ratings ->
                 val dropped = matching.flatMap { it.unallowPackages }.toSet()
                 if (dropped.isEmpty()) ratings
@@ -316,6 +336,16 @@ data class Policy(
             allowedPackages = allowedPackages?.let { base ->
                 (base + enabled.flatMap { it.allowedPackages }).distinct()
             },
+            withheldBrowserPackages = withheldBrowserPackages -
+                enabled.flatMap { it.exemptBrowserPackages }.toSet(),
+            browser = browser.copy(
+                blockedUrlPatterns = browser.blockedUrlPatterns -
+                    enabled.flatMap { it.exemptUrlPatterns }.toSet(),
+                hiddenSearchEngines = enabled.flatMap { it.exemptSearchEngines }
+                    .mapTo(mutableSetOf()) { it.lowercase() }
+                    .let { released -> browser.hiddenSearchEngines.filterNot { it.lowercase() in released } },
+                hostRewrites = browser.hostRewrites - enabled.flatMap { it.exemptHostRewrites }.toSet(),
+            ),
         )
     }
 
@@ -449,6 +479,25 @@ data class PolicyOption(
      */
     @SerialName("allowed_domains")
     val allowedDomains: List<String> = emptyList(),
+
+    /**
+     * Entries of `browser.blocked_url_patterns` this option releases, matched
+     * verbatim. Like [exemptPackages]: a fragment blocks, the option spares.
+     */
+    @SerialName("exempt_url_patterns")
+    val exemptUrlPatterns: List<String> = emptyList(),
+
+    /** Search engines this option gives back to herald; see [BrowserPolicy.hiddenSearchEngines]. */
+    @SerialName("exempt_search_engines")
+    val exemptSearchEngines: List<String> = emptyList(),
+
+    /** Hosts whose [BrowserPolicy.hostRewrites] entry this option lifts. */
+    @SerialName("exempt_host_rewrites")
+    val exemptHostRewrites: List<String> = emptyList(),
+
+    /** Browsers this option takes off [Policy.withheldBrowserPackages]. */
+    @SerialName("exempt_browser_packages")
+    val exemptBrowserPackages: List<String> = emptyList(),
 ) {
     fun displayName(language: String): String = pick(name, nameByLanguage, language)
 
@@ -618,6 +667,27 @@ data class ConditionalPolicy(
      */
     @SerialName("unallow_packages")
     val unallowPackages: List<String> = emptyList(),
+
+    /**
+     * Added to `browser.blocked_url_patterns`: the paths herald refuses that the
+     * DNS layer cannot express, such as a search engine's results page.
+     * An option releases one by naming it, verbatim, in
+     * [PolicyOption.exemptUrlPatterns].
+     */
+    @SerialName("blocked_url_patterns")
+    val blockedUrlPatterns: List<String> = emptyList(),
+
+    /** Added to `browser.hidden_search_engines`; see [BrowserPolicy.hiddenSearchEngines]. */
+    @SerialName("hidden_search_engines")
+    val hiddenSearchEngines: List<String> = emptyList(),
+
+    /** Added to `browser.host_rewrites`; see [BrowserPolicy.hostRewrites]. */
+    @SerialName("host_rewrites")
+    val hostRewrites: Map<String, String> = emptyMap(),
+
+    /** Added to [Policy.withheldBrowserPackages]. */
+    @SerialName("withheld_browser_packages")
+    val withheldBrowserPackages: List<String> = emptyList(),
 )
 
 @Serializable
@@ -777,7 +847,30 @@ data class BrowserPolicy(
      */
     @SerialName("blocked_hosts")
     val blockedHosts: List<String> = emptyList(),
+
+    /**
+     * Names in [searchEngines] herald does not offer. Kept apart from the list
+     * rather than deleted from it so an option can give one back in its place:
+     * [visibleSearchEngines] is what herald shows.
+     */
+    @SerialName("hidden_search_engines")
+    val hiddenSearchEngines: List<String> = emptyList(),
+
+    /**
+     * Hosts herald swaps for another on a top-level load, path and query kept:
+     * `duckduckgo.com` → `noai.duckduckgo.com`, the same engine with its AI
+     * answers switched off. Exact host matches only, `www.` aside.
+     */
+    @SerialName("host_rewrites")
+    val hostRewrites: Map<String, String> = emptyMap(),
 ) {
+    /** [searchEngines] without [hiddenSearchEngines], in the document's order. */
+    val visibleSearchEngines: List<String>
+        get() {
+            val hidden = hiddenSearchEngines.mapTo(mutableSetOf()) { it.lowercase() }
+            return searchEngines.filterNot { it.lowercase() in hidden }
+        }
+
     /** [blockedPageTitle] in [language], or the untranslated original. */
     fun displayBlockedPageTitle(language: String): String =
         pick(blockedPageTitle, blockedPageTitleByLanguage, language)
