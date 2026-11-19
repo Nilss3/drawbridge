@@ -258,7 +258,13 @@ class DiagnosticsActivity : AppCompatActivity() {
             usable.forEach { appendLine("  $it") }
             appendLine("assistant apps:")
             val blocker = AppBlocker(this@DiagnosticsActivity)
-            AppBlocker.SUSPEND_FIRST.forEach { appendLine("  $it: ${blocker.explain(it)}") }
+            // Only the ones this phone has: most names on the list belong to
+            // other brands.
+            AppBlocker.SUSPEND_FIRST
+                .map { it to blocker.explain(it) }
+                .filter { (_, line) -> line != "not on this phone" }
+                .ifEmpty { listOf("none" to "no assistant from the list is installed") }
+                .forEach { (name, line) -> appendLine("  $name: $line") }
             appendLine()
             appendLine("restrictions in force:")
             val restrictions = deviceOwner.activeRestrictions()

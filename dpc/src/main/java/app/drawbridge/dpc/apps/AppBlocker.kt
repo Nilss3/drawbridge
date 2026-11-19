@@ -1396,6 +1396,21 @@ class AppBlocker(context: Context) {
             // Google app. Suspended for the same reason: it can hold the
             // assistant role, and hiding a role holder loses the role.
             "com.google.android.apps.googleassistant",
+            // The brands' own assistants, added 2026-11-17 for the same reason:
+            // each can hold the assistant role or the side-button gesture on its
+            // own phones. None was tested on a handset; the names come from
+            // public system-app databases and debloat lists, and a name that is
+            // not installed costs nothing. Kept in step with the chatbots
+            // option's blocked_packages in dist/policy.json.
+            "com.motorola.aiservices", // Moto AI
+            "com.motorola.aicore", // Moto AI Core
+            "com.samsung.android.bixby.agent", // Bixby
+            "com.vivo.assistant", // Jovi
+            "com.nothing.ntessentialspace", // Nothing Essential Space
+            "com.heytap.speechassist", // Breeno (OPPO, realme, OnePlus)
+            "com.coloros.speechassist", // Breeno on older ColorOS
+            "com.huawei.vassistant", // Celia
+            "com.miui.voiceassist", // Xiao AI / Mi AI
         )
 
         /** Launchers, keyboards and system UI variants differ per OEM. */

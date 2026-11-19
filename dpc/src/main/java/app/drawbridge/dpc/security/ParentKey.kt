@@ -171,11 +171,17 @@ class ParentKey(context: Context) {
      *  - Diagnostics says so on screen when a build has one, because a back door
      *    nobody can see is worse than one everybody can.
      *
-     * What does not limit the damage: it is the same key on every device, it
-     * never rotates, and it survives every lock. **Ship no build with it to
-     * anyone else, and remove it before the first real deployment.** The
-     * sanctioned answer to a lost key is the delayed self-removal on the
-     * roadmap, not this.
+     * What does not limit the damage: it is the same key on every device and it
+     * survives every lock. It rotates only with a build: a new `emergencyKey`
+     * reaches each phone when that phone takes the update.
+     *
+     * **It stays in every release, released or not.** The owner's decision of
+     * 2026-11-17: a phone that nobody can open in a life-threatening situation,
+     * or in a dispute that ends up in court, is a worse outcome than the risk of
+     * the key itself. So the key is guarded like the signing keys, offline and
+     * backed up, and never handed out; it is used by the project, not given to
+     * a parent. The everyday answer to a lost parent key is still the delayed
+     * self-removal on the roadmap, not this.
      *
      * SHA-256 rather than PBKDF2 because this input is high-entropy by
      * construction — the same reasoning the comment on [derive] already makes —

@@ -1510,6 +1510,17 @@ including the power-button assistant. The policy model gained the fragment
 fields and matching `exempt_*` option fields; `policytool.py sign` refuses a
 fragment restriction no option releases.
 
+**Brand assistants (2026-11-17, not yet released).** The switch also suspends
+the phone makers' own assistants: Moto AI and Moto AI Core, Bixby, Jovi,
+Nothing's Essential Space, Breeno (both package names), Celia and Xiao AI. None
+was tested on a handset: the names come from public system-app databases and
+debloat lists, and a name a phone does not have costs nothing. They are in
+`SUSPEND_FIRST` as well as the fragment's `blocked_packages`, because each can
+hold the assistant role or the side-button gesture on its own phones. Keep the
+two lists in step. Diagnostics' "assistant apps" now lists only those installed.
+`com.motorola.aicore` may also power camera features; if a Moto loses one with
+chatbots off, that package is the first suspect.
+
 Three things found on the way, each worth knowing before touching this again:
 
 - **Suspend, never hide, an assistant.** Hiding the Google app made Android drop
@@ -2283,7 +2294,7 @@ only as good as the next person knowing it exists and where.
 
 | What | Where | Consequence of losing it |
 |---|---|---|
-| Emergency unlock key | `emergencyKey` in `keystore.properties` | Development only. Losing it costs nothing a factory reset cannot fix; **leaking it unlocks every device running a build that carries it**. Remove before real deployment. |
+| Emergency unlock key | `emergencyKey` in `keystore.properties` | Kept in every release on purpose (owner's decision, 2026-11-17: the way into a phone in a life-threatening situation or a legal dispute). Losing it costs nothing a factory reset cannot fix; **leaking it unlocks every device running a build that carries it**, until a build with a new key reaches them. Never hand it out. |
 | Release signing keystore | `keys/drawbridge-release.jks`, password in `keystore.properties` | Every provisioned device is stranded on its installed version forever. Android refuses updates signed with a different key. |
 | Policy signing key | `keys/drawbridge-2026-07.pem` | No device can ever be given a new policy again without reinstalling both apps. |
 

@@ -1,5 +1,5 @@
 {
-  "version": 183,
+  "version": 186,
   "issued_at": "2026-11-17T11:00:00Z",
   "comment": "DEV CHANNEL ONLY. drawbridge 0.2.48 build 73 and herald 0.1.29 (v0.2.8-dev.20): a blocklist change no longer freezes the switches that were on at that moment into the policy. That is why chatbots switched off on the Moto left the Google app exempt until a new policy arrived. Diagnostics keeps its assistant-apps lines.",
   "dns": {
@@ -909,14 +909,14 @@
   },
   "app_update": {
     "package_name": "app.drawbridge.dpc",
-    "version_code": 73,
-    "url": "https://dev.drawbridge-project.pages.dev/assets/dpc-74426de62453b0af.apk",
-    "sha256": "74426de62453b0af78ba781504bfa255d54156bff5f6337c3a9b5b4b649cbdf5",
-    "version_name": "0.2.48",
-    "notes": "Fixed: switching an option off now always takes effect, even after the block lists have been updated. Everything in 0.2.47 is still here.",
+    "version_code": 75,
+    "url": "https://dev.drawbridge-project.pages.dev/assets/dpc-2227f658a601e444.apk",
+    "sha256": "2227f658a601e444354d28372057808daf478e19d2234a22956164f2a0abacd5",
+    "version_name": "0.2.50",
+    "notes": "New: with chatbots switched off, the phone makers' own assistants (Moto AI, Bixby, Jovi, Celia, Xiao AI, Breeno, Nothing's Essential Space) are paused too. Everything in 0.2.48 is still here.",
     "notes_i18n": {
-      "nl": "Opgelost: een optie uitzetten werkt nu altijd, ook nadat de blokkeerlijsten zijn bijgewerkt. Alles uit 0.2.47 zit er nog in.",
-      "fr": "Corrig\u00e9 : d\u00e9sactiver une option prend d\u00e9sormais toujours effet, m\u00eame apr\u00e8s une mise \u00e0 jour des listes de blocage. Tout ce qui \u00e9tait dans la 0.2.47 y est encore."
+      "nl": "Nieuw: met chatbots uitgeschakeld worden ook de eigen assistenten van telefoonmerken gepauzeerd (Moto AI, Bixby, Jovi, Celia, Xiao AI, Breeno, Essential Space van Nothing). Alles uit 0.2.48 zit er nog in.",
+      "fr": "Nouveau : quand les chatbots sont d\u00e9sactiv\u00e9s, les assistants propres aux fabricants (Moto AI, Bixby, Jovi, Celia, Xiao AI, Breeno, Essential Space de Nothing) sont aussi mis en pause. Tout ce qui \u00e9tait dans la 0.2.48 y est encore."
     }
   },
   "required_apps": [
@@ -1107,7 +1107,16 @@
         "starnest.aichat.aichatbot.assistant",
         "tech.butterfly.app",
         "com.google.android.googlequicksearchbox",
-        "com.google.android.apps.googleassistant"
+        "com.google.android.apps.googleassistant",
+        "com.motorola.aiservices",
+        "com.motorola.aicore",
+        "com.samsung.android.bixby.agent",
+        "com.vivo.assistant",
+        "com.nothing.ntessentialspace",
+        "com.heytap.speechassist",
+        "com.coloros.speechassist",
+        "com.huawei.vassistant",
+        "com.miui.voiceassist"
       ],
       "options": [
         {
@@ -1194,7 +1203,16 @@
             "app.reflection.reflection",
             "io.mondayhero.sageai",
             "com.google.android.googlequicksearchbox",
-            "com.google.android.apps.googleassistant"
+            "com.google.android.apps.googleassistant",
+            "com.motorola.aiservices",
+            "com.motorola.aicore",
+            "com.samsung.android.bixby.agent",
+            "com.vivo.assistant",
+            "com.nothing.ntessentialspace",
+            "com.heytap.speechassist",
+            "com.coloros.speechassist",
+            "com.huawei.vassistant",
+            "com.miui.voiceassist"
           ],
           "allowed_domains": [
             "chatgpt.com",
