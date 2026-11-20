@@ -1,5 +1,5 @@
 {
-  "version": 185,
+  "version": 189,
   "issued_at": "2026-11-17T12:30:00Z",
   "comment": "drawbridge 0.2.49 build 74 and herald 0.1.30 (v0.2.31): the beta catches up with dev 0.2.48 / 0.1.29. drawbridge installs its own updates again, unattended, with a notification when one is waiting and no Play Protect steps on the Update screen. The chatbots switch, off, also blocks Google Search and Copilot in Bing in herald, sends DuckDuckGo to noai.duckduckgo.com, withholds every browser but herald, and suspends the Google app and the Assistant shell. A blocklist update no longer freezes the switches that were on into the policy.",
   "dns": {
@@ -32,7 +32,7 @@
       "url": "https://raw.githubusercontent.com/Nilss3/drawbridge/main/dist/lists/adult.txt",
       "format": "domains",
       "category": "adult",
-      "sha256": "eaf02999750d3ac8e06a20ed581a3ea302ca313b030ab9c63605bf72ffe9954c"
+      "sha256": "122357b239f6033e5fe2eca01f74117711b3b288979b73b1fbcc60ff8cc5f401"
     },
     {
       "id": "gambling",
@@ -670,8 +670,7 @@
       ],
       "allowed_domains": [
         "telegram.org",
-        "telegram.me",
-        "t.me"
+        "telegram.me"
       ],
       "name_i18n": {
         "nl": "Telegram toestaan",
@@ -943,7 +942,8 @@
     "com.vivaldi.browser",
     "ai.perplexity.comet",
     "mark.via.gp",
-    "app.vanadium.browser"
+    "app.vanadium.browser",
+    "app.drawbridge.heraldlcars"
   ],
   "app_ratings": {
     "store_region": "BE",
