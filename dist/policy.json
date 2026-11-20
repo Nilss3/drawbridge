@@ -1,5 +1,5 @@
 {
-  "version": 186,
+  "version": 187,
   "issued_at": "2026-11-17T11:00:00Z",
   "comment": "DEV CHANNEL ONLY. drawbridge 0.2.48 build 73 and herald 0.1.29 (v0.2.8-dev.20): a blocklist change no longer freezes the switches that were on at that moment into the policy. That is why chatbots switched off on the Moto left the Google app exempt until a new policy arrived. Diagnostics keeps its assistant-apps lines.",
   "dns": {
@@ -32,7 +32,7 @@
       "url": "https://raw.githubusercontent.com/Nilss3/drawbridge/dev/dist/lists/adult.txt",
       "format": "domains",
       "category": "adult",
-      "sha256": "eaf02999750d3ac8e06a20ed581a3ea302ca313b030ab9c63605bf72ffe9954c"
+      "sha256": "122357b239f6033e5fe2eca01f74117711b3b288979b73b1fbcc60ff8cc5f401"
     },
     {
       "id": "gambling",
@@ -943,7 +943,8 @@
     "com.vivaldi.browser",
     "ai.perplexity.comet",
     "mark.via.gp",
-    "app.vanadium.browser"
+    "app.vanadium.browser",
+    "app.drawbridge.heraldlcars"
   ],
   "app_ratings": {
     "store_region": "BE",
