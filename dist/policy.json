@@ -1,5 +1,5 @@
 {
-  "version": 190,
+  "version": 192,
   "issued_at": "2026-11-17T12:30:00Z",
   "comment": "drawbridge 0.2.49 build 74 and herald 0.1.30 (v0.2.31): the beta catches up with dev 0.2.48 / 0.1.29. drawbridge installs its own updates again, unattended, with a notification when one is waiting and no Play Protect steps on the Update screen. The chatbots switch, off, also blocks Google Search and Copilot in Bing in herald, sends DuckDuckGo to noai.duckduckgo.com, withholds every browser but herald, and suspends the Google app and the Assistant shell. A blocklist update no longer freezes the switches that were on into the policy.",
   "dns": {
@@ -1002,6 +1002,7 @@
       "com.strava",
       "com.stt.android",
       "com.trainerize.sweatwithsteph",
+      "com.trainerize.sweatwithstephpt",
       "de.danoeh.antennapod",
       "deezer.android.app",
       "fm.castbox.audiobook.radio.podcast",
