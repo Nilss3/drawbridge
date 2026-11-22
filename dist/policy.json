@@ -1,5 +1,5 @@
 {
-  "version": 188,
+  "version": 191,
   "issued_at": "2026-11-17T11:00:00Z",
   "comment": "DEV CHANNEL ONLY. drawbridge 0.2.48 build 73 and herald 0.1.29 (v0.2.8-dev.20): a blocklist change no longer freezes the switches that were on at that moment into the policy. That is why chatbots switched off on the Moto left the Google app exempt until a new policy arrived. Diagnostics keeps its assistant-apps lines.",
   "dns": {
@@ -993,6 +993,7 @@
       "com.spotify.music",
       "com.strava",
       "com.stt.android",
+      "com.trainerize.sweatwithsteph",
       "de.danoeh.antennapod",
       "deezer.android.app",
       "fm.castbox.audiobook.radio.podcast",
